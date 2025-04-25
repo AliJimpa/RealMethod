@@ -1,23 +1,25 @@
 {
-    "name": "com.mustard.realmethod",
-    "version": "1.0.0",
-    "displayName": "RealMethod",
-    "description": "A modern concept for making game in unity.",
-    "unity": "6000.0.0",
-    "author": {
-      "name": "Ali & Arsalan",
-      "url": "https://alibadpa.weebly.com"
-    },
-    "keywords": ["mustard", "tools", "utilities", "editor"],
-    "samples": [
-      {
-        "displayName": "Basic Usage",
-        "description": "How to use Mustard Utilities",
-        "path": "Samples~/Basic"
-      }
-    ],
-    "dependencies": {
-      "com.unity.mathematics": "1.2.6"
+  "name": "com.mustard.realmethod",
+  "version": "1.0.0",
+  "displayName": "RealMethod",
+  "description": "A modern concept for making game in unity.",
+  "unity": "6000.0",
+  "author": {
+    "name": "Ali & Arsalan",
+    "url": "https://alibadpa.weebly.com"
+  },
+  "keywords": [
+    "mustard",
+    "tools",
+    "utilities",
+    "editor"
+  ],
+  "samples": [
+    {
+      "displayName": "Basic Usage",
+      "description": "How to use Mustard Utilities",
+      "path": "Samples~/Basic"
     }
-  }
-  
+  ],
+  "unityRelease": "44f1"
+}
