@@ -24,7 +24,7 @@ public class Game : MonoBehaviour
         {
             if (AlternativeInstance == null)
             {
-                Game[] components = FindObjectsOfType<Game>();
+                Game[] components = FindObjectsByType<Game>(FindObjectsSortMode.InstanceID);
                 if (components.Length == 1)
                 {
                     AlternativeInstance = components[0];
