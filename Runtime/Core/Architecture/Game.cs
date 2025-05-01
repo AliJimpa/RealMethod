@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 /// The Game class is a singleton that manages the core game logic and state.
 /// Note: Dont Use RequireComponent.
 /// </remarks>
-public class Game : MonoBehaviour
+public abstract class Game : MonoBehaviour
 {
     //Static Variables
     private static Game AlternativeInstance;

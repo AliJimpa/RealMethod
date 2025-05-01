@@ -2,9 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [DefaultExecutionOrder(-1)]
-public class World : MonoBehaviour
+public abstract class World : MonoBehaviour
 {
-
     [Header("World")]
     [SerializeField]
     private bool IsPlayerInScene = true;
