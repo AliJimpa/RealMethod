@@ -466,20 +466,4 @@ namespace RealMethod
     }
 
 
-    public class GameSettingAsset : ScriptableObject
-    {
-        [Header("Srvice")]
-        public Action<Service> OnNewService;
-        [Header("FadeScreen")]
-        public Action<bool> OnScreenFade;
-        public float FadingTime = 1;
-        [Header("LoadScreen")]
-        public Action<bool> OnScreenLoading;
-        public Action<float> OnLoadingProcess;
-        [Header("Status")]
-        public Action<bool> OnSceneLoading;
-
-    }
-
-
 }
