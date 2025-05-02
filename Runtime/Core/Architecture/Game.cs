@@ -35,7 +35,7 @@ public abstract class Game : MonoBehaviour
                     if (components.Length == 0)
                     {
                         var emptyObject = new GameObject("GameManager");
-                        Type TargetClass = GameManager.Settings.GetComponentType();
+                        Type TargetClass = GameManager.Settings.GetGameClass();
                         if (TargetClass != null)
                         {
                             AlternativeInstance = (Game)emptyObject.AddComponent(TargetClass);

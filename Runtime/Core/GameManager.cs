@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameSettingObj cachedSettings;
+    private static RMSS cachedSettings;
 
-    public static GameSettingObj Settings
+    public static RMSS Settings
     {
         get
         {
             if (cachedSettings == null)
             {
-                cachedSettings = Resources.Load<GameSettingObj>("Mustard/GameSettingObj");
+                cachedSettings = Resources.Load<RMSS>("Mustard/GameSettingObj");
                 if (cachedSettings == null)
                 {
                     Debug.LogError("GlobalSettings asset is missing from Resources folder!");
