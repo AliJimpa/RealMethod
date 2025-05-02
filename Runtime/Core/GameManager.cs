@@ -1,22 +1,25 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+namespace RealMethod
 {
-    private static RMSS cachedSettings;
-
-    public static RMSS Settings
+    public class GameManager : MonoBehaviour
     {
-        get
+        private static RealMethodSettingAsset cachedSettings;
+
+        public static RealMethodSettingAsset Settings
         {
-            if (cachedSettings == null)
+            get
             {
-                cachedSettings = Resources.Load<RMSS>("Mustard/GameSettingObj");
                 if (cachedSettings == null)
                 {
-                    Debug.LogError("GlobalSettings asset is missing from Resources folder!");
+                    cachedSettings = Resources.Load<RealMethodSettingAsset>("Mustard/GameSettingObj");
+                    if (cachedSettings == null)
+                    {
+                        Debug.LogError("GlobalSettings asset is missing from Resources folder!");
+                    }
                 }
+                return cachedSettings;
             }
-            return cachedSettings;
         }
     }
 }
