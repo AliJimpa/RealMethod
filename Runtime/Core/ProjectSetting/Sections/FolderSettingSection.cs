@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public class ContentSetting : SettingSection
+    public class FolderSettingSection : ProjectSettingSection
     {
-        private RealMethodSettingAsset MyStorage;
+        private ProjectSettingAsset MyStorage;
 
         // Implement Abstaction Methods
         protected override void Initialized()
         {
         }
-        protected override void FirstSelected(RealMethodSettingAsset Storage)
+        protected override void FirstSelected(ProjectSettingAsset Storage)
         {
             MyStorage = Storage;
         }

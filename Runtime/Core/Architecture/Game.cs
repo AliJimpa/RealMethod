@@ -18,8 +18,28 @@ namespace RealMethod
     /// </remarks>
     public abstract class Game : MonoBehaviour
     {
-        //Static Variables
+        //Private Static Variables
         private static Game AlternativeInstance;
+        private static ProjectSettingAsset AlternativeProjectSettings;
+        private static ProjectSettingAsset ProjectSettings
+        {
+            get
+            {
+                if (AlternativeProjectSettings == null)
+                {
+                    AlternativeProjectSettings = Resources.Load<ProjectSettingAsset>("Mustard/GameSettingObj");
+                    if (AlternativeProjectSettings == null)
+                    {
+                        Debug.LogError("GlobalSettings asset is missing from Resources folder!");
+                    }
+                }
+                return AlternativeProjectSettings;
+            }
+        }
+        private static GameSettingAsset AlternativeGameSetting;
+
+
+        // Public Static Variables
         public static Game Instance
         {
             get
@@ -37,7 +57,7 @@ namespace RealMethod
                         if (components.Length == 0)
                         {
                             var emptyObject = new GameObject("GameManager");
-                            Type TargetClass = GameManager.Settings.GetGameClass();
+                            Type TargetClass = ProjectSettings.GetGameInstanceClass();
                             if (TargetClass != null)
                             {
                                 AlternativeInstance = (Game)emptyObject.AddComponent(TargetClass);
@@ -65,14 +85,34 @@ namespace RealMethod
             private set { }
         }
         public static World World;
+        public static GameSettingAsset Setting
+        {
+            get
+            {
+                if (AlternativeGameSetting == null)
+                {
+                    if (ProjectSettings.GameSetting != null)
+                    {
+                        AlternativeGameSetting = ProjectSettings.GameSetting;
+                    }
+                    else
+                    {
+                        AlternativeGameSetting = ScriptableObject.CreateInstance<GameSettingAsset>();
+                    }
+                }
+                return AlternativeGameSetting;
+            }
+        }
+
 
         //Public Variables
         public Action<World> OnWorldUpdated = delegate { };
         public Timer GameTimer;
 
-        //Private
+        //Private Variables
         private bool IsInLoading = false;
-        private GameData gameData;
+        private GameSettingAsset gameData;
+
         private List<Service> Services = new List<Service>();
 
 
@@ -266,7 +306,7 @@ namespace RealMethod
         {
             return AlternativeInstance;
         }
-        public static GameData Data()
+        public static GameSettingAsset Data()
         {
             if (Instance.gameData != null)
             {
@@ -274,13 +314,13 @@ namespace RealMethod
             }
             else
             {
-                if (GameManager.Settings.GeneralGameData != null)
+                if (ProjectSettings.GameSetting != null)
                 {
-                    Instance.gameData = GameManager.Settings.GeneralGameData;
+                    Instance.gameData = ProjectSettings.GameSetting;
                 }
                 else
                 {
-                    Instance.gameData = ScriptableObject.CreateInstance<GameData>();
+                    Instance.gameData = ScriptableObject.CreateInstance<GameSettingAsset>();
                 }
                 return Instance.gameData;
             }
@@ -426,7 +466,7 @@ namespace RealMethod
     }
 
 
-    public class GameData : ScriptableObject
+    public class GameSettingAsset : ScriptableObject
     {
         [Header("Srvice")]
         public Action<Service> OnNewService;

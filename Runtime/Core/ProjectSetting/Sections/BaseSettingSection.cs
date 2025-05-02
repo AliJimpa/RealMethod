@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace RealMethod
 {
-    public class GameSetting : SettingSection
+    public class BaseSettingSection : ProjectSettingSection
     {
         private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset"; // Store in Resources for runtime access
         private SerializedObject settings;
@@ -26,7 +26,7 @@ namespace RealMethod
 
             typeNames = componentTypes.Select(t => t.FullName).ToArray();
         }
-        protected override void FirstSelected(RealMethodSettingAsset Storage)
+        protected override void FirstSelected(ProjectSettingAsset Storage)
         {
             settings = new SerializedObject(Storage);
         }
@@ -34,14 +34,14 @@ namespace RealMethod
         {
             if (settings == null) return;
 
-            EditorGUILayout.PropertyField(settings.FindProperty("GeneralGameData"), new GUIContent("GameData"));
+            EditorGUILayout.PropertyField(settings.FindProperty("GameSetting"), new GUIContent("GameSettingAsset"));
 
-            int selectedIndex = Array.IndexOf(typeNames, settings.FindProperty("GameClass").stringValue);
-            int newIndex = EditorGUILayout.Popup("GameClass", selectedIndex, typeNames);
+            int selectedIndex = Array.IndexOf(typeNames, settings.FindProperty("GameInstanceClass").stringValue);
+            int newIndex = EditorGUILayout.Popup("GameInstanceClass", selectedIndex, typeNames);
 
             if (newIndex >= 0 && newIndex < typeNames.Length)
             {
-                settings.FindProperty("GameClass").stringValue = typeNames[newIndex];
+                settings.FindProperty("GameInstanceClass").stringValue = typeNames[newIndex];
             }
 
             settings.ApplyModifiedProperties();

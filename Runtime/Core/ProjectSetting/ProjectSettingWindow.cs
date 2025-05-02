@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public static class RealMethodSetting
+    public static class ProjectSettingWindow
     {
         private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         private static bool candraw = true;// Flag to determine if the UI can be drawn
-        private static SettingSection[] sections = new SettingSection[2] {
+        private static ProjectSettingSection[] sections = new ProjectSettingSection[2] {
         // Array of sections to be rendered in the settings UI
-        new GameSetting(),
-        new ContentSetting()
+        new BaseSettingSection(),
+        new FolderSettingSection()
     };
 
 
@@ -25,7 +25,7 @@ namespace RealMethod
                 // Called when the settings tab is first selected
                 activateHandler = (searchContext, rootElement) =>
                 {
-                    RealMethodSettingAsset TargetStorage = null;
+                    ProjectSettingAsset TargetStorage = null;
 
                     // Attempt to load the settings asset
                     if (!GetSettingStorage(out TargetStorage))
@@ -71,7 +71,7 @@ namespace RealMethod
                                 AssetDatabase.CreateFolder("Assets/Resources", "RealMethod");
 
 
-                            RealMethodSettingAsset TargetStorage = CreateSettingStorage();
+                            ProjectSettingAsset TargetStorage = CreateSettingStorage();
                             foreach (var item in sections)
                             {
                                 if (TargetStorage != null)
@@ -88,16 +88,16 @@ namespace RealMethod
         }
 
 
-        private static bool GetSettingStorage(out RealMethodSettingAsset settings)
+        private static bool GetSettingStorage(out ProjectSettingAsset settings)
         {
             // Attempt to load the settings asset from the specified path
-            settings = AssetDatabase.LoadAssetAtPath<RealMethodSettingAsset>(settingsPath);
+            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(settingsPath);
             return settings != null;
         }
-        private static RealMethodSettingAsset CreateSettingStorage()
+        private static ProjectSettingAsset CreateSettingStorage()
         {
             // Create a new settings asset at the specified path
-            RealMethodSettingAsset settings = ScriptableObject.CreateInstance<RealMethodSettingAsset>();
+            ProjectSettingAsset settings = ScriptableObject.CreateInstance<ProjectSettingAsset>();
             AssetDatabase.CreateAsset(settings, settingsPath);
             AssetDatabase.SaveAssets();
             return settings;
@@ -106,7 +106,7 @@ namespace RealMethod
 
 
     // Abstract base class for a settings section
-    public abstract class SettingSection
+    public abstract class ProjectSettingSection
     {
 
         private bool isReady = true;// Indicates whether the section is ready to render
@@ -114,12 +114,12 @@ namespace RealMethod
         private int errorid = 0;// Error ID to identify the type of error
 
 
-        public SettingSection()
+        public ProjectSettingSection()
         {
             Initialized();
         }
 
-        public void BeginRender(RealMethodSettingAsset storage)
+        public void BeginRender(ProjectSettingAsset storage)
         {
             FirstSelected(storage);
         }
@@ -148,7 +148,7 @@ namespace RealMethod
 
 
         protected abstract void Initialized();
-        protected abstract void FirstSelected(RealMethodSettingAsset Storage);
+        protected abstract void FirstSelected(ProjectSettingAsset Storage);
         protected abstract void Draw();
         protected abstract string GetTitle();
         protected abstract void Fix(int Id);

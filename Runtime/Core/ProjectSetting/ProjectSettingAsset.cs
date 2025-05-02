@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RealMethod
 {
     // Real Method Setting Storage
-    public class RealMethodSettingAsset : ScriptableObject
+    public class ProjectSettingAsset : ScriptableObject
     {
         [Serializable]
         public struct FolderAddress
@@ -37,9 +37,9 @@ namespace RealMethod
         }
 
 
-        public GameData GeneralGameData;
+        public GameSettingAsset GameSetting;
         [SerializeField]
-        private string GameClass;
+        private string GameInstanceClass;
         public FolderAddress[] ProjectStructure = new FolderAddress[17]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},
@@ -63,13 +63,20 @@ namespace RealMethod
 
 
 
-        public Type GetGameClass()
+        public Type GetGameInstanceClass()
         {
-            return System.Type.GetType(GameClass);
+            return Type.GetType(GameInstanceClass);
         }
-        public void SetGameClass(Type type)
+        public void SetGameInstanceClass(Type type)
         {
-            GameClass = type.AssemblyQualifiedName; // Store fully qualified name
+            // Store fully qualified name of the type
+            if (type != null)
+            {
+                GameInstanceClass = type.AssemblyQualifiedName;
+            }else{
+                Debug.LogError("Type is null. Cannot set GameInstanceClass.");
+            }
+
         }
 
     }
