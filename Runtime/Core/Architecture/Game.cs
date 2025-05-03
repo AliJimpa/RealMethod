@@ -7,7 +7,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -409,7 +408,7 @@ namespace RealMethod
             }
             while (!Load_opertation.isDone)
             {
-                gameData.OnLoadingProcess?.Invoke(Mustard.Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1)));
+                gameData.OnLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1)));
                 yield return null;
             }
 
@@ -424,7 +423,7 @@ namespace RealMethod
                 }
                 while (!Additive_Load_opertation.isDone)
                 {
-                    gameData.OnLoadingProcess?.Invoke(Mustard.Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1 - (i + 1))));
+                    gameData.OnLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1 - (i + 1))));
                     yield return null;
                 }
 

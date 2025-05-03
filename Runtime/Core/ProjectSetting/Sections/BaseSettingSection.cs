@@ -36,7 +36,7 @@ namespace RealMethod
 
             EditorGUILayout.PropertyField(settings.FindProperty("GameSetting"), new GUIContent("GameSettingAsset"));
 
-            int selectedIndex = Array.IndexOf(typeNames, settings.FindProperty("GameInstanceClass").stringValue);
+            int selectedIndex = System.Array.IndexOf(typeNames, settings.FindProperty("GameInstanceClass").stringValue);
             int newIndex = EditorGUILayout.Popup("GameInstanceClass", selectedIndex, typeNames);
 
             if (newIndex >= 0 && newIndex < typeNames.Length)

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace Mustard
+namespace RealMethod
 {
     static class Math
     {
