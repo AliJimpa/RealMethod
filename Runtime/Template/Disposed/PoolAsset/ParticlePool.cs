@@ -1,11 +1,10 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
 namespace RealMethod
 {
-    [CreateAssetMenu(fileName = "ParticlePool", menuName = "Mustard/Pool/ParticlePool", order = 1)]
+    [CreateAssetMenu(fileName = "ParticlePool", menuName = "RealMethod/Pool/ParticlePool", order = 1)]
     public class ParticlePool : Pool<ParticleSystem>
     {
         public ParticleSystem Particle;

@@ -1,10 +1,9 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace RealMethod
 {
-    [CreateAssetMenu(fileName = "PrefabPool", menuName = "Mustard/Pool/PrefabPool", order = 1)]
+    [CreateAssetMenu(fileName = "PrefabPool", menuName = "RealMethod/Pool/PrefabPool", order = 1)]
     public class PrefabPool : Pool<Transform>
     {
         [SerializeField]

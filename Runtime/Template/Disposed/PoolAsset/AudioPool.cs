@@ -5,7 +5,7 @@ using UnityEngine.Audio;
 
 namespace RealMethod
 {
-    [CreateAssetMenu(fileName = "AudioPool", menuName = "Mustard/Pool/AudioPool", order = 1)]
+    [CreateAssetMenu(fileName = "AudioPool", menuName = "RealMethod/Pool/AudioPool", order = 1)]
     public class AudioPool : Pool<AudioSource>
     {
         [Header("ّFirstSetup")]
