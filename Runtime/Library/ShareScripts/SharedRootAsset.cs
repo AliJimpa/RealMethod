@@ -1,33 +1,37 @@
 using UnityEngine;
 using RealMethod;
 
-public abstract class SharedRootAsset : DataAsset
+namespace RealMethod
 {
-    private Transform _GameObjectRoot;
-    protected Transform GameObjectRoot
+    public abstract class SharedRootAsset : DataAsset
     {
-        get
+        private Transform _GameObjectRoot;
+        protected Transform GameObjectRoot
         {
-            if (_GameObjectRoot == null)
+            get
             {
-                _GameObjectRoot = new GameObject("Shared_" + name).transform;
-                OnRootInitiate();
+                if (_GameObjectRoot == null)
+                {
+                    _GameObjectRoot = new GameObject("Shared_" + name).transform;
+                    OnRootInitiate();
+                }
+                return _GameObjectRoot;
             }
+        }
+
+        protected abstract void OnRootInitiate();
+
+        public Transform GetRoot()
+        {
+            return GameObjectRoot;
+        }
+
+        protected bool IsInitiate()
+        {
             return _GameObjectRoot;
         }
-    }
 
-    protected abstract void OnRootInitiate();
-    
-    public Transform GetRoot()
-    {
-        return GameObjectRoot;
-    }
 
-    protected bool IsInitiate()
-    {
-        return _GameObjectRoot;
     }
-
 
 }

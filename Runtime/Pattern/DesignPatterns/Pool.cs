@@ -3,153 +3,156 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-
-public abstract class CorePool<T> : SharedRootAsset where T : Component
+namespace RealMethod
 {
-    protected Stack<T> Available = new Stack<T>();
-    private bool Prewarmed = false;
-
-    // abstract Methods
-    protected abstract void PreProcess(T Comp);
-    protected abstract T CreateObject();
-    protected abstract IEnumerator PostProcess(T Comp);
-
-
-    //virtual methods
-    public virtual void Clear()
+    public abstract class Pool<T> : SharedRootAsset where T : Component
     {
-        Available.Clear();
-        Prewarmed = false;
-    }
+        protected Stack<T> Available = new Stack<T>();
+        private bool Prewarmed = false;
+
+        // abstract Methods
+        protected abstract void PreProcess(T Comp);
+        protected abstract T CreateObject();
+        protected abstract IEnumerator PostProcess(T Comp);
 
 
-    // Functions
-    public void Prewarm(int amount = 1)
-    {
-        if (Prewarmed)
+        //virtual methods
+        public virtual void Clear()
         {
-            Debug.LogWarning($"Pool {name} has already been prewarmed.");
-            return;
+            Available.Clear();
+            Prewarmed = false;
         }
 
-        for (int i = 0; i < amount; i++)
+
+        // Functions
+        public void Prewarm(int amount = 1)
         {
-            var NewObject = CreateObject();
-            NewObject.transform.SetParent(GameObjectRoot.transform);
-            NewObject.gameObject.SetActive(false);
-            Available.Push(NewObject);
-        }
-        Prewarmed = true;
-    }
-    public IEnumerable<T> Request(int amount = 1)
-    {
-        T[] members = new T[amount];
-        for (int i = 0; i < amount; i++)
-        {
-            members[i] = Request();
-        }
-        return members;
-    }
-    public void Return(int amount = 1)
-    {
-        T[] Chield = GameObjectRoot.GetComponentsInChildren<T>();
-        for (int i = 0; i < amount; i++)
-        {
-            if (i < Chield.Length)
+            if (Prewarmed)
             {
-                Return(Chield[i]);
+                Debug.LogWarning($"Pool {name} has already been prewarmed.");
+                return;
             }
-        }
-    }
-    public void Remove(int amount = 1, bool RemoveActivated = false)
-    {
-        for (int i = 0; i < amount; i++)
-        {
-            if (Available.Count > 0)
+
+            for (int i = 0; i < amount; i++)
             {
-                T item = Available.Pop();
-                Destroy(item.gameObject);
+                var NewObject = CreateObject();
+                NewObject.transform.SetParent(GameObjectRoot.transform);
+                NewObject.gameObject.SetActive(false);
+                Available.Push(NewObject);
             }
-            else
+            Prewarmed = true;
+        }
+        public IEnumerable<T> Request(int amount = 1)
+        {
+            T[] members = new T[amount];
+            for (int i = 0; i < amount; i++)
             {
-                if (RemoveActivated)
+                members[i] = Request();
+            }
+            return members;
+        }
+        public void Return(int amount = 1)
+        {
+            T[] Chield = GameObjectRoot.GetComponentsInChildren<T>();
+            for (int i = 0; i < amount; i++)
+            {
+                if (i < Chield.Length)
                 {
-                    T ValidComponent = GameObjectRoot.GetComponent<T>();
-                    if (ValidComponent)
-                    {
-                        Destroy(ValidComponent.gameObject);
-                    }
+                    Return(Chield[i]);
                 }
             }
         }
-
-    }
-    public void Clean()
-    {
-        if (GameObjectRoot != null)
+        public void Remove(int amount = 1, bool RemoveActivated = false)
         {
+            for (int i = 0; i < amount; i++)
+            {
+                if (Available.Count > 0)
+                {
+                    T item = Available.Pop();
+                    Destroy(item.gameObject);
+                }
+                else
+                {
+                    if (RemoveActivated)
+                    {
+                        T ValidComponent = GameObjectRoot.GetComponent<T>();
+                        if (ValidComponent)
+                        {
+                            Destroy(ValidComponent.gameObject);
+                        }
+                    }
+                }
+            }
+
+        }
+        public void Clean()
+        {
+            if (GameObjectRoot != null)
+            {
 #if UNITY_EDITOR
-            DestroyImmediate(GameObjectRoot.gameObject);
+                DestroyImmediate(GameObjectRoot.gameObject);
 #else
 			Destroy(GameObjectRoot.gameObject);
 #endif
-        }
-        Clear();
-    }
-
-
-    // Base Method
-    protected T Request()
-    {
-        if (!IsInitiate())
-        {
+            }
             Clear();
         }
 
-        if (Available.Count > 0)
+
+        // Base Method
+        protected T Request()
         {
-            T item = Available.Pop();
-            PreProcess(item);
-            item.gameObject.SetActive(true);
-            IEnumerator Poolback = PostProcess(item);
-            if (Poolback != null)
-                CallPoolBackEvent(item, Poolback);
-            return item;
+            if (!IsInitiate())
+            {
+                Clear();
+            }
+
+            if (Available.Count > 0)
+            {
+                T item = Available.Pop();
+                PreProcess(item);
+                item.gameObject.SetActive(true);
+                IEnumerator Poolback = PostProcess(item);
+                if (Poolback != null)
+                    CallPoolBackEvent(item, Poolback);
+                return item;
+            }
+            else
+            {
+                T newMember = CreateObject();
+                PreProcess(newMember);
+                newMember.transform.SetParent(GameObjectRoot.transform);
+                IEnumerator Poolback = PostProcess(newMember);
+                if (Poolback != null)
+                    CallPoolBackEvent(newMember, Poolback);
+                return newMember;
+            }
         }
-        else
+        protected void Return(T Value)
         {
-            T newMember = CreateObject();
-            PreProcess(newMember);
-            newMember.transform.SetParent(GameObjectRoot.transform);
-            IEnumerator Poolback = PostProcess(newMember);
-            if (Poolback != null)
-                CallPoolBackEvent(newMember, Poolback);
-            return newMember;
+            Value.gameObject.SetActive(false);
+            Available.Push(Value);
         }
+
+        private void CallPoolBackEvent(T Target, IEnumerator Corotine)
+        {
+            MonoBehaviour MonoComp = Target.GetComponent<MonoBehaviour>();
+            if (MonoComp)
+            {
+                MonoComp.StartCoroutine(Corotine);
+            }
+            else
+            {
+                Target.AddComponent<PoolComponentHandeler>().StartCoroutine(Corotine);
+            }
+        }
+
     }
-    protected void Return(T Value)
+
+    public class PoolComponentHandeler : MonoBehaviour
     {
-        Value.gameObject.SetActive(false);
-        Available.Push(Value);
+
     }
-
-    private void CallPoolBackEvent(T Target, IEnumerator Corotine)
-    {
-        MonoBehaviour MonoComp = Target.GetComponent<MonoBehaviour>();
-        if (MonoComp)
-        {
-            MonoComp.StartCoroutine(Corotine);
-        }
-        else
-        {
-            Target.AddComponent<PoolComponentHandeler>().StartCoroutine(Corotine);
-        }
-    }
-
-}
-
-public class PoolComponentHandeler : MonoBehaviour
-{
 
 }
 

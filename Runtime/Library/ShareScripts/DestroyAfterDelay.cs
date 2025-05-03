@@ -1,20 +1,20 @@
 using UnityEngine;
-using RealMethod;
 
-public class DestroyAfterDelay : MonoBehaviour, IInitializableWithArgument<float>
+namespace RealMethod
 {
-    public float Delay = 5;
-
-    public void Initialize(float argument)
+    public class DestroyAfterDelay : MonoBehaviour, IInitializableWithArgument<float>
     {
-        Delay = argument;
+        public float Delay = 5;
+
+        public void Initialize(float argument)
+        {
+            Delay = argument;
+        }
+
+        void Start()
+        {
+            Destroy(gameObject, Delay);
+        }
     }
-
-    void Start()
-    {
-        Destroy(gameObject, Delay);
-    }
-
-
 
 }
