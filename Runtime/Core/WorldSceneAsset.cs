@@ -1,12 +1,13 @@
 
 using UnityEngine;
+using RealMethod;
 using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
 #endif
 
-[CreateAssetMenu(fileName = "WorldScene", menuName = "Mustard/Asset/WorldScene", order = 1)]
-public class WorldScene : ScriptableObject
+[CreateAssetMenu(fileName = "WorldScene", menuName = "Scene/WorldScene", order = 1)]
+public class WorldSceneAsset : DataAsset
 {
    [Header("Config")]
    [SerializeField]

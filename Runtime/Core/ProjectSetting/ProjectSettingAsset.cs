@@ -39,7 +39,7 @@ namespace RealMethod
 
         public GameSettingAsset GameSetting;
         [SerializeField]
-        private string GameInstanceClass;
+        private string GameInstanceClass = "DefultGame";
         public FolderAddress[] ProjectStructure = new FolderAddress[17]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},

@@ -7,6 +7,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -27,10 +28,10 @@ namespace RealMethod
             {
                 if (AlternativeProjectSettings == null)
                 {
-                    AlternativeProjectSettings = Resources.Load<ProjectSettingAsset>("Mustard/GameSettingObj");
+                    AlternativeProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
                     if (AlternativeProjectSettings == null)
                     {
-                        Debug.LogError("GlobalSettings asset is missing from Resources folder!");
+                        Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
                     }
                 }
                 return AlternativeProjectSettings;
@@ -64,12 +65,12 @@ namespace RealMethod
                                 if (AlternativeInstance == null)
                                 {
                                     Debug.LogError($"Component of type {TargetClass} is not assignable from Game.");
-                                    AlternativeInstance = emptyObject.AddComponent<Game>();
+                                    AlternativeInstance = emptyObject.AddComponent<DefultGame>();
                                 }
                             }
                             else
                             {
-                                AlternativeInstance = emptyObject.AddComponent<Game>();
+                                AlternativeInstance = emptyObject.AddComponent<DefultGame>();
                             }
                             AlternativeInstance.Initialize();
                         }
@@ -97,7 +98,7 @@ namespace RealMethod
                     }
                     else
                     {
-                        AlternativeGameSetting = ScriptableObject.CreateInstance<GameSettingAsset>();
+                        AlternativeGameSetting = ScriptableObject.CreateInstance<DefaultGameSetting>();
                     }
                 }
                 return AlternativeGameSetting;
@@ -276,7 +277,7 @@ namespace RealMethod
                 Debug.LogWarning("The scene is already loaded.");
             }
         }
-        public static void OpenWorld(WorldScene WorldScene)
+        public static void OpenWorld(WorldSceneAsset WorldScene)
         {
             if (Instance.IsInLoading)
                 return;
@@ -305,25 +306,6 @@ namespace RealMethod
         public static bool IsValid()
         {
             return AlternativeInstance;
-        }
-        public static GameSettingAsset Data()
-        {
-            if (Instance.gameData != null)
-            {
-                return Instance.gameData;
-            }
-            else
-            {
-                if (ProjectSettings.GameSetting != null)
-                {
-                    Instance.gameData = ProjectSettings.GameSetting;
-                }
-                else
-                {
-                    Instance.gameData = ScriptableObject.CreateInstance<GameSettingAsset>();
-                }
-                return Instance.gameData;
-            }
         }
         public static void SetGameTime(float scale)
         {
@@ -395,7 +377,7 @@ namespace RealMethod
             gameData.OnSceneLoading?.Invoke(false);
             IsInLoading = false;
         }
-        private IEnumerator LoadWorldAsync(WorldScene WS)
+        private IEnumerator LoadWorldAsync(WorldSceneAsset WS)
         {
             //Cheack GameData
             if (gameData == null)

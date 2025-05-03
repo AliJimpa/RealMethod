@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class GameSettingAsset : ScriptableObject
+    public abstract class GameSettingAsset : DataAsset
     {
         [Header("Srvice")]
         public Action<Service> OnNewService;

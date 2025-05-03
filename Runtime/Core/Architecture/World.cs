@@ -78,7 +78,7 @@ namespace RealMethod
         {
             //Introduce Self to GameInstance
             Game.Instance.OnWorldUpdate(this);
-            Game.Data().OnNewService += OnServiceCreated;
+            Game.Setting.OnNewService += OnServiceCreated;
 
             //Find Player or Create newone
             DetectPlayer();
