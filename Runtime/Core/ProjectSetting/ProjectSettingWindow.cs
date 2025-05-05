@@ -108,7 +108,6 @@ namespace RealMethod
     // Abstract base class for a settings section
     public abstract class ProjectSettingSection
     {
-
         private bool isReady = true;// Indicates whether the section is ready to render
         private string message = string.Empty;// Error message to display if the section is not ready
         private int errorid = 0;// Error ID to identify the type of error

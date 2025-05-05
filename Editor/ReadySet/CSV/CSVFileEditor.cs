@@ -10,7 +10,7 @@ namespace RealMethod
     [CustomEditor(typeof(TextAsset))]
     public class CSVFileEditor : Editor
     {
-        class CustomList<T> : EL_ScriptableObject<T> where T : ScriptableObject
+        class CustomList<T> : EPS_ScriptableObjectList<T> where T : ScriptableObject
         {
             Color originalColor = GUI.backgroundColor;
 
@@ -50,12 +50,12 @@ namespace RealMethod
 
         private bool IsActiveEditor = false;
         private string assetPath;
-        private EV_Enum<CSVReadType> ReadStyle;
+        private EPS_Enum<CSVReadType> ReadStyle;
         private TableViewer TabelGUI;
         private CustomList<ScriptableObject> ObjectsPart;
-        private EV_Date LastUpdate;
-        private EV_Enum<SheetType> OnlineSheetType;
-        private EV_string SheetID;
+        private EPS_Date LastUpdate;
+        private EPS_Enum<SheetType> OnlineSheetType;
+        private EPS_string SheetID;
         private bool Isdownloading = false;
 
 
@@ -73,11 +73,11 @@ namespace RealMethod
             {
                 // Load the file content
                 TabelGUI = new TableViewer(textAsset);
-                ReadStyle = new EV_Enum<CSVReadType>(this, "ReadType");
+                ReadStyle = new EPS_Enum<CSVReadType>(this, "ReadType");
                 ObjectsPart = new CustomList<ScriptableObject>(this, "SObjects");
-                LastUpdate = new EV_Date(this, "LastUpdate");
-                SheetID = new EV_string(this, "SheetID");
-                OnlineSheetType = new EV_Enum<SheetType>(this, "SheetType");
+                LastUpdate = new EPS_Date(this, "LastUpdate");
+                SheetID = new EPS_string(this, "SheetID");
+                OnlineSheetType = new EPS_Enum<SheetType>(this, "SheetType");
                 IsActiveEditor = true;
             }
             Debug.Log("CSV EditorInitiate");
@@ -91,14 +91,14 @@ namespace RealMethod
                 EditorGUILayout.Space();
 
                 EditorGUILayout.LabelField("CSV File", EditorStyles.boldLabel);
-                TabelGUI.OnRender();
+                TabelGUI.Render();
                 EditorGUILayout.Space(15);
 
                 EditorGUILayout.LabelField("Connect To Cloude", EditorStyles.boldLabel);
-                OnlineSheetType.OnRender();
-                SheetID.OnRender();
+                OnlineSheetType.Render();
+                SheetID.Render();
                 EditorGUILayout.BeginHorizontal();
-                LastUpdate.OnRender();
+                LastUpdate.Render();
                 if (Isdownloading)
                 {
                     EditorGUILayout.LabelField("Downloading CSV...", EditorStyles.miniLabel);
@@ -116,8 +116,8 @@ namespace RealMethod
 
 
                 EditorGUILayout.LabelField("Export Data", EditorStyles.boldLabel);
-                ReadStyle.OnRender();
-                ObjectsPart.OnRender();
+                ReadStyle.Render();
+                ObjectsPart.Render();
                 if (GUILayout.Button("Export CSV Data"))
                 {
                     if (ObjectsPart.GetCount() == 0)

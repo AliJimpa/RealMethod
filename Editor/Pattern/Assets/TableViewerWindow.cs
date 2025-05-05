@@ -48,7 +48,7 @@ namespace RealMethod
             }
 
             //Rendering
-            Chart.OnRender();
+            Chart.Render();
 
             EditorGUILayout.Space(25);
 

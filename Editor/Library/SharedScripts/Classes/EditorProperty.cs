@@ -4,50 +4,120 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-    public abstract class EditorVariable
+    // Base EditorProperty Class
+    // This class is used to create custom editor properties that can be rendered in the Unity Editor.
+    public abstract class EditorProperty
     {
-        public bool HideDebug = true;
-        protected Editor Owner;
-        protected string MyName;
+        protected Object Owner;
+        protected string PropertyName { get; private set; }
+        private ErrorAction PropertyError = null;
 
-
-        public EditorVariable(Editor other, string Name)
+        public EditorProperty(string _Name, Object _Owner)
         {
-            Owner = other;
-            MyName = Name;
-            OnLoad();
-            OnCreated();
-            DebugPrint("Editor Variable Loaded or Created");
+            PropertyName = _Name;
+            Owner = _Owner;
+            if (Owner == null)
+            {
+                Debug.LogError($"Owner is null in {PropertyName}");
+                return;
+            }
+            Initialized();
         }
 
-        public bool IsValid()
+        public byte Render()
         {
-            return MetaDataHandler.HasMetadata(GetAssetPath(), MyName);
+            if (PropertyError != null)
+            {
+                try
+                {
+                    return UpdateRender();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError(e);
+                    return 0;
+                }
+            }
+            else
+            {
+                PropertyError.RenderError();
+                return 0;
+            }
         }
 
-        protected string GetAssetPath()
+        protected void Error(string message, int id)
         {
-            TextAsset textAsset = (TextAsset)Owner.target;
-            return AssetDatabase.GetAssetPath(textAsset);
-        }
-        protected void DebugPrint(string Message)
-        {
-            if (!HideDebug)
-                Debug.Log($"[{this}]-[{MyName}]: {Message}");
+            PropertyError = new ErrorAction(message, id, FixError);
         }
 
-        protected abstract void OnCreated();
-        public abstract byte OnRender();
-        protected abstract void OnSave();
-        protected abstract void OnLoad();
-
+        protected abstract void Initialized();
+        protected abstract byte UpdateRender();
+        protected abstract void FixError(int Id);
     }
-    public abstract class EditorVariable<T> : EditorVariable
+    // EditorProperty Template for Badic Variable
+    public abstract class EditorProperty<T> : EditorProperty
     {
         protected T CurrentValue;
         protected T CashValue;
 
-        public EditorVariable(Editor other, string Name) : base(other, Name)
+        public EditorProperty(Editor other, string Name) : base(Name, other)
+        {
+        }
+        public T GetValue()
+        {
+            return CurrentValue;
+        }
+        public void SetValue(T NewValue)
+        {
+            CurrentValue = NewValue;
+        }
+    }
+
+
+
+
+    // Storeable
+    // EditorProperty that can be stored in the meradata
+    public abstract class EP_Storeable : EditorProperty
+    {
+        protected bool IsDebugMode = false;
+        public EP_Storeable(string _Name, Object _Owner) : base(_Name, _Owner)
+        {
+            OnLoad();
+            OnCreated();
+        }
+
+        public bool IsValid()
+        {
+            return MetaDataHandler.HasMetadata(GetAssetPath(), PropertyName);
+        }
+
+        protected string GetAssetPath()
+        {
+            TextAsset textAsset = (TextAsset)GetMyOwner().target;
+            return AssetDatabase.GetAssetPath(textAsset);
+        }
+        protected Editor GetMyOwner()
+        {
+            return (Editor)Owner;
+        }
+        protected void DebugPrint(string message)
+        {
+            if (IsDebugMode)
+                Debug.Log($"{PropertyName}: {message}");
+        }
+
+        protected abstract void OnCreated();
+        protected abstract void OnSave();
+        protected abstract void OnLoad();
+
+    }
+    public abstract class EP_Storeable<T> : EP_Storeable
+    {
+        protected T CurrentValue;
+        protected T CashValue;
+
+        public EP_Storeable(Editor other, string Name) : base(Name, other)
         {
         }
         public T GetValue()
@@ -60,11 +130,12 @@ namespace RealMethod
             OnSave();
         }
     }
-    public abstract class EditorList<T> : EditorVariable
+    /// Sample EditorVariable
+    public abstract class EditorList<T> : EP_Storeable
     {
         protected List<T> MyList = new List<T>();
 
-        protected EditorList(Editor other, string Name) : base(other, Name)
+        public EditorList(Editor other, string Name) : base(Name, other)
         {
         }
         public int GetCount()
@@ -96,22 +167,22 @@ namespace RealMethod
         protected abstract void OnDelete(int Index);
 
     }
-
-
-
-    /// Example of a custom editor variable
-    public class EV_Enum<T> : EditorVariable<T> where T : System.Enum
+    public class EPS_Enum<T> : EP_Storeable<T> where T : System.Enum
     {
-        public EV_Enum(Editor other, string Name) : base(other, Name)
+        public EPS_Enum(Editor other, string Name) : base(other, Name)
         {
         }
 
+        protected override void Initialized()
+        {
+
+        }
         protected override void OnCreated()
         {
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
-            CashValue = (T)EditorGUILayout.EnumPopup($"{MyName}:", CurrentValue);
+            CashValue = (T)EditorGUILayout.EnumPopup($"{PropertyName}:", CurrentValue);
             if (EqualityComparer<T>.Default.Equals(CashValue, CurrentValue))
             {
                 return 0; // No change
@@ -126,41 +197,47 @@ namespace RealMethod
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, CurrentValue.GetHashCode().ToString());
+            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.GetHashCode().ToString());
             DebugPrint("Saved");
         }
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
             int Result = 0;
-            if (MetaDataHandler.HasMetadata(Path, MyName))
+            if (MetaDataHandler.HasMetadata(Path, PropertyName))
             {
-                int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, MyName), out Result);
+                int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = (T)(object)Result;
                 DebugPrint(Result + "");
             }
             else
             {
                 CurrentValue = (T)(object)Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, Result.ToString());
+                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
+        protected override void FixError(int Id)
+        {
+        }
     }
-    public class EV_ScriptableObject<T> : EditorVariable<T> where T : ScriptableObject
+    public class EPS_ScriptableObject<T> : EP_Storeable<T> where T : ScriptableObject
     {
-        public EV_ScriptableObject(Editor other, string Name) : base(other, Name)
+        public EPS_ScriptableObject(Editor other, string Name) : base(other, Name)
         {
         }
 
+        protected override void Initialized()
+        {
+        }
         protected override void OnCreated()
         {
 
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
-            CashValue = (T)EditorGUILayout.ObjectField($"{MyName}:", CurrentValue, typeof(T), false);
+            CashValue = (T)EditorGUILayout.ObjectField($"{PropertyName}:", CurrentValue, typeof(T), false);
             if (CashValue == CurrentValue)
             {
                 return 0;
@@ -175,9 +252,9 @@ namespace RealMethod
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, MyName))
+            if (MetaDataHandler.HasMetadata(Path, PropertyName))
             {
-                string targetpath = MetaDataHandler.LoadCustomMetadata(Path, MyName);
+                string targetpath = MetaDataHandler.LoadCustomMetadata(Path, PropertyName);
                 CurrentValue = AssetDatabase.LoadAssetAtPath<T>(targetpath);
                 DebugPrint(targetpath);
             }
@@ -190,17 +267,23 @@ namespace RealMethod
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, GetTargetPath().ToString());
+            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, GetTargetPath().ToString());
             DebugPrint("Saved");
         }
+        protected override void FixError(int Id)
+        {
+        }
+
         private string GetTargetPath()
         {
             return AssetDatabase.GetAssetPath(CurrentValue);
         }
+
+
     }
-    public class EV_int : EditorVariable<int>
+    public class EPS_int : EP_Storeable<int>
     {
-        public EV_int(Editor other, string Name) : base(other, Name)
+        public EPS_int(Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -208,9 +291,9 @@ namespace RealMethod
         {
 
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
-            CashValue = EditorGUILayout.IntField($"{MyName}:", CurrentValue);
+            CashValue = EditorGUILayout.IntField($"{PropertyName}:", CurrentValue);
             if (CashValue == CurrentValue)
             {
                 return 0;
@@ -226,36 +309,46 @@ namespace RealMethod
         {
             string Path = GetAssetPath();
             int Result = 0;
-            if (MetaDataHandler.HasMetadata(Path, MyName))
+            if (MetaDataHandler.HasMetadata(Path, PropertyName))
             {
-                int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, MyName), out Result);
+                int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = Result;
                 DebugPrint(Result.ToString());
             }
             else
             {
                 CurrentValue = Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, Result.ToString());
+                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, CurrentValue.ToString());
+            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
             DebugPrint("Saved");
         }
+
+        protected override void Initialized()
+        {
+        }
+        protected override void FixError(int Id)
+        {
+        }
     }
-    public class EL_ScriptableObject<T> : EditorList<T> where T : ScriptableObject
+    public class EPS_ScriptableObjectList<T> : EditorList<T> where T : ScriptableObject
     {
-        public EL_ScriptableObject(Editor other, string Name) : base(other, Name)
+        public EPS_ScriptableObjectList(Editor other, string Name) : base(other, Name)
         {
         }
 
+        protected override void Initialized()
+        {
+        }
         protected override void OnCreated()
         {
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("+", GUILayout.Width(30)))
@@ -291,14 +384,14 @@ namespace RealMethod
             string Path = GetAssetPath();
 
             int MaxCount = 0;
-            int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, MyName), out MaxCount);
+            int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out MaxCount);
             string targetpath;
             for (int i = 0; i < MaxCount; i++)
             {
-                if (MetaDataHandler.HasMetadata(Path, i + "_" + MyName))
+                if (MetaDataHandler.HasMetadata(Path, i + "_" + PropertyName))
                 {
                     MyList.Add(null);
-                    targetpath = MetaDataHandler.LoadCustomMetadata(Path, i + "_" + MyName);
+                    targetpath = MetaDataHandler.LoadCustomMetadata(Path, i + "_" + PropertyName);
                     if (targetpath != null)
                     {
                         MyList[i] = AssetDatabase.LoadAssetAtPath<T>(targetpath);
@@ -310,28 +403,30 @@ namespace RealMethod
         protected override void OnSave()
         {
             string Path = GetAssetPath();
-            MetaDataHandler.SaveCustomMetadata(Path, MyName, GetCount().ToString());
+            MetaDataHandler.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
             for (int i = 0; i < GetCount(); i++)
             {
-                MetaDataHandler.SaveCustomMetadata(Path, i + "_" + MyName, GetTargetPath(MyList[i]));
+                MetaDataHandler.SaveCustomMetadata(Path, i + "_" + PropertyName, GetTargetPath(MyList[i]));
             }
             DebugPrint("Saved");
         }
         protected override void OnDelete(int Index)
         {
             string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, Index + "_" + MyName))
+            if (MetaDataHandler.HasMetadata(Path, Index + "_" + PropertyName))
             {
-                MetaDataHandler.DeleteMetadata(Path, Index + "_" + MyName);
+                MetaDataHandler.DeleteMetadata(Path, Index + "_" + PropertyName);
                 DebugPrint("Deleted");
             }
             else
             {
-                Debug.LogError($"No metadata found for {Index} in {MyName}");
+                Debug.LogError($"No metadata found for {Index} in {PropertyName}");
             }
-            MetaDataHandler.SaveCustomMetadata(Path, MyName, GetCount().ToString());
+            MetaDataHandler.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
         }
-
+        protected override void FixError(int Id)
+        {
+        }
 
         protected virtual void RenderItemIndex(ref T Result, int Index)
         {
@@ -343,20 +438,26 @@ namespace RealMethod
             return AssetDatabase.GetAssetPath(Target);
         }
 
+
+
+
     }
-    public class EV_string : EditorVariable<string>
+    public class EPS_string : EP_Storeable<string>
     {
-        public EV_string(Editor other, string Name) : base(other, Name)
+        public EPS_string(Editor other, string Name) : base(other, Name)
         {
         }
 
+        protected override void Initialized()
+        {
+        }
         protected override void OnCreated()
         {
 
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
-            CashValue = EditorGUILayout.TextField($"{MyName}:", CurrentValue);
+            CashValue = EditorGUILayout.TextField($"{PropertyName}:", CurrentValue);
             if (CashValue == CurrentValue)
             {
                 return 0;
@@ -371,38 +472,47 @@ namespace RealMethod
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, MyName))
+            if (MetaDataHandler.HasMetadata(Path, PropertyName))
             {
-                CurrentValue = MetaDataHandler.LoadCustomMetadata(Path, MyName);
+                CurrentValue = MetaDataHandler.LoadCustomMetadata(Path, PropertyName);
                 DebugPrint(CurrentValue);
             }
             else
             {
                 CurrentValue = "Empty";
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, CurrentValue);
+                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue);
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, CurrentValue);
+            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue);
             DebugPrint("Saved");
         }
+        protected override void FixError(int Id)
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
-    public class EV_float : EditorVariable<float>
+    public class EPS_float : EP_Storeable<float>
     {
-        public EV_float(Editor other, string Name) : base(other, Name)
+        public EPS_float(Editor other, string Name) : base(other, Name)
         {
         }
 
+
+        protected override void Initialized()
+        {
+        }
         protected override void OnCreated()
         {
 
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
-            CashValue = EditorGUILayout.FloatField($"{MyName}:", CurrentValue);
+            CashValue = EditorGUILayout.FloatField($"{PropertyName}:", CurrentValue);
             if (CashValue == CurrentValue)
             {
                 return 0;
@@ -418,39 +528,47 @@ namespace RealMethod
         {
             string Path = GetAssetPath();
             float Result = 0;
-            if (MetaDataHandler.HasMetadata(Path, MyName))
+            if (MetaDataHandler.HasMetadata(Path, PropertyName))
             {
-                float.TryParse(MetaDataHandler.LoadCustomMetadata(Path, MyName), out Result);
+                float.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = Result;
                 DebugPrint(Result.ToString());
             }
             else
             {
                 CurrentValue = Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, Result.ToString());
+                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, CurrentValue.ToString());
+            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
             DebugPrint("Saved");
         }
-    }
-    public class EV_bool : EditorVariable<bool>
-    {
-        public EV_bool(Editor other, string Name) : base(other, Name)
+        protected override void FixError(int Id)
         {
         }
 
+    }
+    public class EPS_bool : EP_Storeable<bool>
+    {
+        public EPS_bool(Editor other, string Name) : base(other, Name)
+        {
+        }
+
+
+        protected override void Initialized()
+        {
+        }
         protected override void OnCreated()
         {
 
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
-            CashValue = EditorGUILayout.Toggle($"{MyName}:", CurrentValue);
+            CashValue = EditorGUILayout.Toggle($"{PropertyName}:", CurrentValue);
             if (CashValue == CurrentValue)
             {
                 return 0;
@@ -465,38 +583,46 @@ namespace RealMethod
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, MyName))
+            if (MetaDataHandler.HasMetadata(Path, PropertyName))
             {
-                CurrentValue = MetaDataHandler.LoadCustomMetadata(Path, MyName) == "True" ? true : false;
+                CurrentValue = MetaDataHandler.LoadCustomMetadata(Path, PropertyName) == "True" ? true : false;
                 DebugPrint(CurrentValue.ToString());
             }
             else
             {
                 CurrentValue = false;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, "False");
+                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, "False");
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, CurrentValue ? "True" : "False");
+            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue ? "True" : "False");
             DebugPrint("Saved");
         }
+        protected override void FixError(int Id)
+        {
+        }
+
     }
-    public class EV_Color : EditorVariable<Color>
+    public class EPS_Color : EP_Storeable<Color>
     {
-        public EV_Color(Editor other, string Name) : base(other, Name)
+        public EPS_Color(Editor other, string Name) : base(other, Name)
         {
 
         }
 
+
+        protected override void Initialized()
+        {
+        }
         protected override void OnCreated()
         {
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
-            CashValue = EditorGUILayout.ColorField($"{MyName}:", CurrentValue);
+            CashValue = EditorGUILayout.ColorField($"{PropertyName}:", CurrentValue);
             if (CashValue == CurrentValue)
             {
                 return 0;
@@ -513,65 +639,77 @@ namespace RealMethod
 
             string Path = GetAssetPath();
             Color Result = Color.black;
-            if (MetaDataHandler.HasMetadata(Path, MyName))
+            if (MetaDataHandler.HasMetadata(Path, PropertyName))
             {
-                UnityEngine.ColorUtility.TryParseHtmlString(MetaDataHandler.LoadCustomMetadata(Path, MyName), out Result);
+                UnityEngine.ColorUtility.TryParseHtmlString(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = Result;
                 DebugPrint(Result.ToString());
             }
             else
             {
                 CurrentValue = Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, Result.ToString());
+                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, CurrentValue.ToString());
+            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
             DebugPrint("Saved");
+        }
+        protected override void FixError(int Id)
+        {
         }
 
 
     }
-    public class EV_Date : EditorVariable<System.DateTime>
+    public class EPS_Date : EP_Storeable<System.DateTime>
     {
-        public EV_Date(Editor other, string Name) : base(other, Name)
+        public EPS_Date(Editor other, string Name) : base(other, Name)
         {
         }
 
+
+        protected override void Initialized()
+        {
+        }
         protected override void OnCreated()
         {
         }
-        public override byte OnRender()
+        protected override byte UpdateRender()
         {
-            EditorGUILayout.LabelField($"{MyName}:", CurrentValue.ToString());
+            EditorGUILayout.LabelField($"{PropertyName}:", CurrentValue.ToString());
             return 0;
         }
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
             System.DateTime Result = System.DateTime.Now;
-            if (MetaDataHandler.HasMetadata(Path, MyName))
+            if (MetaDataHandler.HasMetadata(Path, PropertyName))
             {
-                System.DateTime.TryParse(MetaDataHandler.LoadCustomMetadata(Path, MyName), out Result);
+                System.DateTime.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = Result;
                 DebugPrint(Result.ToString());
             }
             else
             {
                 CurrentValue = Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, Result.ToString());
+                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), MyName, CurrentValue.ToString());
+            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
             DebugPrint("Saved");
         }
+        protected override void FixError(int Id)
+        {
+            throw new System.NotImplementedException();
+        }
+
 
     }
 

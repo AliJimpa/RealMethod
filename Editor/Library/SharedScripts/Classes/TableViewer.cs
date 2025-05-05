@@ -37,7 +37,7 @@ namespace RealMethod
             RefreshColumnDetails();
         }
 
-        public void OnRender(bool isActive = true)
+        public void Render(bool isActive = true)
         {
             // **Start Scroll View**
             ScrollPosCash = EditorGUILayout.BeginScrollView(ScrollPosCash, GUILayout.Height(400)); // Adjust height as needed
