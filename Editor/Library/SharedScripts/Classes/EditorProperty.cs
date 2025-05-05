@@ -21,22 +21,13 @@ namespace RealMethod
                 Debug.LogError($"Owner is null in {PropertyName}");
                 return;
             }
-            Initialized();
         }
 
         public byte Render()
         {
-            if (PropertyError != null)
+            if (PropertyError == null)
             {
-                try
-                {
-                    return UpdateRender();
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError(e);
-                    return 0;
-                }
+                return UpdateRender();
             }
             else
             {
@@ -50,18 +41,21 @@ namespace RealMethod
             PropertyError = new ErrorAction(message, id, FixError);
         }
 
-        protected abstract void Initialized();
         protected abstract byte UpdateRender();
         protected abstract void FixError(int Id);
     }
-    // EditorProperty Template for Badic Variable
     public abstract class EditorProperty<T> : EditorProperty
     {
         protected T CurrentValue;
         protected T CashValue;
 
-        public EditorProperty(Editor other, string Name) : base(Name, other)
+        public EditorProperty(string Name, Object other) : base(Name, other)
         {
+        }
+        public EditorProperty(string Name, Object other, T DefaultValue) : base(Name, other)
+        {
+            CurrentValue = DefaultValue;
+            CashValue = DefaultValue;
         }
         public T GetValue()
         {
@@ -72,12 +66,173 @@ namespace RealMethod
             CurrentValue = NewValue;
         }
     }
+    // Sample EditorProperty
+    public class EP_Enum<T> : EditorProperty<T> where T : System.Enum
+    {
+        public EP_Enum(string Name, Object other) : base(Name, other)
+        {
+        }
+
+        protected override byte UpdateRender()
+        {
+            throw new System.NotImplementedException();
+        }
+        protected override void FixError(int Id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+    }
+    public class EP_int : EditorProperty<int>
+    {
+        public EP_int(string Name, Object other) : base(Name, other)
+        {
+        }
+
+        protected override byte UpdateRender()
+        {
+            CashValue = EditorGUILayout.IntField($"{PropertyName}:", CurrentValue);
+            if (CashValue == CurrentValue)
+            {
+                return 0;
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1;
+            }
+        }
+        protected override void FixError(int Id)
+        {
+        }
+    }
+    public class EP_float : EditorProperty<float>
+    {
+        public EP_float(string Name, Object other) : base(Name, other)
+        {
+        }
+
+        protected override byte UpdateRender()
+        {
+            CashValue = EditorGUILayout.FloatField($"{PropertyName}:", CurrentValue);
+            if (CashValue == CurrentValue)
+            {
+                return 0;
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1;
+            }
+        }
+        protected override void FixError(int Id)
+        {
+        }
+
+    }
+    public class EP_bool : EditorProperty<bool>
+    {
+        public EP_bool(string Name, Object other) : base(Name, other)
+        {
+        }
+
+
+        protected override byte UpdateRender()
+        {
+            CashValue = EditorGUILayout.Toggle($"{PropertyName}:", CurrentValue);
+            if (CashValue == CurrentValue)
+            {
+                return 0;
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1;
+            }
+        }
+        protected override void FixError(int Id)
+        {
+        }
+
+    }
+    public class EP_Color : EditorProperty<Color>
+    {
+        public EP_Color(string Name, Object other) : base(Name, other)
+        {
+
+        }
+
+
+        protected override byte UpdateRender()
+        {
+            CashValue = EditorGUILayout.ColorField($"{PropertyName}:", CurrentValue);
+            if (CashValue == CurrentValue)
+            {
+                return 0;
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1;
+            }
+        }
+        protected override void FixError(int Id)
+        {
+        }
+
+
+    }
+    public class EP_Date : EditorProperty<System.DateTime>
+    {
+        public EP_Date(string Name, Object other) : base(Name, other)
+        {
+        }
+
+
+        protected override byte UpdateRender()
+        {
+            EditorGUILayout.LabelField($"{PropertyName}:", CurrentValue.ToString());
+            return 0;
+        }
+        protected override void FixError(int Id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+
+    }
+    public class EP_ScriptableObject<T> : EditorProperty<T> where T : ScriptableObject
+    {
+        public EP_ScriptableObject(string Name, Object other) : base(Name, other)
+        {
+            CurrentValue = null;
+            CashValue = null;
+        }
+
+        protected override byte UpdateRender()
+        {
+            CashValue = (T)EditorGUILayout.ObjectField($"{PropertyName}:", CurrentValue, typeof(T), false);
+            if (CashValue == CurrentValue)
+            {
+                return 0;
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1;
+            }
+        }
+        protected override void FixError(int Id)
+        {
+        }
+
+    }
 
 
 
 
     // Storeable
-    // EditorProperty that can be stored in the meradata
+    // EditorProperty that can be stored in the MetaData
     public abstract class EP_Storeable : EditorProperty
     {
         protected bool IsDebugMode = false;
@@ -130,12 +285,11 @@ namespace RealMethod
             OnSave();
         }
     }
-    /// Sample EditorVariable
-    public abstract class EditorList<T> : EP_Storeable
+    public abstract class EP_StoreableList<T> : EP_Storeable
     {
         protected List<T> MyList = new List<T>();
 
-        public EditorList(Editor other, string Name) : base(Name, other)
+        public EP_StoreableList(Editor other, string Name) : base(Name, other)
         {
         }
         public int GetCount()
@@ -167,16 +321,116 @@ namespace RealMethod
         protected abstract void OnDelete(int Index);
 
     }
+    /// Sample EP_Storeable
+    public class EPS_ScriptableObjectList<T> : EP_StoreableList<T> where T : ScriptableObject
+    {
+        public EPS_ScriptableObjectList(Editor other, string Name) : base(other, Name)
+        {
+        }
+
+        protected override void OnCreated()
+        {
+        }
+        protected override byte UpdateRender()
+        {
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("+", GUILayout.Width(30)))
+            {
+                AddItem(null);
+            }
+            if (GUILayout.Button("-", GUILayout.Width(30)))
+            {
+                RemoveItem(GetCount() - 1);
+            }
+            GUI.enabled = false;
+            EditorGUILayout.IntField("Count:", GetCount());
+            GUI.enabled = true;
+            GUILayout.EndHorizontal();
+
+            T CashValue = null;
+            for (int i = 0; i < MyList.Count; i++)
+            {
+                RenderItemIndex(ref CashValue, i);
+                if (CashValue != MyList[i])
+                {
+                    MyList[i] = CashValue;
+                    OnSave();
+                    DebugPrint("Changed");
+                }
+            }
+            return 0;
+
+        }
+        protected override void OnLoad()
+        {
+            MyList.Clear();
+            string Path = GetAssetPath();
+
+            int MaxCount = 0;
+            int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out MaxCount);
+            string targetpath;
+            for (int i = 0; i < MaxCount; i++)
+            {
+                if (MetaDataHandler.HasMetadata(Path, i + "_" + PropertyName))
+                {
+                    MyList.Add(null);
+                    targetpath = MetaDataHandler.LoadCustomMetadata(Path, i + "_" + PropertyName);
+                    if (targetpath != null)
+                    {
+                        MyList[i] = AssetDatabase.LoadAssetAtPath<T>(targetpath);
+                    }
+                }
+            }
+            DebugPrint("Loaded");
+        }
+        protected override void OnSave()
+        {
+            string Path = GetAssetPath();
+            MetaDataHandler.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
+            for (int i = 0; i < GetCount(); i++)
+            {
+                MetaDataHandler.SaveCustomMetadata(Path, i + "_" + PropertyName, GetTargetPath(MyList[i]));
+            }
+            DebugPrint("Saved");
+        }
+        protected override void OnDelete(int Index)
+        {
+            string Path = GetAssetPath();
+            if (MetaDataHandler.HasMetadata(Path, Index + "_" + PropertyName))
+            {
+                MetaDataHandler.DeleteMetadata(Path, Index + "_" + PropertyName);
+                DebugPrint("Deleted");
+            }
+            else
+            {
+                Debug.LogError($"No metadata found for {Index} in {PropertyName}");
+            }
+            MetaDataHandler.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
+        }
+        protected override void FixError(int Id)
+        {
+        }
+
+        protected virtual void RenderItemIndex(ref T Result, int Index)
+        {
+            Result = (T)EditorGUILayout.ObjectField(MyList[Index], typeof(T), false);
+        }
+
+        private string GetTargetPath(T Target)
+        {
+            return AssetDatabase.GetAssetPath(Target);
+        }
+
+
+
+
+    }
     public class EPS_Enum<T> : EP_Storeable<T> where T : System.Enum
     {
         public EPS_Enum(Editor other, string Name) : base(other, Name)
         {
         }
 
-        protected override void Initialized()
-        {
-
-        }
         protected override void OnCreated()
         {
         }
@@ -228,9 +482,6 @@ namespace RealMethod
         {
         }
 
-        protected override void Initialized()
-        {
-        }
         protected override void OnCreated()
         {
 
@@ -329,118 +580,9 @@ namespace RealMethod
             DebugPrint("Saved");
         }
 
-        protected override void Initialized()
-        {
-        }
         protected override void FixError(int Id)
         {
         }
-    }
-    public class EPS_ScriptableObjectList<T> : EditorList<T> where T : ScriptableObject
-    {
-        public EPS_ScriptableObjectList(Editor other, string Name) : base(other, Name)
-        {
-        }
-
-        protected override void Initialized()
-        {
-        }
-        protected override void OnCreated()
-        {
-        }
-        protected override byte UpdateRender()
-        {
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("+", GUILayout.Width(30)))
-            {
-                AddItem(null);
-            }
-            if (GUILayout.Button("-", GUILayout.Width(30)))
-            {
-                RemoveItem(GetCount() - 1);
-            }
-            GUI.enabled = false;
-            EditorGUILayout.IntField("Count:", GetCount());
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
-
-            T CashValue = null;
-            for (int i = 0; i < MyList.Count; i++)
-            {
-                RenderItemIndex(ref CashValue, i);
-                if (CashValue != MyList[i])
-                {
-                    MyList[i] = CashValue;
-                    OnSave();
-                    DebugPrint("Changed");
-                }
-            }
-            return 0;
-
-        }
-        protected override void OnLoad()
-        {
-            MyList.Clear();
-            string Path = GetAssetPath();
-
-            int MaxCount = 0;
-            int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out MaxCount);
-            string targetpath;
-            for (int i = 0; i < MaxCount; i++)
-            {
-                if (MetaDataHandler.HasMetadata(Path, i + "_" + PropertyName))
-                {
-                    MyList.Add(null);
-                    targetpath = MetaDataHandler.LoadCustomMetadata(Path, i + "_" + PropertyName);
-                    if (targetpath != null)
-                    {
-                        MyList[i] = AssetDatabase.LoadAssetAtPath<T>(targetpath);
-                    }
-                }
-            }
-            DebugPrint("Loaded");
-        }
-        protected override void OnSave()
-        {
-            string Path = GetAssetPath();
-            MetaDataHandler.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
-            for (int i = 0; i < GetCount(); i++)
-            {
-                MetaDataHandler.SaveCustomMetadata(Path, i + "_" + PropertyName, GetTargetPath(MyList[i]));
-            }
-            DebugPrint("Saved");
-        }
-        protected override void OnDelete(int Index)
-        {
-            string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, Index + "_" + PropertyName))
-            {
-                MetaDataHandler.DeleteMetadata(Path, Index + "_" + PropertyName);
-                DebugPrint("Deleted");
-            }
-            else
-            {
-                Debug.LogError($"No metadata found for {Index} in {PropertyName}");
-            }
-            MetaDataHandler.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
-        }
-        protected override void FixError(int Id)
-        {
-        }
-
-        protected virtual void RenderItemIndex(ref T Result, int Index)
-        {
-            Result = (T)EditorGUILayout.ObjectField(MyList[Index], typeof(T), false);
-        }
-
-        private string GetTargetPath(T Target)
-        {
-            return AssetDatabase.GetAssetPath(Target);
-        }
-
-
-
-
     }
     public class EPS_string : EP_Storeable<string>
     {
@@ -448,9 +590,6 @@ namespace RealMethod
         {
         }
 
-        protected override void Initialized()
-        {
-        }
         protected override void OnCreated()
         {
 
@@ -503,9 +642,6 @@ namespace RealMethod
         }
 
 
-        protected override void Initialized()
-        {
-        }
         protected override void OnCreated()
         {
 
@@ -559,9 +695,6 @@ namespace RealMethod
         }
 
 
-        protected override void Initialized()
-        {
-        }
         protected override void OnCreated()
         {
 
@@ -614,9 +747,6 @@ namespace RealMethod
         }
 
 
-        protected override void Initialized()
-        {
-        }
         protected override void OnCreated()
         {
         }
@@ -671,9 +801,6 @@ namespace RealMethod
         }
 
 
-        protected override void Initialized()
-        {
-        }
         protected override void OnCreated()
         {
         }
@@ -712,8 +839,6 @@ namespace RealMethod
 
 
     }
-
-
 
 
 }
