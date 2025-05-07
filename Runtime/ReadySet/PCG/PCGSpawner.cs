@@ -14,7 +14,8 @@ namespace RealMethod
         private void Start()
         {
             MYGeneration = ScriptableObject.Instantiate(Generation);
-            MyList = MYGeneration.GetFullProcess(Resource);
+            MYGeneration.GetFullProcess(Resource);
+            MyList = MYGeneration.GetResult();
         }
     }
 }

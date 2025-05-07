@@ -78,9 +78,7 @@ namespace RealMethod
         {
             Result.Clear();
             PreProcess(resource);
-            BackgroundProcess();
-            MiddlegroundProcess();
-            ForegroundProcess();
+            Process();
             PostProcess();
             return Result;
         }
@@ -96,48 +94,22 @@ namespace RealMethod
             Stage_MiddlegroundGenerat();
             Stage_ForegroundGenerat();
         }
-        public void BackgroundProcess()
+        public void Process()
         {
             for (int i = 0; i < Result.Count; i++) // Iterate using index to modify the list directly
             {
-                if (Result[i].GetLayer(MyResource) == PCGSourceLayer.Background)
+                PCGData tempData = Result[i];
+                switch (Result[i].GetLayer(MyResource))
                 {
-                    PCGData tempData = Result[i];
-                    if (Stage_BackgroundProcess(ref tempData))
-                    {
-                        Result[i] = tempData;
-                        return;
-                    }
-                }
-            }
-        }
-        public void MiddlegroundProcess()
-        {
-            for (int i = 0; i < Result.Count; i++) // Iterate using index to modify the list directly
-            {
-                if (Result[i].GetLayer(MyResource) == PCGSourceLayer.Middleground)
-                {
-                    PCGData tempData = Result[i];
-                    if (Stage_MiddlegroundProcess(ref tempData))
-                    {
-                        Result[i] = tempData;
-                        return;
-                    }
-                }
-            }
-        }
-        public void ForegroundProcess()
-        {
-            for (int i = 0; i < Result.Count; i++) // Iterate using index to modify the list directly
-            {
-                if (Result[i].GetLayer(MyResource) == PCGSourceLayer.Foreground)
-                {
-                    PCGData tempData = Result[i];
-                    if (Stage_ForegroundProcess(ref tempData))
-                    {
-                        Result[i] = tempData;
-                        return;
-                    }
+                    case PCGSourceLayer.Background:
+                        Result[i] = Stage_BackgroundProcess(Result[i]);
+                        break;
+                    case PCGSourceLayer.Middleground:
+                        Result[i] = Stage_MiddlegroundProcess(Result[i]);
+                        break;
+                    case PCGSourceLayer.Foreground:
+                        Result[i] = Stage_ForegroundProcess(Result[i]);
+                        break;
                 }
             }
         }
@@ -146,11 +118,7 @@ namespace RealMethod
             for (int i = 0; i < Result.Count; i++) // Iterate using index to modify the list directly
             {
                 PCGData tempData = Result[i];
-                if (Stage_PostProcess(ref tempData))
-                {
-                    Result[i] = tempData;
-                    return;
-                }
+                Result[i] = Stage_PostProcess(Result[i]);
             }
         }
 
@@ -172,7 +140,7 @@ namespace RealMethod
         }
 
 
-
+        // PreProcess
         private void Stage_Sort()
         {
             for (int i = 0; i < MyResource.GetLength(); i++)
@@ -181,7 +149,7 @@ namespace RealMethod
                 {
                     if (MyResource.GetSource(i).Label == TLabel)
                     {
-                        return;
+                        continue;
                     }
                 }
 
@@ -254,8 +222,10 @@ namespace RealMethod
             }
         }
 
-        private bool Stage_BackgroundProcess(ref PCGData Data)
+        // Process
+        private PCGData Stage_BackgroundProcess(PCGData Data)
         {
+            PCGData temporary = Data;
             int CommandResult = 0;
             PCGCommand MyCommand = null;
             foreach (var order in Background)
@@ -266,10 +236,10 @@ namespace RealMethod
                     if (CommandType == null)
                     {
                         Debug.LogError($"Command type '{order.Command}' not found.");
-                        return false;
+                        return Data;
                     }
                     MyCommand = (PCGCommand)Activator.CreateInstance(CommandType);
-                    CommandResult = (int)MyCommand.Process(ref Data, order.StringParam, order.FloatParam, order.VectorParam);
+                    CommandResult = (int)MyCommand.Process(ref temporary, order.StringParam, order.FloatParam, order.VectorParam);
                 }
                 if (CommandResult == 2)
                 {
@@ -277,13 +247,14 @@ namespace RealMethod
                 }
                 if (CommandResult == 3)
                 {
-                    return false;
+                    return Data;
                 }
             }
-            return true;
+            return temporary;
         }
-        private bool Stage_MiddlegroundProcess(ref PCGData Data)
+        private PCGData Stage_MiddlegroundProcess(PCGData Data)
         {
+            PCGData temporary = Data;
             int CommandResult = 0;
             PCGCommand MyCommand = null;
             foreach (var Oerder in Middleground)
@@ -294,10 +265,10 @@ namespace RealMethod
                     if (CommandType == null)
                     {
                         Debug.LogError($"Command type '{Oerder.Command}' not found.");
-                        return false;
+                        return Data;
                     }
                     MyCommand = (PCGCommand)Activator.CreateInstance(CommandType);
-                    CommandResult = (int)MyCommand.Process(ref Data, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
+                    CommandResult = (int)MyCommand.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
                 }
                 if (CommandResult == 2)
                 {
@@ -305,13 +276,14 @@ namespace RealMethod
                 }
                 if (CommandResult == 3)
                 {
-                    return false;
+                    return Data;
                 }
             }
-            return true;
+            return temporary;
         }
-        private bool Stage_ForegroundProcess(ref PCGData Data)
+        private PCGData Stage_ForegroundProcess(PCGData Data)
         {
+            PCGData temporary = Data;
             int CommandResult = 0;
             PCGCommand MyCommand = null;
             foreach (var Oerder in Foreground)
@@ -322,10 +294,10 @@ namespace RealMethod
                     if (CommandType == null)
                     {
                         Debug.LogError($"Command type '{Oerder.Command}' not found.");
-                        return false;
+                        return Data;
                     }
                     MyCommand = (PCGCommand)Activator.CreateInstance(CommandType);
-                    CommandResult = (int)MyCommand.Process(ref Data, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
+                    CommandResult = (int)MyCommand.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
                 }
                 if (CommandResult == 2)
                 {
@@ -333,13 +305,14 @@ namespace RealMethod
                 }
                 if (CommandResult == 3)
                 {
-                    return false;
+                    return Data;
                 }
             }
-            return true;
+            return temporary;
         }
-        private bool Stage_PostProcess(ref PCGData Data)
+        private PCGData Stage_PostProcess(PCGData Data)
         {
+            PCGData temporary = Data;
             int CommandResult = 0;
             PCGCommand MyCommand = null;
             foreach (var Oerder in FullItem)
@@ -350,10 +323,10 @@ namespace RealMethod
                     if (CommandType == null)
                     {
                         Debug.LogError($"Command type '{Oerder.Command}' not found.");
-                        return false;
+                        return Data;
                     }
                     MyCommand = (PCGCommand)Activator.CreateInstance(CommandType);
-                    CommandResult = (int)MyCommand.Process(ref Data, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
+                    CommandResult = (int)MyCommand.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
                 }
                 if (CommandResult == 1)
                 {
@@ -361,10 +334,10 @@ namespace RealMethod
                 }
                 if (CommandResult == 2)
                 {
-                    return false;
+                    return Data;
                 }
             }
-            return true;
+            return temporary;
         }
     }
 
@@ -377,7 +350,8 @@ namespace RealMethod
         [SerializeField, TextArea]
         private string Guide;
 
-        private void OnValidate()
+        [ContextMenu("PrintGuide")]
+        private void PrintGuide()
         {
             // Get all available MonoBehaviour types **only once**
             List<Type> componentTypes = AppDomain.CurrentDomain.GetAssemblies()
