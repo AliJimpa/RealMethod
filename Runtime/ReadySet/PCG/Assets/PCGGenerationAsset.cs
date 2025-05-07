@@ -65,165 +65,91 @@ namespace RealMethod
         [SerializeField]
         private List<PCGOrder> FullItem = new List<PCGOrder>();
 
-        //SortVariable
-        private List<int> background = new List<int>();
-        private List<int> middleground = new List<int>();
-        private List<int> foreground = new List<int>();
-
-        private List<PCGData> Result = new List<PCGData>();
         private PCGResourceAsset MyResource;
 
 
-        public List<PCGData> GetFullProcess(PCGResourceAsset resource)
+        public PCGData[] GetFullProcess(PCGResourceAsset resource)
         {
-            Result.Clear();
-            PreProcess(resource);
-            Process();
-            PostProcess();
+            PCGData[] Result =  PreProcess(resource);
+            Process(ref Result);
+            PostProcess(ref Result);
             return Result;
         }
-        public List<PCGData> GetResult()
-        {
-            return Result;
-        }
-        public void PreProcess(PCGResourceAsset resource)
+        public PCGData[] PreProcess(PCGResourceAsset resource)
         {
             MyResource = resource;
-            Stage_Sort();
-            Stage_BackgroundGenerat();
-            Stage_MiddlegroundGenerat();
-            Stage_ForegroundGenerat();
-        }
-        public void Process()
-        {
-            for (int i = 0; i < Result.Count; i++) // Iterate using index to modify the list directly
-            {
-                PCGData tempData = Result[i];
-                switch (Result[i].GetLayer(MyResource))
-                {
-                    case PCGSourceLayer.Background:
-                        Result[i] = Stage_BackgroundProcess(Result[i]);
-                        break;
-                    case PCGSourceLayer.Middleground:
-                        Result[i] = Stage_MiddlegroundProcess(Result[i]);
-                        break;
-                    case PCGSourceLayer.Foreground:
-                        Result[i] = Stage_ForegroundProcess(Result[i]);
-                        break;
-                }
-            }
-        }
-        public void PostProcess()
-        {
-            for (int i = 0; i < Result.Count; i++) // Iterate using index to modify the list directly
-            {
-                PCGData tempData = Result[i];
-                Result[i] = Stage_PostProcess(Result[i]);
-            }
-        }
-
-
-        protected PCGSource GetSource(PCGSourceLayer layer, int index)
-        {
-            switch (layer)
-            {
-                case PCGSourceLayer.Background:
-                    return MyResource.GetSource(background[index]);
-                case PCGSourceLayer.Middleground:
-                    return MyResource.GetSource(middleground[index]);
-                case PCGSourceLayer.Foreground:
-                    return MyResource.GetSource(foreground[index]);
-                default:
-                    Debug.LogError("PCG Cant find your layer");
-                    return new PCGSource();
-            }
-        }
-
-
-        // PreProcess
-        private void Stage_Sort()
-        {
+            List<PCGData> Result = new List<PCGData>();
             for (int i = 0; i < MyResource.GetLength(); i++)
             {
+                PCGSource source = MyResource.GetSource(i);
                 foreach (var TLabel in LabelFilter)
                 {
-                    if (MyResource.GetSource(i).Label == TLabel)
+                    if (source.Label == TLabel)
                     {
                         continue;
                     }
                 }
 
-                switch (MyResource.GetSource(i).Layer)
+                for (int j = 0; j < source.Count; j++)
+                {
+                    switch (source.Layer)
+                    {
+                        case PCGSourceLayer.Background:
+                            if (i < (source.Count * (Generat_BG / 100)))
+                            {
+                                Result.Add(new PCGData(i, j, Result.Count));
+                            }
+                            break;
+                        case PCGSourceLayer.Middleground:
+                            if (i < (source.Count * (Generat_MG / 100)))
+                            {
+                                Result.Add(new PCGData(i, j, Result.Count));
+                            }
+                            break;
+                        case PCGSourceLayer.Foreground:
+                            if (i < (source.Count * (Generat_FG / 100)))
+                            {
+                                Result.Add(new PCGData(i, j, Result.Count));
+                            }
+                            break;
+                    }
+
+                }
+            }
+            return Result.ToArray();
+        }
+        public void Process(ref PCGData[] DataObjects)
+        {
+            for (int i = 0; i < DataObjects.Length; i++) // Iterate using index to modify the list directly
+            {
+                PCGData tempData = DataObjects[i];
+                switch (DataObjects[i].GetLayer(MyResource))
                 {
                     case PCGSourceLayer.Background:
-                        background.Add(i);
+                        DataObjects[i] = Stage_Background(DataObjects[i]);
                         break;
                     case PCGSourceLayer.Middleground:
-                        middleground.Add(i);
+                        DataObjects[i] = Stage_Middleground(DataObjects[i]);
                         break;
                     case PCGSourceLayer.Foreground:
-                        foreground.Add(i);
+                        DataObjects[i] = Stage_Foreground(DataObjects[i]);
                         break;
                 }
             }
         }
-        private void Stage_BackgroundGenerat()
+        public void PostProcess(ref PCGData[] DataObjects)
         {
-            if (Generat_BG == 0)
-                return;
-
-            foreach (var sourceIndex in background)
+            for (int i = 0; i < DataObjects.Length; i++) // Iterate using index to modify the list directly
             {
-                PCGSource sourceTarget = MyResource.GetSource(sourceIndex);
-
-                for (int i = 0; i < sourceTarget.Count; i++)
-                {
-                    if (i < (sourceTarget.Count * (Generat_BG / 100)))
-                    {
-                        Result.Add(new PCGData(sourceIndex, i, Result.Count));
-                    }
-                }
+                PCGData tempData = DataObjects[i];
+                DataObjects[i] = Stage_PostProcess(DataObjects[i]);
             }
         }
-        private void Stage_MiddlegroundGenerat()
-        {
-            if (Generat_MG == 0)
-                return;
 
-            foreach (var sourceIndex in middleground)
-            {
-                PCGSource sourceTarget = MyResource.GetSource(sourceIndex);
 
-                for (int i = 0; i < sourceTarget.Count; i++)
-                {
-                    if (i < (sourceTarget.Count * (Generat_MG / 100)))
-                    {
-                        Result.Add(new PCGData(sourceIndex, i, Result.Count));
-                    }
-                }
-            }
-        }
-        private void Stage_ForegroundGenerat()
-        {
-            if (Generat_FG == 0)
-                return;
-
-            foreach (var sourceIndex in foreground)
-            {
-                PCGSource sourceTarget = MyResource.GetSource(sourceIndex);
-
-                for (int i = 0; i < sourceTarget.Count; i++)
-                {
-                    if (i < (sourceTarget.Count * (Generat_FG / 100)))
-                    {
-                        Result.Add(new PCGData(sourceIndex, i, Result.Count));
-                    }
-                }
-            }
-        }
 
         // Process
-        private PCGData Stage_BackgroundProcess(PCGData Data)
+        private PCGData Stage_Background(PCGData Data)
         {
             PCGData temporary = Data;
             int CommandResult = 0;
@@ -252,7 +178,7 @@ namespace RealMethod
             }
             return temporary;
         }
-        private PCGData Stage_MiddlegroundProcess(PCGData Data)
+        private PCGData Stage_Middleground(PCGData Data)
         {
             PCGData temporary = Data;
             int CommandResult = 0;
@@ -281,7 +207,7 @@ namespace RealMethod
             }
             return temporary;
         }
-        private PCGData Stage_ForegroundProcess(PCGData Data)
+        private PCGData Stage_Foreground(PCGData Data)
         {
             PCGData temporary = Data;
             int CommandResult = 0;

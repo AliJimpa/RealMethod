@@ -47,6 +47,7 @@ namespace RealMethod
     }
     public abstract class EditorProperty<T> : EditorProperty
     {
+        public bool isvalid => CurrentValue!=null;
         protected T CurrentValue;
         protected T CashValue;
 
@@ -66,6 +67,7 @@ namespace RealMethod
         {
             CurrentValue = NewValue;
         }
+        
     }
     public abstract class EditorPropertyList<T> : EditorProperty
     {

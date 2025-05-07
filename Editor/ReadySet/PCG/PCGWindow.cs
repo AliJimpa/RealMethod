@@ -5,10 +5,8 @@ using UnityEngine;
 
 namespace RealMethod
 {
-
     public class PCGWindow : EditorWindow
     {
-
         private class DataClass : EditorProperty
         {
             public string Name = "MyName";
@@ -50,8 +48,10 @@ namespace RealMethod
         private EP_ScriptableObject<PCGGenerationAsset> Genration;
         private EP_ScriptableObject<PCGCashAsset> Cash;
         private EP_List<DataClass> SelectionData;
-        private List<PCGData> Result;
+        private PCGData[] GeneratedData;
         private GameObject[] ResultObject;
+
+        private bool[] PanelVisualize = new bool[3];
 
 
 
@@ -79,14 +79,18 @@ namespace RealMethod
             EditorGUILayout.LabelField("Assets", EditorStyles.centeredGreyMiniLabel);
             Resurce.Render();
             Genration.Render();
+            if (!Resurce.isvalid || !Genration.isvalid)
+            {
+                GUIUtility.ExitGUI();
+            }
             EditorGUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Generate"))
             {
-                Result = Genration.GetValue().GetFullProcess(Resurce.GetValue());
-                ResultObject = new GameObject[Result.Count];
+                GeneratedData = Genration.GetValue().GetFullProcess(Resurce.GetValue());
+                ResultObject = new GameObject[GeneratedData.Length];
                 SelectionData.ClearList();
-                foreach (var item in Result)
+                foreach (var item in GeneratedData)
                 {
                     DataClass NewData = new DataClass(item.CodeName, this);
                     NewData.Position.SetValue(item.Position);
@@ -97,16 +101,16 @@ namespace RealMethod
             }
             if (GUILayout.Button("Instantiate"))
             {
-                for (int i = 0; i < Result.Count; i++)
+                for (int i = 0; i < GeneratedData.Length; i++)
                 {
-                    PCGSource Source = Resurce.GetValue().GetSource(Result[i].SourceID);
-                    ResultObject[i] = Instantiate(Source.Prefabs, Result[i].Position, Quaternion.Euler(Result[i].Rotation));
+                    PCGSource Source = Resurce.GetValue().GetSource(GeneratedData[i].SourceID);
+                    ResultObject[i] = Instantiate(Source.Prefabs, GeneratedData[i].Position, Quaternion.Euler(GeneratedData[i].Rotation));
                 }
             }
             if (GUILayout.Button("Clear"))
             {
                 SelectionData.ClearList();
-                Result.Clear();
+                GeneratedData = null;
                 foreach (var TargetObject in ResultObject)
                 {
                     if (TargetObject)
@@ -115,11 +119,56 @@ namespace RealMethod
                 ResultObject = null;
             }
             EditorGUILayout.EndHorizontal();
+            StatusPanel(ref PanelVisualize[1],ref PanelVisualize[0]);
+
             EditorGUILayout.Space(5);
             SelectionData.Render();
-
         }
 
+
+
+        private void StatusPanel(ref bool Mode , ref bool Enable)
+        {
+            EditorGUILayout.Space(1);
+            EditorGUILayout.LabelField("Status", EditorStyles.centeredGreyMiniLabel);
+            //Title
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("()", GUILayout.Width(20)))
+            {
+                Enable = !Enable;
+            }
+            if (Mode)
+            {
+                EditorGUILayout.LabelField("Layer", GUILayout.Width(120));
+                EditorGUILayout.LabelField("Prefab", GUILayout.Width(100));
+                EditorGUILayout.LabelField("Instance", GUILayout.Width(100));
+            }
+            else
+            {
+                EditorGUILayout.LabelField("PrefabName", GUILayout.Width(120));
+                EditorGUILayout.LabelField("Instance", GUILayout.Width(100));
+                EditorGUILayout.LabelField("Label", GUILayout.Width(100));
+            }
+            if (GUILayout.Button("Mode", GUILayout.Width(40)))
+            {
+                Mode = !Mode;
+            }
+            EditorGUILayout.EndHorizontal();
+            if (!Enable)
+            {
+                return;
+            }
+
+            if(Mode)
+            {
+                // foreach (var item in collection)
+                // {
+                    
+                // }
+            }
+
+
+        }
 
 
 

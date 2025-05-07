@@ -7,7 +7,7 @@ namespace RealMethod
     {
         public PCGResourceAsset Resource;
         public PCGGenerationAsset Generation;
-        public List<PCGData> MyList = new List<PCGData>();
+        public PCGData[] MyList;
 
         private PCGGenerationAsset MYGeneration;
 
@@ -15,7 +15,7 @@ namespace RealMethod
         {
             MYGeneration = ScriptableObject.Instantiate(Generation);
             MYGeneration.GetFullProcess(Resource);
-            MyList = MYGeneration.GetResult();
+            MyList =  MYGeneration.GetFullProcess(Resource);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace RealMethod
         {
         }
 
-        public override PCGCommandResult Process(ref PCGData Context, string Labelparam, float Radiusparam, Vector3 VectorParam)
+        public override PCGCommandResult Process(ref PCGData Context, string Labelparam, float FloatParam, Vector3 VectorParam)
         {
             Debug.Log(Context.CodeName);
             return 0;
@@ -51,9 +51,9 @@ namespace RealMethod
         {
         }
 
-        public override PCGCommandResult Process(ref PCGData Context, string Labelparam, float Radiusparam, Vector3 VectorParam)
+        public override PCGCommandResult Process(ref PCGData Context, string Labelparam, float FloatParam, Vector3 VectorParam)
         {
-            Context.Position = Vector3.one * 100 * Context.DataIndex;
+            Context.Position = Vector3.one * FloatParam * Context.DataIndex;
             return 0;
         }
     }
