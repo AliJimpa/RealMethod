@@ -27,7 +27,7 @@ namespace RealMethod
     }
 
     [CreateAssetMenu(fileName = "PCG_Resource", menuName = "RealMethod/PCG/Resource", order = 1)]
-    public class PCGResource : DataAsset
+    public class PCGResourceAsset : DataAsset
     {
         [SerializeField]
         private PCGSource[] Sources;

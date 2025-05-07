@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace RealMethod
 {
@@ -66,6 +67,46 @@ namespace RealMethod
             CurrentValue = NewValue;
         }
     }
+    public abstract class EditorPropertyList<T> : EditorProperty
+    {
+        protected List<T> MyList = new List<T>();
+
+        protected EditorPropertyList(string _Name, Object _Owner) : base(_Name, _Owner)
+        {
+        }
+        public int GetCount()
+        {
+            return MyList.Count;
+        }
+        public void AddItem(T NewValue)
+        {
+            MyList.Add(NewValue);
+            OnCreated(NewValue);
+        }
+        public void RemoveItem(int Index)
+        {
+            if (Index >= 0 && Index < MyList.Count)
+            {
+                MyList.RemoveAt(Index);
+                OnDeleted(Index);
+            }
+        }
+        public T GetValue(int Index)
+        {
+            return MyList[Index];
+        }
+        public List<T> GetList()
+        {
+            return MyList;
+        }
+        public void ClearList()
+        {
+            MyList.Clear();
+        }
+
+        protected abstract void OnCreated(T Item);
+        protected abstract void OnDeleted(int Index);
+    }
     // Sample EditorProperty
     public class EP_Enum<T> : EditorProperty<T> where T : System.Enum
     {
@@ -82,6 +123,30 @@ namespace RealMethod
             throw new System.NotImplementedException();
         }
 
+    }
+    public class EP_String : EditorProperty<string>
+    {
+        public EP_String(string Name, Object other) : base(Name, other)
+        {
+        }
+
+        protected override byte UpdateRender()
+        {
+            CashValue = EditorGUILayout.TextField($"{PropertyName}:", CurrentValue);
+            if (CashValue == CurrentValue)
+            {
+                return 0;
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1;
+            }
+        }
+        protected override void FixError(int Id)
+        {
+            throw new System.NotImplementedException();
+        }
     }
     public class EP_int : EditorProperty<int>
     {
@@ -155,6 +220,35 @@ namespace RealMethod
         }
 
     }
+    public class EP_Vector3 : EditorProperty<Vector3>
+    {
+        public EP_Vector3(string Name, Object other) : base(Name, other)
+        {
+        }
+
+        protected override byte UpdateRender()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label($"{PropertyName}:", GUILayout.Width(EditorGUIUtility.labelWidth - 4));
+            CashValue = EditorGUILayout.Vector3Field("", CurrentValue, GUILayout.MinWidth(0));
+            GUILayout.EndHorizontal();
+            if (CashValue == CurrentValue)
+            {
+                return 0;
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1;
+            }
+
+
+        }
+        protected override void FixError(int Id)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
     public class EP_Color : EditorProperty<Color>
     {
         public EP_Color(string Name, Object other) : base(Name, other)
@@ -227,7 +321,164 @@ namespace RealMethod
         }
 
     }
+    public class EP_Class<T> : EditorProperty<T> where T : class
+    {
+        public EP_Class(string Name, Object other) : base(Name, other)
+        {
+        }
 
+        protected override byte UpdateRender()
+        {
+            FieldInfo[] fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Instance);
+            foreach (FieldInfo field in fields)
+            {
+                object value = field.GetValue(CurrentValue);
+
+                if (field.FieldType == typeof(int))
+                {
+                    int newValue = EditorGUILayout.IntField(field.Name, (int)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(float))
+                {
+                    float newValue = EditorGUILayout.FloatField(field.Name, (float)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(string))
+                {
+                    string newValue = EditorGUILayout.TextField(field.Name, (string)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(bool))
+                {
+                    bool newValue = EditorGUILayout.Toggle(field.Name, (bool)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType.IsEnum)
+                {
+                    System.Enum newValue = EditorGUILayout.EnumPopup(field.Name, (System.Enum)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(Vector3))
+                {
+                    Vector3 newValue = EditorGUILayout.Vector3Field(field.Name, (Vector3)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(Color))
+                {
+                    Color newValue = EditorGUILayout.ColorField(field.Name, (Color)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField(field.Name, $"Unsupported type: {field.FieldType}");
+                }
+            }
+            return 0;
+        }
+        protected override void FixError(int Id)
+        {
+
+        }
+    }
+    public class EP_Struct<T> : EditorProperty<T> where T : struct
+    {
+        public EP_Struct(string Name, Object other) : base(Name, other)
+        {
+        }
+
+        protected override byte UpdateRender()
+        {
+            FieldInfo[] fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Instance);
+            foreach (FieldInfo field in fields)
+            {
+                object value = field.GetValue(CurrentValue);
+
+                if (field.FieldType == typeof(int))
+                {
+                    int newValue = EditorGUILayout.IntField(field.Name, (int)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(float))
+                {
+                    float newValue = EditorGUILayout.FloatField(field.Name, (float)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(string))
+                {
+                    string newValue = EditorGUILayout.TextField(field.Name, (string)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(bool))
+                {
+                    bool newValue = EditorGUILayout.Toggle(field.Name, (bool)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType.IsEnum)
+                {
+                    System.Enum newValue = EditorGUILayout.EnumPopup(field.Name, (System.Enum)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(Vector3))
+                {
+                    Vector3 newValue = EditorGUILayout.Vector3Field(field.Name, (Vector3)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else if (field.FieldType == typeof(Color))
+                {
+                    Color newValue = EditorGUILayout.ColorField(field.Name, (Color)value);
+                    field.SetValue(CurrentValue, newValue);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField(field.Name, $"Unsupported type: {field.FieldType}");
+                }
+            }
+            return 0;
+        }
+        protected override void FixError(int Id)
+        {
+
+        }
+    }
+    public class EP_List<T> : EditorPropertyList<T> where T : EditorProperty
+    {
+        public bool EnableScrollView = true;
+        public Vector2 ScrollPosition = Vector2.zero;
+        public Vector2 Size = new(20, 200);
+
+        public EP_List(string _Name, Object _Owner) : base(_Name, _Owner)
+        {
+        }
+
+        public void AddItem(string Name)
+        {
+            AddItem((T)System.Activator.CreateInstance(typeof(T), Name, Owner));
+        }
+
+        protected override byte UpdateRender()
+        {
+            if (EnableScrollView)
+                ScrollPosition = GUILayout.BeginScrollView(ScrollPosition, GUILayout.Height(Size.y));
+            foreach (var item in MyList)
+            {
+                item.Render();
+            }
+            if (EnableScrollView)
+                GUILayout.EndScrollView();
+            return 0;
+        }
+        protected override void OnCreated(T Item)
+        {
+        }
+        protected override void OnDeleted(int Index)
+        {
+        }
+        protected override void FixError(int Id)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
 
 
 

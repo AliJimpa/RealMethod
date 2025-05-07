@@ -3,19 +3,18 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public class PCGComponent : MonoBehaviour
+    public class PCGSpawner : MonoBehaviour
     {
-        public PCGResource Resource;
-        public PCGProcess Generation;
+        public PCGResourceAsset Resource;
+        public PCGGenerationAsset Generation;
         public List<PCGData> MyList = new List<PCGData>();
 
-        private PCGProcess MYGeneration;
+        private PCGGenerationAsset MYGeneration;
 
         private void Start()
         {
             MYGeneration = ScriptableObject.Instantiate(Generation);
-            MYGeneration.Generate(Resource);
-            MyList = MYGeneration.GetResult();
+            MyList = MYGeneration.GetFullProcess(Resource);
         }
     }
 }
