@@ -11,9 +11,9 @@ namespace RealMethod
     }
     public enum PCGSourceLayer
     {
-        Background,
-        Middleground,
-        Foreground
+        Background = 0,
+        Middleground = 1,
+        Foreground = 2
     }
 
     [Serializable]
@@ -39,6 +39,31 @@ namespace RealMethod
         public int GetLength()
         {
             return Sources.Length;
+        }
+        
+        public int GetPrefabCount(PCGSourceLayer layer)
+        {
+            int result = 0;
+            foreach (var So in Sources)
+            {
+                if(So.Layer == layer)
+                {
+                    result++;
+                }
+            }
+            return result;
+        }
+        public int GetTotalInstance(PCGSourceLayer layer)
+        {
+            int result = 0;
+            foreach (var So in Sources)
+            {
+                if(So.Layer == layer)
+                {
+                    result += So.Count;
+                }
+            }
+            return result;
         }
 
     }

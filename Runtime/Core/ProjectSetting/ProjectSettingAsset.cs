@@ -34,13 +34,14 @@ namespace RealMethod
             User = 14,
             Resources = 15,
             ThirdpartyPack = 16,
+            PCG,
         }
 
 
         public GameSettingAsset GameSetting;
         [SerializeField]
         private string GameInstanceClass = "DefultGame";
-        public FolderAddress[] ProjectStructure = new FolderAddress[17]
+        public FolderAddress[] ProjectStructure = new FolderAddress[18]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},
         new FolderAddress { Identity = (IdentityCategory)1, Path = "Assets/2_Scripts" },
@@ -58,7 +59,8 @@ namespace RealMethod
         new FolderAddress { Identity = (IdentityCategory)13, Path = "Assets/7_Misc"},
         new FolderAddress { Identity = (IdentityCategory)14, Path = "Assets/Developer"},
         new FolderAddress { Identity = (IdentityCategory)15, Path = "Assets/Resources"},
-        new FolderAddress { Identity = (IdentityCategory)16, Path = "Assets/~Thirdparty"}
+        new FolderAddress { Identity = (IdentityCategory)16, Path = "Assets/~Thirdparty"},
+        new FolderAddress { Identity = (IdentityCategory)17, Path = "Assets/4_Data/PCG"}
         };
 
 
