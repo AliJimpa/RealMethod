@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace RealMethod
@@ -8,6 +7,20 @@ namespace RealMethod
     {
         [SerializeField]
         private PCGData[] CashData;
+
+        public PCGData GetData(int Index)
+        {
+            return CashData[Index];
+        }
+
+        
+
+#if UNITY_EDITOR
+        public void SetCash(PCGData[] Target)
+        {
+            CashData = Target;
+        }
+#endif
 
     }
 }

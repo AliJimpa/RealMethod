@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -57,6 +56,11 @@ namespace RealMethod
             public int Count;
             public string Label;
         }
+        private enum PCGExportType
+        {
+            PCGCash,
+            Prefab
+        }
 
         // Fields
         private EP_ScriptableObject<PCGResourceAsset> Resurce;
@@ -64,6 +68,8 @@ namespace RealMethod
         private EP_ScriptableObject<PCGCashAsset> Cash;
         private EP_List<GD_Class> SelectedData;
         private EP_String CashAddress;
+        private EP_String PrefabAddress;
+        private EP_Enum<PCGExportType> ExportType;
 
         // Generation Data
         private PCGData[] GeneratedObject;
@@ -101,7 +107,10 @@ namespace RealMethod
             Cash = new EP_ScriptableObject<PCGCashAsset>("Cash", this);
             SelectedData = new EP_List<GD_Class>("Data", this);
             CashAddress = new EP_String("Address", this);
-            CashAddress.SetValue(ProjectSetting.ProjectStructure[17].Path+"/PCGCashAsset.asset");
+            CashAddress.SetValue(ProjectSetting.ProjectStructure[17].Path + "/PCGCashAsset.asset");
+            PrefabAddress = new EP_String("Address", this);
+            PrefabAddress.SetValue(ProjectSetting.ProjectStructure[2].Path + "/PCG.prefab");
+            ExportType = new EP_Enum<PCGExportType>("ExportType", this);
 
             // Subscribe to the selectionChanged event
             Selection.selectionChanged += OnSelectionChanged;
@@ -110,6 +119,8 @@ namespace RealMethod
         {
             // Unsubscribe from the selectionChanged event to avoid memory leaks
             Selection.selectionChanged -= OnSelectionChanged;
+            ClearInstance();
+            ClearGeneration();
         }
         private void OnGUI()
         {
@@ -175,7 +186,7 @@ namespace RealMethod
             }
             if (Resurce.isvalid && Genration.isvalid && GeneratedObject != null)
             {
-                CashPanel();
+                ExportPanel();
             }
         }
 
@@ -249,6 +260,7 @@ namespace RealMethod
                                 break;
                         }
                         InitiateObject[i].transform.localScale = GeneratedObject[i].Scale;
+                        InitiateObject[i].name = GeneratedObject[i].CodeName;
                         RuntimeCount.y++;
                     }
                 }
@@ -329,8 +341,15 @@ namespace RealMethod
         }
         private void SelcetionPanel()
         {
-            EditorGUILayout.Space(3);
+            EditorGUILayout.Space(5);
+            EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Selcetion", EditorStyles.centeredGreyMiniLabel);
+            if (GUILayout.Button("R", GUILayout.Width(20)))
+            {
+                OnSelectionChanged();
+            }
+            EditorGUILayout.EndHorizontal();
+
             if (SelectedData.GetCount() > 0)
             {
                 SelectedData.Render();
@@ -342,15 +361,27 @@ namespace RealMethod
         }
         private void CashPanel()
         {
-            EditorGUILayout.Space(3);
-            EditorGUILayout.LabelField("Cash", EditorStyles.centeredGreyMiniLabel);
+            EditorGUILayout.Space(1);
             if (Cash.isvalid)
             {
                 Cash.Render();
                 if (GUILayout.Button("UpdateCash"))
                 {
                     PCGCashAsset Temporery = Cash.GetValue();
-                    //Temporery.s
+                    PCGData[] CashTarget = GeneratedObject;
+                    for (int i = 0; i < CashTarget.Length; i++)
+                    {
+                        if (InitiateObject != null && InitiateObject[i] != null)
+                        {
+                            CashTarget[i].Position = InitiateObject[i].transform.position;
+                            CashTarget[i].Rotation = InitiateObject[i].transform.rotation.eulerAngles;
+                            CashTarget[i].Scale = InitiateObject[i].transform.localScale;
+                        }
+                    }
+                    Temporery.SetCash(CashTarget);
+                    EditorUtility.SetDirty(Temporery);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
                 }
             }
             else
@@ -363,6 +394,44 @@ namespace RealMethod
                     Cash.SetValue(ScriptableObj.CreateAndSaveAsset<PCGCashAsset>(CashAddress.GetValue()));
                 }
                 EditorGUILayout.EndHorizontal();
+            }
+        }
+        private void PrefabPanel()
+        {
+            EditorGUILayout.Space(1);
+            PrefabAddress.Render();
+            if (GUILayout.Button("CreatePrefab"))
+            {
+                string localPath = PrefabAddress.GetValue();
+                localPath = AssetDatabase.GenerateUniqueAssetPath(localPath);
+
+                GameObject prefab = PrefabUtility.SaveAsPrefabAssetAndConnect(CashObject[0], localPath, InteractionMode.UserAction);
+                if (prefab != null)
+                {
+                    Debug.Log("Prefab created successfully at: " + localPath);
+                }
+                else
+                {
+                    Debug.LogError("Failed to create prefab.");
+                }
+            }
+        }
+        private void ExportPanel()
+        {
+            EditorGUILayout.Space(5);
+            EditorGUILayout.LabelField("Export", EditorStyles.centeredGreyMiniLabel);
+            ExportType.Render();
+            switch (ExportType.GetValue())
+            {
+                case PCGExportType.PCGCash:
+                    CashPanel();
+                    break;
+                case PCGExportType.Prefab:
+                    if (InitiateObject != null)
+                    {
+                        PrefabPanel();
+                    }
+                    break;
             }
         }
         private void ClearGeneration()

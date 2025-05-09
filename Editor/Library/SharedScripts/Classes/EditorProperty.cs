@@ -47,7 +47,7 @@ namespace RealMethod
     }
     public abstract class EditorProperty<T> : EditorProperty
     {
-        public bool isvalid => CurrentValue!=null;
+        public bool isvalid => CurrentValue != null;
         protected T CurrentValue;
         protected T CashValue;
 
@@ -67,7 +67,7 @@ namespace RealMethod
         {
             CurrentValue = NewValue;
         }
-        
+
     }
     public abstract class EditorPropertyList<T> : EditorProperty
     {
@@ -118,7 +118,16 @@ namespace RealMethod
 
         protected override byte UpdateRender()
         {
-            throw new System.NotImplementedException();
+            CashValue = (T)EditorGUILayout.EnumPopup($"{PropertyName}:", CurrentValue);
+            if (EqualityComparer<T>.Default.Equals(CashValue, CurrentValue))
+            {
+                return 0; // No change
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1; // Changed
+            }
         }
         protected override void FixError(int Id)
         {
