@@ -7,6 +7,35 @@ using UnityEngine;
 namespace RealMethod
 {
     [Serializable]
+    public struct PCGData
+    {
+        public string CodeName;
+        public int SourceID { get; private set; }
+        public int PrefabIndex { get; private set; }
+        public int DataIndex { get; private set; }
+        public Vector3 Position;
+        public Vector3 Rotation;
+        public Vector3 Scale;
+
+        public PCGData(int sourceindex, int prefabindex, int dataindex)
+        {
+            SourceID = sourceindex;
+            PrefabIndex = prefabindex;
+            DataIndex = dataindex;
+            CodeName = $"{dataindex} {sourceindex}-{prefabindex}";
+            Position = Vector3.zero;
+            Rotation = Vector3.zero;
+            Scale = Vector3.one;
+        }
+
+        public PCGSourceLayer GetLayer(PCGResourceAsset Resource)
+        {
+            return Resource.GetSource(SourceID).Layer;
+        }
+
+    }
+
+    [Serializable]
     public struct PCGOrder
     {
         public string Command;
@@ -42,7 +71,7 @@ namespace RealMethod
 
         public PCGData[] GetFullProcess(PCGResourceAsset resource)
         {
-            PCGData[] Result =  PreProcess(resource);
+            PCGData[] Result = PreProcess(resource);
             Process(ref Result);
             PostProcess(ref Result);
             return Result;
@@ -238,7 +267,6 @@ namespace RealMethod
             return temporary;
         }
     }
-
 
 
     [CreateAssetMenu(fileName = "PCG_Generation", menuName = "RealMethod/PCG/Generation", order = 2)]
