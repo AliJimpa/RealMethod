@@ -44,7 +44,9 @@ namespace RealMethod
             EditorGUILayout.PropertyField(settings.FindProperty("GameSetting"), new GUIContent("GameSettingAsset"));
 
             //GameInitialPrefabs
-            EditorGUILayout.PropertyField(settings.FindProperty("GamePrefabs"), new GUIContent("Game Initial Prefabs"), true);
+            EditorGUILayout.PropertyField(settings.FindProperty("GamePrefab_1"), new GUIContent("GameInitialPrefab 1"));
+            EditorGUILayout.PropertyField(settings.FindProperty("GamePrefab_2"), new GUIContent("GameInitialPrefab 2"));
+            EditorGUILayout.PropertyField(settings.FindProperty("GamePrefab_3"), new GUIContent("GameInitialPrefab 3"));
 
             settings.ApplyModifiedProperties();
         }

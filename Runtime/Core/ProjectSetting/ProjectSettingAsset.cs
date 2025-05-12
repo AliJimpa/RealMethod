@@ -38,9 +38,11 @@ namespace RealMethod
         }
 
         [SerializeField]
-        private string GameClass = "DefultGame";
+        private string GameClass = "RealMethod.DefultGame";
         public GameSettingAsset GameSetting;
-        public GameObject[] GamePrefabs = new GameObject[2];
+        public GameObject GamePrefab_1;
+        public GameObject GamePrefab_2;
+        public GameObject GamePrefab_3;
         public FolderAddress[] ProjectStructure = new FolderAddress[18]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},

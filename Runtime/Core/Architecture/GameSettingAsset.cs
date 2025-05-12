@@ -15,7 +15,6 @@ namespace RealMethod
         public Action<float> OnLoadingProcess;
         [Header("Status")]
         public Action<bool> OnSceneLoading;
-
     }
 
 }
