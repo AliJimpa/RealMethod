@@ -37,10 +37,10 @@ namespace RealMethod
             PCG,
         }
 
-
-        public GameSettingAsset GameSetting;
         [SerializeField]
-        private string GameInstanceClass = "DefultGame";
+        private string GameClass = "DefultGame";
+        public GameSettingAsset GameSetting;
+        public GameObject[] GamePrefabs = new GameObject[2];
         public FolderAddress[] ProjectStructure = new FolderAddress[18]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},
@@ -67,15 +67,17 @@ namespace RealMethod
 
         public Type GetGameInstanceClass()
         {
-            return Type.GetType(GameInstanceClass);
+            return Type.GetType(GameClass);
         }
         public void SetGameInstanceClass(Type type)
         {
             // Store fully qualified name of the type
             if (type != null)
             {
-                GameInstanceClass = type.AssemblyQualifiedName;
-            }else{
+                GameClass = type.AssemblyQualifiedName;
+            }
+            else
+            {
                 Debug.LogError("Type is null. Cannot set GameInstanceClass.");
             }
 

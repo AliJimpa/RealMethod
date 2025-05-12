@@ -10,7 +10,7 @@ namespace RealMethod
         private static bool candraw = true;// Flag to determine if the UI can be drawn
         private static ProjectSettingSection[] sections = new ProjectSettingSection[2] {
         // Array of sections to be rendered in the settings UI
-        new BaseSettingSection(),
+        new InitializerSection(),
         new FolderSettingSection()
     };
 
@@ -57,6 +57,8 @@ namespace RealMethod
                         foreach (var item in sections)
                         {
                             item.UpdateRender();
+                            // Add a separator line
+                            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
                         }
                     }
                     else

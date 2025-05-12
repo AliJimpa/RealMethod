@@ -1,21 +1,19 @@
-using UnityEditor;
-using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
 
 namespace RealMethod
 {
-    public class BaseSettingSection : ProjectSettingSection
+    public class InitializerSection : ProjectSettingSection
     {
-        private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset"; // Store in Resources for runtime access
         private SerializedObject settings;
         private List<Type> componentTypes;
         private string[] typeNames;
+        private int SelctedIndex = 0;
+        private int NewIndex;
 
-
-
-        // Implement Abstaction Methods
         protected override void Initialized()
         {
             // Get all available MonoBehaviour types **only once**
@@ -34,26 +32,32 @@ namespace RealMethod
         {
             if (settings == null) return;
 
+            // GameInstanceClass
+            SelctedIndex = System.Array.IndexOf(typeNames, settings.FindProperty("GameClass").stringValue);
+            NewIndex = EditorGUILayout.Popup("GameInstanceClass", SelctedIndex, typeNames);
+            if (NewIndex >= 0 && NewIndex < typeNames.Length)
+            {
+                settings.FindProperty("GameClass").stringValue = typeNames[NewIndex];
+            }
+
+            // GameSettingAsset
             EditorGUILayout.PropertyField(settings.FindProperty("GameSetting"), new GUIContent("GameSettingAsset"));
 
-            int selectedIndex = System.Array.IndexOf(typeNames, settings.FindProperty("GameInstanceClass").stringValue);
-            int newIndex = EditorGUILayout.Popup("GameInstanceClass", selectedIndex, typeNames);
-
-            if (newIndex >= 0 && newIndex < typeNames.Length)
-            {
-                settings.FindProperty("GameInstanceClass").stringValue = typeNames[newIndex];
-            }
+            //GameInitialPrefabs
+            EditorGUILayout.PropertyField(settings.FindProperty("GamePrefabs"), new GUIContent("Game Initial Prefabs"), true);
 
             settings.ApplyModifiedProperties();
         }
         protected override string GetTitle()
         {
-            return "Base";
+            return "Initializer";
         }
         protected override void Fix(int Id)
         {
-
+            throw new System.NotImplementedException();
         }
+
+
 
 
     }
