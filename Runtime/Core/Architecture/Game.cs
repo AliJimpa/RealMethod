@@ -177,14 +177,21 @@ namespace RealMethod
         public static Service CreateService<T>(string Name, object Author)
         {
             Service newService = Activator.CreateInstance<T>() as Service;
-            Instance.GameServices.Add(Name, newService);
-            Service.OnServiceCreate?.Invoke(newService);
-            foreach (var manager in Instance.Managers)
+            if (Instance.GameServices.TryAdd(Name, newService))
             {
-                manager.InitiateService(newService);
+                Service.OnServiceCreate?.Invoke(newService);
+                foreach (var manager in Instance.Managers)
+                {
+                    manager.InitiateService(newService);
+                }
+                newService.Created(Author);
+                return newService;
             }
-            newService.Created(Author);
-            return newService;
+            else
+            {
+                Debug.LogWarning($"A service with the name '{Name}' already exists and will not be replaced.");
+                return null;
+            }
         }
         public static bool DeleteService(string Name, object Author)
         {

@@ -25,15 +25,22 @@ namespace RealMethod
         private IGameManager[] Managers;
         private GameObject PlayerObject;
 
-
+        // Base Method
         private void Awake()
         {
             // ForInitateGame
             Game.IsValid(true);
 
             //Connect to Game Service
-            Game.Service.OnServiceCreate += NewServiceCreated;
-            Game.Service.IntroduceWorld(this, AdditiveWorld);
+            if (Game.Service.IntroduceWorld(this))
+            {
+                Game.Service.OnAdditiveWorld += AdditiveWorld;
+                Game.Service.OnServiceCreate += NewServiceCreated;
+            }
+            else
+            {
+                return;
+            }
 
             //Find Player or Create newone
             if (!InitiatePlayer())
@@ -63,7 +70,11 @@ namespace RealMethod
             Managers = CashManagers.ToArray();
 
         }
-
+        private void OnDestroy()
+        {
+            Game.Service.OnAdditiveWorld -= AdditiveWorld;
+            Game.Service.OnServiceCreate -= NewServiceCreated;
+        }
 
         // Public Metthods
         public T GetManager<T>() where T : class
@@ -105,6 +116,44 @@ namespace RealMethod
         public T GetComponentInPlayer<T>() where T : MonoBehaviour
         {
             return PlayerObject.GetComponentInChildren<T>();
+        }
+        public GameObject AddObject(GameObject Prefab)
+        {
+            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity);
+            SpawnedObject.transform.SetParent(this.transform);
+            return SpawnedObject;
+        }
+        public GameObject FindExteraObject(string ObjectName)
+        {
+            GameObject Result = null;
+            foreach (var obj in ExteraObject)
+            {
+                if (obj.name == ObjectName)
+                {
+                    Result = obj;
+                }
+            }
+            return Result;
+        }
+        public T GetComponentInExteraObject<T>(string ObjectName) where T : MonoBehaviour
+        {
+            GameObject TargetObject = FindExteraObject(ObjectName);
+            if (TargetObject)
+            {
+                T TargetComponent = TargetObject.GetComponent<T>();
+                if (TargetComponent)
+                {
+                    return TargetComponent;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
         // Virtual Methods
         protected virtual bool InitiatePlayer()
@@ -149,16 +198,21 @@ namespace RealMethod
             Debug.LogWarning($"This World Class ({TargetWorld}) Deleted");
             Destroy(TargetWorld);
         }
+        protected virtual bool CheckExteraObject(GameObject GObj)
+        {
+            return true;
+        }
         // Private Methods
         private void NewServiceCreated(Service NewService)
         {
-            foreach (var manager in Managers)
+            if (Managers != null)
             {
-                manager.InitiateService(NewService);
+                foreach (var manager in Managers)
+                {
+                    manager.InitiateService(NewService);
+                }
             }
         }
-        // Abstract Methods
-        protected abstract bool CheckExteraObject(GameObject GObj);
 
     }
 }
