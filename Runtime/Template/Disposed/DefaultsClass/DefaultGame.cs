@@ -1,8 +1,11 @@
 
 namespace RealMethod
 {
-    public class DefultGame : Game
+    public class DefultGame : CoreGame
     {
-
+        protected override void Initialize()
+        {
+            
+        }
     }
 }

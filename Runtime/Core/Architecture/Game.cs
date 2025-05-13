@@ -64,12 +64,12 @@ namespace RealMethod
                                 if (AlternativeInstance == null)
                                 {
                                     Debug.LogError($"Component of type {TargetClass} is not assignable from Game.");
-                                    AlternativeInstance = emptyObject.AddComponent<DefultGame>();
+                                    AlternativeInstance = emptyObject.AddComponent<DefultGameold>();
                                 }
                             }
                             else
                             {
-                                AlternativeInstance = emptyObject.AddComponent<DefultGame>();
+                                AlternativeInstance = emptyObject.AddComponent<DefultGameold>();
                             }
                             AlternativeInstance.Initialize();
                         }
@@ -91,9 +91,9 @@ namespace RealMethod
             {
                 if (AlternativeGameSetting == null)
                 {
-                    if (ProjectSettings.GameSetting != null)
+                    if (ProjectSettings.GetGameSetting() != null)
                     {
-                        AlternativeGameSetting = ProjectSettings.GameSetting;
+                        AlternativeGameSetting = ProjectSettings.GetGameSetting();
                     }
                     else
                     {
@@ -247,7 +247,7 @@ namespace RealMethod
             {
                 // Instantiate a new object of the specified type
                 T NServ = new T();
-                NServ.Initiate(Owner);
+                NServ.Created(Owner);
                 foreach (var item in Instance.GetComponents<IGameManager>())
                 {
                     item.InitiateService(NServ);

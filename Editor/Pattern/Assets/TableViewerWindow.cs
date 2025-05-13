@@ -23,7 +23,7 @@ namespace RealMethod
 
         }
 
-        [MenuItem("Tools/Table Viewer")]
+        [MenuItem("Tools/RealMethod/Table Viewer")]
         public static void ShowWindow()
         {
             window = GetWindow<TableViewerWindow>("Table Viewer");

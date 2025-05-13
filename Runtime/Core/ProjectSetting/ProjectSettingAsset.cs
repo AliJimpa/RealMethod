@@ -37,12 +37,17 @@ namespace RealMethod
             PCG,
         }
 
+
         [SerializeField]
         private string GameClass = "RealMethod.DefultGame";
-        public GameSettingAsset GameSetting;
-        public GameObject GamePrefab_1;
-        public GameObject GamePrefab_2;
-        public GameObject GamePrefab_3;
+        [SerializeField]
+        private GameSettingAsset GameSetting;
+        [SerializeField]
+        private GameObject GamePrefab_1;
+        [SerializeField]
+        private GameObject GamePrefab_2;
+        [SerializeField]
+        private GameObject GamePrefab_3;
         public FolderAddress[] ProjectStructure = new FolderAddress[18]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},
@@ -84,7 +89,18 @@ namespace RealMethod
             }
 
         }
-
+        public GameSettingAsset GetGameSetting()
+        {
+            return GameSetting;
+        }
+        public GameObject[] GetGamePrefabs()
+        {
+            return new GameObject[3] {
+                                GamePrefab_1,
+                                GamePrefab_2,
+                                GamePrefab_3,
+                            };
+        }
     }
 
 
