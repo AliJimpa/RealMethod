@@ -1,6 +1,6 @@
 namespace RealMethod
 {
-    public class DefultGameold : Game {
+    public class DefultGameold : Game_old {
         
     }
 }

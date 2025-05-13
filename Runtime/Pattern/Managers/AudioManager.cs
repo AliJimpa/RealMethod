@@ -63,7 +63,7 @@ namespace RealMethod
         }
         else
         {
-            Game.LogError("AudioMixers Not Valid!");
+            //Game.LogError("AudioMixers Not Valid!");
         }
     }
     public float GetParameter(int index)
@@ -76,7 +76,7 @@ namespace RealMethod
         }
         else
         {
-            Game.LogError("AudioMixers Not Valid!");
+            //Game.LogError("AudioMixers Not Valid!");
             return -1;
         }
     }
@@ -94,7 +94,7 @@ namespace RealMethod
         }
         else
         {
-            Game.LogError("AudioMixers Not Valid!");
+            //Game.LogError("AudioMixers Not Valid!");
         }
     }
     protected float GetParameter(string name)
@@ -107,7 +107,7 @@ namespace RealMethod
         }
         else
         {
-            Game.LogError("AudioMixers Not Valid!");
+            //Game.LogError("AudioMixers Not Valid!");
             return -1;
         }
     }

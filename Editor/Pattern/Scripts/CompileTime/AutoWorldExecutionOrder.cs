@@ -12,7 +12,7 @@ namespace RealMethod
         [MenuItem("Tools/RealMethod/Core/ExecutionOrder")]
         static void ApplyExecutionOrder()
         {
-            SetExecutionOrderForDerivedTypes(typeof(CoreWorld), -18); // ← change base class and order here
+            SetExecutionOrderForDerivedTypes(typeof(World), -18); // ← change base class and order here
         }
 
         private static void SetExecutionOrderForDerivedTypes(Type baseType, int order)

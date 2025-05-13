@@ -18,7 +18,8 @@ namespace RealMethod
 
     public class GameService : Service
     {
-        public Action<CoreWorld> OnWorldUpdat;
+        public Action<World> OnWorldUpdate;
+        public Action<Service> OnServiceCreate;
 
         // override Method
         public override void Created(object Author)
@@ -29,20 +30,17 @@ namespace RealMethod
         }
 
         // Any World in Awake time acall this method
-        public void IntroduceWorld(CoreWorld NewWorld, Action<CoreWorld> CallAdditive)
+        public void IntroduceWorld(World NewWorld, Action<World> CallAdditive)
         {
-            if (CoreGame.World == null)
+            if (Game.World == null)
             {
-                Debug.LogWarning("Null");
-                OnWorldUpdat?.Invoke(NewWorld);
+                OnWorldUpdate?.Invoke(NewWorld);
             }
             else
             {
-                Debug.LogWarning("Valid");
                 CallAdditive?.Invoke(NewWorld);
             }
         }
-
     }
 
 }

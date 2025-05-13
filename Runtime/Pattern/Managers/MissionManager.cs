@@ -85,7 +85,7 @@ namespace RealMethod
         }
         public void OpenHomeScene()
         {
-            Game.OpenScene(HomeScene);
+            //////////////////////Game.OpenScene(HomeScene);
         }
 
 

@@ -407,12 +407,12 @@ namespace RealMethod
 
 		private void OnEnable()
 		{
-			Game.Instance.OnWorldUpdated += WorldUpdated;
+			Game.Service.OnWorldUpdate += WorldUpdated;
 		}
 		private void OnDisable()
 		{
 			if (Game.IsValid())
-				Game.Instance.OnWorldUpdated -= WorldUpdated;
+				Game.Service.OnWorldUpdate -= WorldUpdated;
 		}
 		private void WorldUpdated(World Target)
 		{
