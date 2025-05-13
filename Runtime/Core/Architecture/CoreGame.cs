@@ -53,8 +53,8 @@ namespace RealMethod
                             {
                                 Setting = ScriptableObject.CreateInstance<DefaultGameSetting>();
                             }
-                            // Initiate GamePrefab in Game
-                            List<IGameManager> CashManagers = new List<IGameManager>();
+                            // Initiate GamePrefab & Managers
+                            List<IGameManager> CashManagers = new List<IGameManager>(5);
                             foreach (var obj in ProjectSettings.GetGamePrefabs())
                             {
                                 if (obj != null)
@@ -68,7 +68,6 @@ namespace RealMethod
                                     DontDestroyOnLoad(newobj);
                                 }
                             }
-                            // Setup Mamagers
                             AlternativeInstance.Managers = new IGameManager[CashManagers.Count];
                             AlternativeInstance.Managers = CashManagers.ToArray();
                             // Unload Project Setting
@@ -94,7 +93,32 @@ namespace RealMethod
 
 
 
+        //Public Metthods
+        public T GetManager<T>() where T : class
+        {
+            foreach (var manager in Managers)
+            {
+                if (manager.GetManagerClass() is T Result)
+                {
+                    return Result;
+                }
+            }
+            return null;
+        }
+        public IGameManager GetManager(string ClassName)
+        {
+            foreach (var manger in Managers)
+            {
+                if (manger.GetType().FullName == ClassName)
+                {
+                    return manger;
+                }
+            }
+            return null;
+        }
 
+
+        // Private Methods
         private void InitializeClass()
         {
             // Move Self GameObject to DontDestroy
@@ -110,11 +134,10 @@ namespace RealMethod
         private void ReplaceWorld(CoreWorld NewWorld)
         {
             World = NewWorld;
-            Debug.Log($"ReplaceWorkd {World}");
         }
 
 
-        // Statics Functions
+        // Static Methods
         // ---Service---
         public static Service CreateService<T>(string Name, object Author)
         {
@@ -151,7 +174,15 @@ namespace RealMethod
             }
             return null;
         }
-
+        // ---Manager---
+        public static T FindManager<T>() where T : class
+        {
+            if (World != null)
+            {
+                return World.GetManager<T>();
+            }
+            return Instance.GetManager<T>();
+        }
 
         // Abstract Methods
         protected abstract void Initialize();

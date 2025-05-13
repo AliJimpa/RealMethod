@@ -3,6 +3,19 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public interface IGameManager
+    {
+        void InitiateManager(bool AlwaysLoaded);
+        MonoBehaviour GetManagerClass();
+        void InitiateService(Service service);
+    }
+
+    public abstract class Service
+    {
+        public abstract void Created(object Author);
+        public abstract void Removed(object Author);
+    }
+
     public class GameService : Service
     {
         public Action<CoreWorld> OnWorldUpdat;
@@ -10,15 +23,13 @@ namespace RealMethod
         // override Method
         public override void Created(object Author)
         {
-            Debug.Log("GameService Created");
         }
         public override void Removed(object Author)
         {
-            Debug.Log("GameService Removed");
         }
 
-
-        public void IntroduceWorld(CoreWorld NewWorld , Action<CoreWorld> CallAdditive)
+        // Any World in Awake time acall this method
+        public void IntroduceWorld(CoreWorld NewWorld, Action<CoreWorld> CallAdditive)
         {
             if (CoreGame.World == null)
             {
@@ -33,4 +44,5 @@ namespace RealMethod
         }
 
     }
+
 }
