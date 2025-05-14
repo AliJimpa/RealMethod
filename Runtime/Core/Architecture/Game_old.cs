@@ -110,7 +110,6 @@ namespace RealMethod
         public Timer GameTimer;
 
         //Private Variables
-        private bool IsInLoading = false;
         private GameSettingAsset gameData;
         private List<Service> Services = new List<Service>();
 

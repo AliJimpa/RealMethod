@@ -69,6 +69,7 @@ namespace RealMethod
             Managers = new IGameManager[CashManagers.Count];
             Managers = CashManagers.ToArray();
 
+            AwakeWorld();
         }
         private void OnDestroy()
         {
@@ -213,6 +214,7 @@ namespace RealMethod
                 }
             }
         }
-
+        // Abstract Methods
+        protected abstract void AwakeWorld();
     }
 }
