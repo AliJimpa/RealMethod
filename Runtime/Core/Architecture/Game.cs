@@ -1,9 +1,3 @@
-/// <summary>
-/// The Game class is a singleton that manages the core game logic and state.
-/// It provides methods for managing game objects, scenes, and services, as well as handling world updates.
-/// Note: Ensure that only one instance of this class is active in the scene.
-/// VeryImportant: Dont Use RequireComponent in This class.
-/// </summary>
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,32 +6,10 @@ using UnityEngine.SceneManagement;
 
 namespace RealMethod
 {
-    /// <remarks>
-    /// The Game class is a singleton that manages the core game logic and state.
-    /// Note: Dont Use RequireComponent.
-    /// </remarks>
     public abstract class Game : MonoBehaviour
     {
-        //Private Static Variables
+        // Private Static Variables
         private static Game AlternativeInstance;
-        private static ProjectSettingAsset AlternativeProjectSettings;
-        private static ProjectSettingAsset ProjectSettings
-        {
-            get
-            {
-                if (AlternativeProjectSettings == null)
-                {
-                    AlternativeProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
-                    if (AlternativeProjectSettings == null)
-                    {
-                        Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
-                    }
-                }
-                return AlternativeProjectSettings;
-            }
-        }
-        private static GameSettingAsset AlternativeGameSetting;
-
 
         // Public Static Variables
         public static Game Instance
@@ -46,177 +18,84 @@ namespace RealMethod
             {
                 if (AlternativeInstance == null)
                 {
+                    // Find Game In Scene
                     Game[] components = FindObjectsByType<Game>(FindObjectsSortMode.InstanceID);
                     if (components.Length == 1)
                     {
                         AlternativeInstance = components[0];
-                        AlternativeInstance.Initialize();
+                        InitializeGame(false);
                     }
                     else
                     {
                         if (components.Length == 0)
                         {
-                            var emptyObject = new GameObject("GameManager");
-                            Type TargetClass = ProjectSettings.GetGameInstanceClass();
-                            if (TargetClass != null)
-                            {
-                                AlternativeInstance = (Game)emptyObject.AddComponent(TargetClass);
-                                if (AlternativeInstance == null)
-                                {
-                                    Debug.LogError($"Component of type {TargetClass} is not assignable from Game.");
-                                    AlternativeInstance = emptyObject.AddComponent<DefultGame>();
-                                }
-                            }
-                            else
-                            {
-                                AlternativeInstance = emptyObject.AddComponent<DefultGame>();
-                            }
-                            AlternativeInstance.Initialize();
+                            InitializeGame();
                         }
                         else
                         {
                             Debug.LogError("The 'Game' Class Component should be active in scene & just One");
                         }
-
                     }
                 }
                 return AlternativeInstance;
             }
             private set { }
         }
-        public static World World;
-        public static GameSettingAsset Setting
+        public static GameSettingAsset Setting { get; private set; }
+        public static World World { get; private set; }
+        public static GameService Service { get; private set; }
+
+        // Private Variable
+        private IGameManager[] Managers;
+        private Dictionary<string, Service> GameServices = new Dictionary<string, Service>(10);
+
+
+
+        // Public Metthods
+        public T GetManager<T>() where T : class
         {
-            get
+            foreach (var manager in Managers)
             {
-                if (AlternativeGameSetting == null)
-                {
-                    if (ProjectSettings.GameSetting != null)
-                    {
-                        AlternativeGameSetting = ProjectSettings.GameSetting;
-                    }
-                    else
-                    {
-                        AlternativeGameSetting = ScriptableObject.CreateInstance<DefaultGameSetting>();
-                    }
-                }
-                return AlternativeGameSetting;
-            }
-        }
-
-
-        //Public Variables
-        public Action<World> OnWorldUpdated = delegate { };
-        public Timer GameTimer;
-
-        //Private Variables
-        private bool IsInLoading = false;
-        private GameSettingAsset gameData;
-
-        private List<Service> Services = new List<Service>();
-
-
-
-        // Basic Methods
-        public GameObject GetWorldObject()
-        {
-            return World.gameObject;
-        }
-
-        // Add or Remove GameObject in Child 
-        public void HoldGameObject(GameObject Target)
-        {
-            Target.transform.SetParent(this.transform);
-        }
-        public bool UnHoldGameObject(string GameObjectName, GameObject Target)
-        {
-            Transform[] Childs = GetComponentsInChildren<Transform>();
-            foreach (var item in Childs)
-            {
-                if (item.gameObject.name == GameObjectName)
-                {
-                    item.SetParent(Target.transform);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // Manager
-        public IGameManager FindManager(string ClassName)
-        {
-            IGameManager Result = null;
-            foreach (var item in GetComponents<IGameManager>())
-            {
-                if (item.GetType().FullName == ClassName)
-                {
-                    Result = item;
-                    break;
-                }
-            }
-            return Result;
-        }
-        public T FindManagerClass<T>() where T : class
-        {
-            foreach (var TargetManager in GetComponents<IGameManager>())
-            {
-                if (TargetManager.GetManagerClass() is T Result)
+                if (manager.GetManagerClass() is T Result)
                 {
                     return Result;
                 }
             }
             return null;
         }
-
-        // Call these Virtual Method for Your Custom Game
-        protected virtual void Initialize()
+        public IGameManager GetManager(string ClassName)
         {
-            DontDestroyOnLoad(gameObject);
-
-            GameTimer = new Timer();
-            //Find All Script that has IGameManagerInterface
-            foreach (var Manager in GetComponents<IGameManager>())
+            foreach (var manger in Managers)
             {
-                Manager.InitiateManager(true);
+                if (manger.GetType().FullName == ClassName)
+                {
+                    return manger;
+                }
             }
+            return null;
         }
-        public virtual void OnWorldUpdate(World NewWorld)
+        // Protected Methods
+        protected bool NeedComponent<t>(out t TargetRef) where t : MonoBehaviour
         {
-            if (!World)
+            TargetRef = gameObject.GetComponent<t>();
+            if (TargetRef == null)
             {
-                World = NewWorld;
-                OnWorldUpdated?.Invoke(NewWorld);
+                TargetRef = gameObject.AddComponent<t>();
+                Debug.LogWarning($"Component of type {typeof(t).Name} was not found. [A new one has been added].");
+                return false;
             }
             else
             {
-                Debug.LogWarning($"This World Class ({NewWorld}) Deleted");
-                Destroy(NewWorld.gameObject);
+                return true;
             }
         }
-        protected virtual void PrintDebug(string message, LogType type)
+        // Private Methods
+        private void ReplaceWorld(World NewWorld)
         {
-            switch (type)
-            {
-                case LogType.Log:
-                    Debug.Log(message);
-                    break;
-                case LogType.Warning:
-                    Debug.LogWarning(message);
-                    break;
-                case LogType.Error:
-                    Debug.LogError(message);
-                    break;
-                default:
-                    Debug.LogError("Game: PrintDebug Type is not normal type");
-                    break;
-            }
+            World = NewWorld;
+            WorldSynced(World);
         }
-
-        // Statics Functions
-        public static GameObject GetGameObject()
-        {
-            return Instance.gameObject;
-        }
+        // Public Static Methods
         public static T CastInstance<T>() where T : class
         {
             if (Instance is T CastedInstance)
@@ -241,35 +120,58 @@ namespace RealMethod
                 return null;
             }
         }
-        public static bool AddService<T>(object Owner) where T : Service, new()
+        public static Service CreateService<T>(string Name, object Author)
         {
-            try
+            Service newService = Activator.CreateInstance<T>() as Service;
+            if (Instance.GameServices.TryAdd(Name, newService))
             {
-                // Instantiate a new object of the specified type
-                T NServ = new T();
-                NServ.Initiate(Owner);
-                foreach (var item in Instance.GetComponents<IGameManager>())
+                Service.OnServiceCreate?.Invoke(newService);
+                foreach (var manager in Instance.Managers)
                 {
-                    item.InitiateService(NServ);
+                    manager.InitiateService(newService);
                 }
-                Instance.Services.Add(NServ);
-                Instance.gameData.OnNewService?.Invoke(NServ);
-                return true;
+                newService.Created(Author);
+                return newService;
             }
-            catch (Exception ex)
+            else
             {
-                Debug.LogError($"Error instantiating {typeof(T).Name}: {ex.Message}");
-                return false;
+                Debug.LogWarning($"A service with the name '{Name}' already exists and will not be replaced.");
+                return null;
             }
+        }
+        public static bool DeleteService(string Name, object Author)
+        {
+            if (!Instance.GameServices.TryGetValue(Name, out var Result))
+                return false;
+
+            Result.Removed(Author);
+            Instance.GameServices.Remove(Name);
+            return true;
+        }
+        public static Service FindService(string Name)
+        {
+            return Instance.GameServices[Name];
+        }
+        public static bool FindService(string Name, out Service Target)
+        {
+            return Instance.GameServices.TryGetValue(Name, out Target);
+        }
+        public static Service FindService<T>() where T : Service
+        {
+            foreach (var service in Instance.GameServices.Values)
+            {
+                if (service is T targetService)
+                {
+                    return targetService;
+                }
+            }
+            return null;
         }
         public static void OpenScene(SceneReference TargetScene)
         {
-            if (Instance.IsInLoading)
-                return;
-
-            if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(TargetScene.ScenePath).buildIndex)
+            if (!Service.IsLoading && SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(TargetScene).buildIndex)
             {
-                Instance.StartCoroutine(Instance.LoadSceneAsync(TargetScene));
+                Instance.StartCoroutine(Service.LoadSceneAsync(TargetScene));
             }
             else
             {
@@ -278,78 +180,185 @@ namespace RealMethod
         }
         public static void OpenWorld(WorldSceneAsset WorldScene)
         {
-            if (Instance.IsInLoading)
-                return;
-
-            if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.GetPersistent().ScenePath).buildIndex)
+            if (!Service.IsLoading && SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.GetPersistent()).buildIndex)
             {
-                Instance.StartCoroutine(Instance.LoadWorldAsync(WorldScene));
+                Instance.StartCoroutine(Service.LoadWorldAsync(WorldScene));
             }
             else
             {
                 Debug.LogWarning("The scene is already loaded.");
             }
         }
-        public static void Log(string Message)
+        public static T FindManager<T>() where T : class
         {
-            Instance.PrintDebug(Message, LogType.Log);
-        }
-        public static void LogWarning(string Message)
-        {
-            Instance.PrintDebug(Message, LogType.Warning);
-        }
-        public static void LogError(string Message)
-        {
-            Instance.PrintDebug(Message, LogType.Error);
-        }
-        public static bool IsValid()
-        {
-            return AlternativeInstance;
-        }
-        public static void SetGameTime(float scale)
-        {
-            Time.timeScale = scale;
-        }
-
-
-        // Protected Function
-        protected bool CheckComponent<t>(out t TargetRef) where t : MonoBehaviour
-        {
-            TargetRef = gameObject.GetComponent<t>();
-            if (TargetRef == null)
+            if (World != null)
             {
-                TargetRef = gameObject.AddComponent<t>();
-                Debug.LogWarning($"Component of type {typeof(t).Name} was not found. [A new one has been added].");
-                return false;
+                return World.GetManager<T>();
+            }
+            return Instance.GetManager<T>();
+        }
+        public static void HoldGameObject(GameObject Target)
+        {
+            Target.transform.SetParent(Instance.transform);
+        }
+        public static bool UnHoldGameObject(string GameObjectName, GameObject Target)
+        {
+            Transform[] Childs = Instance.GetComponentsInChildren<Transform>();
+            foreach (var item in Childs)
+            {
+                if (item.gameObject.name == GameObjectName)
+                {
+                    item.SetParent(Target.transform);
+                    return true;
+                }
+            }
+            return false;
+        }
+        public static bool IsValid(bool Initiate = false)
+        {
+            if (Initiate)
+            {
+                return Instance;
             }
             else
             {
-                return true;
+                return AlternativeInstance;
             }
         }
-        //Private Function
-        private IEnumerator LoadSceneAsync(SceneReference scene)
+        // Private Static Methods
+        private static void InitializeGame(bool CreateInstance = true)
         {
-            //Cheack GameData
-            if (gameData == null)
+            // Load Project Setting
+            ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
+
+            if (ProjectSettings != null)
             {
-                Debug.LogError("GameData is not Valid");
+                // Initiate Game Class in Game
+                if (CreateInstance)
+                {
+                    var emptyObject = new GameObject("GameManager");
+                    Type TargetClass = ProjectSettings.GetGameInstanceClass();
+                    if (TargetClass != null)
+                    {
+                        AlternativeInstance = (Game)emptyObject.AddComponent(TargetClass);
+                        if (AlternativeInstance == null)
+                        {
+                            Debug.LogError($"Component of type {TargetClass} is not assignable from Game.");
+                            AlternativeInstance = emptyObject.AddComponent<DefultGame>();
+                        }
+                    }
+                    else
+                    {
+                        AlternativeInstance = emptyObject.AddComponent<DefultGame>();
+                    }
+                }
+                // Create Game Service
+                Service = new GameService();
+                Service.OnWorldUpdate += AlternativeInstance.ReplaceWorld;
+                Service.Created(AlternativeInstance);
+                // Set Game Setting Asset 
+                if (ProjectSettings.GetGameSetting() != null)
+                {
+                    Setting = ProjectSettings.GetGameSetting();
+                }
+                else
+                {
+                    Setting = ScriptableObject.CreateInstance<DefaultGameSetting>();
+                }
+                Setting.GameStarted(AlternativeInstance);
+                // Initiate GamePrefab & Managers
+                List<IGameManager> CashManagers = new List<IGameManager>(5);
+                foreach (var obj in ProjectSettings.GetGamePrefabs())
+                {
+                    if (obj != null)
+                    {
+                        GameObject newobj = Instantiate(obj);
+                        foreach (var manager in newobj.GetComponents<IGameManager>())
+                        {
+                            manager.InitiateManager(true);
+                            CashManagers.Add(manager);
+                        }
+                        DontDestroyOnLoad(newobj);
+                    }
+                }
+                AlternativeInstance.Managers = new IGameManager[CashManagers.Count];
+                AlternativeInstance.Managers = CashManagers.ToArray();
+                // Unload Project Setting
+                Resources.UnloadAsset(ProjectSettings);
+
+                // Move Self GameObject to DontDestroy
+                DontDestroyOnLoad(AlternativeInstance.gameObject);
+                // Call Initialize abstract Method
+                AlternativeInstance.Initialize();
+            }
+            else
+            {
+                Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
+            }
+        }
+        // Abstract Methods
+        protected abstract void Initialize();
+        protected abstract void WorldSynced(World NewWorld);
+
+    }
+
+    public class GameService : Service
+    {
+        // Game Structure
+        public Action<World> OnWorldUpdate;
+        public Action<World> OnAdditiveWorld;
+        public Action<Service> OnServiceCreate;
+        // Load Scene 
+        public Action<bool> OnSceneLoading;
+        public Action<float> OnSceneLoadingProcess;
+        public bool IsLoading { get; private set; }
+        public float FadeTime = 0;
+
+
+        // override Method
+        public override void Created(object Author)
+        {
+        }
+        public override void Removed(object Author)
+        {
+        }
+
+        // Any World in Awake time acall this method
+        public bool IntroduceWorld(World NewWorld)
+        {
+            if (Game.World == null)
+            {
+                OnWorldUpdate?.Invoke(NewWorld);
+                return true;
+            }
+            else
+            {
+                OnAdditiveWorld?.Invoke(NewWorld);
+                return false;
+            }
+        }
+
+
+        // Corotine
+        public IEnumerator LoadSceneAsync(SceneReference scene)
+        {
+            if (IsLoading == true)
+            {
+                Debug.LogWarning($"Can't load {scene} The Service is in Loadin");
                 yield break;
             }
 
             //StartLoading
-            IsInLoading = true;
-            gameData.OnSceneLoading?.Invoke(true);
+            IsLoading = true;
+            OnSceneLoading?.Invoke(true);
 
             //Fading Screen
-            if (gameData.FadingTime != 0)
+            if (FadeTime != 0)
             {
-                gameData.OnScreenFade?.Invoke(true);
-                yield return new WaitForSeconds(gameData.FadingTime);
+                yield return new WaitForSeconds(FadeTime);
             }
 
             //Loading Scene
-            gameData.OnScreenLoading?.Invoke(true);
             AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
             if (Load_opertation == null)
             {
@@ -358,46 +367,39 @@ namespace RealMethod
             }
             while (!Load_opertation.isDone)
             {
-                gameData.OnLoadingProcess?.Invoke(Load_opertation.progress);
+                OnSceneLoadingProcess?.Invoke(Load_opertation.progress);
                 yield return null;
             }
-            gameData.OnLoadingProcess?.Invoke(1);
-            yield return new WaitForSeconds(0.5f);
-            gameData.OnScreenLoading?.Invoke(false);
+            OnSceneLoadingProcess?.Invoke(1);
 
             //Fading Screen
-            if (gameData.FadingTime != 0)
+            if (FadeTime != 0)
             {
-                gameData.OnScreenFade?.Invoke(false);
-                yield return new WaitForSeconds(gameData.FadingTime);
+                yield return new WaitForSeconds(FadeTime);
             }
 
             //FinishLoading
-            gameData.OnSceneLoading?.Invoke(false);
-            IsInLoading = false;
+            IsLoading = false;
+            OnSceneLoading?.Invoke(false);
         }
-        private IEnumerator LoadWorldAsync(WorldSceneAsset WS)
+        public IEnumerator LoadWorldAsync(WorldSceneAsset WS)
         {
-            //Cheack GameData
-            if (gameData == null)
+            if (IsLoading == true)
             {
-                Debug.LogError("GameData is not Valid");
+                Debug.LogWarning($"Can't load {WS} The Service is in Loadin");
                 yield break;
             }
 
             //StartLoading
-            IsInLoading = true;
-            gameData.OnSceneLoading?.Invoke(true);
+            IsLoading = true;
+            OnSceneLoading?.Invoke(true);
 
             //Fading Screen
-            if (gameData.FadingTime != 0)
+            if (FadeTime != 0)
             {
-                gameData.OnScreenFade?.Invoke(true);
-                yield return new WaitForSeconds(gameData.FadingTime);
+                yield return new WaitForSeconds(FadeTime);
             }
 
-            //Loading Scene
-            gameData.OnScreenLoading?.Invoke(true);
 
             //load Persistance Levels
             AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(WS.GetPersistent(), LoadSceneMode.Single);
@@ -408,7 +410,7 @@ namespace RealMethod
             }
             while (!Load_opertation.isDone)
             {
-                gameData.OnLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1)));
+                OnSceneLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1)));
                 yield return null;
             }
 
@@ -423,28 +425,23 @@ namespace RealMethod
                 }
                 while (!Additive_Load_opertation.isDone)
                 {
-                    gameData.OnLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1 - (i + 1))));
+                    OnSceneLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1 - (i + 1))));
                     yield return null;
                 }
 
             }
-            yield return new WaitForSeconds(0.5f);
-            gameData.OnScreenLoading?.Invoke(false);
 
             //Fading Screen
-            if (gameData.FadingTime != 0)
+            if (FadeTime != 0)
             {
-                gameData.OnScreenFade?.Invoke(false);
-                yield return new WaitForSeconds(gameData.FadingTime);
+                yield return new WaitForSeconds(FadeTime);
             }
 
             //FinishLoading
-            gameData.OnSceneLoading?.Invoke(false);
-            IsInLoading = false;
+            IsLoading = false;
+            OnSceneLoading?.Invoke(false);
         }
 
-
     }
-
 
 }

@@ -1,26 +1,29 @@
 using UnityEditor;
 using UnityEngine;
 
-
 namespace RealMethod
 {
     public class FolderSettingSection : ProjectSettingSection
     {
         private ProjectSettingAsset MyStorage;
+        private bool isPanelMaximize = false; // Add a toggle for minimizing the panel
 
-        // Implement Abstaction Methods
+        // Implement Abstraction Methods
         protected override void Initialized()
         {
         }
+
         protected override void FirstSelected(ProjectSettingAsset Storage)
         {
             MyStorage = Storage;
         }
+
         protected override void Draw()
         {
+            // Add a toggle button for minimizing or expanding the panel
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Folder List", EditorStyles.largeLabel); // Title for the list
-            if (GUILayout.Button("CrateAll", GUILayout.Width(60)))
+            isPanelMaximize = EditorGUILayout.Foldout(isPanelMaximize, "Folder List", true, EditorStyles.foldoutHeader);
+            if (GUILayout.Button("Create All", GUILayout.Width(80)))
             {
                 foreach (var address in MyStorage.ProjectStructure)
                 {
@@ -39,13 +42,20 @@ namespace RealMethod
             }
             EditorGUILayout.EndHorizontal();
 
+            // If the panel is minimized, stop rendering the rest of the UI
+            if (!isPanelMaximize)
+            {
+                return;
+            }
+
+            // Render the folder list
             for (int i = 0; i < MyStorage.ProjectStructure.Length; i++)
             {
                 EditorGUILayout.BeginHorizontal(); // Start horizontal layout
 
+
                 // Display the folder path as a text field
                 MyStorage.ProjectStructure[i].Path = EditorGUILayout.TextField($"{i + 1}.{MyStorage.ProjectStructure[i].Identity}", MyStorage.ProjectStructure[i].Path);
-
 
                 string ButtonName = AssetDatabase.IsValidFolder(MyStorage.ProjectStructure[i].Path) ? "Check" : "Create";
                 // Add a button next to the text field
@@ -67,18 +77,16 @@ namespace RealMethod
 
                 EditorGUILayout.EndHorizontal(); // End horizontal layout
             }
-
-
         }
+
         protected override string GetTitle()
         {
             return "FolderStructure";
         }
+
         protected override void Fix(int Id)
         {
-
         }
-
 
         private void CreateFolder(string parentFolder, string newFolderName)
         {
@@ -102,6 +110,5 @@ namespace RealMethod
                 currentPath = nextPath; // Move to the next folder in the hierarchy
             }
         }
-
     }
 }

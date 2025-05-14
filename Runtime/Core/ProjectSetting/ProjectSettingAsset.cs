@@ -34,13 +34,21 @@ namespace RealMethod
             User = 14,
             Resources = 15,
             ThirdpartyPack = 16,
+            PCG,
         }
 
 
-        public GameSettingAsset GameSetting;
         [SerializeField]
-        private string GameInstanceClass = "DefultGame";
-        public FolderAddress[] ProjectStructure = new FolderAddress[17]
+        private string GameClass = "RealMethod.DefultGame";
+        [SerializeField]
+        private GameSettingAsset GameSetting;
+        [SerializeField]
+        private GameObject GamePrefab_1;
+        [SerializeField]
+        private GameObject GamePrefab_2;
+        [SerializeField]
+        private GameObject GamePrefab_3;
+        public FolderAddress[] ProjectStructure = new FolderAddress[18]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},
         new FolderAddress { Identity = (IdentityCategory)1, Path = "Assets/2_Scripts" },
@@ -58,27 +66,41 @@ namespace RealMethod
         new FolderAddress { Identity = (IdentityCategory)13, Path = "Assets/7_Misc"},
         new FolderAddress { Identity = (IdentityCategory)14, Path = "Assets/Developer"},
         new FolderAddress { Identity = (IdentityCategory)15, Path = "Assets/Resources"},
-        new FolderAddress { Identity = (IdentityCategory)16, Path = "Assets/~Thirdparty"}
+        new FolderAddress { Identity = (IdentityCategory)16, Path = "Assets/~Thirdparty"},
+        new FolderAddress { Identity = (IdentityCategory)17, Path = "Assets/4_Data/PCG"}
         };
 
 
 
         public Type GetGameInstanceClass()
         {
-            return Type.GetType(GameInstanceClass);
+            return Type.GetType(GameClass);
         }
         public void SetGameInstanceClass(Type type)
         {
             // Store fully qualified name of the type
             if (type != null)
             {
-                GameInstanceClass = type.AssemblyQualifiedName;
-            }else{
+                GameClass = type.AssemblyQualifiedName;
+            }
+            else
+            {
                 Debug.LogError("Type is null. Cannot set GameInstanceClass.");
             }
 
         }
-
+        public GameSettingAsset GetGameSetting()
+        {
+            return GameSetting;
+        }
+        public GameObject[] GetGamePrefabs()
+        {
+            return new GameObject[3] {
+                                GamePrefab_1,
+                                GamePrefab_2,
+                                GamePrefab_3,
+                            };
+        }
     }
 
 

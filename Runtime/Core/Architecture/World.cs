@@ -1,13 +1,11 @@
-using UnityEngine;
 using System.Collections.Generic;
-
+using UnityEngine;
 
 namespace RealMethod
 {
-    [DefaultExecutionOrder(-1)]
     public abstract class World : MonoBehaviour
     {
-        [Header("World")]
+        [Header("Core")]
         [SerializeField]
         private bool IsPlayerInScene = true;
         [SerializeField]
@@ -21,93 +19,111 @@ namespace RealMethod
         [ConditionalHide("IsPlayerInScene", true, true)]
         private Transform SpawnPoint;
         [SerializeField]
-        private bool AdditiveWorld = false;
-        [SerializeField]
-        protected List<GameObject> ExteraObject = new List<GameObject>();
-        protected List<IGameManager> Managers = new List<IGameManager>();
+        protected GameObject[] ExteraObject;
+
+        // Private Variable
+        private IGameManager[] Managers;
         private GameObject PlayerObject;
 
-
-        //Internal Methods
-        protected virtual void Awake()
+        // Base Method
+        private void Awake()
         {
-            World TopWorld = Game.World;
-            if (TopWorld)
+            // ForInitateGame
+            Game.IsValid(true);
+
+            //Connect to Game Service
+            if (Game.Service.IntroduceWorld(this))
             {
-                if (AdditiveWorld)
-                {
-                    TopWorld.ExteraObject.Add(this.gameObject);
-                    foreach (var item in GetComponentsInChildren<IGameManager>())
-                    {
-                        TopWorld.Managers.Add(item);
-                        item.InitiateManager(false);
-                    }
-                    foreach (GameObject Item in ExteraObject)
-                    {
-                        foreach (var Manager in Item.GetComponentsInChildren<IGameManager>())
-                        {
-                            TopWorld.Managers.Add(Manager);
-                            Manager.InitiateManager(false);
-                        }
-                    }
-                    gameObject.name = "AdditiveWorld_" + TopWorld.ExteraObject.Count.ToString();
-                    OnAdditiveWorldActive(TopWorld);
-                }
-                else
-                {
-                    foreach (GameObject Item in ExteraObject)
-                    {
-                        foreach (var Manager in Item.GetComponentsInChildren<IGameManager>())
-                        {
-                            TopWorld.Managers.Add(Manager);
-                            Manager.InitiateManager(false);
-                        }
-                    }
-                    Destroy(gameObject);
-                }
+                Game.Service.OnAdditiveWorld += AdditiveWorld;
+                Game.Service.OnServiceCreate += NewServiceCreated;
             }
             else
             {
-                InitiateWorld();
+                return;
             }
-
-        }
-
-        //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private void InitiateWorld()
-        {
-            //Introduce Self to GameInstance
-            Game.Instance.OnWorldUpdate(this);
-            Game.Setting.OnNewService += OnServiceCreated;
 
             //Find Player or Create newone
-            DetectPlayer();
-
-            //Find All Script that has IGameManagerInterface
-            foreach (var item in GetComponentsInChildren<IGameManager>())
+            if (!InitiatePlayer())
             {
-                Managers.Add(item);
+                return;
             }
 
-            //Process Extera Objects
-            foreach (GameObject obj in ExteraObject)
+            // Get All Managers
+            List<IGameManager> CashManagers = new List<IGameManager>(10);
+            foreach (var manager in GetComponentsInChildren<IGameManager>()) // Self Mangers
             {
-                IGameManager Manager = obj.GetComponent<IGameManager>();
-                if (Manager != null)
+                manager.InitiateManager(false);
+                CashManagers.Add(manager);
+            }
+            foreach (GameObject obj in ExteraObject) // Extera Object Manager
+            {
+                if (CheckExteraObject(obj))
                 {
-                    Managers.Add(Manager);
+                    foreach (var manager in obj.GetComponentsInChildren<IGameManager>())
+                    {
+                        manager.InitiateManager(false);
+                        CashManagers.Add(manager);
+                    }
                 }
-                CheckExteraObject(obj);
             }
+            Managers = new IGameManager[CashManagers.Count];
+            Managers = CashManagers.ToArray();
 
-            //InitiateManagers
-            foreach (var item in Managers)
-            {
-                item.InitiateManager(false);
-            }
+            AwakeWorld();
+        }
+        private void OnDestroy()
+        {
+            Game.Service.OnAdditiveWorld -= AdditiveWorld;
+            Game.Service.OnServiceCreate -= NewServiceCreated;
         }
 
-        // Extera Object Methods
+        // Public Metthods
+        public T GetManager<T>() where T : class
+        {
+            foreach (var manager in Managers)
+            {
+                if (manager.GetManagerClass() is T Result)
+                {
+                    return Result;
+                }
+            }
+            return null;
+        }
+        public IGameManager GetManager(string ClassName)
+        {
+            foreach (var manger in Managers)
+            {
+                if (manger.GetType().FullName == ClassName)
+                {
+                    return manger;
+                }
+            }
+            return null;
+        }
+        public GameObject GetPlayerObject()
+        {
+            return PlayerObject;
+        }
+        public T[] GetComponentsInPlayer<T>() where T : MonoBehaviour
+        {
+            T[] components = PlayerObject.GetComponentsInChildren<T>();
+            if (components.Length > 0)
+            {
+                return components;
+            }
+            Debug.LogWarning($"No components of type {typeof(T).Name} found on {PlayerObject.name} or its children.");
+            return null;
+        }
+        public T GetComponentInPlayer<T>() where T : MonoBehaviour
+        {
+            return PlayerObject.GetComponentInChildren<T>();
+        }
+        public GameObject AddObject(GameObject Prefab)
+        {
+            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity);
+            SpawnedObject.transform.SetParent(this.transform);
+            return SpawnedObject;
+        }
         public GameObject FindExteraObject(string ObjectName)
         {
             GameObject Result = null;
@@ -140,55 +156,8 @@ namespace RealMethod
                 return null;
             }
         }
-
-        // Player Method
-        public GameObject GetPlayerObject()
-        {
-            return PlayerObject;
-        }
-        public T[] GetComponentsInPlayer<T>() where T : MonoBehaviour
-        {
-            T[] components = PlayerObject.GetComponentsInChildren<T>();
-            if (components.Length > 0)
-            {
-                return components;
-            }
-            Debug.LogWarning($"No components of type {typeof(T).Name} found on {PlayerObject.name} or its children.");
-            return null;
-        }
-        public T GetComponentInPlayer<T>() where T : MonoBehaviour
-        {
-            return PlayerObject.GetComponentInChildren<T>();
-        }
-
-        //Manager Method
-        public IGameManager FindManager(string ClassName)
-        {
-            IGameManager Result = null;
-            foreach (var item in Managers)
-            {
-                if (item.GetType().FullName == ClassName)
-                {
-                    Result = item;
-                    break;
-                }
-            }
-            return Result;
-        }
-        public T FindManagerClass<T>() where T : class
-        {
-            foreach (var Mg in Managers)
-            {
-                if (Mg.GetManagerClass() is T Result)
-                {
-                    return Result;
-                }
-            }
-            return null;
-        }
-
-        //virtual Method
-        protected virtual bool DetectPlayer()
+        // Virtual Methods
+        protected virtual bool InitiatePlayer()
         {
             if (IsPlayerInScene)
             {
@@ -225,34 +194,27 @@ namespace RealMethod
 
             }
         }
-        protected virtual void CheckExteraObject(GameObject Obj)
+        protected virtual void AdditiveWorld(World TargetWorld)
         {
+            Debug.LogWarning($"This World Class ({TargetWorld}) Deleted");
+            Destroy(TargetWorld);
         }
-        protected virtual void OnAdditiveWorldActive(World TopWorld)
+        protected virtual bool CheckExteraObject(GameObject GObj)
         {
-            Destroy(this);
+            return true;
         }
-
-        //Functions
-        protected GameObject AddGameObject(GameObject Prefab)
+        // Private Methods
+        private void NewServiceCreated(Service NewService)
         {
-            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity);
-            foreach (var item in SpawnedObject.GetComponentsInChildren<IGameManager>())
+            if (Managers != null)
             {
-                Managers.Add(item);
-                item.InitiateManager(false);
-            }
-            SpawnedObject.transform.SetParent(this.transform);
-            return SpawnedObject;
-        }
-        private void OnServiceCreated(Service NewServ)
-        {
-            foreach (var item in Managers)
-            {
-                item.InitiateService(NewServ);
+                foreach (var manager in Managers)
+                {
+                    manager.InitiateService(NewService);
+                }
             }
         }
-
-
+        // Abstract Methods
+        protected abstract void AwakeWorld();
     }
 }
