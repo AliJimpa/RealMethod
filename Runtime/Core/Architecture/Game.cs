@@ -265,6 +265,7 @@ namespace RealMethod
                 {
                     Setting = ScriptableObject.CreateInstance<DefaultGameSetting>();
                 }
+                Setting.GameStarted(AlternativeInstance);
                 // Initiate GamePrefab & Managers
                 List<IGameManager> CashManagers = new List<IGameManager>(5);
                 foreach (var obj in ProjectSettings.GetGamePrefabs())
