@@ -38,8 +38,11 @@ namespace RealMethod
         }
 
 
+        [Header("Initializer")]
         [SerializeField]
         private string GameClass = "RealMethod.DefultGame";
+        [SerializeField]
+        private string GameService = "RealMethod.DefaultGameService";
         [SerializeField]
         private GameSettingAsset GameSetting;
         [SerializeField]
@@ -48,6 +51,7 @@ namespace RealMethod
         private GameObject GamePrefab_2;
         [SerializeField]
         private GameObject GamePrefab_3;
+        [Header("FolderStructure")]
         public FolderAddress[] ProjectStructure = new FolderAddress[18]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},
@@ -89,6 +93,23 @@ namespace RealMethod
             }
 
         }
+        public Type GetGameServiceClass()
+        {
+            return Type.GetType(GameService);
+        }
+        public void SetGameServiceClass(Type type)
+        {
+            // Store fully qualified name of the type
+            if (type != null)
+            {
+                GameService = type.AssemblyQualifiedName;
+            }
+            else
+            {
+                Debug.LogError("Type is null. Cannot set GameInstanceClass.");
+            }
+
+        }
         public GameSettingAsset GetGameSetting()
         {
             return GameSetting;
@@ -101,6 +122,7 @@ namespace RealMethod
                                 GamePrefab_3,
                             };
         }
+
     }
 
 

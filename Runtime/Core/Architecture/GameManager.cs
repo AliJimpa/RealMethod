@@ -11,8 +11,8 @@ namespace RealMethod
 
     public abstract class Service
     {
-        public abstract void Created(object Author);
-        public abstract void Removed(object Author);
+        public abstract void Start(object Author);
+        public abstract void End(object Author);
     }
 
 }

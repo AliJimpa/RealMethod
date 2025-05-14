@@ -8,47 +8,68 @@ namespace RealMethod
 {
     public class InitializerSection : ProjectSettingSection
     {
-        private SerializedObject settings;
-        private List<Type> componentTypes;
-        private string[] typeNames;
-        private int SelctedIndex = 0;
-        private int NewIndex;
+        private class ClassType<T>
+        {
+            private List<Type> TypeList;
+            private string[] TypeName;
+            private int selctedIndex = 0;
+            private int newIndex;
+
+            public ClassType()
+            {
+                // Get all available T types **only once**
+                TypeList = AppDomain.CurrentDomain.GetAssemblies()
+               .SelectMany(assembly => assembly.GetTypes())
+               .Where(type => typeof(T).IsAssignableFrom(type) && !type.IsAbstract)
+               .ToList();
+
+                TypeName = TypeList.Select(t => t.FullName).ToArray();
+            }
+
+            public void Draw(SerializedObject projectSettings, string PropertyName, string DisplayName)
+            {
+                selctedIndex = System.Array.IndexOf(TypeName, projectSettings.FindProperty(PropertyName).stringValue);
+                newIndex = EditorGUILayout.Popup(DisplayName, selctedIndex, TypeName);
+                if (newIndex >= 0 && newIndex < TypeName.Length)
+                {
+                    projectSettings.FindProperty(PropertyName).stringValue = TypeName[newIndex];
+                }
+            }
+        }
+        
+        
+        private ClassType<Game> gameClass;
+        private ClassType<GameService> gameService;
+        private SerializedObject projectSettings;
 
         protected override void Initialized()
         {
-            // Get all available MonoBehaviour types **only once**
-            componentTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => typeof(Game).IsAssignableFrom(type) && !type.IsAbstract)
-                .ToList();
-
-            typeNames = componentTypes.Select(t => t.FullName).ToArray();
+            gameClass = new ClassType<Game>();
+            gameService = new ClassType<GameService>();
         }
         protected override void FirstSelected(ProjectSettingAsset Storage)
         {
-            settings = new SerializedObject(Storage);
+            projectSettings = new SerializedObject(Storage);
         }
         protected override void Draw()
         {
-            if (settings == null) return;
+            if (projectSettings == null) return;
 
             // GameInstanceClass
-            SelctedIndex = System.Array.IndexOf(typeNames, settings.FindProperty("GameClass").stringValue);
-            NewIndex = EditorGUILayout.Popup("GameInstanceClass", SelctedIndex, typeNames);
-            if (NewIndex >= 0 && NewIndex < typeNames.Length)
-            {
-                settings.FindProperty("GameClass").stringValue = typeNames[NewIndex];
-            }
+            gameClass.Draw(projectSettings,"GameClass" , "Game Class");
+
+            // GameServiceClass
+            gameService.Draw(projectSettings,"GameService" , "Game Service");
 
             // GameSettingAsset
-            EditorGUILayout.PropertyField(settings.FindProperty("GameSetting"), new GUIContent("GameSettingAsset"));
+            EditorGUILayout.PropertyField(projectSettings.FindProperty("GameSetting"), new GUIContent("Game Setting"));
 
             //GameInitialPrefabs
-            EditorGUILayout.PropertyField(settings.FindProperty("GamePrefab_1"), new GUIContent("GameInitialPrefab 1"));
-            EditorGUILayout.PropertyField(settings.FindProperty("GamePrefab_2"), new GUIContent("GameInitialPrefab 2"));
-            EditorGUILayout.PropertyField(settings.FindProperty("GamePrefab_3"), new GUIContent("GameInitialPrefab 3"));
+            EditorGUILayout.PropertyField(projectSettings.FindProperty("GamePrefab_1"), new GUIContent("Game Prefab (1)"));
+            EditorGUILayout.PropertyField(projectSettings.FindProperty("GamePrefab_2"), new GUIContent("Game Prefab (2)"));
+            EditorGUILayout.PropertyField(projectSettings.FindProperty("GamePrefab_3"), new GUIContent("Game Prefab (3)"));
 
-            settings.ApplyModifiedProperties();
+            projectSettings.ApplyModifiedProperties();
         }
         protected override string GetTitle()
         {

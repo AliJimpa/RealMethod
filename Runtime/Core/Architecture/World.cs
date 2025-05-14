@@ -76,7 +76,6 @@ namespace RealMethod
             Game.Service.OnAdditiveWorld -= AdditiveWorld;
             Game.Service.OnServiceCreate -= NewServiceCreated;
         }
-
         // Public Metthods
         public T GetManager<T>() where T : class
         {

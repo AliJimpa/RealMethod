@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -130,7 +129,7 @@ namespace RealMethod
                 {
                     manager.InitiateService(newService);
                 }
-                newService.Created(Author);
+                newService.Start(Author);
                 return newService;
             }
             else
@@ -144,7 +143,7 @@ namespace RealMethod
             if (!Instance.GameServices.TryGetValue(Name, out var Result))
                 return false;
 
-            Result.Removed(Author);
+            Result.End(Author);
             Instance.GameServices.Remove(Name);
             return true;
         }
@@ -253,9 +252,33 @@ namespace RealMethod
                     }
                 }
                 // Create Game Service
-                Service = new GameService();
+                Type targetService = ProjectSettings.GetGameServiceClass();
+                if (targetService != null)
+                {
+                    if (typeof(Service).IsAssignableFrom(targetService))
+                    {
+                        try
+                        {
+                            Service = (GameService)Activator.CreateInstance(targetService);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"Failed to instantiate {targetService}: {ex.Message}");
+                            Service = new DefaultGameService();
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError($"Type {targetService} is not assignable to Service.");
+                        Service = new DefaultGameService();
+                    }
+                }
+                else
+                {
+                    Service = new DefaultGameService();
+                }
                 Service.OnWorldUpdate += AlternativeInstance.ReplaceWorld;
-                Service.Created(AlternativeInstance);
+                Service.Start(AlternativeInstance);
                 // Set Game Setting Asset 
                 if (ProjectSettings.GetGameSetting() != null)
                 {
@@ -301,147 +324,4 @@ namespace RealMethod
         protected abstract void WorldSynced(World NewWorld);
 
     }
-
-    public class GameService : Service
-    {
-        // Game Structure
-        public Action<World> OnWorldUpdate;
-        public Action<World> OnAdditiveWorld;
-        public Action<Service> OnServiceCreate;
-        // Load Scene 
-        public Action<bool> OnSceneLoading;
-        public Action<float> OnSceneLoadingProcess;
-        public bool IsLoading { get; private set; }
-        public float FadeTime = 0;
-
-
-        // override Method
-        public override void Created(object Author)
-        {
-        }
-        public override void Removed(object Author)
-        {
-        }
-
-        // Any World in Awake time acall this method
-        public bool IntroduceWorld(World NewWorld)
-        {
-            if (Game.World == null)
-            {
-                OnWorldUpdate?.Invoke(NewWorld);
-                return true;
-            }
-            else
-            {
-                OnAdditiveWorld?.Invoke(NewWorld);
-                return false;
-            }
-        }
-
-
-        // Corotine
-        public IEnumerator LoadSceneAsync(SceneReference scene)
-        {
-            if (IsLoading == true)
-            {
-                Debug.LogWarning($"Can't load {scene} The Service is in Loadin");
-                yield break;
-            }
-
-            //StartLoading
-            IsLoading = true;
-            OnSceneLoading?.Invoke(true);
-
-            //Fading Screen
-            if (FadeTime != 0)
-            {
-                yield return new WaitForSeconds(FadeTime);
-            }
-
-            //Loading Scene
-            AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
-            if (Load_opertation == null)
-            {
-                Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                yield break;
-            }
-            while (!Load_opertation.isDone)
-            {
-                OnSceneLoadingProcess?.Invoke(Load_opertation.progress);
-                yield return null;
-            }
-            OnSceneLoadingProcess?.Invoke(1);
-
-            //Fading Screen
-            if (FadeTime != 0)
-            {
-                yield return new WaitForSeconds(FadeTime);
-            }
-
-            //FinishLoading
-            IsLoading = false;
-            OnSceneLoading?.Invoke(false);
-        }
-        public IEnumerator LoadWorldAsync(WorldSceneAsset WS)
-        {
-            if (IsLoading == true)
-            {
-                Debug.LogWarning($"Can't load {WS} The Service is in Loadin");
-                yield break;
-            }
-
-            //StartLoading
-            IsLoading = true;
-            OnSceneLoading?.Invoke(true);
-
-            //Fading Screen
-            if (FadeTime != 0)
-            {
-                yield return new WaitForSeconds(FadeTime);
-            }
-
-
-            //load Persistance Levels
-            AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(WS.GetPersistent(), LoadSceneMode.Single);
-            if (Load_opertation == null)
-            {
-                Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                yield break;
-            }
-            while (!Load_opertation.isDone)
-            {
-                OnSceneLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1)));
-                yield return null;
-            }
-
-            // Load Additive Levels
-            for (int i = 0; i < WS.GetAdditiveCount(); i++)
-            {
-                AsyncOperation Additive_Load_opertation = SceneManager.LoadSceneAsync(WS.GetAdditive(i), LoadSceneMode.Additive);
-                if (Additive_Load_opertation == null)
-                {
-                    Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                    yield break;
-                }
-                while (!Additive_Load_opertation.isDone)
-                {
-                    OnSceneLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1 - (i + 1))));
-                    yield return null;
-                }
-
-            }
-
-            //Fading Screen
-            if (FadeTime != 0)
-            {
-                yield return new WaitForSeconds(FadeTime);
-            }
-
-            //FinishLoading
-            IsLoading = false;
-            OnSceneLoading?.Invoke(false);
-        }
-
-    }
-
 }
