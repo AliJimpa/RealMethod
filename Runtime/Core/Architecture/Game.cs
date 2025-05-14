@@ -19,66 +19,21 @@ namespace RealMethod
                 if (AlternativeInstance == null)
                 {
                     // Find Game In Scene
-                    Game components = FindFirstObjectByType<Game>();
-                    if (components)
+                    Game[] components = FindObjectsByType<Game>(FindObjectsSortMode.InstanceID);
+                    if (components.Length == 1)
                     {
-                        AlternativeInstance = components;
-                        AlternativeInstance.InitializeClass();
+                        AlternativeInstance = components[0];
+                        InitializeGame(false);
                     }
                     else
                     {
-                        var emptyObject = new GameObject("GameManager");
-                        ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
-                        if (ProjectSettings != null)
+                        if (components.Length == 0)
                         {
-                            Type TargetClass = ProjectSettings.GetGameInstanceClass();
-                            // Initiate Game Class in Game
-                            if (TargetClass != null)
-                            {
-                                AlternativeInstance = (Game)emptyObject.AddComponent(TargetClass);
-                                if (AlternativeInstance == null)
-                                {
-                                    Debug.LogError($"Component of type {TargetClass} is not assignable from Game.");
-                                    AlternativeInstance = emptyObject.AddComponent<DefultGame>();
-                                }
-                            }
-                            else
-                            {
-                                AlternativeInstance = emptyObject.AddComponent<DefultGame>();
-                            }
-                            // Set Game Setting Asset 
-                            if (ProjectSettings.GetGameSetting() != null)
-                            {
-                                Setting = ProjectSettings.GetGameSetting();
-                            }
-                            else
-                            {
-                                Setting = ScriptableObject.CreateInstance<DefaultGameSetting>();
-                            }
-                            // Initiate GamePrefab & Managers
-                            List<IGameManager> CashManagers = new List<IGameManager>(5);
-                            foreach (var obj in ProjectSettings.GetGamePrefabs())
-                            {
-                                if (obj != null)
-                                {
-                                    GameObject newobj = Instantiate(obj);
-                                    foreach (var manager in newobj.GetComponents<IGameManager>())
-                                    {
-                                        manager.InitiateManager(true);
-                                        CashManagers.Add(manager);
-                                    }
-                                    DontDestroyOnLoad(newobj);
-                                }
-                            }
-                            AlternativeInstance.Managers = new IGameManager[CashManagers.Count];
-                            AlternativeInstance.Managers = CashManagers.ToArray();
-                            // Unload Project Setting
-                            Resources.UnloadAsset(ProjectSettings);
-                            AlternativeInstance.InitializeClass();
+                            InitializeGame();
                         }
                         else
                         {
-                            Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
+                            Debug.LogError("The 'Game' Class Component should be active in scene & just One");
                         }
                     }
                 }
@@ -135,23 +90,12 @@ namespace RealMethod
             }
         }
         // Private Methods
-        private void InitializeClass()
-        {
-            // Move Self GameObject to DontDestroy
-            DontDestroyOnLoad(gameObject);
-            // Create Game Service
-            Service = new GameService();
-            Service.OnWorldUpdate += ReplaceWorld;
-            Service.Created(this);
-            // Call Initialize abstract Method
-            Initialize();
-        }
         private void ReplaceWorld(World NewWorld)
         {
             World = NewWorld;
             WorldSynced(World);
         }
-        // Static Methods
+        // Public Static Methods
         public static T CastInstance<T>() where T : class
         {
             if (Instance is T CastedInstance)
@@ -279,6 +223,76 @@ namespace RealMethod
             else
             {
                 return AlternativeInstance;
+            }
+        }
+        // Private Static Methods
+        private static void InitializeGame(bool CreateInstance = true)
+        {
+            // Load Project Setting
+            ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
+
+            if (ProjectSettings != null)
+            {
+                // Initiate Game Class in Game
+                if (CreateInstance)
+                {
+                    var emptyObject = new GameObject("GameManager");
+                    Type TargetClass = ProjectSettings.GetGameInstanceClass();
+                    if (TargetClass != null)
+                    {
+                        AlternativeInstance = (Game)emptyObject.AddComponent(TargetClass);
+                        if (AlternativeInstance == null)
+                        {
+                            Debug.LogError($"Component of type {TargetClass} is not assignable from Game.");
+                            AlternativeInstance = emptyObject.AddComponent<DefultGame>();
+                        }
+                    }
+                    else
+                    {
+                        AlternativeInstance = emptyObject.AddComponent<DefultGame>();
+                    }
+                }
+                // Create Game Service
+                Service = new GameService();
+                Service.OnWorldUpdate += AlternativeInstance.ReplaceWorld;
+                Service.Created(AlternativeInstance);
+                // Set Game Setting Asset 
+                if (ProjectSettings.GetGameSetting() != null)
+                {
+                    Setting = ProjectSettings.GetGameSetting();
+                }
+                else
+                {
+                    Setting = ScriptableObject.CreateInstance<DefaultGameSetting>();
+                }
+                // Initiate GamePrefab & Managers
+                List<IGameManager> CashManagers = new List<IGameManager>(5);
+                foreach (var obj in ProjectSettings.GetGamePrefabs())
+                {
+                    if (obj != null)
+                    {
+                        GameObject newobj = Instantiate(obj);
+                        foreach (var manager in newobj.GetComponents<IGameManager>())
+                        {
+                            manager.InitiateManager(true);
+                            CashManagers.Add(manager);
+                        }
+                        DontDestroyOnLoad(newobj);
+                    }
+                }
+                AlternativeInstance.Managers = new IGameManager[CashManagers.Count];
+                AlternativeInstance.Managers = CashManagers.ToArray();
+                // Unload Project Setting
+                Resources.UnloadAsset(ProjectSettings);
+
+                // Move Self GameObject to DontDestroy
+                DontDestroyOnLoad(AlternativeInstance.gameObject);
+                // Call Initialize abstract Method
+                AlternativeInstance.Initialize();
+            }
+            else
+            {
+                Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
             }
         }
         // Abstract Methods
