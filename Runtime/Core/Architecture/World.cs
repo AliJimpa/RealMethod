@@ -200,7 +200,14 @@ namespace RealMethod
         }
         protected virtual bool CheckExteraObject(GameObject GObj)
         {
-            return true;
+            if (GObj != null)
+            {
+                return true;
+            }else{
+                Debug.LogWarning($"Ther ExterObject isn't valid");
+                return false;
+            }
+
         }
         // Private Methods
         private void NewServiceCreated(Service NewService)
