@@ -112,7 +112,6 @@ namespace RealMethod
         //Private Variables
         private bool IsInLoading = false;
         private GameSettingAsset gameData;
-
         private List<Service> Services = new List<Service>();
 
 
@@ -262,34 +261,34 @@ namespace RealMethod
                 return false;
             }
         }
-        public static void OpenScene(SceneReference TargetScene)
-        {
-            if (Instance.IsInLoading)
-                return;
+        // public static void OpenScene(SceneReference TargetScene)
+        // {
+        //     if (Instance.IsInLoading)
+        //         return;
 
-            if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(TargetScene.ScenePath).buildIndex)
-            {
-                Instance.StartCoroutine(Instance.LoadSceneAsync(TargetScene));
-            }
-            else
-            {
-                Debug.LogWarning("The scene is already loaded.");
-            }
-        }
-        public static void OpenWorld(WorldSceneAsset WorldScene)
-        {
-            if (Instance.IsInLoading)
-                return;
+        //     if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(TargetScene.ScenePath).buildIndex)
+        //     {
+        //         Instance.StartCoroutine(Instance.LoadSceneAsync(TargetScene));
+        //     }
+        //     else
+        //     {
+        //         Debug.LogWarning("The scene is already loaded.");
+        //     }
+        // }
+        // public static void OpenWorld(WorldSceneAsset WorldScene)
+        // {
+        //     if (Instance.IsInLoading)
+        //         return;
 
-            if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.GetPersistent().ScenePath).buildIndex)
-            {
-                Instance.StartCoroutine(Instance.LoadWorldAsync(WorldScene));
-            }
-            else
-            {
-                Debug.LogWarning("The scene is already loaded.");
-            }
-        }
+        //     if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.GetPersistent().ScenePath).buildIndex)
+        //     {
+        //         Instance.StartCoroutine(Instance.LoadWorldAsync(WorldScene));
+        //     }
+        //     else
+        //     {
+        //         Debug.LogWarning("The scene is already loaded.");
+        //     }
+        // }
         public static void Log(string Message)
         {
             Instance.PrintDebug(Message, LogType.Log);
@@ -328,120 +327,120 @@ namespace RealMethod
             }
         }
         //Private Function
-        private IEnumerator LoadSceneAsync(SceneReference scene)
-        {
-            //Cheack GameData
-            if (gameData == null)
-            {
-                Debug.LogError("GameData is not Valid");
-                yield break;
-            }
+        // private IEnumerator LoadSceneAsync(SceneReference scene)
+        // {
+        //     //Cheack GameData
+        //     if (gameData == null)
+        //     {
+        //         Debug.LogError("GameData is not Valid");
+        //         yield break;
+        //     }
 
-            //StartLoading
-            IsInLoading = true;
-            gameData.OnSceneLoading?.Invoke(true);
+        //     //StartLoading
+        //     IsInLoading = true;
+        //     gameData.OnSceneLoading?.Invoke(true);
 
-            //Fading Screen
-            if (gameData.FadingTime != 0)
-            {
-                gameData.OnScreenFade?.Invoke(true);
-                yield return new WaitForSeconds(gameData.FadingTime);
-            }
+        //     //Fading Screen
+        //     if (gameData.FadingTime != 0)
+        //     {
+        //         gameData.OnScreenFade?.Invoke(true);
+        //         yield return new WaitForSeconds(gameData.FadingTime);
+        //     }
 
-            //Loading Scene
-            gameData.OnScreenLoading?.Invoke(true);
-            AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
-            if (Load_opertation == null)
-            {
-                Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                yield break;
-            }
-            while (!Load_opertation.isDone)
-            {
-                gameData.OnLoadingProcess?.Invoke(Load_opertation.progress);
-                yield return null;
-            }
-            gameData.OnLoadingProcess?.Invoke(1);
-            yield return new WaitForSeconds(0.5f);
-            gameData.OnScreenLoading?.Invoke(false);
+        //     //Loading Scene
+        //     gameData.OnScreenLoading?.Invoke(true);
+        //     AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+        //     if (Load_opertation == null)
+        //     {
+        //         Debug.LogError("Failed to load scene. AsyncOperation is null.");
+        //         yield break;
+        //     }
+        //     while (!Load_opertation.isDone)
+        //     {
+        //         gameData.OnLoadingProcess?.Invoke(Load_opertation.progress);
+        //         yield return null;
+        //     }
+        //     gameData.OnLoadingProcess?.Invoke(1);
+        //     yield return new WaitForSeconds(0.5f);
+        //     gameData.OnScreenLoading?.Invoke(false);
 
-            //Fading Screen
-            if (gameData.FadingTime != 0)
-            {
-                gameData.OnScreenFade?.Invoke(false);
-                yield return new WaitForSeconds(gameData.FadingTime);
-            }
+        //     //Fading Screen
+        //     if (gameData.FadingTime != 0)
+        //     {
+        //         gameData.OnScreenFade?.Invoke(false);
+        //         yield return new WaitForSeconds(gameData.FadingTime);
+        //     }
 
-            //FinishLoading
-            gameData.OnSceneLoading?.Invoke(false);
-            IsInLoading = false;
-        }
-        private IEnumerator LoadWorldAsync(WorldSceneAsset WS)
-        {
-            //Cheack GameData
-            if (gameData == null)
-            {
-                Debug.LogError("GameData is not Valid");
-                yield break;
-            }
+        //     //FinishLoading
+        //     gameData.OnSceneLoading?.Invoke(false);
+        //     IsInLoading = false;
+        // }
+        // private IEnumerator LoadWorldAsync(WorldSceneAsset WS)
+        // {
+        //     //Cheack GameData
+        //     if (gameData == null)
+        //     {
+        //         Debug.LogError("GameData is not Valid");
+        //         yield break;
+        //     }
 
-            //StartLoading
-            IsInLoading = true;
-            gameData.OnSceneLoading?.Invoke(true);
+        //     //StartLoading
+        //     IsInLoading = true;
+        //     gameData.OnSceneLoading?.Invoke(true);
 
-            //Fading Screen
-            if (gameData.FadingTime != 0)
-            {
-                gameData.OnScreenFade?.Invoke(true);
-                yield return new WaitForSeconds(gameData.FadingTime);
-            }
+        //     //Fading Screen
+        //     if (gameData.FadingTime != 0)
+        //     {
+        //         gameData.OnScreenFade?.Invoke(true);
+        //         yield return new WaitForSeconds(gameData.FadingTime);
+        //     }
 
-            //Loading Scene
-            gameData.OnScreenLoading?.Invoke(true);
+        //     //Loading Scene
+        //     gameData.OnScreenLoading?.Invoke(true);
 
-            //load Persistance Levels
-            AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(WS.GetPersistent(), LoadSceneMode.Single);
-            if (Load_opertation == null)
-            {
-                Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                yield break;
-            }
-            while (!Load_opertation.isDone)
-            {
-                gameData.OnLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1)));
-                yield return null;
-            }
+        //     //load Persistance Levels
+        //     AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(WS.GetPersistent(), LoadSceneMode.Single);
+        //     if (Load_opertation == null)
+        //     {
+        //         Debug.LogError("Failed to load scene. AsyncOperation is null.");
+        //         yield break;
+        //     }
+        //     while (!Load_opertation.isDone)
+        //     {
+        //         gameData.OnLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1)));
+        //         yield return null;
+        //     }
 
-            // Load Additive Levels
-            for (int i = 0; i < WS.GetAdditiveCount(); i++)
-            {
-                AsyncOperation Additive_Load_opertation = SceneManager.LoadSceneAsync(WS.GetAdditive(i), LoadSceneMode.Additive);
-                if (Additive_Load_opertation == null)
-                {
-                    Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                    yield break;
-                }
-                while (!Additive_Load_opertation.isDone)
-                {
-                    gameData.OnLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1 - (i + 1))));
-                    yield return null;
-                }
+        //     // Load Additive Levels
+        //     for (int i = 0; i < WS.GetAdditiveCount(); i++)
+        //     {
+        //         AsyncOperation Additive_Load_opertation = SceneManager.LoadSceneAsync(WS.GetAdditive(i), LoadSceneMode.Additive);
+        //         if (Additive_Load_opertation == null)
+        //         {
+        //             Debug.LogError("Failed to load scene. AsyncOperation is null.");
+        //             yield break;
+        //         }
+        //         while (!Additive_Load_opertation.isDone)
+        //         {
+        //             gameData.OnLoadingProcess?.Invoke(Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.GetAdditiveCount() + 1 - (i + 1))));
+        //             yield return null;
+        //         }
 
-            }
-            yield return new WaitForSeconds(0.5f);
-            gameData.OnScreenLoading?.Invoke(false);
+        //     }
+        //     yield return new WaitForSeconds(0.5f);
+        //     gameData.OnScreenLoading?.Invoke(false);
 
-            //Fading Screen
-            if (gameData.FadingTime != 0)
-            {
-                gameData.OnScreenFade?.Invoke(false);
-                yield return new WaitForSeconds(gameData.FadingTime);
-            }
+        //     //Fading Screen
+        //     if (gameData.FadingTime != 0)
+        //     {
+        //         gameData.OnScreenFade?.Invoke(false);
+        //         yield return new WaitForSeconds(gameData.FadingTime);
+        //     }
 
-            //FinishLoading
-            gameData.OnSceneLoading?.Invoke(false);
-            IsInLoading = false;
-        }
+        //     //FinishLoading
+        //     gameData.OnSceneLoading?.Invoke(false);
+        //     IsInLoading = false;
+        // }
 
 
     }
