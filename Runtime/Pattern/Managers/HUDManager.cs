@@ -2,25 +2,37 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.UIElements;
 
 
 namespace RealMethod
 {
     public abstract class HUDManager : MonoBehaviour, IGameManager
     {
-        private Dictionary<string, GameObject> Layers = new Dictionary<string, GameObject>();
+        public enum UIMethod
+        {
+            IMGUI,
+            uGUI,
+            UI_Toolkit
+        }
+
+        [Header("HUD")]
+        [SerializeField]
+        private UIMethod Method = UIMethod.uGUI;
+        [SerializeField, ShowInInspectorByEnum("Method", 2)]
+        private PanelSettings UISetting;
+
+        // Private Variable
+        private Dictionary<string, GameObject> Layers = new Dictionary<string, GameObject>(5);
 
 
         public MonoBehaviour GetManagerClass()
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(bool alwaysLoaded)
         {
-            if (GetComponent<Canvas>() == null)
-                Debug.LogError("The HUD Should be placed in a canvas");
-
-            foreach (Transform child in this.transform)
+            foreach (Transform child in transform)
             {
                 Layers.Add(child.gameObject.name, child.gameObject);
                 IWidget LayerWidget = child.GetComponent<IWidget>();
@@ -30,18 +42,49 @@ namespace RealMethod
                 }
             }
         }
-        public void InitiateService(Service service)
+        public void InitiateService(Service newService)
         {
-            throw new System.NotImplementedException();
+
+        }
+
+        private void OnValidate()
+        {
+            switch (Method)
+            {
+                case UIMethod.IMGUI:
+                    gameObject.layer = 5;
+                    break;
+                case UIMethod.uGUI:
+                    if (GetComponent<Canvas>() == null)
+                    {
+                        Debug.LogError("The HUD Should be placed in a canvas");
+                        return;
+                    }
+                    break;
+                case UIMethod.UI_Toolkit:
+                    gameObject.layer = 5;
+                    break;
+            }
         }
 
 
-
         //Core Methods
-        public GameObject AddLayer(GameObject Prefab, string Name)
+        public GameObject AddLayer(MonoBehaviour Owner, GameObject Prefab, string Name)
         {
             GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
             Layers.Add(Name, SpawnedObject);
+            IWidget widget = SpawnedObject.GetComponent<IWidget>();
+            if (widget != null)
+            {
+                if (Owner)
+                {
+                    widget.InitiateWidget(Owner);
+                }
+                else
+                {
+                    widget.InitiateWidget(this);
+                }
+            }
             return SpawnedObject;
         }
         public IWidget AddWidget(MonoBehaviour Owner, GameObject Prefab, string Name)
@@ -50,16 +93,16 @@ namespace RealMethod
             {
                 GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
                 Layers.Add(Name, SpawnedObject);
-                IWidget Target = SpawnedObject.GetComponent<IWidget>();
+                IWidget widget = SpawnedObject.GetComponent<IWidget>();
                 if (Owner)
                 {
-                    Target.InitiateWidget(Owner);
+                    widget.InitiateWidget(Owner);
                 }
                 else
                 {
-                    Target.InitiateWidget(this);
+                    widget.InitiateWidget(this);
                 }
-                return Target;
+                return widget;
             }
             else
             {
@@ -79,7 +122,6 @@ namespace RealMethod
             {
                 return false;
             }
-
         }
         public GameObject FindLayer(string Name)
         {
@@ -99,29 +141,36 @@ namespace RealMethod
                 return false;
             }
         }
-        public T FindWidget<T>() where T : class
+        public T FindLayerByClass<T>() where T : class
         {
             T Reslut = null;
+            IWidget TargetWidget;
             foreach (var Lay in Layers)
             {
-                IWidget TargetWidget = Lay.Value.GetComponent<IWidget>();
+                TargetWidget = Lay.Value.GetComponent<IWidget>();
                 if (TargetWidget == null)
+                {
                     continue;
+                }
 
                 if (TargetWidget.GetWidgetClass() is T WidgetClass)
                 {
                     Reslut = WidgetClass;
                     break;
                 }
+                else
+                {
+                    TargetWidget = null;
+                }
             }
             return Reslut;
         }
-        public bool ActiveLayer(string Name, bool Enable)
+        public bool ActiveLayer(string Name)
         {
             GameObject TargetLayer = Layers[Name];
             if (TargetLayer)
             {
-                TargetLayer.SetActive(Enable);
+                TargetLayer.SetActive(true);
                 return true;
             }
             else
@@ -129,57 +178,86 @@ namespace RealMethod
                 return false;
             }
         }
-        public GameObject CreateLayer(string Name)
-        {
-            GameObject Result = new GameObject(Name);
-            Result.AddComponent<Canvas>();
-            Result.AddComponent<CanvasScaler>();
-            Result.AddComponent<GraphicRaycaster>();
-            Result.transform.SetParent(transform);
-            Layers.Add(Name, Result);
-            return Result;
-        }
-        public bool FadeInLayer(string Name, float Duration, bool Force)
+        public bool DeactivateLayer(string Name)
         {
             GameObject TargetLayer = Layers[Name];
             if (TargetLayer)
             {
-                CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
-                if (!CG && Force)
-                {
-                    CG = TargetLayer.AddComponent<CanvasGroup>();
-                }
-
-                if (CG)
-                {
-                    StartCoroutine(FadeIn(CG, Duration));
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                TargetLayer.SetActive(false);
+                return true;
             }
             else
             {
                 return false;
             }
         }
-        public bool FadeOutLayer(string Name, float Duration, bool Force)
+        public GameObject CreateEmptyLayer(string Name)
         {
-            GameObject TargetLayer = Layers[Name];
-            if (TargetLayer)
+            GameObject Result = new GameObject(Name);
+            switch (Method)
             {
-                CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
-                if (!CG && Force)
+                case UIMethod.IMGUI:
+                    break;
+                case UIMethod.uGUI:
+                    Result.AddComponent<Canvas>();
+                    Result.AddComponent<CanvasScaler>();
+                    Result.AddComponent<GraphicRaycaster>();
+                    break;
+                case UIMethod.UI_Toolkit:
+                    Result.AddComponent<UIDocument>();
+                    break;
+            }
+            Result.transform.SetParent(transform);
+            Layers.Add(Name, Result);
+            return Result;
+        }
+        public UIDocument CreateLayer(string Name, VisualTreeAsset UIAsset)
+        {
+            if (Method == UIMethod.UI_Toolkit)
+            {
+                GameObject EmptyObject = new GameObject(Name);
+                EmptyObject.transform.SetParent(transform);
+                UIDocument Result = EmptyObject.AddComponent<UIDocument>();
+                Result.visualTreeAsset = UIAsset;
+                if (UISetting != null)
                 {
-                    CG = TargetLayer.AddComponent<CanvasGroup>();
+                    Result.panelSettings = UISetting;
                 }
-
-                if (CG)
+                else
                 {
-                    StartCoroutine(FadeOut(CG, Duration));
-                    return true;
+                    Debug.LogWarning("UISetting is not Valid");
+                }
+                Layers.Add(Name, EmptyObject);
+                return Result;
+            }
+            else
+            {
+                Debug.LogError("Just use for 'UI_Toolkit' Method");
+                return null;
+            }
+        }
+        public bool FadeIn(string Name, float Duration, bool Force)
+        {
+            if (Method == UIMethod.uGUI)
+            {
+                GameObject TargetLayer = Layers[Name];
+                if (TargetLayer)
+                {
+                    CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
+                    if (!CG && Force)
+                    {
+                        CG = TargetLayer.AddComponent<CanvasGroup>();
+                    }
+
+                    if (CG)
+                    {
+                        StartCoroutine(FadeIn(CG, Duration));
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
@@ -188,17 +266,58 @@ namespace RealMethod
             }
             else
             {
+                Debug.LogError("Just use for 'uGUI' Method");
+                return false;
+            }
+        }
+        public bool FadeOut(string Name, float Duration, bool Force)
+        {
+            if (Method == UIMethod.uGUI)
+            {
+                GameObject TargetLayer = Layers[Name];
+                if (TargetLayer)
+                {
+                    CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
+                    if (!CG && Force)
+                    {
+                        CG = TargetLayer.AddComponent<CanvasGroup>();
+                    }
+
+                    if (CG)
+                    {
+                        StartCoroutine(FadeOut(CG, Duration));
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                Debug.LogError("Just use for 'uGUI' Method");
                 return false;
             }
         }
         public void SwitchLayer(string LayerA, string LayerB, float Duration)
         {
-            FadeInLayer(LayerA, Duration, true);
-            FadeOutLayer(LayerB, Duration, true);
+            if (Method == UIMethod.uGUI)
+            {
+                FadeIn(LayerA, Duration, true);
+                FadeIn(LayerB, Duration, true);
+            }
+            else
+            {
+                Debug.LogError("Just use for 'uGUI' Method");
+            }
         }
 
-
-        //Enumerator
+        //Enumerators
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration)
         {
             float elapsedTime = 0f;
