@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace RealMethod
 {
     public class DefaultGameService : GameService
