@@ -8,7 +8,7 @@ using System;
 
 namespace RealMethod
 {
-    public abstract class HUDManager : MonoBehaviour, IGameManager
+    public abstract class UIManager : MonoBehaviour, IGameManager
     {
         public enum UIMethod
         {
@@ -17,7 +17,7 @@ namespace RealMethod
             UI_Toolkit
         }
 
-        [Header("Setting")]
+        [Header("UI")]
         [SerializeField]
         private UIMethod Method = UIMethod.uGUI;
         [SerializeField, ShowInInspectorByEnum("Method", 2)]
