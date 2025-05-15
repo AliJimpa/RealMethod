@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Codice.CM.Client.Gui;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 namespace RealMethod
@@ -8,81 +10,70 @@ namespace RealMethod
     public class TableViewerWindow : EditorWindow
     {
         private TableAsset CurrentTable;
-        private TableAsset CashTable;
-        private SheetViewer Chart;
-        private List<string[]> TableData;
-        private float GridSize;
+        private SheetViewer MySheet;
+        private List<string[]> TableList;
+        private Vector2 SheetSize;
 
 
         private static TableViewerWindow window;
 
-        void OnEnable()
+        private void OnEnable()
         {
-            Chart = new SheetViewer(out TableData);
-            GridSize = Chart.GetGridSize().x;
-
+            MySheet = new SheetViewer(out TableList);
+            SheetSize = MySheet.GetGridSize();
+            minSize = new Vector2(500, 300);
         }
-
-        [MenuItem("Tools/RealMethod/Table Viewer")]
-        public static void ShowWindow()
-        {
-            window = GetWindow<TableViewerWindow>("Table Viewer");
-            window.minSize = new Vector2(500, 300);
-            window.Show();
-        }
-
         private void OnGUI()
         {
-            EditorGUILayout.BeginHorizontal();
-            CashTable = (TableAsset)EditorGUILayout.ObjectField("Table", CurrentTable, typeof(TableAsset), false);
-            if (GUILayout.Button("Refresh"))
+            GUILayout.Space(2);
+            if (GUILayout.Button("Refresh", GUILayout.Width(55)))
             {
-                UpdateTable();
+                CurrentTable.FillList(ref window.TableList, true);
+                MySheet.RefreshColumnDetails(true);
             }
-            EditorGUILayout.EndHorizontal();
-
-            if (CashTable != CurrentTable)
-            {
-                CurrentTable = CashTable;
-                UpdateTable();
-            }
+            GUILayout.Space(10);
 
             //Rendering
-            Chart.Render();
-
-            EditorGUILayout.Space(25);
-
-            foreach (var item in TableData)
-            {
-                Debug.Log("---> " + item.Length);
-            }
+            MySheet.Render();
 
             //Size
-            float cashgridsize = GridSize;
-            GridSize = EditorGUILayout.Slider("Size(x):", GridSize, 0f, 500f);
-            if (GridSize != cashgridsize)
+            float cashgridsize = SheetSize.x;
+            SheetSize.x = EditorGUILayout.Slider("Size(x):", SheetSize.x, 0f, 500f);
+            if (SheetSize.x != cashgridsize)
             {
-                Chart.SetGridSize(new Vector2(GridSize, Chart.GetGridSize().y));
+                MySheet.SetGridSize(new Vector2(SheetSize.x, MySheet.GetGridSize().y));
             }
 
         }
-
-        private void UpdateTable()
+        private void OnDisable()
         {
-            // Create New Table
-            if (CurrentTable)
-            {
-                CurrentTable.FilStringLisst(ref TableData, true);
-                Chart.RefreshColumnDetails(true);
-                Debug.Log("Valid");
-            }
-            else
-            {
-                TableData.Clear();
-                Chart.RefreshColumnDetails(true);
-            }
-            Debug.Log("UpdateTable");
+            MySheet = null;
+            TableList = null;
+            SheetSize = Vector2.zero;
+            CurrentTable = null;
         }
+
+        public static void OpenWindow(TableAsset Table)
+        {
+            window = GetWindow<TableViewerWindow>(Table.name);
+            window.CurrentTable = Table;
+            window.CurrentTable.FillList(ref window.TableList, true);
+            window.MySheet.RefreshColumnDetails(true);
+            window.Show();
+        }
+        public static bool IsOpenWindow()
+        {
+            return window != null;
+        }
+        public static void CloseWindow()
+        {
+            if (window != null)
+            {
+                window.Close();
+            }
+        }
+
+
         // private void DrawStructFields(ref object structInstance)
         // {
         //     var fields = structInstance.GetType().GetFields();
@@ -127,8 +118,6 @@ namespace RealMethod
         //         EditorGUILayout.EndHorizontal();
         //     }
         // }
-
-
 
     }
 }

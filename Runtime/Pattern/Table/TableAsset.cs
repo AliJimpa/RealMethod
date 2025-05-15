@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class TableAsset : ScriptableObject
+    public abstract class TableAsset : DataAsset
     {
         public enum ModifyTableType
         {
@@ -19,7 +19,7 @@ namespace RealMethod
         public abstract void ClearTable();
 
         // For Table Editor
-        public abstract void FilStringLisst(ref List<string[]> Target, bool RowName);
+        public abstract void FillList(ref List<string[]> Target, bool RowName);
     }
     public abstract class TableAsset<T> : TableAsset where T : struct
     {
@@ -100,7 +100,7 @@ namespace RealMethod
             RebuildList();
             OnModifyTable?.Invoke(ModifyTableType.ClearTable);
         }
-        public override void FilStringLisst(ref List<string[]> Target, bool RowName)
+        public override void FillList(ref List<string[]> Target, bool RowName)
         {
             Target.Clear();
             foreach (var kvp in dataTable)
