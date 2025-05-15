@@ -1,84 +1,90 @@
 using UnityEngine;
 using UnityEditor;
 
-public class ConditionalHideAttribute : PropertyAttribute
+namespace RealMethod
 {
-    public string ConditionalSourceField;
-    public bool HideInInspector;
-    public bool ReverceCondition;
-
-    public ConditionalHideAttribute(string conditionalSourceField, bool hideInInspector = false , bool reverceCondition = false)
+    public class ConditionalHideAttribute : PropertyAttribute
     {
-        ConditionalSourceField = conditionalSourceField;
-        HideInInspector = hideInInspector;
-        ReverceCondition = reverceCondition;
+        public string ConditionalSourceField;
+        public bool HideInInspector;
+        public bool ReverceCondition;
+
+        public ConditionalHideAttribute(string conditionalSourceField, bool hideInInspector = false, bool reverceCondition = false)
+        {
+            ConditionalSourceField = conditionalSourceField;
+            HideInInspector = hideInInspector;
+            ReverceCondition = reverceCondition;
+        }
     }
-}
 
 #if UNITY_EDITOR
 
-[CustomPropertyDrawer(typeof(ConditionalHideAttribute))]
-public class ConditionalHidePropertyDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(ConditionalHideAttribute))]
+    public class ConditionalHidePropertyDrawer : PropertyDrawer
     {
-        ConditionalHideAttribute condHAtt = (ConditionalHideAttribute)attribute;
-        bool enabled = GetConditionalHideAttributeResult(condHAtt, property);
-
-        bool wasEnabled = GUI.enabled;
-        GUI.enabled = enabled;
-
-        if (!condHAtt.HideInInspector || enabled)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUI.PropertyField(position, property, label, true);
-        }
+            ConditionalHideAttribute condHAtt = (ConditionalHideAttribute)attribute;
+            bool enabled = GetConditionalHideAttributeResult(condHAtt, property);
 
-        GUI.enabled = wasEnabled;
-    }
+            bool wasEnabled = GUI.enabled;
+            GUI.enabled = enabled;
 
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        ConditionalHideAttribute condHAtt = (ConditionalHideAttribute)attribute;
-        bool enabled = GetConditionalHideAttributeResult(condHAtt, property);
-
-        if (!condHAtt.HideInInspector || enabled)
-        {
-            return EditorGUI.GetPropertyHeight(property, label);
-        }
-        else
-        {
-            return -EditorGUIUtility.standardVerticalSpacing;
-        }
-    }
-
-    private bool GetConditionalHideAttributeResult(ConditionalHideAttribute condHAtt, SerializedProperty property)
-    {
-        bool enabled = true;
-
-        string propertyPath = property.propertyPath; // returns the property path of the property we want to apply the attribute to
-        string conditionPath = propertyPath.Replace(property.name, condHAtt.ConditionalSourceField); // changes the path to the conditionalsource property path
-        SerializedProperty sourcePropertyValue = property.serializedObject.FindProperty(conditionPath);
-
-        if (sourcePropertyValue != null)
-        {
-            if(!condHAtt.ReverceCondition)
+            if (!condHAtt.HideInInspector || enabled)
             {
-                enabled = sourcePropertyValue.boolValue;
-            }else{
-                enabled = !sourcePropertyValue.boolValue;
+                EditorGUI.PropertyField(position, property, label, true);
             }
-            
-        }
-        else
-        {
-            Debug.LogWarning("Attempting to use a ConditionalHideAttribute but no matching SourcePropertyValue found in object: " + condHAtt.ConditionalSourceField);
+
+            GUI.enabled = wasEnabled;
         }
 
-        return enabled;
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            ConditionalHideAttribute condHAtt = (ConditionalHideAttribute)attribute;
+            bool enabled = GetConditionalHideAttributeResult(condHAtt, property);
+
+            if (!condHAtt.HideInInspector || enabled)
+            {
+                return EditorGUI.GetPropertyHeight(property, label);
+            }
+            else
+            {
+                return -EditorGUIUtility.standardVerticalSpacing;
+            }
+        }
+
+        private bool GetConditionalHideAttributeResult(ConditionalHideAttribute condHAtt, SerializedProperty property)
+        {
+            bool enabled = true;
+
+            string propertyPath = property.propertyPath; // returns the property path of the property we want to apply the attribute to
+            string conditionPath = propertyPath.Replace(property.name, condHAtt.ConditionalSourceField); // changes the path to the conditionalsource property path
+            SerializedProperty sourcePropertyValue = property.serializedObject.FindProperty(conditionPath);
+
+            if (sourcePropertyValue != null)
+            {
+                if (!condHAtt.ReverceCondition)
+                {
+                    enabled = sourcePropertyValue.boolValue;
+                }
+                else
+                {
+                    enabled = !sourcePropertyValue.boolValue;
+                }
+
+            }
+            else
+            {
+                Debug.LogWarning("Attempting to use a ConditionalHideAttribute but no matching SourcePropertyValue found in object: " + condHAtt.ConditionalSourceField);
+            }
+
+            return enabled;
+        }
     }
-}
 
 #endif
+
+}
 
 //Use
 // [ConditionalHide("IsPlayerInScene", true, false)]

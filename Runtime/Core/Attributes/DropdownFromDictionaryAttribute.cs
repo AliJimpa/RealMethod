@@ -2,72 +2,75 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class DropdownFromDictionaryAttribute : PropertyAttribute
+namespace RealMethod
 {
-    public string dictionaryFieldName;
-
-    public DropdownFromDictionaryAttribute(string dictionaryFieldName)
+    public class DropdownFromDictionaryAttribute : PropertyAttribute
     {
-        this.dictionaryFieldName = dictionaryFieldName;
+        public string dictionaryFieldName;
+
+        public DropdownFromDictionaryAttribute(string dictionaryFieldName)
+        {
+            this.dictionaryFieldName = dictionaryFieldName;
+        }
     }
-}
 
 #if UNITY_EDITOR
 
-[CustomPropertyDrawer(typeof(DropdownFromDictionaryAttribute))]
-public class DropdownFromDictionaryDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(DropdownFromDictionaryAttribute))]
+    public class DropdownFromDictionaryDrawer : PropertyDrawer
     {
-        DropdownFromDictionaryAttribute dropdownAttribute = (DropdownFromDictionaryAttribute)attribute;
-        string[] options = GetOptions(property, dropdownAttribute.dictionaryFieldName);
-
-        if (options != null && options.Length > 0)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (property.propertyType == SerializedPropertyType.String)
+            DropdownFromDictionaryAttribute dropdownAttribute = (DropdownFromDictionaryAttribute)attribute;
+            string[] options = GetOptions(property, dropdownAttribute.dictionaryFieldName);
+
+            if (options != null && options.Length > 0)
             {
-                int index = Mathf.Max(0, System.Array.IndexOf(options, property.stringValue));
-                index = EditorGUI.Popup(position, label.text, index, options);
-                property.stringValue = options[index];
+                if (property.propertyType == SerializedPropertyType.String)
+                {
+                    int index = Mathf.Max(0, System.Array.IndexOf(options, property.stringValue));
+                    index = EditorGUI.Popup(position, label.text, index, options);
+                    property.stringValue = options[index];
+                }
+                else
+                {
+                    EditorGUI.LabelField(position, label.text, "Use DropdownFromDictionary with string.");
+                }
             }
             else
             {
-                EditorGUI.LabelField(position, label.text, "Use DropdownFromDictionary with string.");
+                EditorGUI.LabelField(position, label.text, "Dictionary not found or empty.");
             }
         }
-        else
-        {
-            EditorGUI.LabelField(position, label.text, "Dictionary not found or empty.");
-        }
-    }
 
-    private string[] GetOptions(SerializedProperty property, string dictionaryFieldName)
-    {
-        string[] options = null;
-        Object targetObject = property.serializedObject.targetObject;
-        System.Type targetType = targetObject.GetType();
-        System.Reflection.FieldInfo fieldInfo = targetType.GetField(dictionaryFieldName);
-
-        if (fieldInfo != null)
+        private string[] GetOptions(SerializedProperty property, string dictionaryFieldName)
         {
-            var dictionary = fieldInfo.GetValue(targetObject) as Dictionary<string, string>;
-            if (dictionary != null)
+            string[] options = null;
+            Object targetObject = property.serializedObject.targetObject;
+            System.Type targetType = targetObject.GetType();
+            System.Reflection.FieldInfo fieldInfo = targetType.GetField(dictionaryFieldName);
+
+            if (fieldInfo != null)
             {
-                options = new string[dictionary.Count];
-                dictionary.Keys.CopyTo(options, 0);
+                var dictionary = fieldInfo.GetValue(targetObject) as Dictionary<string, string>;
+                if (dictionary != null)
+                {
+                    options = new string[dictionary.Count];
+                    dictionary.Keys.CopyTo(options, 0);
+                }
             }
+
+            return options;
         }
 
-        return options;
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return EditorGUI.GetPropertyHeight(property, label, true);
+        }
     }
-
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        return EditorGUI.GetPropertyHeight(property, label, true);
-    }
-}
 
 #endif
+}
 
 // ----Use
 // public Dictionary<string, string> options = new Dictionary<string, string>

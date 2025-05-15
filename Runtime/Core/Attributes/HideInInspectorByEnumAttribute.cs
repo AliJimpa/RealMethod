@@ -1,52 +1,55 @@
 using UnityEditor;
 using UnityEngine;
 
-public class HideInInspectorByEnumAttribute : PropertyAttribute
-{
-    public string EnumFieldName { get; private set; }
-    public int EnumValue { get; private set; }
 
-    public HideInInspectorByEnumAttribute(string enumFieldName, int enumValue)
+namespace RealMethod
+{
+    public class HideInInspectorByEnumAttribute : PropertyAttribute
     {
-        EnumFieldName = enumFieldName;
-        EnumValue = enumValue;
+        public string EnumFieldName { get; private set; }
+        public int EnumValue { get; private set; }
+
+        public HideInInspectorByEnumAttribute(string enumFieldName, int enumValue)
+        {
+            EnumFieldName = enumFieldName;
+            EnumValue = enumValue;
+        }
     }
-}
 
 
 #if UNITY_EDITOR
 
-[CustomPropertyDrawer(typeof(HideInInspectorByEnumAttribute))]
-public class HideInInspectorByEnumDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(HideInInspectorByEnumAttribute))]
+    public class HideInInspectorByEnumDrawer : PropertyDrawer
     {
-        HideInInspectorByEnumAttribute hideAttribute = (HideInInspectorByEnumAttribute)attribute;
-        SerializedProperty enumField = property.serializedObject.FindProperty(hideAttribute.EnumFieldName);
-
-        if (enumField != null && enumField.enumValueIndex == hideAttribute.EnumValue)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            return; // Do not draw the property if the condition matches.
+            HideInInspectorByEnumAttribute hideAttribute = (HideInInspectorByEnumAttribute)attribute;
+            SerializedProperty enumField = property.serializedObject.FindProperty(hideAttribute.EnumFieldName);
+
+            if (enumField != null && enumField.enumValueIndex == hideAttribute.EnumValue)
+            {
+                return; // Do not draw the property if the condition matches.
+            }
+
+            EditorGUI.PropertyField(position, property, label, true);
         }
 
-        EditorGUI.PropertyField(position, property, label, true);
-    }
-
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        HideInInspectorByEnumAttribute hideAttribute = (HideInInspectorByEnumAttribute)attribute;
-        SerializedProperty enumField = property.serializedObject.FindProperty(hideAttribute.EnumFieldName);
-
-        if (enumField != null && enumField.enumValueIndex == hideAttribute.EnumValue)
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return 0; // Hides the property by returning 0 height.
-        }
+            HideInInspectorByEnumAttribute hideAttribute = (HideInInspectorByEnumAttribute)attribute;
+            SerializedProperty enumField = property.serializedObject.FindProperty(hideAttribute.EnumFieldName);
 
-        return EditorGUI.GetPropertyHeight(property, label, true);
+            if (enumField != null && enumField.enumValueIndex == hideAttribute.EnumValue)
+            {
+                return 0; // Hides the property by returning 0 height.
+            }
+
+            return EditorGUI.GetPropertyHeight(property, label, true);
+        }
     }
-}
 #endif
-
+}
 
 
 ///////////Use

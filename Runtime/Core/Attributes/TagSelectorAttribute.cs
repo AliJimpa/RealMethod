@@ -1,41 +1,43 @@
 using UnityEngine;
 using UnityEditor;
 
-public class TagSelectorAttribute : PropertyAttribute
+namespace RealMethod
 {
-    public bool UseDefaultTagFieldDrawer = false;
-}
+    public class TagSelectorAttribute : PropertyAttribute
+    {
+        public bool UseDefaultTagFieldDrawer = false;
+    }
 
 
 #if UNITY_EDITOR
 
-[CustomPropertyDrawer(typeof(TagSelectorAttribute))]
-public class TagSelectorPropertyDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(TagSelectorAttribute))]
+    public class TagSelectorPropertyDrawer : PropertyDrawer
     {
-        TagSelectorAttribute tagSelector = (TagSelectorAttribute)attribute;
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            TagSelectorAttribute tagSelector = (TagSelectorAttribute)attribute;
 
-        if (tagSelector.UseDefaultTagFieldDrawer)
-        {
-            EditorGUI.PropertyField(position, property, label);
-        }
-        else
-        {
-            if (property.propertyType == SerializedPropertyType.String)
+            if (tagSelector.UseDefaultTagFieldDrawer)
             {
-                property.stringValue = EditorGUI.TagField(position, label, property.stringValue);
+                EditorGUI.PropertyField(position, property, label);
             }
             else
             {
-                EditorGUI.PropertyField(position, property, label);
-                EditorGUI.HelpBox(position, "TagSelector can only be used with strings.", MessageType.Error);
+                if (property.propertyType == SerializedPropertyType.String)
+                {
+                    property.stringValue = EditorGUI.TagField(position, label, property.stringValue);
+                }
+                else
+                {
+                    EditorGUI.PropertyField(position, property, label);
+                    EditorGUI.HelpBox(position, "TagSelector can only be used with strings.", MessageType.Error);
+                }
             }
         }
     }
-}
 #endif
-
+}
 
 //Use
 // [TagSelector]

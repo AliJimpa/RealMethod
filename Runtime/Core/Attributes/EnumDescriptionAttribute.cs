@@ -2,69 +2,71 @@ using System;
 using UnityEngine;
 using UnityEditor;
 
-[AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-public class EnumDescriptionAttribute : PropertyAttribute
+namespace RealMethod
 {
-    public string Description { get; }
-
-    public EnumDescriptionAttribute(string description)
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public class EnumDescriptionAttribute : PropertyAttribute
     {
-        Description = description;
+        public string Description { get; }
+
+        public EnumDescriptionAttribute(string description)
+        {
+            Description = description;
+        }
     }
-}
 
 
 #if UNITY_EDITOR
 
 
-[CustomPropertyDrawer(typeof(EnumDescriptionAttribute))]
-public class EnumWithDescriptionsDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(EnumDescriptionAttribute))]
+    public class EnumWithDescriptionsDrawer : PropertyDrawer
     {
-        if (property.propertyType == SerializedPropertyType.Enum)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            // Get the enum type and value.
-            Type enumType = fieldInfo.FieldType;
-            int selectedIndex = property.enumValueIndex;
-
-            // Get the descriptions for each enum value.
-            string[] descriptions = GetEnumDescriptions(enumType);
-
-            if (descriptions != null && descriptions.Length > selectedIndex)
+            if (property.propertyType == SerializedPropertyType.Enum)
             {
-                // Draw the popup with descriptions.
-                property.enumValueIndex = EditorGUI.Popup(position, label.text, selectedIndex, descriptions);
+                // Get the enum type and value.
+                Type enumType = fieldInfo.FieldType;
+                int selectedIndex = property.enumValueIndex;
+
+                // Get the descriptions for each enum value.
+                string[] descriptions = GetEnumDescriptions(enumType);
+
+                if (descriptions != null && descriptions.Length > selectedIndex)
+                {
+                    // Draw the popup with descriptions.
+                    property.enumValueIndex = EditorGUI.Popup(position, label.text, selectedIndex, descriptions);
+                }
+                else
+                {
+                    // Fallback to default behavior.
+                    EditorGUI.PropertyField(position, property, label);
+                }
             }
             else
             {
-                // Fallback to default behavior.
                 EditorGUI.PropertyField(position, property, label);
             }
         }
-        else
+
+        private string[] GetEnumDescriptions(Type enumType)
         {
-            EditorGUI.PropertyField(position, property, label);
+            var names = Enum.GetNames(enumType);
+            string[] descriptions = new string[names.Length];
+
+            for (int i = 0; i < names.Length; i++)
+            {
+                var field = enumType.GetField(names[i]);
+                var descriptionAttribute = Attribute.GetCustomAttribute(field, typeof(EnumDescriptionAttribute)) as EnumDescriptionAttribute;
+                descriptions[i] = descriptionAttribute != null ? descriptionAttribute.Description : names[i];
+            }
+
+            return descriptions;
         }
     }
-
-    private string[] GetEnumDescriptions(Type enumType)
-    {
-        var names = Enum.GetNames(enumType);
-        string[] descriptions = new string[names.Length];
-
-        for (int i = 0; i < names.Length; i++)
-        {
-            var field = enumType.GetField(names[i]);
-            var descriptionAttribute = Attribute.GetCustomAttribute(field, typeof(EnumDescriptionAttribute)) as EnumDescriptionAttribute;
-            descriptions[i] = descriptionAttribute != null ? descriptionAttribute.Description : names[i];
-        }
-
-        return descriptions;
-    }
-}
 #endif
-
+}
 
 
 //////Use

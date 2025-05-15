@@ -4,58 +4,60 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-public class ListToPopupAttribute : PropertyAttribute
+namespace RealMethod
 {
-    public Type myType;
-    public string propertyName;
-
-    public ListToPopupAttribute(Type _myType, string _propertyName)
+    public class ListToPopupAttribute : PropertyAttribute
     {
-        myType = _myType;
-        propertyName = _propertyName;
+        public Type myType;
+        public string propertyName;
+
+        public ListToPopupAttribute(Type _myType, string _propertyName)
+        {
+            myType = _myType;
+            propertyName = _propertyName;
+        }
     }
-}
 
 #if UNITY_EDITOR
 
-[CustomPropertyDrawer(typeof(ListToPopupAttribute))]
-public class ListToPopupDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(ListToPopupAttribute))]
+    public class ListToPopupDrawer : PropertyDrawer
     {
-        ListToPopupAttribute atb = attribute as ListToPopupAttribute;
-        List<string> stringList = null;
-
-        // Get the field using reflection
-        FieldInfo field = atb.myType.GetField(atb.propertyName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-        if (field != null)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            stringList = field.GetValue(null) as List<string>;
-        }
+            ListToPopupAttribute atb = attribute as ListToPopupAttribute;
+            List<string> stringList = null;
 
-        if (stringList != null && stringList.Count != 0)
-        {
-            // Determine the current selected index
-            int currentIndex = stringList.IndexOf(property.stringValue);
-            if (currentIndex == -1)
+            // Get the field using reflection
+            FieldInfo field = atb.myType.GetField(atb.propertyName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+            if (field != null)
             {
-                currentIndex = 0; // default to the first item if the value is not found
+                stringList = field.GetValue(null) as List<string>;
             }
 
-            // Display the popup and update the property value
-            int selectedIndex = EditorGUI.Popup(position, label.text, currentIndex, stringList.ToArray());
-            property.stringValue = stringList[selectedIndex];
-        }
-        else
-        {
-            // If the list is null or empty, fallback to the default property field
-            EditorGUI.PropertyField(position, property, label);
+            if (stringList != null && stringList.Count != 0)
+            {
+                // Determine the current selected index
+                int currentIndex = stringList.IndexOf(property.stringValue);
+                if (currentIndex == -1)
+                {
+                    currentIndex = 0; // default to the first item if the value is not found
+                }
+
+                // Display the popup and update the property value
+                int selectedIndex = EditorGUI.Popup(position, label.text, currentIndex, stringList.ToArray());
+                property.stringValue = stringList[selectedIndex];
+            }
+            else
+            {
+                // If the list is null or empty, fallback to the default property field
+                EditorGUI.PropertyField(position, property, label);
+            }
         }
     }
-}
 
 #endif
-
+}
 // ------------Use
 // [ListToPopup(typeof(ExampleClass), "options")]
 // public string selectedOption;

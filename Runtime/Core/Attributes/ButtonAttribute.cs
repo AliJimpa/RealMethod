@@ -4,32 +4,34 @@ using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 
-[AttributeUsage(AttributeTargets.Method, Inherited = true)]
-public class ButtonAttribute : Attribute { }
-
-[CustomEditor(typeof(MonoBehaviour), true)]
-public class ButtonDrawer : Editor
+namespace RealMethod
 {
-    public override void OnInspectorGUI()
+    [AttributeUsage(AttributeTargets.Method, Inherited = true)]
+    public class ButtonAttribute : Attribute { }
+
+    [CustomEditor(typeof(MonoBehaviour), true)]
+    public class ButtonDrawer : Editor
     {
-        base.OnInspectorGUI();
-
-        var targetType = target.GetType();
-        var methods = targetType
-            .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-            .Where(m => m.GetCustomAttribute<ButtonAttribute>() != null && m.GetParameters().Length == 0);
-
-        foreach (var method in methods)
+        public override void OnInspectorGUI()
         {
-            if (GUILayout.Button(method.Name))
+            base.OnInspectorGUI();
+
+            var targetType = target.GetType();
+            var methods = targetType
+                .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(m => m.GetCustomAttribute<ButtonAttribute>() != null && m.GetParameters().Length == 0);
+
+            foreach (var method in methods)
             {
-                method.Invoke(target, null);
+                if (GUILayout.Button(method.Name))
+                {
+                    method.Invoke(target, null);
+                }
             }
         }
     }
+
 }
-
-
 
 
 // [Button]
