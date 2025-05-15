@@ -17,7 +17,9 @@ namespace RealMethod
         }
         protected override void Draw()
         {
+            if (projectSettings == null) return;
             EditorGUILayout.PropertyField(projectSettings.FindProperty("ShowHideAbblity"), new GUIContent("Show Inside Abblity"));
+            projectSettings.ApplyModifiedProperties();
         }
         protected override void Fix(int Id)
         {
