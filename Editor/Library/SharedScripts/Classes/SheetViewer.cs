@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-    public class TableViewer
+    public class SheetViewer
     {
         private Color DefaultColor = GUI.backgroundColor;
         private Vector2 CellSize = new Vector2(50, 30); // Cell size    
@@ -15,21 +15,21 @@ namespace RealMethod
         public int ColumnSize { get; private set; }
         public int SelectRow = -1;
 
-        public TableViewer(List<string[]> tableContent)
+        public SheetViewer(List<string[]> tableContent)
         {
             CurrentTable.Clear();
             CurrentTable = tableContent;
             ColumnSize = GetMaxColumnSize();
             RefreshColumnDetails();
         }
-        public TableViewer(TextAsset CSVAsset)
+        public SheetViewer(TextAsset CSVAsset)
         {
             CurrentTable.Clear();
             CurrentTable = CSV.ParseCSV(CSVAsset.text);
             ColumnSize = GetMaxColumnSize();
             RefreshColumnDetails();
         }
-        public TableViewer(out List<string[]> target)
+        public SheetViewer(out List<string[]> target)
         {
             CurrentTable.Clear();
             target = CurrentTable;

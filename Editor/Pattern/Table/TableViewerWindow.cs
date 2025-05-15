@@ -9,7 +9,7 @@ namespace RealMethod
     {
         private TableAsset CurrentTable;
         private TableAsset CashTable;
-        private TableViewer Chart;
+        private SheetViewer Chart;
         private List<string[]> TableData;
         private float GridSize;
 
@@ -18,7 +18,7 @@ namespace RealMethod
 
         void OnEnable()
         {
-            Chart = new TableViewer(out TableData);
+            Chart = new SheetViewer(out TableData);
             GridSize = Chart.GetGridSize().x;
 
         }

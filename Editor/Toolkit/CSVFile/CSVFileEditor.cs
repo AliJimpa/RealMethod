@@ -51,7 +51,7 @@ namespace RealMethod
         private bool IsActiveEditor = false;
         private string assetPath;
         private EPS_Enum<CSVReadType> ReadStyle;
-        private TableViewer TabelGUI;
+        private SheetViewer TabelGUI;
         private CustomList<ScriptableObject> ObjectsPart;
         private EPS_Date LastUpdate;
         private EPS_Enum<SheetType> OnlineSheetType;
@@ -72,7 +72,7 @@ namespace RealMethod
             if (IsActiveEditor)
             {
                 // Load the file content
-                TabelGUI = new TableViewer(textAsset);
+                TabelGUI = new SheetViewer(textAsset);
                 ReadStyle = new EPS_Enum<CSVReadType>(this, "ReadType");
                 ObjectsPart = new CustomList<ScriptableObject>(this, "SObjects");
                 LastUpdate = new EPS_Date(this, "LastUpdate");
