@@ -8,10 +8,11 @@ namespace RealMethod
     {
         private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         private static bool candraw = true;// Flag to determine if the UI can be drawn
-        private static ProjectSettingSection[] sections = new ProjectSettingSection[2] {
+        private static ProjectSettingSection[] sections = new ProjectSettingSection[3] {
         // Array of sections to be rendered in the settings UI
         new InitializerSection(),
-        new FolderSettingSection()
+        new FolderSettingSection(),
+        new InspectorGuideSection()
     };
 
 

@@ -73,7 +73,8 @@ namespace RealMethod
         new FolderAddress { Identity = (IdentityCategory)16, Path = "Assets/~Thirdparty"},
         new FolderAddress { Identity = (IdentityCategory)17, Path = "Assets/4_Data/PCG"}
         };
-
+        [Header("Inspector")]
+        public bool ShowHideAbblity = true;
 
 
         public Type GetGameInstanceClass()
