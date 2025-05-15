@@ -5,7 +5,7 @@ namespace RealMethod
 {
     public abstract class World : MonoBehaviour
     {
-        [Header("Core")]
+        [Header("Player")]
         [SerializeField]
         private bool IsPlayerInScene = true;
         [SerializeField]
@@ -18,6 +18,7 @@ namespace RealMethod
         [SerializeField]
         [ConditionalHide("IsPlayerInScene", true, true)]
         private Transform SpawnPoint;
+        [Space(5)]
         [SerializeField]
         protected GameObject[] ExteraObject;
 

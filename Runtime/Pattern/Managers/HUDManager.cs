@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.UIElements;
+using System;
 
 
 namespace RealMethod
@@ -16,11 +17,15 @@ namespace RealMethod
             UI_Toolkit
         }
 
-        [Header("HUD")]
+        [Header("Setting")]
         [SerializeField]
         private UIMethod Method = UIMethod.uGUI;
         [SerializeField, ShowInInspectorByEnum("Method", 2)]
         private PanelSettings UISetting;
+
+        // Actions 
+        public Action<CanvasGroup, bool> OnFadeIn;
+        public Action<CanvasGroup, bool> OnFadeOut;
 
         // Private Variable
         private Dictionary<string, GameObject> Layers = new Dictionary<string, GameObject>(5);
@@ -141,7 +146,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public T FindLayerByClass<T>() where T : class
+        public T FindClassinLayers<T>() where T : class
         {
             T Reslut = null;
             IWidget TargetWidget;
@@ -164,6 +169,44 @@ namespace RealMethod
                 }
             }
             return Reslut;
+        }
+        public void SortLayer(string Name, int Order)
+        {
+            if (Method == UIMethod.UI_Toolkit)
+            {
+                UIDocument Target = Layers[Name].GetComponent<UIDocument>();
+                if (Target)
+                {
+                    Target.sortingOrder = Order;
+                }
+                else
+                {
+                    Debug.LogError("Can't find any layer with this name");
+                }
+            }
+            else
+            {
+                Transform MyLayer = Layers[Name].GetComponent<Transform>();
+                if (MyLayer)
+                {
+                    MyLayer.SetSiblingIndex(0);
+                }
+                else
+                {
+                    Debug.LogError("Can't find any layer with this name");
+                }
+            }
+        }
+        public void SortLayer(string Name, bool First = true)
+        {
+            if (First)
+            {
+                SortLayer(Name, 0);
+            }
+            else
+            {
+                SortLayer(Name, GetComponent<Transform>().childCount - 1);
+            }
         }
         public bool ActiveLayer(string Name)
         {
@@ -194,6 +237,7 @@ namespace RealMethod
         public GameObject CreateEmptyLayer(string Name)
         {
             GameObject Result = new GameObject(Name);
+            Result.layer = 5;
             switch (Method)
             {
                 case UIMethod.IMGUI:
@@ -216,6 +260,7 @@ namespace RealMethod
             if (Method == UIMethod.UI_Toolkit)
             {
                 GameObject EmptyObject = new GameObject(Name);
+                EmptyObject.layer = 5;
                 EmptyObject.transform.SetParent(transform);
                 UIDocument Result = EmptyObject.AddComponent<UIDocument>();
                 Result.visualTreeAsset = UIAsset;
@@ -236,7 +281,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public bool FadeIn(string Name, float Duration, bool Force)
+        public bool FadeIn(string Name, float Duration)
         {
             if (Method == UIMethod.uGUI)
             {
@@ -244,11 +289,6 @@ namespace RealMethod
                 if (TargetLayer)
                 {
                     CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
-                    if (!CG && Force)
-                    {
-                        CG = TargetLayer.AddComponent<CanvasGroup>();
-                    }
-
                     if (CG)
                     {
                         StartCoroutine(FadeIn(CG, Duration));
@@ -256,6 +296,7 @@ namespace RealMethod
                     }
                     else
                     {
+                        Debug.LogWarning("Your Layer doesn't have CanvasGroup");
                         return false;
                     }
                 }
@@ -270,7 +311,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool FadeOut(string Name, float Duration, bool Force)
+        public bool FadeOut(string Name, float Duration)
         {
             if (Method == UIMethod.uGUI)
             {
@@ -278,11 +319,6 @@ namespace RealMethod
                 if (TargetLayer)
                 {
                     CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
-                    if (!CG && Force)
-                    {
-                        CG = TargetLayer.AddComponent<CanvasGroup>();
-                    }
-
                     if (CG)
                     {
                         StartCoroutine(FadeOut(CG, Duration));
@@ -290,6 +326,7 @@ namespace RealMethod
                     }
                     else
                     {
+                        Debug.LogWarning("Your Layer doesn't have CanvasGroup");
                         return false;
                     }
                 }
@@ -308,8 +345,8 @@ namespace RealMethod
         {
             if (Method == UIMethod.uGUI)
             {
-                FadeIn(LayerA, Duration, true);
-                FadeIn(LayerB, Duration, true);
+                FadeIn(LayerA, Duration);
+                FadeOut(LayerB, Duration);
             }
             else
             {
@@ -321,7 +358,7 @@ namespace RealMethod
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration)
         {
             float elapsedTime = 0f;
-
+            OnFadeIn?.Invoke(canvas, true);
             while (elapsedTime < fadeDuration)
             {
                 elapsedTime += Time.deltaTime;
@@ -329,11 +366,12 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
+            OnFadeIn?.Invoke(canvas, false);
         }
         private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration)
         {
             float elapsedTime = 0f;
-
+            OnFadeOut?.Invoke(canvas, true);
             while (elapsedTime < fadeDuration)
             {
                 elapsedTime += Time.deltaTime;
@@ -341,6 +379,7 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
+            OnFadeOut?.Invoke(canvas, false);
         }
 
     }
@@ -349,6 +388,6 @@ namespace RealMethod
     public interface IWidget
     {
         public MonoBehaviour GetWidgetClass();
-        public void InitiateWidget(Object Owner);
+        public void InitiateWidget(UnityEngine.Object Owner);
     }
 }
