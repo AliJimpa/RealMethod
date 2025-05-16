@@ -89,11 +89,11 @@ namespace RealMethod
             }
             return null;
         }
-        public IGameManager GetManager(string ClassName)
+        public IGameManager GetManager(string ObjectName)
         {
             foreach (var manger in Managers)
             {
-                if (manger.GetType().FullName == ClassName)
+                if (manger.GetManagerClass().gameObject.name == ObjectName)
                 {
                     return manger;
                 }
