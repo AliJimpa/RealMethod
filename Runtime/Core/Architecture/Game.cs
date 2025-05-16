@@ -155,17 +155,6 @@ namespace RealMethod
         {
             return Instance.GameServices.TryGetValue(Name, out Target);
         }
-        public static Service FindService<T>() where T : Service
-        {
-            foreach (var service in Instance.GameServices.Values)
-            {
-                if (service is T targetService)
-                {
-                    return targetService;
-                }
-            }
-            return null;
-        }
         public static void OpenScene(SceneReference TargetScene)
         {
             if (!Service.IsLoading && SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(TargetScene).buildIndex)
