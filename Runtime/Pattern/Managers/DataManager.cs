@@ -5,22 +5,12 @@ namespace RealMethod
 {
     public abstract class DataManager : MonoBehaviour, IGameManager
     {
-        public MonoBehaviour GetManagerClass()
-        {
-            return this;
-        }
-        public abstract void InitiateManager(bool AlwaysLoaded);
-        public abstract void InitiateService(Service service);
-    }
 
-    public abstract class DataManager<T> : DataManager where T : Enum
-    {
-        [Header("Setting")]
-        public T Method { get; private set; }
+        [Header("SaveFile")]
         [SerializeField]
         private bool AutoLoad = true;
-        [Header("File")]
-        public SaveFile File { get; private set; }
+        [SerializeField] private SaveFile file;
+        public SaveFile File => file;
 
 
         public Action<SaveFile> OnFileChanged;
@@ -28,7 +18,11 @@ namespace RealMethod
         public Action<SaveFile> OnFileSaved;
 
 
-        public override void InitiateManager(bool AlwaysLoaded)
+        public MonoBehaviour GetManagerClass()
+        {
+            return this;
+        }
+        public void InitiateManager(bool AlwaysLoaded)
         {
             if (File)
             {
@@ -40,6 +34,8 @@ namespace RealMethod
                 }
             }
         }
+        public abstract void InitiateService(Service service);
+
 
 
         [ContextMenu("SaveFile")]
@@ -95,7 +91,7 @@ namespace RealMethod
                 if (File != newfile)
                 {
                     File?.OnDiactiveted(this);
-                    File = newfile;
+                    file = newfile;
                     File.OnActiveted(this);
                     OnFileChanged?.Invoke(File);
                 }
@@ -110,13 +106,19 @@ namespace RealMethod
 
 
         // Abstract Mehtod
-        protected abstract bool IsExist(SaveFile file);
-        protected abstract void OnDelete(SaveFile file);
-        protected abstract void OnSaveFile(SaveFile file);
-        protected abstract void OnLoadFile(SaveFile file);
+        protected abstract bool IsExist(SaveFile targetfile);
+        protected abstract void OnDelete(SaveFile targetfile);
+        protected abstract void OnSaveFile(SaveFile targetfile);
+        protected abstract void OnLoadFile(SaveFile targetfile);
 
     }
 
+    public abstract class DataManager<T> : DataManager where T : Enum
+    {
+        [Header("FileSystem")]
+        [SerializeField] private T method;
+        public T Method => method;
+    }
 
     public abstract class SaveFile : ScriptableObject
     {

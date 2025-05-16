@@ -18,9 +18,10 @@ namespace RealMethod
         }
 
         [Header("UI")]
-        [SerializeField]
-        private UIMethod Method = UIMethod.uGUI;
-        [SerializeField, ShowInInspectorByEnum("Method", 2)]
+        [SerializeField] private UIMethod method = UIMethod.uGUI;
+        public UIMethod Method => method;
+
+        [SerializeField, ShowInInspectorByEnum("method", 2)]
         private PanelSettings UISetting;
 
         // Actions 
@@ -47,7 +48,7 @@ namespace RealMethod
                 }
             }
         }
-        
+
 
         private void OnValidate()
         {
