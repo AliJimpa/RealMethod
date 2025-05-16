@@ -36,11 +36,12 @@ namespace RealMethod
                 }
             }
         }
-        
-        
+
+
         private ClassType<Game> gameClass;
         private ClassType<GameService> gameService;
         private SerializedObject projectSettings;
+        private ProjectSettingAsset SettingAsset;
 
         protected override void Initialized()
         {
@@ -49,17 +50,20 @@ namespace RealMethod
         }
         protected override void FirstSelected(ProjectSettingAsset Storage)
         {
+            SettingAsset = Storage;
             projectSettings = new SerializedObject(Storage);
         }
         protected override void Draw()
         {
             if (projectSettings == null) return;
 
+            projectSettings.Update();
+
             // GameInstanceClass
-            gameClass.Draw(projectSettings,"GameClass" , "Game Class");
+            gameClass.Draw(projectSettings, "GameClass", "Game Class");
 
             // GameServiceClass
-            gameService.Draw(projectSettings,"GameService" , "Game Service");
+            gameService.Draw(projectSettings, "GameService", "Game Service");
 
             // GameSettingAsset
             EditorGUILayout.PropertyField(projectSettings.FindProperty("GameSetting"), new GUIContent("Game Setting"));
@@ -68,6 +72,12 @@ namespace RealMethod
             EditorGUILayout.PropertyField(projectSettings.FindProperty("GamePrefab_1"), new GUIContent("Game Prefab (1)"));
             EditorGUILayout.PropertyField(projectSettings.FindProperty("GamePrefab_2"), new GUIContent("Game Prefab (2)"));
             EditorGUILayout.PropertyField(projectSettings.FindProperty("GamePrefab_3"), new GUIContent("Game Prefab (3)"));
+
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(SettingAsset); // Mark ScriptableObject dirty
+                AssetDatabase.SaveAssets();     // Optional: saves to disk immediately
+            }
 
             projectSettings.ApplyModifiedProperties();
         }
