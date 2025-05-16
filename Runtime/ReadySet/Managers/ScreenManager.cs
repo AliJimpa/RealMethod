@@ -30,6 +30,11 @@ namespace RealMethod
             }
         }
 
+        public override void InitiateService(Service newService)
+        {
+
+        }
+
 
 
 

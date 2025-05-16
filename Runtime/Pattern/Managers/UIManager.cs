@@ -47,10 +47,7 @@ namespace RealMethod
                 }
             }
         }
-        public void InitiateService(Service newService)
-        {
-
-        }
+        
 
         private void OnValidate()
         {
@@ -353,6 +350,9 @@ namespace RealMethod
                 Debug.LogError("Just use for 'uGUI' Method");
             }
         }
+
+        // Abstract Methods
+        public abstract void InitiateService(Service newService);
 
         //Enumerators
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration)

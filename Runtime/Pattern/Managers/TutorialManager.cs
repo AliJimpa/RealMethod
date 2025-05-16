@@ -8,7 +8,6 @@ namespace RealMethod
 {
     public abstract class TutorialManager : MonoBehaviour, IGameManager
     {
-
         [Serializable]
         public struct Quest
         {
