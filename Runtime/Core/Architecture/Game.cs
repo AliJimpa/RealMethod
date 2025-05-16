@@ -151,7 +151,7 @@ namespace RealMethod
         {
             return Instance.GameServices[Name];
         }
-        public static bool FindService(string Name, out Service Target)
+        public static bool TryFindService(string Name, out Service Target)
         {
             return Instance.GameServices.TryGetValue(Name, out Target);
         }
