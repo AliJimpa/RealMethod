@@ -92,6 +92,10 @@ namespace RealMethod
         private void ReplaceWorld(World NewWorld)
         {
             World = NewWorld;
+            foreach (var service in GameServices)
+            {
+                service.Value.WorldUpdated();
+            }
             WorldSynced(World);
         }
         // Public Static Methods

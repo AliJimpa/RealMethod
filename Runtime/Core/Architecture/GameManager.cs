@@ -12,6 +12,7 @@ namespace RealMethod
     public abstract class Service
     {
         public abstract void Start(object Author);
+        public abstract void WorldUpdated();
         public abstract void End(object Author);
     }
 
