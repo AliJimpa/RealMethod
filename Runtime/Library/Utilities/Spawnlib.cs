@@ -3,7 +3,7 @@ using UnityEngine.Audio;
 
 namespace RealMethod
 {
-    static class Spawn
+    static class Spawnlib
     {
         public static void SFX(AudioClip clip, Vector3 position, AudioMixerGroup audioGroup, float spatialBlend, float rolloffDistanceMin = 1f)
         {
