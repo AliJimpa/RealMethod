@@ -18,6 +18,10 @@ namespace RealMethod
         {
             throw new NotImplementedException();
         }
+        public override void WorldUpdated()
+        {
+            throw new NotImplementedException();
+        }
 
         private IEnumerator CallAPI(string url, WWWForm form, Action<string> callback)
         {
@@ -75,6 +79,7 @@ namespace RealMethod
         {
             throw new NotImplementedException();
         }
+
     }
 
 }
