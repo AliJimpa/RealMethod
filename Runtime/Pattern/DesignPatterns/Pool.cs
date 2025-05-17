@@ -143,13 +143,13 @@ namespace RealMethod
             }
             else
             {
-                Target.AddComponent<PoolComponentHandeler>().StartCoroutine(Corotine);
+                Target.AddComponent<PoolHandeler>().StartCoroutine(Corotine);
             }
         }
 
     }
 
-    public class PoolComponentHandeler : MonoBehaviour
+    public class PoolHandeler : MonoBehaviour
     {
 
     }

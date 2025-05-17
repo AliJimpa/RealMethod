@@ -10,36 +10,56 @@ namespace RealMethod
     {
         [Header("ّFirstSetup")]
         [SerializeField]
-        private AudioClip[] TargetClip = new AudioClip[0];
+        private AudioClip[] TargetClip = new AudioClip[1];
+        [SerializeField]
+        private AudioMixerGroup Group;
         [SerializeField, Range(0, 1)]
         private float spatialBlend = 1;
         [SerializeField]
         private float rolloffDistanceMin = 1f;
         [SerializeField]
         private float rolloffDistanceMax = 100f;
-        [SerializeField]
-        private AudioMixerGroup MixedGroup;
+
+
+
+        private bool IsNeedLocation = false;
         private Vector3 AudioLocation;
 
         protected override void OnRootInitiate(Transform Root)
         {
-            Root.SetParent(Game.World.transform);
+            AudioManager audiomanager = Game.World.GetManager<AudioManager>();
+            if (audiomanager != null)
+            {
+                Root.SetParent(audiomanager.transform);
+            }
+            else
+            {
+                Root.SetParent(Game.World.transform);
+            }
         }
+
         protected override void PreProcess(AudioSource Comp)
         {
-            Comp.transform.position = AudioLocation;
+            if (IsNeedLocation)
+            {
+                Comp.transform.position = AudioLocation;
+            }
         }
         protected override AudioSource CreateObject()
         {
-            int randomIndex = UnityEngine.Random.Range(0, TargetClip.Length - 1);
+            int randomIndex = 0;
+            if (TargetClip.Length > 1)
+            {
+                randomIndex = UnityEngine.Random.Range(0, TargetClip.Length - 1);
+            }
 
-            GameObject impactSfxInstance = new GameObject("Audio_" + TargetClip[randomIndex].name);
-            AudioSource source = impactSfxInstance.AddComponent<AudioSource>();
+            GameObject AudioObject = new GameObject("Audio_" + TargetClip[randomIndex].name);
+            AudioSource source = AudioObject.AddComponent<AudioSource>();
             source.clip = TargetClip[randomIndex];
+            source.outputAudioMixerGroup = Group;
             source.spatialBlend = spatialBlend;
             source.minDistance = rolloffDistanceMin;
             source.maxDistance = rolloffDistanceMax;
-            source.outputAudioMixerGroup = MixedGroup;
             return source;
         }
         protected override IEnumerator PostProcess(AudioSource Comp)
@@ -48,9 +68,15 @@ namespace RealMethod
         }
 
 
-        public void Spawn(Vector3 Location)
+        public void PlaySound(Vector3 Location)
         {
+            IsNeedLocation = true;
             AudioLocation = Location;
+            Request();
+        }
+        public void PlaySound2D()
+        {
+            IsNeedLocation = false;
             Request();
         }
 
