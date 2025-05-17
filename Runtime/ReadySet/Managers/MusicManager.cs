@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    [AddComponentMenu("RealMethod/Manager/MusicManager")]
     public class MusicManager : MixerManager
     {
         public struct MusicLerp

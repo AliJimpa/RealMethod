@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
+    [AddComponentMenu("RealMethod/Toolkit/Interaction/Interactable")]
     public class Interactable : MonoBehaviour
     {
         [Header("Interactable")]

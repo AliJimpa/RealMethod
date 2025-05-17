@@ -39,7 +39,7 @@ namespace RealMethod
         Sphere = 1,
     }
 
-
+    [AddComponentMenu("RealMethod/Toolkit/Interaction/Interactor")]
     public class Interactor : MonoBehaviour
     {
         [Header("Interaction")]

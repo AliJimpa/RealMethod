@@ -8,6 +8,8 @@ namespace RealMethod
         Static,
         Runtime
     }
+
+    [AddComponentMenu("RealMethod/Toolkit/PCG/PCG")]
     public class PCG : MonoBehaviour
     {
         [Header("Initiate")]

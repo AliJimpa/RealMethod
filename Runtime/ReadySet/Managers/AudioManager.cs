@@ -6,6 +6,7 @@ using UnityEngine.Audio;
 
 namespace RealMethod
 {
+    [AddComponentMenu("RealMethod/Manager/AudioManager")]
     public class AudioManager : MixerManager
     {
         [Header("Audio")]
@@ -136,7 +137,7 @@ namespace RealMethod
             }
             return source;
         }
-        public AudioSource PlaySound(AudioClip clip,AudioMixerGroup group, Vector3 location, bool autoDestroy = true)
+        public AudioSource PlaySound(AudioClip clip, AudioMixerGroup group, Vector3 location, bool autoDestroy = true)
         {
             GameObject SoundObject = new GameObject();
             SoundObject.name = "Audio_" + clip.name;
