@@ -152,10 +152,10 @@ namespace RealMethod
                 return source;
             }
         }
-        public static T Class<T>() where T : MonoBehaviour
+        public static T Class<T>(string Name) where T : MonoBehaviour
         {
-            GameObject gameobject = new GameObject();
-            return gameobject.AddComponent<T>();
+            GameObject emptyobject = new GameObject(Name);
+            return emptyobject.AddComponent<T>();
         }
         public static GameObject Prefab(GameObject Prefab)
         {
@@ -169,8 +169,13 @@ namespace RealMethod
         {
             return Game.World.AddObject(Prefab, location, Rotation);
         }
-
-
+        public static MeshRenderer Mesh(Mesh Geometry)
+        {
+            GameObject emptyobject = new GameObject(Geometry.name);
+            emptyobject.AddComponent<MeshFilter>().mesh = Geometry;
+            return emptyobject.AddComponent<MeshRenderer>();
+        }
+        
 
     }
 }
