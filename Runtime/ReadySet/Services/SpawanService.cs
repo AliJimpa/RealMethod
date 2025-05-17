@@ -1,10 +1,27 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace RealMethod
 {
     public class Spawn : Service
     {
         private static Spawn instance;
+        public static Spawn Service
+        {
+            get
+            {
+                if (instance != null)
+                {
+                    return instance;
+                }
+                else
+                {
+                    Debug.LogError("For Spawning You need Add Spawn Service in Game. [Game Class > InstanceCreated Method]");
+                    return null;
+                }
+            }
+            private set { }
+        }
         private AudioManager audioBox;
 
         public override void Start(object Author)
@@ -43,5 +60,102 @@ namespace RealMethod
                 }
             }
         }
+
+
+        public static AudioSource PlaySound2D(AudioClip clip, bool autoDestroy = true)
+        {
+            if (Service.audioBox != null)
+            {
+                return Service.audioBox.PlaySound2D(clip, autoDestroy);
+            }
+            else
+            {
+                GameObject AudioObject = new GameObject();
+                AudioObject.name = "Audio_" + clip.name;
+                AudioObject.transform.SetParent(Game.World.transform);
+                AudioSource source = AudioObject.AddComponent<AudioSource>();
+                source.clip = clip;
+                source.spatialBlend = 0;
+                source.Play();
+                if (autoDestroy)
+                {
+                    DestroyAfterDelay timedSelfDestroyer = AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                }
+                return source;
+            }
+        }
+        public static AudioSource PlaySound2D(AudioClip clip, AudioMixerGroup group, bool autoDestroy = true)
+        {
+            if (Service.audioBox != null)
+            {
+                return Service.audioBox.PlaySound2D(clip, group, autoDestroy);
+            }
+            else
+            {
+                GameObject AudioObject = new GameObject();
+                AudioObject.name = "Audio_" + clip.name;
+                AudioObject.transform.SetParent(Game.World.transform);
+                AudioSource source = AudioObject.AddComponent<AudioSource>();
+                source.clip = clip;
+                source.outputAudioMixerGroup = group;
+                source.spatialBlend = 0;
+                source.Play();
+                if (autoDestroy)
+                {
+                    DestroyAfterDelay timedSelfDestroyer = AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                }
+                return source;
+            }
+        }
+        public static AudioSource PlaySound(AudioClip clip, Vector3 location, bool autoDestroy = true)
+        {
+            if (Service.audioBox != null)
+            {
+                return Service.audioBox.PlaySound(clip, location, autoDestroy);
+            }
+            else
+            {
+                GameObject AudioObject = new GameObject();
+                AudioObject.name = "Audio_" + clip.name;
+                AudioObject.transform.position = location;
+                AudioSource source = AudioObject.AddComponent<AudioSource>();
+                source.clip = clip;
+                source.spatialBlend = 0;
+                source.Play();
+                if (autoDestroy)
+                {
+                    DestroyAfterDelay timedSelfDestroyer = AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                }
+                return source;
+            }
+        }
+        public static AudioSource PlaySound(AudioClip clip, AudioMixerGroup group, Vector3 location, bool autoDestroy = true)
+        {
+            if (Service.audioBox != null)
+            {
+                return Service.audioBox.PlaySound(clip, group, location, autoDestroy);
+            }
+            else
+            {
+                GameObject AudioObject = new GameObject();
+                AudioObject.name = "Audio_" + clip.name;
+                AudioObject.transform.position = location;
+                AudioSource source = AudioObject.AddComponent<AudioSource>();
+                source.clip = clip;
+                source.outputAudioMixerGroup = group;
+                source.spatialBlend = 0;
+                source.Play();
+                if (autoDestroy)
+                {
+                    DestroyAfterDelay timedSelfDestroyer = AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                }
+                return source;
+            }
+        }
+
+
+
+
+
     }
 }
