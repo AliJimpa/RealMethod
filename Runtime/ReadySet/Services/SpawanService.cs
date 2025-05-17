@@ -152,8 +152,23 @@ namespace RealMethod
                 return source;
             }
         }
-
-
+        public static T Class<T>() where T : MonoBehaviour
+        {
+            GameObject gameobject = new GameObject();
+            return gameobject.AddComponent<T>();
+        }
+        public static GameObject Prefab(GameObject Prefab)
+        {
+            return Game.World.AddObject(Prefab);
+        }
+        public static GameObject AddObject(GameObject Prefab, Vector3 location)
+        {
+            return Game.World.AddObject(Prefab, location);
+        }
+        public static GameObject AddObject(GameObject Prefab, Vector3 location, Vector3 Rotation)
+        {
+            return Game.World.AddObject(Prefab, location, Rotation);
+        }
 
 
 

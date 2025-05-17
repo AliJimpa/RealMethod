@@ -124,6 +124,16 @@ namespace RealMethod
             SpawnedObject.transform.SetParent(this.transform);
             return SpawnedObject;
         }
+        public GameObject AddObject(GameObject Prefab, Vector3 location)
+        {
+            GameObject SpawnedObject = Instantiate(Prefab, location, Quaternion.identity);
+            return SpawnedObject;
+        }
+        public GameObject AddObject(GameObject Prefab, Vector3 location , Vector3 Rotation)
+        {
+            GameObject SpawnedObject = Instantiate(Prefab, location, Quaternion.Euler(Rotation));
+            return SpawnedObject;
+        }
         public GameObject FindExteraObject(string ObjectName)
         {
             GameObject Result = null;
@@ -204,7 +214,9 @@ namespace RealMethod
             if (GObj != null)
             {
                 return true;
-            }else{
+            }
+            else
+            {
                 Debug.LogWarning($"Ther ExterObject isn't valid");
                 return false;
             }
