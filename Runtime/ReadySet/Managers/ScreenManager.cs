@@ -4,7 +4,7 @@ using UnityEngine.Events;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Manager/ScreenManager")]
-    public class ScreenManager : UIManager
+    public sealed class ScreenManager : UIManager
     {
         [Header("Screen")]
         [SerializeField]

@@ -15,7 +15,7 @@ namespace RealMethod
     }
     
     [AddComponentMenu("RealMethod/Manager/SaveManager")]
-    public class SaveManager : DataManager<SaveMethod>
+    public sealed class SaveManager : DataManager<SaveMethod>
     {
         public override void InitiateService(Service service)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-    public class TimeService : Service
+    public sealed class TimeService : Service
     {
         private float CreateTime;
         private Dictionary<string, float> RecordTime = new Dictionary<string, float>();

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Essential/DefultGame")]
-    public class DefultGame : Game
+    public sealed class DefultGame : Game
     {
         protected override void InstanceCreated()
         {

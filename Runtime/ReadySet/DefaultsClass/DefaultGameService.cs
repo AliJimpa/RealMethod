@@ -1,6 +1,6 @@
 namespace RealMethod
 {
-    public class DefaultGameService : GameService
+    public sealed class DefaultGameService : GameService
     {
         public override void Start(object Author) { }
         public override void WorldUpdated() { }

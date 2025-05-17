@@ -3,7 +3,7 @@ using UnityEngine.Audio;
 
 namespace RealMethod
 {
-    public class Spawn : Service
+    public sealed class Spawn : Service
     {
         private static Spawn instance;
         public static Spawn Service

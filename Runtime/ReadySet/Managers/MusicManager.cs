@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Manager/MusicManager")]
-    public class MusicManager : MixerManager
+    public sealed class MusicManager : MixerManager
     {
         public struct MusicLerp
         {
@@ -61,7 +61,7 @@ namespace RealMethod
             return new MusicLerp(Layers[LayerA], Layers[LayerB]);
         }
 
-        protected IEnumerator CrossfadeTracks(AudioSource sourceA, AudioSource sourceB, float duration)
+        private IEnumerator CrossfadeTracks(AudioSource sourceA, AudioSource sourceB, float duration)
         {
             float timer = 0f;
             while (timer < duration)
@@ -74,7 +74,7 @@ namespace RealMethod
             }
             sourceA.Stop();
         }
-        protected IEnumerator fadeTrack(AudioSource source, bool fadeIn, float duration)
+        private IEnumerator fadeTrack(AudioSource source, bool fadeIn, float duration)
         {
             float timer = 0f;
             while (timer < duration)
@@ -107,6 +107,7 @@ namespace RealMethod
                     {
                         GameObject layerobject = new GameObject($"Layer {i}");
                         Layers[i] = layerobject.AddComponent<AudioSource>();
+                        Layers[i].loop = true;
                         Layers[i].playOnAwake = false;
                         layerobject.transform.SetParent(transform);
                     }

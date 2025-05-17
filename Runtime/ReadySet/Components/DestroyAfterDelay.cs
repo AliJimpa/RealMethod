@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/General/DestroyAfterDelay")]
-    public class DestroyAfterDelay : MonoBehaviour, IInitializableWithArgument<float>
+    public sealed class DestroyAfterDelay : MonoBehaviour, IInitializableWithArgument<float>
     {
         public float Delay = 5;
 

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/General/RetriggerableDelay")]
-    public class RetriggerableDelay : MonoBehaviour
+    public sealed class RetriggerableDelay : MonoBehaviour
     {
         public Action DelayPerfrom;
         public Action<float> DelayUpdate;
@@ -33,7 +33,7 @@ namespace RealMethod
         }
 
         // This is the action to call after the delay
-        protected virtual void ActionToPerform()
+        private void ActionToPerform()
         {
             delayCoroutine = null;
             DelayPerfrom?.Invoke();

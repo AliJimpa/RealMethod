@@ -7,7 +7,7 @@ using UnityEngine.Audio;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Manager/AudioManager")]
-    public class AudioManager : MixerManager
+    public sealed class AudioManager : MixerManager
     {
         [Header("Audio")]
         public AudioMixerGroup DefaultGroup;
@@ -27,7 +27,7 @@ namespace RealMethod
                 SpawnServ.BringManager(this);
             }
 
-            SoundsPacket = InitiatePacket();
+            SoundsPacket = transform;
         }
         public override void InitiateService(Service service)
         {
@@ -229,12 +229,6 @@ namespace RealMethod
             {
                 return false;
             }
-        }
-
-        // Virtual Methods
-        public virtual Transform InitiatePacket()
-        {
-            return transform;
         }
 
 
