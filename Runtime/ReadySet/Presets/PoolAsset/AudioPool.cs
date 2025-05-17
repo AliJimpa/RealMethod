@@ -21,9 +21,9 @@ namespace RealMethod
         private AudioMixerGroup MixedGroup;
         private Vector3 AudioLocation;
 
-        protected override void OnRootInitiate()
+        protected override void OnRootInitiate(Transform Root)
         {
-            GameObjectRoot.SetParent(Game.World.transform);
+            Root.SetParent(Game.World.transform);
         }
         protected override void PreProcess(AudioSource Comp)
         {

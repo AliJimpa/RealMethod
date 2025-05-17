@@ -19,9 +19,9 @@ namespace RealMethod
         private Vector3 ObjectPosition = Vector3.zero;
         private Quaternion ObjectRotation = Quaternion.identity;
         private Vector3 ObjectScale = Vector3.one;
-        protected override void OnRootInitiate()
+        protected override void OnRootInitiate(Transform Root)
         {
-            GameObjectRoot.SetParent(Game.World.transform);
+            Root.SetParent(Game.World.transform);
         }
         protected override void PreProcess(Transform Comp)
         {

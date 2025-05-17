@@ -13,9 +13,9 @@ namespace RealMethod
         private Vector3 Particlescale = Vector3.one;
 
 
-        protected override void OnRootInitiate()
+        protected override void OnRootInitiate(Transform Root)
         {
-            GameObjectRoot.SetParent(Game.World.transform);
+            Root.SetParent(Game.World.transform);
         }
         protected override void PreProcess(ParticleSystem Comp)
         {

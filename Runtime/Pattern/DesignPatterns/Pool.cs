@@ -36,7 +36,7 @@ namespace RealMethod
             for (int i = 0; i < amount; i++)
             {
                 var NewObject = CreateObject();
-                NewObject.transform.SetParent(GameObjectRoot.transform);
+                NewObject.transform.SetParent(GetRoot());
                 NewObject.gameObject.SetActive(false);
                 Available.Push(NewObject);
             }
@@ -53,7 +53,7 @@ namespace RealMethod
         }
         public void Return(int amount = 1)
         {
-            T[] Chield = GameObjectRoot.GetComponentsInChildren<T>();
+            T[] Chield = GetRoot().GetComponentsInChildren<T>();
             for (int i = 0; i < amount; i++)
             {
                 if (i < Chield.Length)
@@ -75,7 +75,7 @@ namespace RealMethod
                 {
                     if (RemoveActivated)
                     {
-                        T ValidComponent = GameObjectRoot.GetComponent<T>();
+                        T ValidComponent = GetRoot().GetComponent<T>();
                         if (ValidComponent)
                         {
                             Destroy(ValidComponent.gameObject);
@@ -87,10 +87,10 @@ namespace RealMethod
         }
         public void Clean()
         {
-            if (GameObjectRoot != null)
+            if (GetRoot() != null)
             {
 #if UNITY_EDITOR
-                DestroyImmediate(GameObjectRoot.gameObject);
+                DestroyImmediate(GetRoot().gameObject);
 #else
 			Destroy(GameObjectRoot.gameObject);
 #endif
@@ -121,7 +121,7 @@ namespace RealMethod
             {
                 T newMember = CreateObject();
                 PreProcess(newMember);
-                newMember.transform.SetParent(GameObjectRoot.transform);
+                newMember.transform.SetParent(GetRoot().transform);
                 IEnumerator Poolback = PostProcess(newMember);
                 if (Poolback != null)
                     CallPoolBackEvent(newMember, Poolback);
