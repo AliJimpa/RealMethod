@@ -3,15 +3,24 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-    public class Timer
+    public class TimeService : Service
     {
         private float CreateTime;
         private Dictionary<string, float> RecordTime = new Dictionary<string, float>();
 
-        public Timer()
+        public override void Start(object Author)
         {
             CreateTime = Time.time;
         }
+
+        public override void WorldUpdated()
+        {
+        }
+
+        public override void End(object Author)
+        {
+        }
+
 
         public void Record(string Tag)
         {
@@ -26,7 +35,7 @@ namespace RealMethod
         }
 
 
-        public float GetTime()
+        public float GetServiceTime()
         {
             return Time.time - CreateTime;
         }
