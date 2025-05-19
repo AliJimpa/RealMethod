@@ -1,0 +1,16 @@
+{
+    "name": "RealMethod.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4b6c18b15d8b5964b8b42aa92d242f55"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

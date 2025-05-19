@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -96,7 +95,7 @@ namespace RealMethod
 
         private IEnumerator OnPlayerLocationChange()
         {
-            Hash128 HashLocation = Utility.Vector2ConvertToHash(PlayrLocation);
+           //Hash128 HashLocation = Utility2.Vector2ConvertToHash(PlayrLocation);
 
             for (int i = -1; i <= 1; i++)
             {
