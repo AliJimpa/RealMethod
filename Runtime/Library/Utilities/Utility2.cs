@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    static class Utility
+    static class Utility2
     {
         public static string GetVariableName<T>(Expression<Func<T>> expression)
         {

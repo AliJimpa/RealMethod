@@ -143,7 +143,7 @@ namespace RealMethod
             }
             else
             {
-                Target.AddComponent<PoolHandeler>().StartCoroutine(Corotine);
+                Target.gameObject.AddComponent<PoolHandeler>().StartCoroutine(Corotine);
             }
         }
 
