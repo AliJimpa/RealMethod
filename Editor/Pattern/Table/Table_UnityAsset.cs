@@ -36,18 +36,19 @@ namespace RealMethod
         }
     }
     [InitializeOnLoad]
-    public static class CustomScriptableObjectIcon
+    public static class TableAssetIcon
     {
-        static CustomScriptableObjectIcon()
+        static TableAssetIcon()
         {
             // Automatically sets the custom icon on load
-            SetCustomIcon();
+            SetAssetIcon();
         }
 
-        public static void SetCustomIcon()
+        public static void SetAssetIcon()
         {
             // Load the custom icon (ensure the path matches your asset's location)
-            Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.mustard.realmetho/Resources/Icons/TableAsset.png");
+            Texture2D icon = Resources.Load<Texture2D>("Icons/TableAsset");
+            //Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.mustard.realmetho/Resources/Icons/TableAsset.png");
 
             if (icon == null)
             {
@@ -56,7 +57,7 @@ namespace RealMethod
             }
 
             // Find all assets of your custom ScriptableObject type
-            string[] guids = AssetDatabase.FindAssets("t:WorldScene");
+            string[] guids = AssetDatabase.FindAssets("t:TableAsset");
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
