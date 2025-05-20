@@ -41,14 +41,13 @@ namespace RealMethod
         static TableAssetIcon()
         {
             // Automatically sets the custom icon on load
-            SetAssetIcon();
+            SetTableAssetIcon();
         }
 
-        public static void SetAssetIcon()
+        public static void SetTableAssetIcon()
         {
             // Load the custom icon (ensure the path matches your asset's location)
-            Texture2D icon = Resources.Load<Texture2D>("Icons/TableAsset");
-            //Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.mustard.realmetho/Resources/Icons/TableAsset.png");
+            Texture2D icon = Resources.Load<Texture2D>("Icons/Pattern/TableAsset");
 
             if (icon == null)
             {
@@ -63,9 +62,11 @@ namespace RealMethod
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 Object asset = AssetDatabase.LoadAssetAtPath(path, typeof(TableAsset));
 
-                // Set the icon
-                EditorGUIUtility.SetIconForObject(asset, icon);
-                Debug.Log($"Icon applied to {asset.name}");
+                              if (asset != null && icon != null)
+{
+    // Set the icon
+    EditorGUIUtility.SetIconForObject(asset, icon);
+}
             }
 
             // Save changes

@@ -34,14 +34,13 @@ namespace RealMethod
         static WorldSceneIcon()
         {
             // Automatically sets the custom icon on load
-            SetAssetIcon();
+            SetWorldSceneIcon();
         }
 
-        public static void SetAssetIcon()
+        public static void SetWorldSceneIcon()
         {
             // Load the custom icon (ensure the path matches your asset's location)
-            Texture2D icon = Resources.Load<Texture2D>("Icons/WorldSceneAsset");
-            //Texture2D icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/2 - Scripts/EditorTools/Resources/Icons/WorldScenIcon.png");
+            Texture2D icon = Resources.Load<Texture2D>("Icons/Core/WorldSceneAsset");
             if (icon == null)
             {
                 Debug.LogWarning("Custom icon not found. Please ensure the path and file are correct.");
@@ -55,9 +54,11 @@ namespace RealMethod
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 Object asset = AssetDatabase.LoadAssetAtPath(path, typeof(WorldSceneAsset));
 
-                // Set the icon
-                EditorGUIUtility.SetIconForObject(asset, icon);
-                Debug.Log($"Icon applied to {asset.name}");
+                if (asset != null && icon != null)
+{
+    // Set the icon
+    EditorGUIUtility.SetIconForObject(asset, icon);
+}
             }
 
             // Save changes
