@@ -9,7 +9,7 @@ namespace RealMethod
         private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         private static string TemplateFolder => GetPackagePath("com.mustard.realmethod") + "Resources/ScriptTemplates";
 
-        public static void CreateFromTemplate(string templateFileName, string defaultName, bool UseProject = false)
+        public static void Create(string templateFileName, string defaultName, bool UseProject = false)
         {
             string templatePath = string.Empty;
             if (UseProject)
@@ -69,6 +69,15 @@ namespace RealMethod
 
             Debug.LogError($"Could not find package path for: {packageName}");
             return null;
+        }
+    }
+
+    class RealMethodScriptTemplate
+    {
+        [MenuItem("Assets/Create/Scripting/EEE", false, 80)]
+        public static void Holay()
+        {
+            ScriptCreator.Create("MyScriptTemplate.txt", "MyScriptTemplate.cs");
         }
     }
 
