@@ -1,6 +1,8 @@
+using UnityEditor;
+
 namespace RealMethod
 {
-    public class PCGResource_UnityAsset : AssetHandeler<PCGResourceAsset, DataAsset>
+    public class Table_UnityAsset : AssetHandeler<TableAsset, DataAsset>
     {
         protected override void Initialized()
         {
@@ -16,11 +18,11 @@ namespace RealMethod
         }
         protected override string GetIconPath()
         {
-            return "Icons/Toolkit/PCGResource";
+            return "Icons/Pattern/TableAsset";
         }
 
     }
-    public class PCGGeneration_UnityAsset : AssetHandeler<PCGGenerationAsset, DataAsset>
+    public class WorldScene_UnityAsset : AssetHandeler<WorldSceneAsset, DataAsset>
     {
         protected override void Initialized()
         {
@@ -36,11 +38,10 @@ namespace RealMethod
         }
         protected override string GetIconPath()
         {
-            return "Icons/Toolkit/PCG_Generation";
+            return "Icons/Core/WorldSceneAsset";
         }
-
     }
-    public class PCGCash_UnityAsset : AssetHandeler<PCGCashAsset, DataAsset>
+    public class Game_UnityAsset : AssetHandeler<MonoScript, Game>
     {
         protected override void Initialized()
         {
@@ -56,8 +57,8 @@ namespace RealMethod
         }
         protected override string GetIconPath()
         {
-            return "Icons/Toolkit/PCGCash";
+            return "Icons/Core/GameClass";
         }
-
     }
+
 }

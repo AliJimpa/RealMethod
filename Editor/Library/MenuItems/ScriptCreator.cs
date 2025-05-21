@@ -9,7 +9,7 @@ namespace RealMethod
         private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         private static string TemplateFolder => GetPackagePath("com.mustard.realmethod") + "Resources/ScriptTemplates";
 
-        public static void Create(string templateFileName, string defaultName, bool UseProject = false)
+        public static string Create(string templateFileName, string defaultName, bool UseProject = false)
         {
             string templatePath = string.Empty;
             if (UseProject)
@@ -26,7 +26,7 @@ namespace RealMethod
             if (!File.Exists(templatePath))
             {
                 Debug.LogError($"Template file not found: {templatePath}");
-                return;
+                return string.Empty;
             }
 
             string selectedPath = GetSelectedPath();
@@ -38,6 +38,7 @@ namespace RealMethod
             File.WriteAllText(newScriptPath, template);
             AssetDatabase.Refresh();
             Selection.activeObject = AssetDatabase.LoadAssetAtPath<MonoScript>(newScriptPath);
+            return newScriptPath;
         }
 
         private static string GetSelectedPath()
@@ -71,15 +72,5 @@ namespace RealMethod
             return null;
         }
     }
-
-    class RealMethodScriptTemplate
-    {
-        [MenuItem("Assets/Create/Scripting/EEE", false, 80)]
-        public static void Holay()
-        {
-            ScriptCreator.Create("MyScriptTemplate.txt", "MyScriptTemplate.cs");
-        }
-    }
-
 }
 
