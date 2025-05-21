@@ -6,7 +6,7 @@ using UnityEngine.Audio;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "AudioPool", menuName = "RealMethod/Pool/AudioPool", order = 1)]
-    public sealed class AudioPool : Pool<AudioSource>
+    public sealed class AudioPool : PoolAsset<AudioSource>
     {
         [Header("ّFirstSetup")]
         [SerializeField]

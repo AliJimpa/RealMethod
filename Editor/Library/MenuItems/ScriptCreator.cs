@@ -34,6 +34,8 @@ namespace RealMethod
 
             string template = File.ReadAllText(templatePath);
             template = template.Replace("#SCRIPTNAME#", Path.GetFileNameWithoutExtension(newScriptPath));
+            string projectName = Application.productName;
+            template = template.Replace("#PROJECTNAME#", projectName);
 
             File.WriteAllText(newScriptPath, template);
             AssetDatabase.Refresh();

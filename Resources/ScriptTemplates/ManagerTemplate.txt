@@ -1,0 +1,21 @@
+using UnityEngine;
+using RealMethod;
+
+public class #SCRIPTNAME# : MonoBehaviour, IGameManager
+{
+
+    // Implement IGameManage Methods
+    public MonoBehaviour GetManagerClass()
+    {
+        return this;
+    }
+    public void InitiateManager(bool AlwaysLoaded)
+    {
+        throw new System.NotImplementedException();
+    }
+    public void InitiateService(Service service)
+    {
+        throw new System.NotImplementedException();
+    }
+
+}

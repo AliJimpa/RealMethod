@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "PrefabPool", menuName = "RealMethod/Pool/PrefabPool", order = 1)]
-    public sealed class PrefabPool : Pool<Transform>
+    public sealed class PrefabPool : PoolAsset<Transform>
     {
         [SerializeField]
         private GameObject Prefab;

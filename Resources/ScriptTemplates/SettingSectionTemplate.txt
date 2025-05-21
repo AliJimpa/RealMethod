@@ -1,0 +1,28 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : ProjectSettingSection
+{
+
+    // Base ProjectSettingSection Methods
+    protected override void Initialized()
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override void FirstSelected(ProjectSettingAsset Storage)
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override void Draw()
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override string GetTitle()
+    {
+        return "#SCRIPTNAME#";
+    }
+    protected override void Fix(int Id)
+    {
+        throw new System.NotImplementedException();
+    }
+
+}

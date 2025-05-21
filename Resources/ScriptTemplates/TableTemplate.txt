@@ -1,0 +1,23 @@
+using UnityEngine;
+using RealMethod;
+using System;
+
+
+[Serializable]
+public struct TableTitle
+{
+	public string Name;
+	public int Age;
+}
+
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : TableAsset<TableTitle>
+{
+
+    // Base TableAsset Methods
+    protected override string[] ConvertRowToString(TableTitle Row)
+	{
+	    return new string[2] { Row.Name, Row.Age.ToString() };
+	}    
+}

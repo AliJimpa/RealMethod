@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class Pool<T> : SharedRootAsset where T : Component
+    public abstract class PoolAsset<T> : SharedRootAsset where T : Component
     {
         protected Stack<T> Available = new Stack<T>();
         private bool Prewarmed = false;

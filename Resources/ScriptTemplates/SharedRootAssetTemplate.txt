@@ -1,0 +1,13 @@
+using RealMethod;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : SharedRootAsset
+{
+
+    // Base SharedRootAsset Methods
+    protected override void OnRootInitiate(Transform Root)
+    {
+        throw new System.NotImplementedException();
+    }
+
+}

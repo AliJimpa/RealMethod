@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "ParticlePool", menuName = "RealMethod/Pool/ParticlePool", order = 1)]
-    public sealed class ParticlePool : Pool<ParticleSystem>
+    public sealed class ParticlePool : PoolAsset<ParticleSystem>
     {
         public ParticleSystem Particle;
         private Vector3 ParticleLocation = Vector3.zero;

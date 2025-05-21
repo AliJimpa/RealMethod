@@ -1,0 +1,33 @@
+using RealMethod;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : PoolAsset<Component>
+{
+
+    // Base PoolAsset Methods
+    protected override void OnRootInitiate(Transform Root)
+    {
+        throw new System.NotImplementedException();
+        //Root.SetParent(audiomanager.transform);
+    }
+    protected override void PreProcess(Component Comp)
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override Component CreateObject()
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override IEnumerator PostProcess(Component Comp)
+    {
+        return PoolBack(Comp);
+    }
+
+    private IEnumerator PoolBack(Component source)
+    {
+        // Befor Timer
+        yield return new WaitForSeconds();
+        // After Time
+    }
+
+}
