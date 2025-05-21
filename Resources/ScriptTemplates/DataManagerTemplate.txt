@@ -1,0 +1,30 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : DataManager
+{
+
+    // Implement IGameManage Methods
+    public override void InitiateService(Service service)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    // Base DataManager Methods
+    protected override void OnSaveFile(SaveFile targetfile)
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override void OnLoadFile(SaveFile targetfile)
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override void OnDelete(SaveFile targetfile)
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override bool IsExist(SaveFile targetfile)
+    {
+        throw new System.NotImplementedException();
+    }
+
+}
