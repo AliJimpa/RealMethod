@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,11 +11,10 @@ namespace RealMethod
     {
         private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         private static bool candraw = true;// Flag to determine if the UI can be drawn
-        private static ProjectSettingSection[] sections = new ProjectSettingSection[3] {
+        private static ProjectSettingSection[] sections = new ProjectSettingSection[2] {
         // Array of sections to be rendered in the settings UI
         new InitializerSection(),
-        new FolderSettingSection(),
-        new InspectorGuideSection()
+        new FolderSettingSection()
     };
 
 
@@ -91,7 +93,7 @@ namespace RealMethod
         }
 
 
-        private static bool GetSettingStorage(out ProjectSettingAsset settings)
+        public static bool GetSettingStorage(out ProjectSettingAsset settings)
         {
             // Attempt to load the settings asset from the specified path
             settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(settingsPath);
@@ -111,6 +113,34 @@ namespace RealMethod
     // Abstract base class for a settings section
     public abstract class ProjectSettingSection
     {
+        protected class ClassType<T>
+        {
+            private List<Type> TypeList;
+            private string[] TypeName;
+            private int selctedIndex = 0;
+            private int newIndex;
+
+            public ClassType()
+            {
+                // Get all available T types **only once**
+                TypeList = AppDomain.CurrentDomain.GetAssemblies()
+               .SelectMany(assembly => assembly.GetTypes())
+               .Where(type => typeof(T).IsAssignableFrom(type) && !type.IsAbstract)
+               .ToList();
+
+                TypeName = TypeList.Select(t => t.FullName).ToArray();
+            }
+
+            public void Draw(SerializedObject projectSettings, string PropertyName, string DisplayName)
+            {
+                selctedIndex = System.Array.IndexOf(TypeName, projectSettings.FindProperty(PropertyName).stringValue);
+                newIndex = EditorGUILayout.Popup(DisplayName, selctedIndex, TypeName);
+                if (newIndex >= 0 && newIndex < TypeName.Length)
+                {
+                    projectSettings.FindProperty(PropertyName).stringValue = TypeName[newIndex];
+                }
+            }
+        }
         private bool isReady = true;// Indicates whether the section is ready to render
         private string message = string.Empty;// Error message to display if the section is not ready
         private int errorid = 0;// Error ID to identify the type of error

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,36 +5,6 @@ namespace RealMethod
 {
     public class InitializerSection : ProjectSettingSection
     {
-        private class ClassType<T>
-        {
-            private List<Type> TypeList;
-            private string[] TypeName;
-            private int selctedIndex = 0;
-            private int newIndex;
-
-            public ClassType()
-            {
-                // Get all available T types **only once**
-                TypeList = AppDomain.CurrentDomain.GetAssemblies()
-               .SelectMany(assembly => assembly.GetTypes())
-               .Where(type => typeof(T).IsAssignableFrom(type) && !type.IsAbstract)
-               .ToList();
-
-                TypeName = TypeList.Select(t => t.FullName).ToArray();
-            }
-
-            public void Draw(SerializedObject projectSettings, string PropertyName, string DisplayName)
-            {
-                selctedIndex = System.Array.IndexOf(TypeName, projectSettings.FindProperty(PropertyName).stringValue);
-                newIndex = EditorGUILayout.Popup(DisplayName, selctedIndex, TypeName);
-                if (newIndex >= 0 && newIndex < TypeName.Length)
-                {
-                    projectSettings.FindProperty(PropertyName).stringValue = TypeName[newIndex];
-                }
-            }
-        }
-
-
         private ClassType<Game> gameClass;
         private ClassType<GameService> gameService;
         private SerializedObject projectSettings;
