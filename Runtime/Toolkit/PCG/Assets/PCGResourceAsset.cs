@@ -19,7 +19,7 @@ namespace RealMethod
     [Serializable]
     public struct PCGSource
     {
-        public GameObject Prefabs;
+        public GameObject Prefab;
         public PCGSourceLayer Layer;
         public PCGSourceLoadOrder LoadPriority;
         public string Label;

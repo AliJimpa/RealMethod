@@ -160,18 +160,18 @@ namespace RealMethod
                 ForegroundLayer.transform.SetParent(Slots[0]);
                 for (int i = 0; i < cashfile.Length; i++)
                 {
-                    PCGSource Source = resurce.GetSource(cashfile[i].SourceID);
+                    PCGSource Source = resurce.GetSource(cashfile[i].PrefabID);
                     GameObject TargetSpawned = null;
                     switch (cashfile[i].GetLayer(resurce))
                     {
                         case PCGSourceLayer.Background:
-                            TargetSpawned = Instantiate(Source.Prefabs, cashfile[i].Position, Quaternion.Euler(cashfile[i].Rotation), BackgroundLayer.transform);
+                            TargetSpawned = Instantiate(Source.Prefab, cashfile[i].Position, Quaternion.Euler(cashfile[i].Rotation), BackgroundLayer.transform);
                             break;
                         case PCGSourceLayer.Middleground:
-                            TargetSpawned = Instantiate(Source.Prefabs, cashfile[i].Position, Quaternion.Euler(cashfile[i].Rotation), MiddlgroundLayer.transform);
+                            TargetSpawned = Instantiate(Source.Prefab, cashfile[i].Position, Quaternion.Euler(cashfile[i].Rotation), MiddlgroundLayer.transform);
                             break;
                         case PCGSourceLayer.Foreground:
-                            TargetSpawned = Instantiate(Source.Prefabs, cashfile[i].Position, Quaternion.Euler(cashfile[i].Rotation), ForegroundLayer.transform);
+                            TargetSpawned = Instantiate(Source.Prefab, cashfile[i].Position, Quaternion.Euler(cashfile[i].Rotation), ForegroundLayer.transform);
                             break;
                     }
                     TargetSpawned.transform.localScale = cashfile[i].Scale;
@@ -195,18 +195,18 @@ namespace RealMethod
             ForegroundLayer.transform.SetParent(Slots[0]);
             for (int i = 0; i < cashdata.Length; i++)
             {
-                PCGSource Source = resurce.GetSource(cashdata[i].SourceID);
+                PCGSource Source = resurce.GetSource(cashdata[i].PrefabID);
                 GameObject TargetSpawned = null;
                 switch (cashdata[i].GetLayer(resurce))
                 {
                     case PCGSourceLayer.Background:
-                        TargetSpawned = Instantiate(Source.Prefabs, cashdata[i].Position, Quaternion.Euler(cashdata[i].Rotation), BackgroundLayer.transform);
+                        TargetSpawned = Instantiate(Source.Prefab, cashdata[i].Position, Quaternion.Euler(cashdata[i].Rotation), BackgroundLayer.transform);
                         break;
                     case PCGSourceLayer.Middleground:
-                        TargetSpawned = Instantiate(Source.Prefabs, cashdata[i].Position, Quaternion.Euler(cashdata[i].Rotation), MiddlgroundLayer.transform);
+                        TargetSpawned = Instantiate(Source.Prefab, cashdata[i].Position, Quaternion.Euler(cashdata[i].Rotation), MiddlgroundLayer.transform);
                         break;
                     case PCGSourceLayer.Foreground:
-                        TargetSpawned = Instantiate(Source.Prefabs, cashdata[i].Position, Quaternion.Euler(cashdata[i].Rotation), ForegroundLayer.transform);
+                        TargetSpawned = Instantiate(Source.Prefab, cashdata[i].Position, Quaternion.Euler(cashdata[i].Rotation), ForegroundLayer.transform);
                         break;
                 }
                 TargetSpawned.transform.localScale = cashdata[i].Scale;

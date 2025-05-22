@@ -160,7 +160,7 @@ namespace RealMethod
                 for (int i = 0; i < Resurce.GetValue().GetLength(); i++)
                 {
                     PCGPrefabStatus newindex;
-                    newindex.PrefabName = Resurce.GetValue().GetSource(i).Prefabs.name;
+                    newindex.PrefabName = Resurce.GetValue().GetSource(i).Prefab.name;
                     newindex.Count = Resurce.GetValue().GetSource(i).Count;
                     TTotalInstance += newindex.Count;
                     newindex.Label = Resurce.GetValue().GetSource(i).Label;
@@ -246,17 +246,17 @@ namespace RealMethod
                     CashObject[3] = ForegroundLayer;
                     for (int i = 0; i < GeneratedObject.Length; i++)
                     {
-                        PCGSource Source = Resurce.GetValue().GetSource(GeneratedObject[i].SourceID);
+                        PCGSource Source = Resurce.GetValue().GetSource(GeneratedObject[i].PrefabID);
                         switch (GeneratedObject[i].GetLayer(Resurce.GetValue()))
                         {
                             case PCGSourceLayer.Background:
-                                InitiateObject[i] = Instantiate(Source.Prefabs, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), BackgroundLayer.transform);
+                                InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), BackgroundLayer.transform);
                                 break;
                             case PCGSourceLayer.Middleground:
-                                InitiateObject[i] = Instantiate(Source.Prefabs, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), MiddlgroundLayer.transform);
+                                InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), MiddlgroundLayer.transform);
                                 break;
                             case PCGSourceLayer.Foreground:
-                                InitiateObject[i] = Instantiate(Source.Prefabs, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), ForegroundLayer.transform);
+                                InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), ForegroundLayer.transform);
                                 break;
                         }
                         InitiateObject[i].transform.localScale = GeneratedObject[i].Scale;

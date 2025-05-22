@@ -53,7 +53,7 @@ namespace RealMethod
 
         public override PCGCommandResult Process(ref PCGData Context, string Labelparam, float FloatParam, Vector3 VectorParam)
         {
-            Context.Position = Vector3.one * FloatParam * Context.DataIndex;
+            Context.Position = Vector3.one * FloatParam * Context.SelfIndex;
             return 0;
         }
     }

@@ -10,19 +10,19 @@ namespace RealMethod
     public struct PCGData
     {
         public string CodeName;
-        public int SourceID { get; private set; }
-        public int PrefabIndex { get; private set; }
-        public int DataIndex { get; private set; }
+        public int PrefabID { get; private set; } 
+        public int InstanceCount { get; private set; }
+        public int SelfIndex { get; private set; }
         public Vector3 Position;
         public Vector3 Rotation;
         public Vector3 Scale;
 
-        public PCGData(int sourceindex, int prefabindex, int dataindex)
+        public PCGData(int sourceindex, int instancecount, int dataindex)
         {
-            SourceID = sourceindex;
-            PrefabIndex = prefabindex;
-            DataIndex = dataindex;
-            CodeName = $"{dataindex} {sourceindex}-{prefabindex}";
+            PrefabID = sourceindex;
+            InstanceCount = instancecount;
+            SelfIndex = dataindex;
+            CodeName = $"{dataindex} {sourceindex}-{InstanceCount}";
             Position = Vector3.zero;
             Rotation = Vector3.zero;
             Scale = Vector3.one;
@@ -30,7 +30,7 @@ namespace RealMethod
 
         public PCGSourceLayer GetLayer(PCGResourceAsset Resource)
         {
-            return Resource.GetSource(SourceID).Layer;
+            return Resource.GetSource(PrefabID).Layer;
         }
 
     }
