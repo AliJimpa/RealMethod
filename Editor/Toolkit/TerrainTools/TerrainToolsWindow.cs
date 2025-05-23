@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 
 namespace RealMethod
 {
@@ -93,7 +94,7 @@ namespace RealMethod
 
             CashFile = new EP_ScriptableObject<PCGCashAsset>("Cash", editor);
             CashAddress = new EP_String("Address", editor);
-            CashAddress.SetValue(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityCategory.PCG).Path + "/PCGCashAsset.asset");
+            CashAddress.SetValue(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityCategory.PCG).Path + "/TerrainCash.asset");
         }
 
         public void OnRender()
@@ -136,8 +137,11 @@ namespace RealMethod
                 CashFile.Render();
                 if (GUILayout.Button("CreateCash"))
                 {
+                    string directoryfile = Path.GetDirectoryName(CashAddress.GetValue());
+                    PCGResourceAsset ResurcePack = ScriptableObj.CreateAndSaveAsset<PCGResourceAsset>(directoryfile+"/TerrainResource.asset");
                     PCGCashAsset Temporery = ScriptableObj.CreateAndSaveAsset<PCGCashAsset>(CashAddress.GetValue());
                     TerrainData Data = OwnerTerrain.terrainData;
+                    PCGSource[] TerrainSource = new PCGSource[Data.treePrototypes.Length];
                     TreeInstance[] trees = OwnerTerrain.terrainData.treeInstances;
                     PCGData[] CashTarget = new PCGData[trees.Length];
                     int[] treeCountsType = new int[Data.treePrototypes.Length];
@@ -148,6 +152,14 @@ namespace RealMethod
                             treeCountsType[tree.prototypeIndex]++;
                         }
                     }
+                    for (int k = 0; k < Data.treePrototypes.Length; k++)
+                    {
+                        TerrainSource[k].Prefab = Data.treePrototypes[0].prefab;
+                        TerrainSource[k].Layer = PCGSourceLayer.Background;
+                        TerrainSource[k].LoadPriority = PCGSourceLoadOrder.High;
+                        TerrainSource[k].Label = "Terrain";
+                        TerrainSource[k].Count = treeCountsType[k];
+                    }
                     for (int i = 0; i < trees.Length; i++)
                     {
                         PCGData TargetData = new PCGData(trees[i].prototypeIndex, treeCountsType[trees[i].prototypeIndex], i);
@@ -157,11 +169,14 @@ namespace RealMethod
                         CashTarget[i] = TargetData;
                     }
                     Temporery.Set(CashTarget);
+                    ResurcePack.Set(TerrainSource);
                     EditorUtility.SetDirty(Temporery);
+                    EditorUtility.SetDirty(ResurcePack);
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
                 }
                 EditorGUILayout.EndHorizontal();
+                EditorGUILayout.LabelField("After Create Cash Automaticly Create Resurce");
             }
         }
 

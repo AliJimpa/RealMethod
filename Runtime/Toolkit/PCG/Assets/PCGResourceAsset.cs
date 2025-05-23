@@ -40,13 +40,13 @@ namespace RealMethod
         {
             return Sources.Length;
         }
-        
+
         public int GetPrefabCount(PCGSourceLayer layer)
         {
             int result = 0;
             foreach (var So in Sources)
             {
-                if(So.Layer == layer)
+                if (So.Layer == layer)
                 {
                     result++;
                 }
@@ -58,13 +58,23 @@ namespace RealMethod
             int result = 0;
             foreach (var So in Sources)
             {
-                if(So.Layer == layer)
+                if (So.Layer == layer)
                 {
                     result += So.Count;
                 }
             }
             return result;
         }
+
+
+
+#if UNITY_EDITOR
+        public void Set(PCGSource[] Target)
+        {
+            Sources = Target;
+        }
+#endif
+
 
     }
 }
