@@ -123,7 +123,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static Service CreateService<T>(string Name, object Author)
+        public static T CreateService<T>(string Name, object Author) where T : class
         {
             Service newService = Activator.CreateInstance<T>() as Service;
             if (Instance.GameServices.TryAdd(Name, newService))
@@ -134,7 +134,7 @@ namespace RealMethod
                     manager.InitiateService(newService);
                 }
                 newService.Start(Author);
-                return newService;
+                return newService as T;
             }
             else
             {

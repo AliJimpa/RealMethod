@@ -1,15 +1,15 @@
 using RealMethod;
 
-public enum #PROJECTNAME#
+public enum StateList
 {
 	Default,
 	State_1,
 	State_2,
 }
 
-public class #SCRIPTNAME# : RuleService
+public class #SCRIPTNAME# : StateService<StateList>
 {
-    public #SCRIPTNAME#() : base(#PROJECTNAME#.Default) // Replace default(#PROJECTNAME#) with an actual enum value if needed
+    public #SCRIPTNAME#() : base(StateList.Default) // Replace default(StateList) with an actual enum value if needed
 	{
 		
     }
@@ -22,7 +22,7 @@ public class #SCRIPTNAME# : RuleService
     {
         throw new System.NotImplementedException();
     }
-    public override bool CanSwitch(#PROJECTNAME# A, #PROJECTNAME# B)
+    public override bool CanSwitch(StateList A, StateList B)
 	{
 		throw new System.NotImplementedException();
 	}
