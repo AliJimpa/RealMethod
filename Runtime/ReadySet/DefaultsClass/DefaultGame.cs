@@ -6,7 +6,7 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Essential/DefultGame")]
     public sealed class DefultGame : Game
     {
-        protected override void InstanceCreated()
+        protected override void GameServiceCreated()
         {
         }
         protected override void GameInitialized()

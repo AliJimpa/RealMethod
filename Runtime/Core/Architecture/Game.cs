@@ -249,8 +249,6 @@ namespace RealMethod
                     {
                         AlternativeInstance = emptyObject.AddComponent<DefultGame>();
                     }
-                    // Call InstanceCreated abstract Method
-                    AlternativeInstance.InstanceCreated();
                 }
                 // Create Game Service
                 Type targetService = ProjectSettings.GetGameServiceClass();
@@ -280,6 +278,8 @@ namespace RealMethod
                 }
                 Service.OnWorldUpdate += AlternativeInstance.ReplaceWorld;
                 Service.Start(AlternativeInstance);
+                // CreateStartService Abstract
+                AlternativeInstance.GameServiceCreated();
                 // Set Game Setting Asset 
                 if (ProjectSettings.GetGameSetting() != null)
                 {
@@ -321,7 +321,7 @@ namespace RealMethod
             }
         }
         // Abstract Methods
-        protected abstract void InstanceCreated();
+        protected abstract void GameServiceCreated();
         protected abstract void GameInitialized();
         protected abstract void WorldSynced(World NewWorld);
 
