@@ -155,9 +155,15 @@ namespace RealMethod
         {
             return Instance.GameServices[Name];
         }
-        public static bool TryFindService(string Name, out Service Target)
+        public static bool TryFindService<T>(string Name, out T Target) where T : Service
         {
-            return Instance.GameServices.TryGetValue(Name, out Target);
+            if (Instance.GameServices.TryGetValue(Name, out Service service) && service is T tService)
+            {
+                Target = tService;
+                return true;
+            }
+            Target = null;
+            return false;
         }
         public static void OpenScene(SceneReference TargetScene)
         {
