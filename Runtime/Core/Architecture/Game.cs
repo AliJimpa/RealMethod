@@ -129,9 +129,12 @@ namespace RealMethod
             if (Instance.GameServices.TryAdd(Name, newService))
             {
                 Service.OnServiceCreate?.Invoke(newService);
-                foreach (var manager in Instance.Managers)
+                if (Instance.Managers != null)
                 {
-                    manager.InitiateService(newService);
+                    foreach (var manager in Instance.Managers)
+                    {
+                        manager.InitiateService(newService);
+                    }
                 }
                 newService.Start(Author);
                 return newService as T;
