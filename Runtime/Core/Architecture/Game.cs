@@ -151,9 +151,9 @@ namespace RealMethod
             Instance.GameServices.Remove(Name);
             return true;
         }
-        public static Service FindService(string Name)
+        public static T FindService<T>(string Name) where T : Service
         {
-            return Instance.GameServices[Name];
+            return Instance.GameServices[Name] as T;
         }
         public static bool TryFindService<T>(string Name, out T Target) where T : Service
         {
