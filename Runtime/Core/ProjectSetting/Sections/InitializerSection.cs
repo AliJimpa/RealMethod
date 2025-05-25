@@ -42,8 +42,10 @@ namespace RealMethod
 
             if (GUI.changed)
             {
+                projectSettings.ApplyModifiedProperties();
                 EditorUtility.SetDirty(SettingAsset); // Mark ScriptableObject dirty
                 AssetDatabase.SaveAssets();     // Optional: saves to disk immediately
+                AssetDatabase.Refresh();
             }
 
             projectSettings.ApplyModifiedProperties();

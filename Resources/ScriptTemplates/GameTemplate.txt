@@ -6,15 +6,15 @@ public class #SCRIPTNAME# : Game
     // Base Game Methods
     protected override void InstanceCreated()
     {
-        throw new System.NotImplementedException();
+        
     }
     protected override void GameInitialized()
     {
-        throw new System.NotImplementedException();
+        
     }
     protected override void WorldSynced(World NewWorld)
     {
-        throw new System.NotImplementedException();
+        
     }
 
     

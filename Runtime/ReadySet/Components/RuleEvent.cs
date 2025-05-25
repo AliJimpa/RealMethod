@@ -36,20 +36,23 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogError($"RuleEvent: Could not find service '{ServiceName}' for Rule '{Rule}' on GameObject '{gameObject.name}'.");
+                Debug.LogError($"RuleEvent: Could not find service '{ServiceName}' for on GameObject '{gameObject.name}'.");
                 enabled = false;
             }
         }
         private void OnDisable()
         {
-            RuleBox.OnAddedRule -= OnNewRuleCreate;
+            if (RuleBox != null)
+            {
+                RuleBox.OnAddedRule -= OnNewRuleCreate;
+            }
         }
 
         public string GetRuleName()
         {
             return Rule;
         }
-        
+
         private void OnNewRuleCreate(string Name)
         {
             if (Name == Rule)

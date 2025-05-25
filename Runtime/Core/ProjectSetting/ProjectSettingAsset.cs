@@ -80,7 +80,13 @@ namespace RealMethod
 
         public Type GetGameInstanceClass()
         {
-            return Type.GetType(GameClass);
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var type = assembly.GetType(GameClass);
+                if (type != null)
+                    return type;
+            }
+            return null;
         }
         public void SetGameInstanceClass(Type type)
         {
