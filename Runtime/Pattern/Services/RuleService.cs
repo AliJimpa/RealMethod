@@ -21,7 +21,7 @@ namespace RealMethod
             }
         }
 
-        public void NewRule(string rule, Func<bool> conditional)
+        public void AddRule(string rule, Func<bool> conditional)
         {
             Rules.AddItem(rule, new Observer<bool>(conditional, AnyRuleChanged));
             OnAddedRule?.Invoke(rule);
@@ -30,6 +30,17 @@ namespace RealMethod
         {
             Rules.RemoveItem(rule);
             OnFinishRule?.Invoke(rule);
+        }
+        public void Check(string rule)
+        {
+            Rules[rule].Check();
+        }
+        public void UpdateRules()
+        {
+            foreach (Observer<bool> item in Rules.GetValues())
+            {
+                item.Check();
+            }
         }
         public bool InEffect(string rule)
         {

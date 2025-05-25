@@ -8,12 +8,15 @@ namespace RealMethod
         [Header("Rule")]
         [SerializeField]
         private string Rule;
+        [SerializeField]
         private bool CallOnAwake = false;
         [SerializeField]
         private UnityEvent<bool> RuleEffect;
         [Header("Advance")]
         [SerializeField]
         private string ServiceName = "GameRule";
+        [SerializeField, ShowOnly]
+        private bool IsConnectRule = false;
 
         private RuleService RuleBox;
 
@@ -24,6 +27,7 @@ namespace RealMethod
                 if (RuleBox.IsValid(Rule))
                 {
                     RuleBox.BindRule(Rule, OnRuleChanged);
+                    IsConnectRule = true;
                     if (CallOnAwake)
                     {
                         RuleEffect.Invoke(RuleBox.InEffect(Rule));
@@ -52,12 +56,18 @@ namespace RealMethod
         {
             return Rule;
         }
+        public bool IsConnect()
+        {
+            return IsConnectRule;
+        }
+
 
         private void OnNewRuleCreate(string Name)
         {
             if (Name == Rule)
             {
                 RuleBox.BindRule(Rule, OnRuleChanged);
+                IsConnectRule = true;
                 RuleBox.OnAddedRule -= OnNewRuleCreate;
             }
         }

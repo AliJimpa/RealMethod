@@ -31,6 +31,20 @@ namespace RealMethod
         {
             return List.TryGetValue(Hash128.Compute(Name), out Result);
         }
+        public string[] GetKeys()
+        {
+            var keys = new List<Hash128>(List.Keys);
+            string[] result = new string[keys.Count];
+            for (int i = 0; i < keys.Count; i++)
+            {
+                result[i] = keys[i].ToString();
+            }
+            return result;
+        }
+        public T[] GetValues()
+        {
+            return new List<T>(List.Values).ToArray();
+        }
         public void Clear()
         {
             List.Clear();
