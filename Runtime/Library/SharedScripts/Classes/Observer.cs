@@ -11,6 +11,13 @@ namespace RealMethod
         {
             OnObserve = callback;
         }
+        public void Unbind(Action<Observer> callback)
+        {
+            if (OnObserve == callback)
+            {
+            OnObserve = null;
+            }
+        }
     }
 
     public class Observer<T> : Observer

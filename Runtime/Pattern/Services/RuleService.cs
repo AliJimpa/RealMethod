@@ -60,6 +60,10 @@ namespace RealMethod
         {
             Rules[Name].Bind(callback);
         }
+        public void UnbindRule(string Name, Action<Observer> callback)
+        {
+            Rules[Name].Unbind(callback);
+        }
 
         protected abstract void AnyRuleChanged(Observer obs);
 
