@@ -1,0 +1,33 @@
+using RealMethod;
+
+public enum #PROJECTNAME#
+{
+	Default,
+	State_1,
+	State_2,
+}
+
+public class #SCRIPTNAME# : RuleService
+{
+    public #SCRIPTNAME#() : base(#PROJECTNAME#.Default) // Replace default(#PROJECTNAME#) with an actual enum value if needed
+	{
+		
+    }
+
+    public override void Start(object Author)
+    {
+        throw new System.NotImplementedException();
+    }
+	public override bool ResetOnNewWorld()
+    {
+        throw new System.NotImplementedException();
+    }
+    public override bool CanSwitch(#PROJECTNAME# A, #PROJECTNAME# B)
+	{
+		throw new System.NotImplementedException();
+	}
+    public override void End(object Author)
+    {
+        throw new System.NotImplementedException();
+    }
+}

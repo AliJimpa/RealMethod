@@ -14,6 +14,11 @@ namespace RealMethod
         {
             string Path = ScriptCreator.Create("DataManagerTemplate.txt", "MyDataManager.cs", true);
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Service/GameService", false, 80)]
+        public static void CreateGameServiceClass()
+        {
+            string Path = ScriptCreator.Create("GameServiceTemplate.txt", "MyGameService.cs", true);
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Game", false, 80)]
         public static void CreateGameClass()
         {
@@ -39,6 +44,11 @@ namespace RealMethod
         {
             string Path = ScriptCreator.Create("PoolAssetTemplate.txt", "MyPoolAsset.cs", true);
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Service/RuleService", false, 80)]
+        public static void CreateRuleService()
+        {
+            string Path = ScriptCreator.Create("RuleServiceTemplate.txt", "MyRuleService.cs", true);
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Service", false, 80)]
         public static void CreateService()
         {
@@ -53,6 +63,11 @@ namespace RealMethod
         public static void CreateSharedRootAsset()
         {
             string Path = ScriptCreator.Create("SharedRootAssetTemplate.txt", "MySharedRootAsset.cs", true);
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Service/StateService", false, 80)]
+        public static void CreateStateService()
+        {
+            string Path = ScriptCreator.Create("StateServiceTemplate.txt", "MyStateService.cs", true);
         }
         [MenuItem("Assets/Create/Scripting/RealMethod/Asset/TableAsset", false, 80)]
         public static void CreateTableAsset()

@@ -1,0 +1,17 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : RuleService
+{
+    public override void End(object Author)
+    {
+        throw new System.NotImplementedException();
+    }
+    public override void Start(object Author)
+    {
+        throw new System.NotImplementedException();
+    }
+    protected override void AnyRuleChanged(Observer obs)
+    {
+        throw new System.NotImplementedException();
+    }
+}

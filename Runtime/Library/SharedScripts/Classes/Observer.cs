@@ -5,11 +5,11 @@ namespace RealMethod
 {
     public abstract class Observer
     {
-        protected Action<Observer> OnObserv;
+        protected Action<Observer> OnObserve;
         public abstract void Check();
         public void Bind(Action<Observer> callback)
         {
-            OnObserv = callback;
+            OnObserve = callback;
         }
     }
 
@@ -24,7 +24,7 @@ namespace RealMethod
         public Observer(Func<T> getter, Action<Observer> onObserv)
         {
             Variable = getter;
-            OnObserv = onObserv;
+            OnObserve = onObserv;
             lastValue = getter(); // store initial value
         }
         public Observer(Func<T> getter, Action<T> onChanged)
@@ -40,7 +40,7 @@ namespace RealMethod
             if (!EqualityComparer<T>.Default.Equals(current, lastValue))
             {
                 OnChanged?.Invoke(current); // Trigger the action
-                OnObserv?.Invoke(this);
+                OnObserve?.Invoke(this);
                 lastValue = current;
             }
         }
