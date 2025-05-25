@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace RealMethod
 {
-    public struct HashedKeyItem<T> where T : Object
+    public struct HashedKeyItem<T>
     {
         public Dictionary<Hash128, T> List;
 
