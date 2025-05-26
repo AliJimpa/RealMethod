@@ -12,7 +12,7 @@ namespace RealMethod
 
     public class EditorIcons : EditorWindow
     {
-        [MenuItem("Tools/RealMethod/Vendor/EditorIcons", priority = -1001)]
+        [MenuItem("Tools/RealMethod/Vendor/EditorIcons")]
         public static void EditorIconsOpen()
         {
 #if UNITY_2018

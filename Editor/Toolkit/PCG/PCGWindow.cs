@@ -89,7 +89,7 @@ namespace RealMethod
 
 
         // Add the menu item
-        [MenuItem("Window/RealMethod/PCG")]
+        [MenuItem("Tools/RealMethod/Kit/PCG")]
         public static void ShowWindow()
         {
             GetWindow<PCGWindow>("PCG Window");

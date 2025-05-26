@@ -9,7 +9,7 @@ namespace RealMethod
     //[InitializeOnLoad]
     public static class AutoWorldExecutionOrder
     {
-        [MenuItem("Tools/RealMethod/Core/ExecutionOrder")]
+        [MenuItem("Tools/RealMethod/Core/ExecutionOrder" , priority = -1001)]
         static void ApplyExecutionOrder()
         {
             SetExecutionOrderForDerivedTypes(typeof(World), -18); // ← change base class and order here
