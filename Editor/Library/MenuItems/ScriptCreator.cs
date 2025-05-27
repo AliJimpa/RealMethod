@@ -7,7 +7,7 @@ namespace RealMethod
     public static class ScriptCreator
     {
         private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
-        private static string TemplateFolder => GetPackagePath("com.mustard.realmethod") + "Resources/ScriptTemplates";
+        private static string TemplateFolder => GetPackagePath("com.mustard.realmethod") + "/Resources/ScriptTemplates";
 
         public static string Create(string templateFileName, string defaultName, bool UseProject = false)
         {
