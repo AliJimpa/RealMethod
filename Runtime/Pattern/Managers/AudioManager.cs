@@ -4,8 +4,8 @@ using UnityEngine.Audio;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Manager/AudioManager")]
-    public sealed class AudioManager : MixerManager
+    
+    public abstract class AudioManager : MixerManager
     {
         [Header("Audio")]
         public AudioMixerGroup DefaultGroup;
@@ -228,7 +228,6 @@ namespace RealMethod
                 return false;
             }
         }
-
 
         // Enumerator Methods
         private IEnumerator PauseAfterSecond(AudioSource source, float time)

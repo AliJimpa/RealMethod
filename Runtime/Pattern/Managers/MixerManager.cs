@@ -61,12 +61,6 @@ namespace RealMethod
         // Abstract Method
         public abstract void InitiateManager(bool AlwaysLoaded);
         public abstract void InitiateService(Service service);
-
-
-        // protected void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1f)
-        // {
-        //     snapshot?.TransitionTo(transitionTime);
-        // }
     }
 
 

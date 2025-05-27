@@ -4,6 +4,16 @@ namespace RealMethod
 {
     class RealMethodScriptTemplate
     {
+        [MenuItem("Assets/Create/Scripting/RealMethod/Manager/AudioManager", false, 80)]
+        public static void CreateAudioManager()
+        {
+            string Path = ScriptCreator.Create("AudioManagerTemplater.txt", "MyAudioManager.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Manager/CompositManager", false, 80)]
+        public static void CreateCompositManager()
+        {
+            string Path = ScriptCreator.Create("CompositManagerTemplate.txt", "MyCompositManager.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Asset/DataAsset", false, 80)]
         public static void CreateDataAsset()
         {

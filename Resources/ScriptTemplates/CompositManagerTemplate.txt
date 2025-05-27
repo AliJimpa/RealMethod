@@ -1,0 +1,12 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : CompositManager
+{
+
+    // Implement IGameManage Methods
+    public override void OnStateConnect()
+    {
+
+    }
+
+}

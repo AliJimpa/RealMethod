@@ -4,7 +4,7 @@ public class #SCRIPTNAME# : Game
 {
 
     // Base Game Methods
-    protected override void InstanceCreated()
+    protected override void GameServiceCreated()
     {
         
     }

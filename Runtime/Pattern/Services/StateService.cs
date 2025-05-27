@@ -2,12 +2,19 @@ using System;
 
 namespace RealMethod
 {
-    public abstract class StateService<T> : Service where T : Enum
+    public abstract class StateService : Service
+    {
+        public Action<StateService> OnStateChanged;
+
+        public abstract int GetIndex();
+    }
+
+    public abstract class StateService<T> : StateService where T : Enum
     {
         public T State { get; private set; }
         public bool ResetStateInNewWorld = false;
         public T DefaultState { get; private set; }
-        public Action<T> OnChangeState;
+        public Action<T> OnNewState;
 
 
         public StateService(T Default)
@@ -21,7 +28,13 @@ namespace RealMethod
             if (ResetOnNewWorld())
             {
                 State = DefaultState;
+                OnStateChanged?.Invoke(this);
+                OnNewState?.Invoke(State);
             }
+        }
+        public override int GetIndex()
+        {
+            return Convert.ToInt32(State);
         }
 
         public bool SwitchState(T Target)
@@ -29,7 +42,8 @@ namespace RealMethod
             if (CanSwitch(State, Target))
             {
                 State = Target;
-                OnChangeState?.Invoke(State);
+                OnStateChanged?.Invoke(this);
+                OnNewState?.Invoke(State);
                 return true;
             }
             else
@@ -41,8 +55,9 @@ namespace RealMethod
         public void SetDefaultState(T state)
         {
             DefaultState = state;
+            OnStateChanged?.Invoke(this);
+            OnNewState?.Invoke(State);
         }
-
 
         // Can Switch State
         public abstract bool CanSwitch(T A, T B);
