@@ -20,7 +20,7 @@ namespace RealMethod
         private Transform SpawnPoint;
         [Space(5)]
         [SerializeField]
-        protected GameObject[] ExteraObject;
+        protected GameObject[] ExtraObject;
 
         // Private Variable
         private IGameManager[] Managers;
@@ -56,7 +56,7 @@ namespace RealMethod
                 manager.InitiateManager(false);
                 CashManagers.Add(manager);
             }
-            foreach (GameObject obj in ExteraObject) // Extera Object Manager
+            foreach (GameObject obj in ExtraObject) // Extera Object Manager
             {
                 if (CheckExteraObject(obj))
                 {
@@ -137,7 +137,7 @@ namespace RealMethod
         public GameObject FindExteraObject(string ObjectName)
         {
             GameObject Result = null;
-            foreach (var obj in ExteraObject)
+            foreach (var obj in ExtraObject)
             {
                 if (obj.name == ObjectName)
                 {
