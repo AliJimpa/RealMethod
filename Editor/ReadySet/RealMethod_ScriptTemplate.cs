@@ -4,10 +4,20 @@ namespace RealMethod
 {
     class RealMethodScriptTemplate
     {
+        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Act", false, 80)]
+        public static void CreateActCommand()
+        {
+            string Path = ScriptCreator.Create("ActTemplate.txt", "MyAct.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Manager/AudioManager", false, 80)]
         public static void CreateAudioManager()
         {
             string Path = ScriptCreator.Create("AudioManagerTemplater.txt", "MyAudioManager.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Pattern/Command", false, 80)]
+        public static void CreateCommand()
+        {
+            string Path = ScriptCreator.Create("CommandTemplate.txt", "MyCommand.cs");
         }
         [MenuItem("Assets/Create/Scripting/RealMethod/Manager/CompositManager", false, 80)]
         public static void CreateCompositManager()

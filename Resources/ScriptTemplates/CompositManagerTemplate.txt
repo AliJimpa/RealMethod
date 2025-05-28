@@ -3,7 +3,7 @@ using RealMethod;
 public class #SCRIPTNAME# : CompositManager
 {
 
-    // Implement IGameManage Methods
+    // Base CompositManager Methods
     public override void OnStateConnect()
     {
 

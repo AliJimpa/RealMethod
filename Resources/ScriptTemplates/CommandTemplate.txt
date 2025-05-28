@@ -1,0 +1,12 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : Command
+{
+    // Base Command Methods
+    public override void Initiate(object Owner)
+    {
+    }
+    protected override void Execute(object Author)
+    {
+    }
+}

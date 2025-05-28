@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [RequireComponent(typeof(Collider))]
+    [RequireComponent(typeof(Collider)) , AddComponentMenu("RealMethod/General/CommandTrigger")]
     public sealed class CommandTrigger : MonoBehaviour
     {
         public Command[] EnterCommands;
