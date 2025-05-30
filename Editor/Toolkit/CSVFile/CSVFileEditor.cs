@@ -8,13 +8,13 @@ using System;
 namespace RealMethod.Editor
 {
     [CustomEditor(typeof(TextAsset))]
-    public class CSVFileEditor : Editor
+    public class CSVFileEditor : UnityEditor.Editor
     {
         class CustomList<T> : EPS_ScriptableObjectList<T> where T : ScriptableObject
         {
             Color originalColor = GUI.backgroundColor;
 
-            public CustomList(Editor other, string Name) : base(other, Name)
+            public CustomList(UnityEditor.Editor other, string Name) : base(other, Name)
             {
 
             }

@@ -514,9 +514,9 @@ namespace RealMethod.Editor
             TextAsset textAsset = (TextAsset)GetMyOwner().target;
             return AssetDatabase.GetAssetPath(textAsset);
         }
-        protected Editor GetMyOwner()
+        protected UnityEditor.Editor GetMyOwner()
         {
-            return (Editor)Owner;
+            return (UnityEditor.Editor)Owner;
         }
         protected void DebugPrint(string message)
         {
@@ -534,7 +534,7 @@ namespace RealMethod.Editor
         protected T CurrentValue;
         protected T CashValue;
 
-        public EP_Storeable(Editor other, string Name) : base(Name, other)
+        public EP_Storeable(UnityEditor.Editor other, string Name) : base(Name, other)
         {
         }
         public T GetValue()
@@ -551,7 +551,7 @@ namespace RealMethod.Editor
     {
         protected List<T> MyList = new List<T>();
 
-        public EP_StoreableList(Editor other, string Name) : base(Name, other)
+        public EP_StoreableList(UnityEditor.Editor other, string Name) : base(Name, other)
         {
         }
         public int GetCount()
@@ -586,7 +586,7 @@ namespace RealMethod.Editor
     /// Sample EP_Storeable
     public class EPS_ScriptableObjectList<T> : EP_StoreableList<T> where T : ScriptableObject
     {
-        public EPS_ScriptableObjectList(Editor other, string Name) : base(other, Name)
+        public EPS_ScriptableObjectList(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -689,7 +689,7 @@ namespace RealMethod.Editor
     }
     public class EPS_Enum<T> : EP_Storeable<T> where T : System.Enum
     {
-        public EPS_Enum(Editor other, string Name) : base(other, Name)
+        public EPS_Enum(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -740,7 +740,7 @@ namespace RealMethod.Editor
     }
     public class EPS_ScriptableObject<T> : EP_Storeable<T> where T : ScriptableObject
     {
-        public EPS_ScriptableObject(Editor other, string Name) : base(other, Name)
+        public EPS_ScriptableObject(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -796,7 +796,7 @@ namespace RealMethod.Editor
     }
     public class EPS_int : EP_Storeable<int>
     {
-        public EPS_int(Editor other, string Name) : base(other, Name)
+        public EPS_int(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -848,7 +848,7 @@ namespace RealMethod.Editor
     }
     public class EPS_string : EP_Storeable<string>
     {
-        public EPS_string(Editor other, string Name) : base(other, Name)
+        public EPS_string(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -899,7 +899,7 @@ namespace RealMethod.Editor
     }
     public class EPS_float : EP_Storeable<float>
     {
-        public EPS_float(Editor other, string Name) : base(other, Name)
+        public EPS_float(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -952,7 +952,7 @@ namespace RealMethod.Editor
     }
     public class EPS_bool : EP_Storeable<bool>
     {
-        public EPS_bool(Editor other, string Name) : base(other, Name)
+        public EPS_bool(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -1003,7 +1003,7 @@ namespace RealMethod.Editor
     }
     public class EPS_Color : EP_Storeable<Color>
     {
-        public EPS_Color(Editor other, string Name) : base(other, Name)
+        public EPS_Color(UnityEditor.Editor other, string Name) : base(other, Name)
         {
 
         }
@@ -1058,7 +1058,7 @@ namespace RealMethod.Editor
     }
     public class EPS_Date : EP_Storeable<System.DateTime>
     {
-        public EPS_Date(Editor other, string Name) : base(other, Name)
+        public EPS_Date(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 

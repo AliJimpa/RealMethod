@@ -6,7 +6,7 @@ using System.IO;
 namespace RealMethod.Editor
 {
     [CustomEditor(typeof(TerrainCollider), true)]
-    public class TerrainToolsWindow : Editor
+    public class TerrainToolsWindow : UnityEditor.Editor
     {
         private TerrainCollider BaseComponent;
         private TreeInstance[] trees;
@@ -76,7 +76,7 @@ namespace RealMethod.Editor
         private ProjectSettingAsset ProjectSetting;
         private Terrain OwnerTerrain;
 
-        public ExportTreeData(Terrain owner, Editor editor)
+        public ExportTreeData(Terrain owner, UnityEditor.Editor editor)
         {
             OwnerTerrain = owner;
             if (OwnerTerrain == null)

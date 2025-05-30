@@ -6,7 +6,7 @@ using System.Reflection;
 namespace RealMethod
 {
     [CustomEditor(typeof(MonoBehaviour), true)]
-    public class DelegateDisplayEditor : Editor
+    public class DelegateDisplayEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
