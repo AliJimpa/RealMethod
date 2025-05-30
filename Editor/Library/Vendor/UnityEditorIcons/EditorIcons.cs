@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
 #if UNITY_EDITOR
 

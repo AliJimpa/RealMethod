@@ -3,7 +3,7 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
 
     public class FindDependencyInjectionWindow : EditorWindow

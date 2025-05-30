@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     public class CurveWindow : EditorWindow
     {

@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     public static class ScriptCreator
     {

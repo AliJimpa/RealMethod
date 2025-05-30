@@ -1,4 +1,4 @@
-namespace RealMethod
+namespace RealMethod.Editor
 {
     public class PCGResource_UnityAsset : AssetHandeler<PCGResourceAsset, DataAsset>
     {

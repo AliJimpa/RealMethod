@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     [CustomEditor(typeof(TextAsset))]
     public class CSVFileEditor : Editor

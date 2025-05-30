@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     [CustomEditor(typeof(TerrainCollider), true)]
     public class TerrainToolsWindow : Editor

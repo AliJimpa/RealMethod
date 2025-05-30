@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     static class MetaDataHandler
     {

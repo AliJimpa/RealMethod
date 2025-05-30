@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     public class Table_UnityAsset : AssetHandeler<TableAsset, DataAsset>
     {

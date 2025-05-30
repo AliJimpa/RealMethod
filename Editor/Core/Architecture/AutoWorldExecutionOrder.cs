@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     //[InitializeOnLoad]
     public static class AutoWorldExecutionOrder

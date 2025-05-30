@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     public class MeshRendererFinderWindow : EditorWindow
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     public static class ProjectSettingWindow
     {

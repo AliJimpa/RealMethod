@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     public class DataAssetEditor : Editor
     {

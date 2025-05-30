@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     // Base EditorProperty Class
     // This class is used to create custom editor properties that can be rendered in the Unity Editor.
