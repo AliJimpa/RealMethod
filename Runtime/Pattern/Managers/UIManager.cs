@@ -253,7 +253,7 @@ namespace RealMethod
             Layers.Add(Name, Result);
             return Result;
         }
-        public IWidget CreateWidget<T>(string Name, MonoBehaviour Owner, VisualTreeAsset UIAsset) where T : MonoBehaviour
+        public IWidget CreateLayer<T>(string Name, MonoBehaviour Owner, VisualTreeAsset UIAsset) where T : MonoBehaviour
         {
             GameObject EmptyObject = new GameObject(Name);
             EmptyObject.layer = 5;
