@@ -89,9 +89,9 @@ namespace RealMethod
             if (GetRoot() != null)
             {
 #if UNITY_EDITOR
-                DestroyImmediate(GetRoot().gameObject);
+    DestroyImmediate(GetRoot().gameObject);
 #else
-			Destroy(GameObjectRoot.gameObject);
+    Destroy(GetRoot().gameObject);
 #endif
             }
             Clear();
