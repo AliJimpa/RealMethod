@@ -11,6 +11,7 @@ namespace RealMethod
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
     public class ButtonAttribute : Attribute { }
 
+#if UNITY_EDITOR
     [CustomEditor(typeof(MonoBehaviour), true)]
     public class ButtonDrawer : Editor
     {
@@ -32,6 +33,7 @@ namespace RealMethod
             }
         }
     }
+#endif
 
 }
 
