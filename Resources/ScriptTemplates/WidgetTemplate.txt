@@ -1,0 +1,14 @@
+using RealMethod;
+using UnityEngine;
+
+public class #SCRIPTNAME# : MonoBehaviour, IWidget
+{
+    //Widget Interface
+    public MonoBehaviour GetWidgetClass()
+    {
+        return this;
+    }
+    public void InitiateWidget(Object Owner)
+    {
+    }
+}

@@ -99,6 +99,11 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("UIManagerTemplate.txt", "MyUIManager.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Widget", false, 80)]
+        public static void CreateWidget()
+        {
+            string Path = ScriptCreator.Create("WidgetTemplate.txt", "MyWidget.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/World", false, 80)]
         public static void CreateWorld()
         {
