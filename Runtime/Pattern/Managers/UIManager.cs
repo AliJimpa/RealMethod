@@ -253,6 +253,42 @@ namespace RealMethod
             Layers.Add(Name, Result);
             return Result;
         }
+        public IWidget CreateWidget<T>(string Name, MonoBehaviour Owner, VisualTreeAsset UIAsset) where T : MonoBehaviour
+        {
+            GameObject EmptyObject = new GameObject(Name);
+            EmptyObject.layer = 5;
+            EmptyObject.transform.SetParent(transform);
+            T WidgetClass = EmptyObject.AddComponent<T>();
+            IWidget Widget = WidgetClass.GetComponent<IWidget>();
+            if (Widget != null)
+            {
+                if (Owner)
+                {
+                    Widget.InitiateWidget(Owner);
+                }
+                else
+                {
+                    Widget.InitiateWidget(this);
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Widget Class Doesn't have IWidget");
+            }
+            UIDocument Result = EmptyObject.AddComponent<UIDocument>();
+            if (UISetting != null)
+            {
+                Result.panelSettings = UISetting;
+            }
+            else
+            {
+                Debug.LogWarning("UISetting is not Valid");
+            }
+            Result.visualTreeAsset = UIAsset;
+            Layers.Add(Name, EmptyObject);
+            return Widget;
+
+        }
         public UIDocument CreateLayer(string Name, VisualTreeAsset UIAsset)
         {
             if (Method == UIMethod.UI_Toolkit)
@@ -261,7 +297,6 @@ namespace RealMethod
                 EmptyObject.layer = 5;
                 EmptyObject.transform.SetParent(transform);
                 UIDocument Result = EmptyObject.AddComponent<UIDocument>();
-                Result.visualTreeAsset = UIAsset;
                 if (UISetting != null)
                 {
                     Result.panelSettings = UISetting;
@@ -270,6 +305,7 @@ namespace RealMethod
                 {
                     Debug.LogWarning("UISetting is not Valid");
                 }
+                Result.visualTreeAsset = UIAsset;
                 Layers.Add(Name, EmptyObject);
                 return Result;
             }
