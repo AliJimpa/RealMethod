@@ -11,6 +11,7 @@ namespace RealMethod
     public abstract class Act : Command, IActTrigger
     {
         private bool Activing = false;
+        private Actor MyOwner;
 
 
         // Implement IActTrigger Interface
@@ -37,6 +38,22 @@ namespace RealMethod
         }
         public bool IsActivate => Activing;
 
+
+        public override bool Initiate(object Owner)
+        {
+            if (Owner is Actor MyOwner)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        protected override void Execute(object Author)
+        {
+
+        }
 
         protected abstract void OnActive();
         protected abstract void OnDeactive();

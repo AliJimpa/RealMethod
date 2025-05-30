@@ -16,7 +16,7 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        public abstract void Initiate(object Owner);
+        public abstract bool Initiate(object Owner);
         protected abstract void Execute(object Author);
     }
     

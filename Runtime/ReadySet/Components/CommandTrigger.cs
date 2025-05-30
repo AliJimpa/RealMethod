@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [RequireComponent(typeof(Collider)) , AddComponentMenu("RealMethod/General/CommandTrigger")]
+    [RequireComponent(typeof(Collider)), AddComponentMenu("RealMethod/General/CommandTrigger")]
     public sealed class CommandTrigger : MonoBehaviour
     {
         public Command[] EnterCommands;
@@ -21,14 +21,18 @@ namespace RealMethod
             {
                 foreach (var command in EnterCommands)
                 {
-                    command.Initiate(this);
+                    if (!command.Initiate(this))
+                    {
+                        Debug.LogWarning($"Failed to initiate command '{command.name}' in {nameof(CommandTrigger)} on GameObject '{gameObject.name}'.");
+                    }
                 }
-            }
-            if (ExitCommand != null)
-            {
+                
                 foreach (var command in ExitCommand)
                 {
-                    command.Initiate(this);
+                    if (!command.Initiate(this))
+                    {
+                        Debug.LogWarning($"Failed to initiate command '{command.name}' in {nameof(CommandTrigger)} on GameObject '{gameObject.name}'.");
+                    }
                 }
             }
         }
