@@ -20,6 +20,14 @@ namespace RealMethod
             get => List[Hash128.Compute(Name)];
             set => List[Hash128.Compute(Name)] = value;
         }
+        public bool IsValid(string Name)
+        {
+            return List.ContainsKey(Hash128.Compute(Name));
+        }
+        public bool IsValid(ItemAsset Asset)
+        {
+            return IsValid(Asset.Name);
+        }
         public void AddItem(string Name, T Value)
         {
             List.Add(Hash128.Compute(Name), Value);
