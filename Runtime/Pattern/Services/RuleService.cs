@@ -15,9 +15,9 @@ namespace RealMethod
 
         public override void WorldUpdated()
         {
-            foreach (var item in Rules.List)
+            foreach (var item in Rules.GetValues())
             {
-                item.Value.Check();
+                item.Check();
             }
         }
 

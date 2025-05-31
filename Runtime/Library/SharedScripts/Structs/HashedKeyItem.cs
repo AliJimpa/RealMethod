@@ -7,7 +7,8 @@ namespace RealMethod
 {
     public struct HashedKeyItem<T>
     {
-        public Dictionary<Hash128, T> List;
+        private Dictionary<Hash128, T> List;
+        public int Count => List.Count;
 
         public HashedKeyItem(int Prewarm)
         {
