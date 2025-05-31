@@ -18,6 +18,10 @@ namespace RealMethod.Editor
         {
             return "Icons/Toolkit/PCGResource";
         }
+        protected override void DoubleClick(PCGResourceAsset asset)
+        {
+
+        }
 
     }
     public class PCGGeneration_UnityAsset : AssetHandeler<PCGGenerationAsset, DataAsset>
@@ -38,6 +42,10 @@ namespace RealMethod.Editor
         {
             return "Icons/Toolkit/PCG_Generation";
         }
+        protected override void DoubleClick(PCGGenerationAsset asset)
+        {
+
+        }
 
     }
     public class PCGCash_UnityAsset : AssetHandeler<PCGCashAsset, DataAsset>
@@ -57,6 +65,10 @@ namespace RealMethod.Editor
         protected override string GetIconPath()
         {
             return "Icons/Toolkit/PCGCash";
+        }
+        protected override void DoubleClick(PCGCashAsset asset)
+        {
+
         }
 
     }

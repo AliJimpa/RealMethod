@@ -21,6 +21,10 @@ namespace RealMethod.Editor
             return "Icons/Pattern/TableAsset";
         }
 
+        protected override void DoubleClick(TableAsset asset)
+        {
+            TableViewerWindow.OpenWindow(asset);
+        }
     }
     public class WorldScene_UnityAsset : AssetHandeler<WorldSceneAsset, DataAsset>
     {
@@ -40,6 +44,10 @@ namespace RealMethod.Editor
         {
             return "Icons/Core/WorldSceneAsset";
         }
+        protected override void DoubleClick(WorldSceneAsset asset)
+        {
+            asset.OnAssetClick();
+        }
     }
     public class Game_UnityAsset : AssetHandeler<MonoScript, Game>
     {
@@ -58,6 +66,10 @@ namespace RealMethod.Editor
         protected override string GetIconPath()
         {
             return "Icons/Core/GameClass";
+        }
+        protected override void DoubleClick(MonoScript asset)
+        {
+            
         }
     }
 
