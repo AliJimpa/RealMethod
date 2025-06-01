@@ -2,14 +2,14 @@ using UnityEditor;
 
 namespace RealMethod
 {
-    [CustomEditor(typeof(Inventory), true)]
+    [CustomEditor(typeof(BaseInventory), true)]
     public class InventoryCompWindow : UnityEditor.Editor
     {
-        private Inventory BaseComponent;
+        private BaseInventory BaseComponent;
 
         private void OnEnable()
         {
-            BaseComponent = (Inventory)target;
+            BaseComponent = (BaseInventory)target;
         }
 
         public override void OnInspectorGUI()
