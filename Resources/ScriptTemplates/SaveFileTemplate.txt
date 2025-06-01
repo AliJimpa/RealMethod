@@ -1,0 +1,28 @@
+using RealMethod;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : SaveFile
+{
+    // Base SaveFile Method
+    public override void OnActiveted(DataManager manager)
+    {
+    }
+    public override void OnSaved()
+    {
+    }
+    public override void OnLoaded()
+    {
+    }
+
+    public override void OnDeleted()
+    {
+    }
+    public override void Default()
+    {
+    }
+    public override void OnDiactiveted(DataManager manager)
+    {
+    }
+
+}

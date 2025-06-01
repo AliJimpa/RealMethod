@@ -74,6 +74,11 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("RuleServiceTemplate.txt", "MyRuleService.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/SaveFile", false, 80)]
+        public static void CreateSaveFile()
+        {
+            string Path = ScriptCreator.Create("SaveFileTemplate.txt", "MySaveFile.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Service", false, 80)]
         public static void CreateService()
         {
