@@ -39,6 +39,11 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("GameServiceTemplate.txt", "MyGameService.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Essential/GameSetting", false, 80)]
+        public static void CreateGameSettingAsset()
+        {
+            string Path = ScriptCreator.Create("GameSettingAssetTemplate.txt", "MyGameSetting.cs" , true);
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Game", false, 80)]
         public static void CreateGameClass()
         {
@@ -74,7 +79,7 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("ServiceTemplate.txt", "MyServicec.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Setting/SettingSection", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/ProjectSetting/SettingSection", false, 80)]
         public static void CreateSettingSection()
         {
             string Path = ScriptCreator.Create("SettingSectionTemplate.txt", "MySection.cs");

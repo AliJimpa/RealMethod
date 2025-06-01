@@ -32,6 +32,23 @@ namespace RealMethod.Editor
             string selectedPath = GetSelectedPath();
             string newScriptPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(selectedPath, defaultName));
 
+            // Prompt user for script name before creating the file
+            string inputName = EditorUtility.SaveFilePanel(
+                "Create Script",
+                selectedPath,
+                Path.GetFileNameWithoutExtension(defaultName),
+                "cs"
+            );
+
+            if (string.IsNullOrEmpty(inputName))
+                return string.Empty;
+
+            // Ensure the path is relative to the Assets folder
+            if (inputName.StartsWith(Application.dataPath))
+                newScriptPath = "Assets" + inputName.Substring(Application.dataPath.Length);
+            else
+                newScriptPath = inputName;
+
             string template = File.ReadAllText(templatePath);
             template = template.Replace("#SCRIPTNAME#", Path.GetFileNameWithoutExtension(newScriptPath));
             string projectName = Application.productName;
