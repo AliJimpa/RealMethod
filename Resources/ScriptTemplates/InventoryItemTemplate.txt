@@ -27,7 +27,15 @@ public class #SCRIPTNAME# : ItemAsset<ItemType>
     {
 
     }
+    public override bool CanPickUp(Inventory owner)
+    {
+        return true;
+    }
     public override bool CanChange(bool IsAdded)
+    {
+        return true;
+    }
+    public override bool CanDropp(Inventory owner)
     {
         return true;
     }
