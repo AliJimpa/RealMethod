@@ -42,7 +42,7 @@ namespace RealMethod.Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/GameSetting", false, 80)]
         public static void CreateGameSettingAsset()
         {
-            string Path = ScriptCreator.Create("GameSettingAssetTemplate.txt", "MyGameSetting.cs" , true);
+            string Path = ScriptCreator.Create("GameSettingAssetTemplate.txt", "MyGameSetting.cs");
         }
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Game", false, 80)]
         public static void CreateGameClass()
