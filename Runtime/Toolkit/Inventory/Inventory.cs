@@ -290,7 +290,7 @@ namespace RealMethod
         [Header("Save")]
         [SerializeField]
         private bool LoadOnAwake = false;
-        [SerializeField, ConditionalHide("LoadOnAwake", true, true)]
+        [SerializeField]
         protected SaveFile SaveSlot;
 
         // override Methods
@@ -345,25 +345,28 @@ namespace RealMethod
         {
             if (LoadOnAwake)
             {
-                DataManager Data = Game.FindManager<DataManager>();
-                if (Data)
+                if (SaveSlot)
                 {
-                    Data.LoadFile();
-                    SaveSlot = Data.File;
+                    return !Load();
                 }
                 else
                 {
-                    Debug.LogError("Cant Find 'DataManager' for load");
+                    DataManager Data = Game.FindManager<DataManager>();
+                    if (Data)
+                    {
+                        Data.LoadFile();
+                        SaveSlot = Data.File;
+                        return !Load();
+                    }
+                    else
+                    {
+                        Debug.LogError("Cant Find 'DataManager' for load");
+                        return true;
+                    }
                 }
-            }
-
-            if (SaveSlot)
-            {
-                return !Load();
             }
             else
             {
-                Debug.LogError($"Save File is Not Valid in Inventory: {gameObject.name}");
                 return true;
             }
         }
