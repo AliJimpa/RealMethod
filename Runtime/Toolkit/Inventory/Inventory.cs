@@ -222,7 +222,6 @@ namespace RealMethod
         // private Methods
         private void SendInventoryMessage(ItemState state, ItemAsset target, int quantity)
         {
-
             switch (state)
             {
                 case ItemState.Create:
@@ -241,6 +240,7 @@ namespace RealMethod
                         default:
                             break;
                     }
+                    AddItem(target);
                     break;
                 case ItemState.Update:
                     target.Cahanged(quantity);
@@ -258,6 +258,7 @@ namespace RealMethod
                         default:
                             break;
                     }
+                    UpdateItem(target, quantity);
                     break;
                 case ItemState.Delete:
                     target.Dropped(this);
@@ -275,6 +276,7 @@ namespace RealMethod
                         default:
                             break;
                     }
+                    RemoveItem();
                     break;
             }
         }
@@ -282,6 +284,9 @@ namespace RealMethod
         // Abstract Methods 
         protected abstract void PostAwake();
         protected abstract bool AddDefaultItem();
+        protected abstract void AddItem(ItemAsset target);
+        protected abstract void UpdateItem(ItemAsset target, int Quantity);
+        protected abstract void RemoveItem();
         public abstract bool Load();
         public abstract bool Save();
     }
