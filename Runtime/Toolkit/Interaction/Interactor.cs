@@ -25,14 +25,6 @@ namespace RealMethod
         Back = 3,
         Left = 4
     };
-    public enum UpdateMethod
-    {
-        None = 0,
-        LateUpdate = 2,
-        Update = 3,
-        FixedUpdate = 4
-
-    };
     public enum Raycasttype
     {
         Line = 0,
