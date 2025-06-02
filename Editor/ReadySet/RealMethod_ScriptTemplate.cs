@@ -4,11 +4,6 @@ namespace RealMethod.Editor
 {
     class RealMethodScriptTemplate
     {
-        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Act", false, 80)]
-        public static void CreateActCommand()
-        {
-            string Path = ScriptCreator.Create("ActTemplate.txt", "MyAct.cs");
-        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Manager/AudioManager", false, 80)]
         public static void CreateAudioManager()
         {
@@ -64,7 +59,7 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("MixerManagerTemplate.txt", "MyMixerManager.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/PoolAsset", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/Pattern/PoolAsset", false, 80)]
         public static void CreatePoolAsset()
         {
             string Path = ScriptCreator.Create("PoolAssetTemplate.txt", "MyPoolAsset.cs");
@@ -74,7 +69,7 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("RuleServiceTemplate.txt", "MyRuleService.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/SaveFile", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/SaveAsset", false, 80)]
         public static void CreateSaveFile()
         {
             string Path = ScriptCreator.Create("SaveFileTemplate.txt", "MySaveFile.cs");
