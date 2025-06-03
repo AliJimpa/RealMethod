@@ -10,55 +10,22 @@ namespace RealMethod
 
     public abstract class Act : Command, IActTrigger
     {
-        private bool Activing = false;
-        private Actor MyOwner;
+        public bool IsActivate => throw new System.NotImplementedException();
 
+        public void ActiveAct()
+        {
+            throw new System.NotImplementedException();
+        }
 
-        // Implement IActTrigger Interface
-        void IActTrigger.ActiveAct()
-        {
-            Activing = true;
-            OnActive();
-        }
-        void IActTrigger.DeactiveAct()
-        {
-            Activing = false;
-            OnDeactive();
-        }
         public bool CanActiveAct(object Author)
         {
-            if (CanActive())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            throw new System.NotImplementedException();
         }
-        public bool IsActivate => Activing;
 
-
-        public override bool Initiate(object Owner)
+        public void DeactiveAct()
         {
-            if (Owner is Actor MyOwner)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            throw new System.NotImplementedException();
         }
-        protected override void Execute(object Author)
-        {
-
-        }
-
-        protected abstract void OnActive();
-        protected abstract void OnDeactive();
-        protected abstract bool CanActive();
-
     }
 
 }

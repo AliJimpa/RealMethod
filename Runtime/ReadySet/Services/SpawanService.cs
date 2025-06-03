@@ -253,28 +253,36 @@ namespace RealMethod
             emptyobject.AddComponent<MeshFilter>().mesh = geometry;
             return emptyobject.AddComponent<MeshRenderer>();
         }
-        public static T Command<T>(GameObject prefab, MonoBehaviour owner) where T : Command
+        public static T Command<T>(GameObject prefab) where T : Command
         {
             T command = prefab.GetComponent<T>();
             if (command == null)
             {
-                Debug.LogError($"Spawn Command Failed: The GameObject '{prefab.name}' does not have a component of type '{typeof(T).Name}'.");
+                Debug.LogError($"Spawn Command Failed: The GameObject '{prefab.name}' does not have a command of type '{typeof(T).Name}'.");
+                return null;
+            }
+            return Prefab(prefab).GetComponent<T>();
+        }
+        public static T Command<T>(GameObject prefab, Transform paret) where T : Command
+        {
+            T command = prefab.GetComponent<T>();
+            if (command == null)
+            {
+                Debug.LogError($"Spawn Command Failed: The GameObject '{prefab.name}' does not have a command of type '{typeof(T).Name}'.");
                 return null;
             }
 
             GameObject SpawnedObject;
-            if (owner)
+            if (paret != null)
             {
-                SpawnedObject = Object.Instantiate(prefab, owner.transform);
+                SpawnedObject = Object.Instantiate(prefab, paret);
             }
             else
             {
-                SpawnedObject = Spawn.Prefab(prefab);
+                SpawnedObject = Prefab(prefab);
+                Debug.LogWarning("Spawn Service: Owner is not valid Command Just Created");
             }
             return SpawnedObject.GetComponent<T>();
         }
-
-
-
     }
 }

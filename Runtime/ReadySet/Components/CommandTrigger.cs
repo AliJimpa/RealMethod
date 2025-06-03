@@ -5,8 +5,8 @@ namespace RealMethod
     [RequireComponent(typeof(Collider)), AddComponentMenu("RealMethod/General/CommandTrigger")]
     public sealed class CommandTrigger : MonoBehaviour
     {
-        public Command[] EnterCommands;
-        public Command[] ExitCommand;
+        public ExecutCommand[] EnterCommands;
+        public ExecutCommand[] ExitCommand;
 
         private void OnValidate()
         {
@@ -21,18 +21,12 @@ namespace RealMethod
             {
                 foreach (var command in EnterCommands)
                 {
-                    if (!command.Initiate(this))
-                    {
-                        Debug.LogWarning($"Failed to initiate command '{command.name}' in {nameof(CommandTrigger)} on GameObject '{gameObject.name}'.");
-                    }
+                    command.GetComponent<ICommandInitiator>().Initiate(this, this);
                 }
-                
+
                 foreach (var command in ExitCommand)
                 {
-                    if (!command.Initiate(this))
-                    {
-                        Debug.LogWarning($"Failed to initiate command '{command.name}' in {nameof(CommandTrigger)} on GameObject '{gameObject.name}'.");
-                    }
+                    command.GetComponent<ICommandInitiator>().Initiate(this, this);
                 }
             }
         }
