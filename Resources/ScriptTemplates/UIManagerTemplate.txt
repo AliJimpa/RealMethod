@@ -8,5 +8,9 @@ public class #SCRIPTNAME# : UIManager
     {
         throw new System.NotImplementedException();
     }
+    public override bool IsMaster()
+    {
+        return false;
+    }
 
 }

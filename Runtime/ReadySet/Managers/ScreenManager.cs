@@ -34,9 +34,9 @@ namespace RealMethod
         {
 
         }
-
-
-
-
+        public override bool IsMaster()
+        {
+            return false;
+        }
     }
 }

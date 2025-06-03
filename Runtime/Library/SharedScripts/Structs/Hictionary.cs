@@ -5,12 +5,12 @@ using NUnit.Framework;
 
 namespace RealMethod
 {
-    public struct HashedKeyItem<T>
+    public struct Hictionary<T>
     {
         private Dictionary<Hash128, T> List;
         public int Count => List.Count;
 
-        public HashedKeyItem(int Prewarm)
+        public Hictionary(int Prewarm)
         {
             List = new Dictionary<Hash128, T>(Prewarm);
         }
@@ -20,23 +20,23 @@ namespace RealMethod
             get => List[Hash128.Compute(Name)];
             set => List[Hash128.Compute(Name)] = value;
         }
-        public bool IsValid(string Name)
+        public bool ContainsKey(string Name)
         {
             return List.ContainsKey(Hash128.Compute(Name));
         }
-        public bool IsValid(ItemAsset Asset)
+        public bool ContainsKey(ItemAsset Asset)
         {
-            return IsValid(Asset.Name);
+            return ContainsKey(Asset.Name);
         }
-        public void AddItem(string Name, T Value)
+        public void Add(string Name, T Value)
         {
             List.Add(Hash128.Compute(Name), Value);
         }
-        public bool RemoveItem(string Name)
+        public bool Remove(string Name)
         {
             return List.Remove(Hash128.Compute(Name));
         }
-        public bool TryGetItem(string Name, out T Result)
+        public bool TryGetValue(string Name, out T Result)
         {
             return List.TryGetValue(Hash128.Compute(Name), out Result);
         }

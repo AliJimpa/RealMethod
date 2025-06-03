@@ -35,7 +35,7 @@ namespace RealMethod
         public Action<ItemAsset, int> OnItemUpdated;
         public Action OnItemRemove;
 
-        protected HashedKeyItem<ItemProperty> Items = new HashedKeyItem<ItemProperty>(5);
+        protected Hictionary<ItemProperty> Items = new Hictionary<ItemProperty>(5);
 
 
         public ItemAsset this[string Name]
@@ -62,7 +62,7 @@ namespace RealMethod
         // public methods
         public int GetQuantity(string Name)
         {
-            if (Items.IsValid(Name))
+            if (Items.ContainsKey(Name))
             {
                 return Items[Name].Quantity;
             }
@@ -78,15 +78,15 @@ namespace RealMethod
         }
         public bool IsValidItem(string Name)
         {
-            return Items.IsValid(Name);
+            return Items.ContainsKey(Name);
         }
         public bool CreateNewItem(ItemAsset item, int Quantity, int ItemCapacity)
         {
-            if (!Items.IsValid(item.Name))
+            if (!Items.ContainsKey(item.Name))
             {
                 if (item.CanPickUp(this))
                 {
-                    Items.AddItem(item.Name, new ItemProperty(item, Quantity, ItemCapacity));
+                    Items.Add(item.Name, new ItemProperty(item, Quantity, ItemCapacity));
                     SendInventoryMessage(ItemState.Create, item, Quantity);
                     return true;
                 }
@@ -105,7 +105,7 @@ namespace RealMethod
         {
             if (Items.Count < _capacity || _capacity == 0)
             {
-                if (Items.IsValid(item.Name))
+                if (Items.ContainsKey(item.Name))
                 {
                     if (item.CanChange(true))
                     {
@@ -117,7 +117,7 @@ namespace RealMethod
                 {
                     if (item.CanPickUp(this))
                     {
-                        Items.AddItem(item.Name, new ItemProperty(item, Quantity));
+                        Items.Add(item.Name, new ItemProperty(item, Quantity));
                         SendInventoryMessage(ItemState.Create, item, Quantity);
                     }
                 }
@@ -132,7 +132,7 @@ namespace RealMethod
         public bool RemoveItem(string Name, int Quantity = 1)
         {
             ItemProperty target;
-            if (Items.TryGetItem(Name, out target))
+            if (Items.TryGetValue(Name, out target))
             {
                 if (target.Asset.CanChange(true))
                 {
@@ -145,7 +145,7 @@ namespace RealMethod
                     {
                         if (target.Asset.CanDropp(this))
                         {
-                            if (Items.RemoveItem(Name))
+                            if (Items.Remove(Name))
                             {
                                 SendInventoryMessage(ItemState.Delete, null, 0);
                             }
@@ -176,9 +176,9 @@ namespace RealMethod
         }
         public bool DeleteItem(string Name)
         {
-            if (Items.IsValid(Name))
+            if (Items.ContainsKey(Name))
             {
-                bool Result = Items.RemoveItem(Name);
+                bool Result = Items.Remove(Name);
                 if (Result)
                 {
                     SendInventoryMessage(ItemState.Delete, null, 0);

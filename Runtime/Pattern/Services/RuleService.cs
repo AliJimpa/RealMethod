@@ -6,11 +6,11 @@ namespace RealMethod
     {
         public Action<string> OnAddedRule;
         public Action<string> OnFinishRule;
-        private HashedKeyItem<Observer<bool>> Rules;
+        private Hictionary<Observer<bool>> Rules;
 
         public RuleService()
         {
-            Rules = new HashedKeyItem<Observer<bool>>(5);
+            Rules = new Hictionary<Observer<bool>>(5);
         }
 
         public override void WorldUpdated()
@@ -23,12 +23,12 @@ namespace RealMethod
 
         public void AddRule(string rule, Func<bool> conditional)
         {
-            Rules.AddItem(rule, new Observer<bool>(conditional, AnyRuleChanged));
+            Rules.Add(rule, new Observer<bool>(conditional, AnyRuleChanged));
             OnAddedRule?.Invoke(rule);
         }
         public void RemoveRule(string rule)
         {
-            Rules.RemoveItem(rule);
+            Rules.Remove(rule);
             OnFinishRule?.Invoke(rule);
         }
         public void Check(string rule)
@@ -65,7 +65,7 @@ namespace RealMethod
         public bool IsValid(string rule)
         {
             Observer<bool> result;
-            return Rules.TryGetItem(rule, out result);
+            return Rules.TryGetValue(rule, out result);
         }
         public void BindRule(string Name, Action<Observer> callback)
         {

@@ -29,7 +29,7 @@ namespace RealMethod
         public Action<CanvasGroup, bool> OnFadeOut;
 
         // Private Variable
-        private Dictionary<string, GameObject> Layers = new Dictionary<string, GameObject>(5);
+        private Hictionary<GameObject> Layers = new Hictionary<GameObject>(5);
 
 
         public MonoBehaviour GetManagerClass()
@@ -46,6 +46,11 @@ namespace RealMethod
                 {
                     LayerWidget.InitiateWidget(this);
                 }
+            }
+
+            if (Game.TryFindService("Spawn", out Service target) && target is Spawn SpawnServ)
+            {
+                SpawnServ.BringManager(this);
             }
         }
 
@@ -72,6 +77,64 @@ namespace RealMethod
 
 
         //Core Methods
+        public GameObject CreateLayer(string Name)
+        {
+            GameObject Result = new GameObject(Name);
+            Result.layer = 5;
+            switch (Method)
+            {
+                case UIMethod.IMGUI:
+                    break;
+                case UIMethod.uGUI:
+                    Result.AddComponent<Canvas>();
+                    Result.AddComponent<CanvasScaler>();
+                    Result.AddComponent<GraphicRaycaster>();
+                    break;
+                case UIMethod.UI_Toolkit:
+                    Result.AddComponent<UIDocument>();
+                    break;
+            }
+            Result.transform.SetParent(transform);
+            Layers.Add(Name, Result);
+            return Result;
+        }
+        public UIDocument CreateLayer(string Name, VisualTreeAsset UIAsset)
+        {
+            if (Method == UIMethod.UI_Toolkit)
+            {
+                GameObject EmptyObject = new GameObject(Name);
+                EmptyObject.layer = 5;
+                EmptyObject.transform.SetParent(transform);
+                UIDocument Result = EmptyObject.AddComponent<UIDocument>();
+                if (UISetting != null)
+                {
+                    Result.panelSettings = UISetting;
+                }
+                else
+                {
+                    Debug.LogWarning("UISetting is not Valid");
+                }
+                Result.visualTreeAsset = UIAsset;
+                Layers.Add(Name, EmptyObject);
+                return Result;
+            }
+            else
+            {
+                Debug.LogError("Just use for 'UI_Toolkit' Method");
+                return null;
+            }
+        }
+        public GameObject AddLayer(GameObject Prefab, string Name)
+        {
+            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
+            Layers.Add(Name, SpawnedObject);
+            IWidget widget = SpawnedObject.GetComponent<IWidget>();
+            if (widget != null)
+            {
+                widget.InitiateWidget(this);
+            }
+            return SpawnedObject;
+        }
         public GameObject AddLayer(MonoBehaviour Owner, GameObject Prefab, string Name)
         {
             GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
@@ -86,32 +149,10 @@ namespace RealMethod
                 else
                 {
                     widget.InitiateWidget(this);
+                    Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
                 }
             }
             return SpawnedObject;
-        }
-        public IWidget AddWidget(MonoBehaviour Owner, GameObject Prefab, string Name)
-        {
-            if (Prefab.GetComponent<IWidget>() != null)
-            {
-                GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
-                Layers.Add(Name, SpawnedObject);
-                IWidget widget = SpawnedObject.GetComponent<IWidget>();
-                if (Owner)
-                {
-                    widget.InitiateWidget(Owner);
-                }
-                else
-                {
-                    widget.InitiateWidget(this);
-                }
-                return widget;
-            }
-            else
-            {
-                Debug.LogWarning("Only Prefab that has Widget Class Component");
-                return null;
-            }
         }
         public bool RemoveLayer(string Name)
         {
@@ -129,44 +170,6 @@ namespace RealMethod
         public GameObject FindLayer(string Name)
         {
             return Layers[Name];
-        }
-        public bool FindWidgetByName(string Name, out IWidget TargetWidget)
-        {
-            IWidget Target = Layers[Name].GetComponent<IWidget>();
-            if (Target != null)
-            {
-                TargetWidget = Target;
-                return true;
-            }
-            else
-            {
-                TargetWidget = null;
-                return false;
-            }
-        }
-        public T FindClassinLayers<T>() where T : class
-        {
-            T Reslut = null;
-            IWidget TargetWidget;
-            foreach (var Lay in Layers)
-            {
-                TargetWidget = Lay.Value.GetComponent<IWidget>();
-                if (TargetWidget == null)
-                {
-                    continue;
-                }
-
-                if (TargetWidget.GetWidgetClass() is T WidgetClass)
-                {
-                    Reslut = WidgetClass;
-                    break;
-                }
-                else
-                {
-                    TargetWidget = null;
-                }
-            }
-            return Reslut;
         }
         public void SortLayer(string Name, int Order)
         {
@@ -230,89 +233,6 @@ namespace RealMethod
             else
             {
                 return false;
-            }
-        }
-        public GameObject CreateEmptyLayer(string Name)
-        {
-            GameObject Result = new GameObject(Name);
-            Result.layer = 5;
-            switch (Method)
-            {
-                case UIMethod.IMGUI:
-                    break;
-                case UIMethod.uGUI:
-                    Result.AddComponent<Canvas>();
-                    Result.AddComponent<CanvasScaler>();
-                    Result.AddComponent<GraphicRaycaster>();
-                    break;
-                case UIMethod.UI_Toolkit:
-                    Result.AddComponent<UIDocument>();
-                    break;
-            }
-            Result.transform.SetParent(transform);
-            Layers.Add(Name, Result);
-            return Result;
-        }
-        public IWidget CreateLayer<T>(string Name, MonoBehaviour Owner, VisualTreeAsset UIAsset) where T : MonoBehaviour
-        {
-            GameObject EmptyObject = new GameObject(Name);
-            EmptyObject.layer = 5;
-            EmptyObject.transform.SetParent(transform);
-            T WidgetClass = EmptyObject.AddComponent<T>();
-            IWidget Widget = WidgetClass.GetComponent<IWidget>();
-            if (Widget != null)
-            {
-                if (Owner)
-                {
-                    Widget.InitiateWidget(Owner);
-                }
-                else
-                {
-                    Widget.InitiateWidget(this);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Widget Class Doesn't have IWidget");
-            }
-            UIDocument Result = EmptyObject.AddComponent<UIDocument>();
-            if (UISetting != null)
-            {
-                Result.panelSettings = UISetting;
-            }
-            else
-            {
-                Debug.LogWarning("UISetting is not Valid");
-            }
-            Result.visualTreeAsset = UIAsset;
-            Layers.Add(Name, EmptyObject);
-            return Widget;
-
-        }
-        public UIDocument CreateLayer(string Name, VisualTreeAsset UIAsset)
-        {
-            if (Method == UIMethod.UI_Toolkit)
-            {
-                GameObject EmptyObject = new GameObject(Name);
-                EmptyObject.layer = 5;
-                EmptyObject.transform.SetParent(transform);
-                UIDocument Result = EmptyObject.AddComponent<UIDocument>();
-                if (UISetting != null)
-                {
-                    Result.panelSettings = UISetting;
-                }
-                else
-                {
-                    Debug.LogWarning("UISetting is not Valid");
-                }
-                Result.visualTreeAsset = UIAsset;
-                Layers.Add(Name, EmptyObject);
-                return Result;
-            }
-            else
-            {
-                Debug.LogError("Just use for 'UI_Toolkit' Method");
-                return null;
             }
         }
         public bool FadeIn(string Name, float Duration)
@@ -388,8 +308,155 @@ namespace RealMethod
             }
         }
 
+        public IWidget CreateWidget<T>(string Name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
+        {
+            GameObject EmptyObject = new GameObject(Name);
+            EmptyObject.layer = 5;
+            EmptyObject.transform.SetParent(transform);
+            T WidgetClass = EmptyObject.AddComponent<T>();
+            IWidget Widget = WidgetClass.GetComponent<IWidget>();
+            if (Widget != null)
+            {
+                if (Owner)
+                {
+                    Widget.InitiateWidget(Owner);
+                }
+                else
+                {
+                    Widget.InitiateWidget(this);
+                    Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Widget Class Doesn't have IWidget");
+            }
+            UIDocument Result = EmptyObject.AddComponent<UIDocument>();
+            if (UISetting != null)
+            {
+                Result.panelSettings = UISetting;
+            }
+            else
+            {
+                Debug.LogWarning("UISetting is not Valid");
+            }
+            Result.visualTreeAsset = UIAsset;
+            Layers.Add(Name, EmptyObject);
+            return Widget;
+
+        }
+        public IWidget CreateWidget<T>(string Name, VisualTreeAsset UIAsset) where T : MonoBehaviour
+        {
+            GameObject EmptyObject = new GameObject(Name);
+            EmptyObject.layer = 5;
+            EmptyObject.transform.SetParent(transform);
+            T WidgetClass = EmptyObject.AddComponent<T>();
+            IWidget Widget = WidgetClass.GetComponent<IWidget>();
+            if (Widget != null)
+            {
+                Widget.InitiateWidget(this);
+            }
+            else
+            {
+                Debug.LogWarning("Widget Class Doesn't have IWidget");
+            }
+            UIDocument Result = EmptyObject.AddComponent<UIDocument>();
+            if (UISetting != null)
+            {
+                Result.panelSettings = UISetting;
+            }
+            else
+            {
+                Debug.LogWarning("UISetting is not Valid");
+            }
+            Result.visualTreeAsset = UIAsset;
+            Layers.Add(Name, EmptyObject);
+            return Widget;
+
+        }
+        public IWidget AddWidget(string Name, GameObject Prefab, MonoBehaviour Owner)
+        {
+            if (Prefab.GetComponent<IWidget>() != null)
+            {
+                GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
+                Layers.Add(Name, SpawnedObject);
+                IWidget widget = SpawnedObject.GetComponent<IWidget>();
+                if (Owner)
+                {
+                    widget.InitiateWidget(Owner);
+                }
+                else
+                {
+                    widget.InitiateWidget(this);
+                    Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
+                }
+                return widget;
+            }
+            else
+            {
+                Debug.LogWarning("Only Prefab that has Widget Class Component");
+                return null;
+            }
+        }
+        public IWidget AddWidget(string Name, GameObject Prefab)
+        {
+            if (Prefab.GetComponent<IWidget>() != null)
+            {
+                GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
+                Layers.Add(Name, SpawnedObject);
+                IWidget widget = SpawnedObject.GetComponent<IWidget>();
+                widget.InitiateWidget(this);
+                return widget;
+            }
+            else
+            {
+                Debug.LogWarning("Only Prefab that has Widget Class Component");
+                return null;
+            }
+        }
+        public bool FindWidgetByName(string Name, out IWidget TargetWidget)
+        {
+            IWidget Target = Layers[Name].GetComponent<IWidget>();
+            if (Target != null)
+            {
+                TargetWidget = Target;
+                return true;
+            }
+            else
+            {
+                TargetWidget = null;
+                return false;
+            }
+        }
+
+        public T FindClassInLayers<T>() where T : class
+        {
+            T Reslut = null;
+            IWidget TargetWidget;
+            foreach (var Lay in Layers.GetValues())
+            {
+                TargetWidget = Lay.GetComponent<IWidget>();
+                if (TargetWidget == null)
+                {
+                    continue;
+                }
+
+                if (TargetWidget.GetWidgetClass() is T WidgetClass)
+                {
+                    Reslut = WidgetClass;
+                    break;
+                }
+                else
+                {
+                    TargetWidget = null;
+                }
+            }
+            return Reslut;
+        }
+
         // Abstract Methods
         public abstract void InitiateService(Service newService);
+        public abstract bool IsMaster();
 
         //Enumerators
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration)
