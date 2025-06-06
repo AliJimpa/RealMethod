@@ -1,0 +1,25 @@
+using RealMethod;
+using UnityEngine;
+
+public class TEST : TargetedCommand<WhoIsOwner>
+{
+    private void Awake()
+    {
+        if (enabled)
+            enabled = false;
+    }
+
+    // Base Command Mtethods
+    protected override void OnInitiate(object author)
+    {
+        enabled = true;
+    }
+    protected override bool CanExecute(object Owner)
+    {
+        return enabled;
+    }
+    protected override void Execute(object Owner)
+    {
+
+    }
+}

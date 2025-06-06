@@ -11,7 +11,7 @@ namespace RealMethod
     public abstract class Command : MonoBehaviour, ICommandInitiator
     {
         // Implement ICommandInitiator Interface
-        public void Initiate(object author, MonoBehaviour owner)
+        void ICommandInitiator.Initiate(object author, MonoBehaviour owner)
         {
             OnInitiate(author, owner);
         }
@@ -32,12 +32,15 @@ namespace RealMethod
         // Implement ICommandExecuter Interface
         void ICommandExecuter.ExecuteCommand(object Executer)
         {
-            if (enabled)
+            if (CanExecute(Executer))
+            {
                 Execute(Executer);
+            }
         }
 
         // Abstract Methods
         protected abstract void Execute(object Owner);
+        protected abstract bool CanExecute(object Owner);
     }
     // A command targeted at a specific type (e.g., a component).
     public abstract class TargetedCommand<T> : ExecutCommand where T : MonoBehaviour
@@ -45,7 +48,7 @@ namespace RealMethod
         public T MyOwner { get; private set; }
 
         // Override Methods
-        protected override void OnInitiate(object author, MonoBehaviour owner)
+        protected sealed override void OnInitiate(object author, MonoBehaviour owner)
         {
             if (owner is T MyOwner)
             {
@@ -68,6 +71,8 @@ namespace RealMethod
     {
         /// <summary> Called when the command starts. </summary>
         void StartCommand(float Duration = 0);
+        /// <summary> Called every update or tick cycle. </summary>
+        void UpdateCommand();
         /// <summary> Called to pause the command temporarily. </summary>
         void StopCommand();
         /// <summary> Elapsed time since command Live. </summary>
@@ -92,15 +97,40 @@ namespace RealMethod
 
 
         // Override Methods
-        protected override void OnInitiate(object author, MonoBehaviour owner)
+        protected sealed override void OnInitiate(object author, MonoBehaviour owner)
         {
             MyOwner = owner;
             MyAuthor = author;
             IsValidated = true;
+            OnInitiate();
         }
 
         // Methods
-        protected void UpdateCommand()
+        protected virtual float PreProcessDuration(float StartDuration)
+        {
+            return StartDuration;
+        }
+
+        // Implement ILiveCommand Interface
+        public float ElapsedTime => lifeTime;
+        public bool IsFinished => !isRunning;
+        void ILiveCommand.StartCommand(float Duration)
+        {
+            float NewDuration = PreProcessDuration(Duration);
+            if (IsValidated)
+            {
+                hasDuration = NewDuration > 0;
+                lifeTime = NewDuration > 0 ? NewDuration : 0;
+                OnBegin();
+                OnStarted?.Invoke(this);
+                isRunning = true;
+            }
+            else
+            {
+                Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
+            }
+        }
+        void ILiveCommand.UpdateCommand()
         {
             if (!isRunning)
             {
@@ -119,7 +149,7 @@ namespace RealMethod
                     if (hasDuration)
                     {
                         lifeTime = 0;
-                        StopCommand();
+                        ((ILiveCommand)this).StopCommand();
                         return;
                     }
                 }
@@ -134,34 +164,7 @@ namespace RealMethod
                 Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
             }
         }
-        protected virtual float PreProcessDuration(float StartDuration)
-        {
-            return StartDuration;
-        }
-
-        // Implement ILiveCommand Interface
-        public float ElapsedTime => lifeTime;
-        public bool IsFinished => !isRunning;
-        public void StartCommand(float Duration)
-        {
-            if (!enabled)
-                return;
-
-            float NewDuration = PreProcessDuration(Duration);
-            if (IsValidated)
-            {
-                hasDuration = NewDuration > 0;
-                lifeTime = NewDuration > 0 ? NewDuration : 0;
-                OnBegin();
-                OnStarted?.Invoke(this);
-                isRunning = true;
-            }
-            else
-            {
-                Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
-            }
-        }
-        public void StopCommand()
+        void ILiveCommand.StopCommand()
         {
             if (IsValidated)
             {
@@ -176,7 +179,7 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        protected abstract void OnCreated();
+        protected abstract void OnInitiate();
         protected abstract void OnBegin();
         protected abstract bool CanUpdate();
         protected abstract void OnUpdate();
@@ -204,7 +207,7 @@ namespace RealMethod
         private bool islive = true;
 
         // Override Methods
-        protected override bool CanUpdate()
+        protected sealed override bool CanUpdate()
         {
             return islive;
         }
@@ -212,26 +215,20 @@ namespace RealMethod
 
         // Implement ILiveCommand Interface
         public bool IsPaused => !islive;
-        public void PauseCommand()
+        void IBehaviourCommand.PauseCommand()
         {
             islive = false;
             OnPause();
             OnPaused?.Invoke(this);
         }
-        public void ResumeCommand()
+        void IBehaviourCommand.ResumeCommand()
         {
-            if (!enabled)
-                return;
-
             islive = true;
         }
-        public void ResetCommand(float Duration)
+        void IBehaviourCommand.ResetCommand(float Duration)
         {
-            if (!enabled)
-                return;
-
             OnReset();
-            StartCommand(Duration);
+            ((ILiveCommand)this).StartCommand(Duration);
         }
 
         // Abstract Methods

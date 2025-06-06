@@ -1,7 +1,7 @@
 using RealMethod;
 using UnityEngine;
 
-public class #SCRIPTNAME# : Command
+public class #SCRIPTNAME# : ExecutCommand
 {
     private void Awake()
     {
@@ -13,5 +13,13 @@ public class #SCRIPTNAME# : Command
     protected override void OnInitiate(object author, MonoBehaviour owner)
     {
         enabled = true;
+    }
+    protected override bool CanExecute(object Owner)
+    {
+        return enabled;
+    }
+    protected override void Execute(object Owner)
+    {
+        
     }
 }

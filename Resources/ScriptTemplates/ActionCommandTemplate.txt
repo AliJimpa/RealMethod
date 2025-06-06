@@ -1,0 +1,39 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : ActionCommand
+{
+
+    // Unity Mtethods
+    private void Awake()
+    {
+        if (enabled)
+            enabled = false;
+    }
+
+    // Base Command Mtethods
+    protected override void OnInitiate()
+    {
+        enabled = true;
+    }
+    protected override void OnBegin()
+    {
+
+    }
+    protected override void OnUpdate()
+    {
+
+    }
+    protected override void OnEnd()
+    {
+        enabled = false;
+    }
+    protected override void OnPause()
+    {
+
+    }
+    protected override void OnReset()
+    {
+        enabled = true;
+    }
+
+}

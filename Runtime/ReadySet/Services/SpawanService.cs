@@ -253,17 +253,7 @@ namespace RealMethod
             emptyobject.AddComponent<MeshFilter>().mesh = geometry;
             return emptyobject.AddComponent<MeshRenderer>();
         }
-        public static T Command<T>(GameObject prefab) where T : Command
-        {
-            T command = prefab.GetComponent<T>();
-            if (command == null)
-            {
-                Debug.LogError($"Spawn Command Failed: The GameObject '{prefab.name}' does not have a command of type '{typeof(T).Name}'.");
-                return null;
-            }
-            return Prefab(prefab).GetComponent<T>();
-        }
-        public static T Command<T>(GameObject prefab, Transform paret) where T : Command
+        public static T Command<T>(GameObject prefab, MonoBehaviour owner, object author) where T : Command
         {
             T command = prefab.GetComponent<T>();
             if (command == null)
@@ -272,17 +262,15 @@ namespace RealMethod
                 return null;
             }
 
-            GameObject SpawnedObject;
-            if (paret != null)
+            if (owner == null || author == null)
             {
-                SpawnedObject = Object.Instantiate(prefab, paret);
+                Debug.LogError($"Spawn Command Failed: Owner or Author Not valid.");
+                return null;
             }
-            else
-            {
-                SpawnedObject = Prefab(prefab);
-                Debug.LogWarning("Spawn Service: Owner is not valid Command Just Created");
-            }
-            return SpawnedObject.GetComponent<T>();
+            GameObject SpawnedObject = Object.Instantiate(prefab, owner.transform);
+            T TargetCommand = SpawnedObject.GetComponent<T>();
+            TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, owner);
+            return TargetCommand;
         }
     }
 }
