@@ -7,6 +7,8 @@ namespace RealMethod
     public interface ICommandInitiator
     {
         void Initiate(object author, MonoBehaviour owner);
+        T CastCommand<T>() where T : MonoBehaviour;
+        Command GetClass();
     }
     public abstract class Command : MonoBehaviour, ICommandInitiator
     {
@@ -15,9 +17,18 @@ namespace RealMethod
         {
             OnInitiate(author, owner);
         }
+        T ICommandInitiator.CastCommand<T>() where T : class
+        {
+            return this as T;
+        }
+        Command ICommandInitiator.GetClass()
+        {
+            return this;
+        }
 
         // Abstract Methods
         protected abstract void OnInitiate(object author, MonoBehaviour owner);
+
     }
 
 
