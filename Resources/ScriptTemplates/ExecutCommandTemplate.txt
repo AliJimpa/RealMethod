@@ -10,7 +10,7 @@ public class #SCRIPTNAME# : ExecutCommand
     }
 
     // Base Command Mtethods
-    protected override void OnInitiate(object author, MonoBehaviour owner)
+    protected override void OnInitiate(Object author, Object owner)
     {
         enabled = true;
     }

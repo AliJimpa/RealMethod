@@ -10,7 +10,7 @@ public class TEST : TargetedCommand<WhoIsOwner>
     }
 
     // Base Command Mtethods
-    protected override void OnInitiate(object author)
+    protected override void OnInitiate(Object author)
     {
         enabled = true;
     }
