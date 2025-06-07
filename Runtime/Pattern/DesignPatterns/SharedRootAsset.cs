@@ -4,32 +4,25 @@ namespace RealMethod
 {
     public abstract class SharedRootAsset : DataAsset
     {
-        private Transform AlternativeRootObject;
-        private Transform RootObject
-        {
-            get
-            {
-                if (AlternativeRootObject == null)
-                {
-                    AlternativeRootObject = new GameObject("Shared_" + name).transform;
-                    OnRootInitiate(AlternativeRootObject);
-                }
-                return AlternativeRootObject;
-            }
-        }
+        private Transform RootObject;
 
-        protected abstract void OnRootInitiate(Transform Root);
-
-        public Transform GetRoot()
+        // Basic Methods
+        public bool IsInitiateRoot()
         {
             return RootObject;
         }
-        protected bool IsInitiate()
+        public Transform GetRoot()
         {
-            return AlternativeRootObject;
+            if (RootObject == null)
+            {
+                RootObject = new GameObject("Shared_" + name).transform;
+                OnRootInitiate(RootObject);
+            }
+            return RootObject;
         }
 
-
+        //Abstract Methods
+        protected abstract void OnRootInitiate(Transform Root);
     }
 
 }

@@ -9,21 +9,8 @@ namespace RealMethod
         protected Stack<T> Available = new Stack<T>();
         private bool Prewarmed = false;
 
-        // abstract Methods
-        protected abstract void PreProcess(T Comp);
-        protected abstract T CreateObject();
-        protected abstract IEnumerator PostProcess(T Comp);
 
-
-        //virtual methods
-        public virtual void Clear()
-        {
-            Available.Clear();
-            Prewarmed = false;
-        }
-
-
-        // Functions
+        // Public Methods
         public void Prewarm(int amount = 1)
         {
             if (Prewarmed)
@@ -89,7 +76,7 @@ namespace RealMethod
             if (GetRoot() != null)
             {
 #if UNITY_EDITOR
-    DestroyImmediate(GetRoot().gameObject);
+                DestroyImmediate(GetRoot().gameObject);
 #else
     Destroy(GetRoot().gameObject);
 #endif
@@ -97,11 +84,17 @@ namespace RealMethod
             Clear();
         }
 
+        //virtual methods
+        public virtual void Clear()
+        {
+            Available.Clear();
+            Prewarmed = false;
+        }
 
-        // Base Method
+        // Protected Method
         protected T Request()
         {
-            if (!IsInitiate())
+            if (!IsInitiateRoot())
             {
                 Clear();
             }
@@ -133,6 +126,7 @@ namespace RealMethod
             Available.Push(Value);
         }
 
+        // Private Methods
         private void CallPoolBackEvent(T Target, IEnumerator Corotine)
         {
             MonoBehaviour MonoComp = Target.GetComponent<MonoBehaviour>();
@@ -146,7 +140,13 @@ namespace RealMethod
             }
         }
 
+        // Abstract Methods
+        protected abstract void PreProcess(T Comp);
+        protected abstract T CreateObject();
+        protected abstract IEnumerator PostProcess(T Comp);
+
     }
+
 
     public class PoolHandeler : MonoBehaviour
     {
