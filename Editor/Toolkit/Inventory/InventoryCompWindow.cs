@@ -22,7 +22,7 @@ namespace RealMethod
             {
                 if (BaseComponent.Count > 0)
                 {
-                    foreach (var item in BaseComponent.CopyItemsByClass<ItemAsset>())
+                    foreach (var item in BaseComponent.CopyItemsByClass<InventoryItemAsset>())
                     {
                         //EditorGUILayout.BeginHorizontal();
                         int ItemQuantity = BaseComponent.GetQuantity(item);

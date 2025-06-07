@@ -8,10 +8,10 @@ namespace RealMethod
         protected override void PostAwake()
         {
         }
-        protected override void AddItem(ItemAsset target)
+        protected override void AddItem(InventoryItemAsset target)
         {
         }
-        protected override void UpdateItem(ItemAsset target, int Quantity)
+        protected override void UpdateItem(InventoryItemAsset target, int Quantity)
         {
         }
 

@@ -230,10 +230,22 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T Class<T>(string name) where T : MonoBehaviour
+        public static T Component<T>(GameObject target) where T : MonoBehaviour
         {
-            GameObject emptyobject = new GameObject(name);
-            return emptyobject.AddComponent<T>();
+            return target.AddComponent<T>();
+        }
+        public static T Component<T>(string name)
+        {
+            GameObject emptyobjec = new GameObject(name);
+            return emptyobjec.GetComponent<T>();
+        }
+        public static T Class<T>() where T : Object, new()
+        {
+            return new T();
+        }
+        public static GameObject GameObject(string name)
+        {
+            return new GameObject(name);
         }
         public static GameObject Prefab(GameObject prefab)
         {
@@ -269,8 +281,15 @@ namespace RealMethod
             }
             GameObject SpawnedObject = Object.Instantiate(prefab, owner.transform);
             T TargetCommand = SpawnedObject.GetComponent<T>();
-            TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, owner);
+            if (!TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, owner))
+            {
+                Debug.LogWarning($"Spawn Command Breack: Initiation failed for command '{typeof(T).Name}' on '{prefab.name}'.");
+            }
             return TargetCommand;
+        }
+        public static T DataAsset<T>(T asset) where T : DataAsset
+        {
+            return ScriptableObject.CreateInstance<T>();
         }
     }
 }

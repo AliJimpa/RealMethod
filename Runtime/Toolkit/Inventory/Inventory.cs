@@ -26,19 +26,19 @@ namespace RealMethod
         [SerializeField]
         private BehaviorType Behavior;
         [SerializeField]
-        private ItemAsset[] DefaultItem;
+        private InventoryItemAsset[] DefaultItem;
 
         public int Capacity => _capacity;
         public bool IsEnoughCapacity => _capacity > 0 ? Items.Count < _capacity : true;
         public int Count => Items.Count;
-        public Action<ItemAsset, int> OnItemAdded;
-        public Action<ItemAsset, int> OnItemUpdated;
+        public Action<InventoryItemAsset, int> OnItemAdded;
+        public Action<InventoryItemAsset, int> OnItemUpdated;
         public Action OnItemRemove;
 
-        protected Hictionary<ItemProperty> Items = new Hictionary<ItemProperty>(5);
+        protected Hictionary<InventoryItemProperty> Items = new Hictionary<InventoryItemProperty>(5);
 
 
-        public ItemAsset this[string Name]
+        public InventoryItemAsset this[string Name]
         {
             get => Items[Name].Asset;
         }
@@ -72,7 +72,7 @@ namespace RealMethod
                 return -1;
             }
         }
-        public int GetQuantity(ItemAsset asset)
+        public int GetQuantity(InventoryItemAsset asset)
         {
             return GetQuantity(asset.Name);
         }
@@ -80,13 +80,13 @@ namespace RealMethod
         {
             return Items.ContainsKey(Name);
         }
-        public bool CreateNewItem(ItemAsset item, int Quantity, int ItemCapacity)
+        public bool CreateNewItem(InventoryItemAsset item, int Quantity, int ItemCapacity)
         {
             if (!Items.ContainsKey(item.Name))
             {
                 if (item.CanPickUp(this))
                 {
-                    Items.Add(item.Name, new ItemProperty(item, Quantity, ItemCapacity));
+                    Items.Add(item.Name, new InventoryItemProperty(item, Quantity, ItemCapacity));
                     SendInventoryMessage(ItemState.Create, item, Quantity);
                     return true;
                 }
@@ -101,7 +101,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool AddItem(ItemAsset item, int Quantity = 1)
+        public bool AddItem(InventoryItemAsset item, int Quantity = 1)
         {
             if (Items.Count < _capacity || _capacity == 0)
             {
@@ -117,7 +117,7 @@ namespace RealMethod
                 {
                     if (item.CanPickUp(this))
                     {
-                        Items.Add(item.Name, new ItemProperty(item, Quantity));
+                        Items.Add(item.Name, new InventoryItemProperty(item, Quantity));
                         SendInventoryMessage(ItemState.Create, item, Quantity);
                     }
                 }
@@ -131,7 +131,7 @@ namespace RealMethod
         }
         public bool RemoveItem(string Name, int Quantity = 1)
         {
-            ItemProperty target;
+            InventoryItemProperty target;
             if (Items.TryGetValue(Name, out target))
             {
                 if (target.Asset.CanChange(true))
@@ -191,7 +191,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public T[] CopyItemsByClass<T>() where T : ItemAsset
+        public T[] CopyItemsByClass<T>() where T : InventoryItemAsset
         {
             List<T> Result = new List<T>();
             foreach (var pack in Items.GetValues())
@@ -203,7 +203,7 @@ namespace RealMethod
             }
             return Result.ToArray();
         }
-        public T CopyItemByClass<T>() where T : ItemAsset
+        public T CopyItemByClass<T>() where T : InventoryItemAsset
         {
             foreach (var pack in Items.GetValues())
             {
@@ -220,7 +220,7 @@ namespace RealMethod
         }
 
         // private Methods
-        private void SendInventoryMessage(ItemState state, ItemAsset target, int quantity)
+        private void SendInventoryMessage(ItemState state, InventoryItemAsset target, int quantity)
         {
             switch (state)
             {
@@ -284,8 +284,8 @@ namespace RealMethod
         // Abstract Methods 
         protected abstract void PostAwake();
         protected abstract bool AddDefaultItem();
-        protected abstract void AddItem(ItemAsset target);
-        protected abstract void UpdateItem(ItemAsset target, int Quantity);
+        protected abstract void AddItem(InventoryItemAsset target);
+        protected abstract void UpdateItem(InventoryItemAsset target, int Quantity);
         protected abstract void RemoveItem();
         public abstract bool Load();
         public abstract bool Save();
@@ -381,16 +381,8 @@ namespace RealMethod
         protected abstract void OnSaved();
     }
 
-    public abstract class ItemAsset : DataAsset
+    public abstract class InventoryItemAsset : ItemAsset
     {
-        [Header("Basic")]
-        [SerializeField]
-        protected string _name;
-        public string Name => _name;
-        [SerializeField]
-        protected Texture2D _icon;
-        public Texture2D Icon => _icon;
-
         public abstract void PickedUp(Inventory owner, int quantity);
         public abstract void Cahanged(int quantity);
         public abstract void Dropped(Inventory owner);
@@ -398,29 +390,29 @@ namespace RealMethod
         public abstract bool CanPickUp(Inventory owner);
         public abstract bool CanDropp(Inventory owner);
     }
-    public abstract class ItemAsset<T> : ItemAsset where T : Enum
+    public abstract class InventoryItemAsset<T> : InventoryItemAsset where T : Enum
     {
-        [Header("Category")]
+        [Header("Inventory")]
         [SerializeField]
         protected T Type;
     }
 
-    public class ItemProperty
+    public class InventoryItemProperty
     {
         [SerializeField]
         private string ItemName;
         [SerializeField]
-        private ItemAsset ItemAsset;
+        private InventoryItemAsset ItemAsset;
         [SerializeField]
         private int ItemQuantity;
         [SerializeField]
         private int ItemCapacity;
         // Just for Getter Serialize Variable
-        public ItemAsset Asset => ItemAsset;
+        public InventoryItemAsset Asset => ItemAsset;
         public int Quantity => ItemQuantity;
         public int Capacity => ItemCapacity;
 
-        public ItemProperty(ItemAsset asset, int quantity, int capacity = 0)
+        public InventoryItemProperty(InventoryItemAsset asset, int quantity, int capacity = 0)
         {
             ItemAsset = asset;
             ItemQuantity = quantity;
@@ -457,8 +449,8 @@ namespace RealMethod
 
     public interface IInventoryData
     {
-        ItemProperty[] LoadInventory(Inventory owner);
-        void SaveInventory(Inventory owner, ItemProperty[] Data);
+        InventoryItemProperty[] LoadInventory(Inventory owner);
+        void SaveInventory(Inventory owner, InventoryItemProperty[] Data);
         bool IsExistInventoryData(Inventory owner);
 
     }
