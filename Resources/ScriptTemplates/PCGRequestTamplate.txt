@@ -1,0 +1,15 @@
+using RealMethod;
+using UnityEngine;
+
+public class #SCRIPTNAME# : PCGRequest
+{
+    // Base PCGRequest Methods
+    protected override void Initialized()
+	{
+
+	}
+	public override PCGRequestResult Process(ref PCGData Context, string StringParam, float FloatParam, Vector3 VectorParam)
+	{
+		return 0;
+	}
+}

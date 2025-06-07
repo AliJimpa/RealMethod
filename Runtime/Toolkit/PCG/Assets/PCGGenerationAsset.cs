@@ -10,7 +10,7 @@ namespace RealMethod
     public struct PCGData
     {
         public string CodeName;
-        public int PrefabID { get; private set; } 
+        public int PrefabID { get; private set; }
         public int InstanceCount { get; private set; }
         public int SelfIndex { get; private set; }
         public Vector3 Position;
@@ -38,7 +38,7 @@ namespace RealMethod
     [Serializable]
     public struct PCGOrder
     {
-        public string Command;
+        public string Request;
         public string StringParam;
         public float FloatParam;
         public Vector3 VectorParam;
@@ -153,26 +153,34 @@ namespace RealMethod
         private PCGData Stage_Background(PCGData Data)
         {
             PCGData temporary = Data;
-            int CommandResult = 0;
-            PCGCommand MyCommand = null;
+            int RequestResult = 0;
+            PCGRequest MyRequest = null;
             foreach (var order in Background)
             {
-                if (order.Command != null)
+                if (order.Request != null)
                 {
-                    Type CommandType = Type.GetType(order.Command);
-                    if (CommandType == null)
+                    Type RequestType = Type.GetType(order.Request);
+                    if (RequestType == null)
                     {
-                        Debug.LogError($"Command type '{order.Command}' not found.");
+                        Debug.LogError($"Request type '{order.Request}' not found.");
                         return Data;
                     }
-                    MyCommand = (PCGCommand)Activator.CreateInstance(CommandType);
-                    CommandResult = (int)MyCommand.Process(ref temporary, order.StringParam, order.FloatParam, order.VectorParam);
+                    MyRequest = (PCGRequest)Activator.CreateInstance(RequestType);
+                    var requestInterface = MyRequest as ICommandInitiator;
+                    if (requestInterface != null)
+                    {
+                        if (!requestInterface.Initiate(this, this))
+                        {
+                            Debug.LogWarning($"{this.name}> ICommandInitiator.Initiate failed for {MyRequest.GetType().Name}");
+                        }
+                    }
+                    RequestResult = (int)MyRequest.Process(ref temporary, order.StringParam, order.FloatParam, order.VectorParam);
                 }
-                if (CommandResult == 2)
+                if (RequestResult == 2)
                 {
-                    Debug.LogWarning($"{this.name}> The Command({MyCommand} is Faield)");
+                    Debug.LogWarning($"{this.name}> The Request({MyRequest} is Faield)");
                 }
-                if (CommandResult == 3)
+                if (RequestResult == 3)
                 {
                     return Data;
                 }
@@ -182,26 +190,34 @@ namespace RealMethod
         private PCGData Stage_Middleground(PCGData Data)
         {
             PCGData temporary = Data;
-            int CommandResult = 0;
-            PCGCommand MyCommand = null;
+            int RequestResult = 0;
+            PCGRequest MyRequest = null;
             foreach (var Oerder in Middleground)
             {
-                if (Oerder.Command != null)
+                if (Oerder.Request != null)
                 {
-                    Type CommandType = Type.GetType(Oerder.Command);
-                    if (CommandType == null)
+                    Type RequestType = Type.GetType(Oerder.Request);
+                    if (RequestType == null)
                     {
-                        Debug.LogError($"Command type '{Oerder.Command}' not found.");
+                        Debug.LogError($"Request type '{Oerder.Request}' not found.");
                         return Data;
                     }
-                    MyCommand = (PCGCommand)Activator.CreateInstance(CommandType);
-                    CommandResult = (int)MyCommand.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
+                    MyRequest = (PCGRequest)Activator.CreateInstance(RequestType);
+                    var requestInterface = MyRequest as ICommandInitiator;
+                    if (requestInterface != null)
+                    {
+                        if (!requestInterface.Initiate(this, this))
+                        {
+                            Debug.LogWarning($"{this.name}> ICommandInitiator.Initiate failed for {MyRequest.GetType().Name}");
+                        }
+                    }
+                    RequestResult = (int)MyRequest.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
                 }
-                if (CommandResult == 2)
+                if (RequestResult == 2)
                 {
-                    Debug.LogWarning($"{this.name}> The Command({MyCommand} is Faield)");
+                    Debug.LogWarning($"{this.name}> The Request({MyRequest} is Faield)");
                 }
-                if (CommandResult == 3)
+                if (RequestResult == 3)
                 {
                     return Data;
                 }
@@ -211,26 +227,34 @@ namespace RealMethod
         private PCGData Stage_Foreground(PCGData Data)
         {
             PCGData temporary = Data;
-            int CommandResult = 0;
-            PCGCommand MyCommand = null;
+            int RequestResult = 0;
+            PCGRequest MyRequest = null;
             foreach (var Oerder in Foreground)
             {
-                if (Oerder.Command != null)
+                if (Oerder.Request != null)
                 {
-                    Type CommandType = Type.GetType(Oerder.Command);
-                    if (CommandType == null)
+                    Type RequestType = Type.GetType(Oerder.Request);
+                    if (RequestType == null)
                     {
-                        Debug.LogError($"Command type '{Oerder.Command}' not found.");
+                        Debug.LogError($"Request type '{Oerder.Request}' not found.");
                         return Data;
                     }
-                    MyCommand = (PCGCommand)Activator.CreateInstance(CommandType);
-                    CommandResult = (int)MyCommand.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
+                    MyRequest = (PCGRequest)Activator.CreateInstance(RequestType);
+                    var requestInterface = MyRequest as ICommandInitiator;
+                    if (requestInterface != null)
+                    {
+                        if (!requestInterface.Initiate(this, this))
+                        {
+                            Debug.LogWarning($"{this.name}> ICommandInitiator.Initiate failed for {MyRequest.GetType().Name}");
+                        }
+                    }
+                    RequestResult = (int)MyRequest.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
                 }
-                if (CommandResult == 2)
+                if (RequestResult == 2)
                 {
-                    Debug.LogWarning($"{this.name}> The Command({MyCommand} is Faield)");
+                    Debug.LogWarning($"{this.name}> The Request({MyRequest} is Faield)");
                 }
-                if (CommandResult == 3)
+                if (RequestResult == 3)
                 {
                     return Data;
                 }
@@ -240,26 +264,34 @@ namespace RealMethod
         private PCGData Stage_PostProcess(PCGData Data)
         {
             PCGData temporary = Data;
-            int CommandResult = 0;
-            PCGCommand MyCommand = null;
+            int RequestResult = 0;
+            PCGRequest MyRequest = null;
             foreach (var Oerder in FullItem)
             {
-                if (Oerder.Command != null)
+                if (Oerder.Request != null)
                 {
-                    Type CommandType = Type.GetType(Oerder.Command);
-                    if (CommandType == null)
+                    Type RequestType = Type.GetType(Oerder.Request);
+                    if (RequestType == null)
                     {
-                        Debug.LogError($"Command type '{Oerder.Command}' not found.");
+                        Debug.LogError($"Request type '{Oerder.Request}' not found.");
                         return Data;
                     }
-                    MyCommand = (PCGCommand)Activator.CreateInstance(CommandType);
-                    CommandResult = (int)MyCommand.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
+                    MyRequest = (PCGRequest)Activator.CreateInstance(RequestType);
+                    var requestInterface = MyRequest as ICommandInitiator;
+                    if (requestInterface != null)
+                    {
+                        if (!requestInterface.Initiate(this, this))
+                        {
+                            Debug.LogWarning($"{this.name}> ICommandInitiator.Initiate failed for {MyRequest.GetType().Name}");
+                        }
+                    }
+                    RequestResult = (int)MyRequest.Process(ref temporary, Oerder.StringParam, Oerder.FloatParam, Oerder.VectorParam);
                 }
-                if (CommandResult == 1)
+                if (RequestResult == 1)
                 {
-                    Debug.LogWarning($"{this.name}> The Command({MyCommand} is Faield)");
+                    Debug.LogWarning($"{this.name}> The Request({MyRequest} is Faield)");
                 }
-                if (CommandResult == 2)
+                if (RequestResult == 2)
                 {
                     return Data;
                 }
@@ -282,7 +314,7 @@ namespace RealMethod
             // Get all available MonoBehaviour types **only once**
             List<Type> componentTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => typeof(PCGCommand).IsAssignableFrom(type) && !type.IsAbstract)
+                .Where(type => typeof(PCGRequest).IsAssignableFrom(type) && !type.IsAbstract)
                 .ToList();
 
             Guide = "";

@@ -10,7 +10,7 @@ namespace RealMethod
     }
 
     [AddComponentMenu("RealMethod/Toolkit/PCG/PCG")]
-    public class PCG : MonoBehaviour
+    public abstract class PCG : MonoBehaviour
     {
         [Header("Initiate")]
         [SerializeField]
