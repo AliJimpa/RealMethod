@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace RealMethod
@@ -6,29 +5,23 @@ namespace RealMethod
     // A base one-shot command
     public interface ICommandInitiator
     {
-        void Initiate(object author, MonoBehaviour owner);
-        T CastCommand<T>() where T : MonoBehaviour;
-        Command GetClass();
+        bool Initiate(Object author, Object owner);
+        T CastCommand<T>() where T : Object;
     }
     public abstract class Command : MonoBehaviour, ICommandInitiator
     {
         // Implement ICommandInitiator Interface
-        void ICommandInitiator.Initiate(object author, MonoBehaviour owner)
+        bool ICommandInitiator.Initiate(Object author, Object owner)
         {
-            OnInitiate(author, owner);
+            return OnInitiate(author, owner);
         }
         T ICommandInitiator.CastCommand<T>() where T : class
         {
             return this as T;
         }
-        Command ICommandInitiator.GetClass()
-        {
-            return this;
-        }
 
         // Abstract Methods
-        protected abstract void OnInitiate(object author, MonoBehaviour owner);
-
+        protected abstract bool OnInitiate(Object author, Object owner);
     }
 
 
@@ -59,20 +52,21 @@ namespace RealMethod
         public T MyOwner { get; private set; }
 
         // Override Methods
-        protected sealed override void OnInitiate(object author, MonoBehaviour owner)
+        protected sealed override bool OnInitiate(Object author, Object owner)
         {
             if (owner is T MyOwner)
             {
-                OnInitiate(author);
+                return OnInitiate(author);
             }
             else
             {
-                Debug.LogWarning($"Command '{GetType().Name}' could not be initiated: Owner is not of type '{typeof(T).Name}'.");
+                Debug.LogError($"Command '{GetType().Name}' could not be initiated: Owner is not of type '{typeof(T).Name}'.");
+                return false;
             }
         }
 
         // Abstract Methods
-        protected abstract void OnInitiate(object author);
+        protected abstract bool OnInitiate(Object author);
     }
 
 
@@ -98,8 +92,8 @@ namespace RealMethod
         public bool IsValidated { get; private set; }
         public object MyAuthor { get; private set; }
         public MonoBehaviour MyOwner { get; private set; }
-        public Action<LifecycleCommand> OnStarted;
-        public Action<LifecycleCommand> OnFinished;
+        public System.Action<LifecycleCommand> OnStarted;
+        public System.Action<LifecycleCommand> OnFinished;
 
         // Private Variable
         private bool hasDuration = false;
@@ -108,12 +102,23 @@ namespace RealMethod
 
 
         // Override Methods
-        protected sealed override void OnInitiate(object author, MonoBehaviour owner)
+        protected sealed override bool OnInitiate(Object author, Object owner)
         {
-            MyOwner = owner;
             MyAuthor = author;
-            IsValidated = true;
-            OnInitiate();
+
+            if (owner is MonoBehaviour result)
+            {
+                MyOwner = result;
+                IsValidated = true;
+                OnInitiate();
+                return true;
+            }
+            else
+            {
+                IsValidated = false;
+                Debug.LogError($"Command '{GetType().Name}' could not be initiated: Owner is not a MonoBehaviour.");
+                return false;
+            }
         }
 
         // Methods
@@ -212,7 +217,7 @@ namespace RealMethod
     public abstract class ActionCommand : LifecycleCommand, IBehaviourCommand
     {
         // Public Variable
-        public Action<LifecycleCommand> OnPaused;
+        public System.Action<LifecycleCommand> OnPaused;
 
         // Private Variable
         private bool islive = true;

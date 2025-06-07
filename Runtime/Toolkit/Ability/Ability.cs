@@ -19,7 +19,7 @@ namespace RealMethod
             Active,
             Deactive,
             Delete,
-            Move,
+            Apply,
         }
 
         [Header("Setting")]
@@ -64,7 +64,7 @@ namespace RealMethod
             {
                 foreach (var ablilty in StartAbility)
                 {
-                    Apply(ablilty, this);
+                    Create(ablilty, this);
                 }
             }
         }
@@ -119,7 +119,22 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool Apply(GameObject prefab, object author, bool AutoActive = false)
+        public bool Apply(AbilityCommand command, Ability target)
+        {
+            if (!Abilities.ContainsKey(command.Name))
+            {
+                command.transform.SetParent(target.transform);
+                Abilities.Add(command.Name, command);
+                MessageBehavior(AbilityState.Apply, command);
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning($"Apply Ability Failed: An ability with ID '{command.Name}' already exists.");
+                return false;
+            }
+        }
+        public bool Create(GameObject prefab, UnityEngine.Object author, bool AutoActive = false)
         {
             AbilityCommand command = prefab.GetComponent<AbilityCommand>();
             if (command == null)
@@ -141,10 +156,10 @@ namespace RealMethod
             }
 
             GameObject SpawnedObject = Instantiate(prefab, transform);
-            SpawnedObject.name = $"Ability_{prefab.name}";
+            SpawnedObject.name = $"Ability_{command.Name}";
             AbilityCommand TargetCommand = SpawnedObject.GetComponent<AbilityCommand>();
             TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, this);
-            Abilities.Add(prefab.name, TargetCommand);
+            Abilities.Add(TargetCommand.Name, TargetCommand);
             if (AutoActive)
             {
                 Active(prefab.name);
@@ -152,7 +167,7 @@ namespace RealMethod
             MessageBehavior(AbilityState.Create, TargetCommand);
             return true;
         }
-        public bool Deny(string name)
+        public bool Delete(string name)
         {
             if (Abilities.ContainsKey(name))
             {
@@ -167,9 +182,9 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool Deny(GameObject prefab)
+        public bool Delete(GameObject prefab)
         {
-            return Deny(prefab.name);
+            return Delete(prefab.GetComponent<AbilityCommand>().Name);
         }
         public bool Move(string name, Ability target)
         {
@@ -223,26 +238,30 @@ namespace RealMethod
                     case AbilityState.Delete:
                         OnDeleted?.Invoke(command);
                         break;
-                    case AbilityState.Move:
+                    case AbilityState.Apply:
+                        OnActive?.Invoke(command);
                         break;
                 }
             }
-            else
+
+            if (Behavior == AbilityBehavior.SendMessage || Behavior == AbilityBehavior.Both)
             {
                 SendMessage("OnAbilityUpdated", State, SendMessageOptions.RequireReceiver);
             }
 
         }
 
-
-
     }
 
     public abstract class AbilityCommand : LifecycleCommand
     {
+        [Header("General")]
+        [SerializeField]
+        private string AbilityName;
         [SerializeField, Tooltip("Ziro means infinit")]
         private float LifeTime;
         public float Duration => LifeTime;
+        public string Name => AbilityName;
 
         // Implemented Override Methods
         protected sealed override void OnInitiate()

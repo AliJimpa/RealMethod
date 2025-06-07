@@ -253,7 +253,7 @@ namespace RealMethod
             emptyobject.AddComponent<MeshFilter>().mesh = geometry;
             return emptyobject.AddComponent<MeshRenderer>();
         }
-        public static T Command<T>(GameObject prefab, MonoBehaviour owner, object author) where T : Command
+        public static T Command<T>(GameObject prefab, MonoBehaviour owner, Object author) where T : Command
         {
             T command = prefab.GetComponent<T>();
             if (command == null)
