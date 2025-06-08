@@ -8,7 +8,7 @@ namespace RealMethod
     [CreateAssetMenu(fileName = "AudioPool", menuName = "RealMethod/Pool/AudioPool", order = 1)]
     public sealed class AudioPool : PoolAsset<AudioSource>
     {
-        [Header("ّFirstSetup")]
+        [Header("Setting")]
         [SerializeField]
         private AudioClip[] TargetClip = new AudioClip[1];
         [SerializeField]
@@ -20,11 +20,60 @@ namespace RealMethod
         [SerializeField]
         private float rolloffDistanceMax = 100f;
 
+        //Actions
+        public Action<AudioSource> OnSpawn;
 
 
-        private bool IsNeedLocation = false;
-        private Vector3 AudioLocation;
+        // Private Variable
+        private byte UseCashData = 0; //0:NoCashing 1:CashLocation 2:CashLocation&Rotation 3:Transform
+        private Vector3 CashPosition = Vector3.zero;
+        private Quaternion CashRotation = Quaternion.identity;
+        private Vector3 CashScale = Vector3.one;
 
+
+        // Functions
+        public AudioSource Spawn(Vector3 location, Quaternion rotation, Vector3 scale)
+        {
+            UseCashData = 3;
+            CashPosition = location;
+            CashRotation = rotation;
+            CashScale = scale;
+            return Spawn();
+        }
+        public AudioSource Spawn(Vector3 location, Quaternion rotation)
+        {
+            UseCashData = 2;
+            CashPosition = location;
+            CashRotation = rotation;
+            return Spawn();
+        }
+        public AudioSource Spawn(Vector3 location)
+        {
+            UseCashData = 1;
+            CashPosition = location;
+            return Spawn();
+        }
+        public AudioSource Spawn()
+        {
+            UseCashData = 0;
+            AudioSource result = Request();
+            OnSpawn?.Invoke(result);
+            return result;
+        }
+
+        // Private Functions
+        private void RandomizeAudioSource(AudioSource source)
+        {
+            int clipLength = TargetClip.Length;
+            if (clipLength > 1)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, clipLength - 1);
+                source.clip = TargetClip[randomIndex];
+            }
+        }
+
+
+        // Base PoolAsset Methods
         protected override void OnRootInitiate(Transform Root)
         {
             AudioManager audiomanager = Game.World.GetManager<AudioManager>();
@@ -37,12 +86,28 @@ namespace RealMethod
                 Root.SetParent(Game.World.transform);
             }
         }
-
         protected override void PreProcess(AudioSource Comp)
         {
-            if (IsNeedLocation)
+            switch (UseCashData)
             {
-                Comp.transform.position = AudioLocation;
+                case 1:
+                    Comp.transform.position = CashPosition;
+                    break;
+                case 2:
+                    Comp.transform.position = CashPosition;
+                    Comp.transform.rotation = CashRotation;
+                    break;
+                case 3:
+                    Comp.transform.position = CashPosition;
+                    Comp.transform.rotation = CashRotation;
+                    if (CashScale != Vector3.one)
+                    {
+                        Comp.transform.localScale = CashScale;
+                    }
+                    break;
+                default:
+                    Debug.LogWarning($"For this CashStage ({UseCashData}) is Not implemented any Preprocessing");
+                    break;
             }
         }
         protected override AudioSource CreateObject()
@@ -68,28 +133,7 @@ namespace RealMethod
         }
 
 
-        public void PlaySound(Vector3 Location)
-        {
-            IsNeedLocation = true;
-            AudioLocation = Location;
-            Request();
-        }
-        public void PlaySound2D()
-        {
-            IsNeedLocation = false;
-            Request();
-        }
-
-        private void RandomizeAudioSource(AudioSource source)
-        {
-            int clipLength = TargetClip.Length;
-            if (clipLength > 1)
-            {
-                int randomIndex = UnityEngine.Random.Range(0, clipLength - 1);
-                source.clip = TargetClip[randomIndex];
-            }
-        }
-
+        // IEnumerator
         private IEnumerator PoolBack(AudioSource source)
         {
             RandomizeAudioSource(source);

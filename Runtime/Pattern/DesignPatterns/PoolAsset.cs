@@ -6,6 +6,7 @@ namespace RealMethod
 {
     public abstract class PoolAsset<T> : SharedRootAsset where T : Component
     {
+        public int Count => Available.Count;
         protected Stack<T> Available = new Stack<T>();
         private bool Prewarmed = false;
 
@@ -48,7 +49,7 @@ namespace RealMethod
                 }
             }
         }
-        public void Remove(int amount = 1, bool RemoveActivated = false)
+        public void Remove(int amount = 1, bool Force = false)
         {
             for (int i = 0; i < amount; i++)
             {
@@ -59,7 +60,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    if (RemoveActivated)
+                    if (Force)
                     {
                         T ValidComponent = GetRoot().GetComponent<T>();
                         if (ValidComponent)
@@ -73,7 +74,7 @@ namespace RealMethod
         }
         public void Clean()
         {
-            if (GetRoot() != null)
+            if (IsInitiateRoot())
             {
 #if UNITY_EDITOR
                 DestroyImmediate(GetRoot().gameObject);
@@ -85,7 +86,7 @@ namespace RealMethod
         }
 
         //virtual methods
-        public virtual void Clear()
+        protected virtual void Clear()
         {
             Available.Clear();
             Prewarmed = false;

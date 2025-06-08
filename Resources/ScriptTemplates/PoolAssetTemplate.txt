@@ -1,33 +1,99 @@
+using System.Collections;
 using RealMethod;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : PoolAsset<Component>
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/Pool/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : PoolAsset<YOURCOMPONENET>
 {
+    [Header("Setting")]
+    [SerializeField]
+    private YOURCOMPONENET Identity;
+    [SerializeField]
+    private float Duration = 2;
+
+
+    // Private Variable
+    private byte UseCashData = 0; //0:NoCashing 1:CashLocation 2:CashLocation&Rotation 3:Transform
+    private Vector3 CashPosition = Vector3.zero;
+    private Quaternion CashRotation = Quaternion.identity;
+    private Vector3 CashScale = Vector3.one;
+
+
+    // Functions
+    public YOURCOMPONENET Spawn(Vector3 location, Quaternion rotation, Vector3 scale)
+    {
+        UseCashData = 3;
+        CashPosition = location;
+        CashRotation = rotation;
+        CashScale = scale;
+        return Spawn();
+    }
+    public YOURCOMPONENET Spawn(Vector3 location, Quaternion rotation)
+    {
+        UseCashData = 2;
+        CashPosition = location;
+        CashRotation = rotation;
+        return Spawn();
+    }
+    public YOURCOMPONENET Spawn(Vector3 location)
+    {
+        UseCashData = 1;
+        CashPosition = location;
+        return Spawn();
+    }
+    public YOURCOMPONENET Spawn()
+    {
+        UseCashData = 0;
+        return Request();
+    }
+
 
     // Base PoolAsset Methods
     protected override void OnRootInitiate(Transform Root)
     {
-        throw new System.NotImplementedException();
-        //Root.SetParent(audiomanager.transform);
+        Root.SetParent(Game.World.transform);
     }
-    protected override void PreProcess(Component Comp)
+    protected override void PreProcess(YOURCOMPONENET Comp)
+    {
+        switch (UseCashData)
+        {
+            case 1:
+                Comp.transform.position = CashPosition;
+                break;
+            case 2:
+                Comp.transform.position = CashPosition;
+                Comp.transform.rotation = CashRotation;
+                break;
+            case 3:
+                Comp.transform.position = CashPosition;
+                Comp.transform.rotation = CashRotation;
+                if (CashScale != Vector3.one)
+                {
+                    Comp.transform.localScale = CashScale;
+                }
+                break;
+            default:
+                Debug.LogWarning($"For this CashStage ({UseCashData}) is Not implemented any Preprocessing");
+                break;
+        }
+    }
+    protected override YOURCOMPONENET CreateObject()
     {
         throw new System.NotImplementedException();
     }
-    protected override Component CreateObject()
-    {
-        throw new System.NotImplementedException();
-    }
-    protected override IEnumerator PostProcess(Component Comp)
+    protected override IEnumerator PostProcess(YOURCOMPONENET Comp)
     {
         return PoolBack(Comp);
     }
 
+
+    // IEnumerator
     private IEnumerator PoolBack(Component source)
     {
         // Befor Timer
-        yield return new WaitForSeconds();
+        yield return new WaitForSeconds(Duration);
         // After Time
     }
+
 
 }
