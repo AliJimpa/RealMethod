@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 
 namespace RealMethod
 {
-    public abstract class NewWidget : MonoBehaviour, IWidget
+    public abstract class WidgetToolkit : MonoBehaviour, IWidget
     {
         [Header("Widget")]
         [SerializeField]

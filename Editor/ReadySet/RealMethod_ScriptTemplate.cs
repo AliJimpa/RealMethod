@@ -128,6 +128,11 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("WidgetTemplate.txt", "MyWidget.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/UI/WidgetToolkit", false, 80)]
+        public static void CreateWidgetToolkit()
+        {
+            string Path = ScriptCreator.Create("WidgetToolkitTemplate.txt", "MyWidgetToolkit.cs");
+        }
         // Pattern
         [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/BaseCommand", false, 80)]
         public static void CreateCommand()
