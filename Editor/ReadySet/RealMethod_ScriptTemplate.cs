@@ -26,15 +26,14 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("GameSettingAssetTemplate.txt", "MyGameSetting.cs");
         }
-
-
-
-        // Managers
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Manager", false, 80)]
         public static void CreateManager()
         {
             string Path = ScriptCreator.Create("ManagerTemplate.txt", "MyManager.cs");
         }
+
+
+        // Managers
         [MenuItem("Assets/Create/Scripting/RealMethod/Manager/AudioManager", false, 80)]
         public static void CreateAudioManager()
         {
@@ -85,51 +84,31 @@ namespace RealMethod.Editor
         }
 
 
-
-        // Pattern
-        [MenuItem("Assets/Create/Scripting/RealMethod/Pattern/Pool/PoolAsset", false, 80)]
-        public static void CreatePoolAsset()
-        {
-            string Path = ScriptCreator.Create("PoolAssetTemplate.txt", "MyPoolAsset.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Pattern/Command/BaseCommand", false, 80)]
-        public static void CreateCommand()
-        {
-            string Path = ScriptCreator.Create("CommandTemplate.txt", "MyCommand.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Pattern/Command/ExecutCommand", false, 80)]
-        public static void CreateExecutCommand()
-        {
-            string Path = ScriptCreator.Create("ExecutCommandTemplate.txt", "MyExecutCommand.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Pattern/Command/TargetedCommand", false, 80)]
-        public static void CreateTargetedCommand()
-        {
-            string Path = ScriptCreator.Create("TargetedCommandTemplate.txt", "MyTargetedCommand.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Pattern/Command/LifecycleCommand", false, 80)]
-        public static void CreateLifecycleCommand()
-        {
-            string Path = ScriptCreator.Create("LifecycleCommandTemplate.txt", "MyLifecycleCommand.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Pattern/Command/ActionCommand", false, 80)]
-        public static void CreateActionCommand()
-        {
-            string Path = ScriptCreator.Create("ActionCommandTemplate.txt", "MyActionCommand.cs");
-        }
-
-
-
         // Assets
         [MenuItem("Assets/Create/Scripting/RealMethod/Asset/DataAsset", false, 80)]
         public static void CreateDataAsset()
         {
             string Path = ScriptCreator.Create("DataAssetTemplate.txt", "MyDataAsset.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/ItemAsset", false, 80)]
+        public static void CreateItemAsset()
+        {
+            string Path = ScriptCreator.Create("ItemAssetTemplate.txt", "MyItemAsset.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/ConfigAsset", false, 80)]
+        public static void CreateConfigAsset()
+        {
+            string Path = ScriptCreator.Create("ConfigAssetTemplate.txt", "MyConfigAsset.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Asset/SharedRootAsset", false, 80)]
         public static void CreateSharedRootAsset()
         {
             string Path = ScriptCreator.Create("SharedRootAssetTemplate.txt", "MySharedRootAsset.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/PoolAsset", false, 80)]
+        public static void CreatePoolAsset()
+        {
+            string Path = ScriptCreator.Create("PoolAssetTemplate.txt", "MyPoolAsset.cs");
         }
         [MenuItem("Assets/Create/Scripting/RealMethod/Asset/SaveAsset", false, 80)]
         public static void CreateSaveFile()
@@ -143,12 +122,39 @@ namespace RealMethod.Editor
         }
 
 
-        // General
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Widget", false, 80)]
+        // UI
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/UI/Widget", false, 80)]
         public static void CreateWidget()
         {
             string Path = ScriptCreator.Create("WidgetTemplate.txt", "MyWidget.cs");
         }
+        // Pattern
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/BaseCommand", false, 80)]
+        public static void CreateCommand()
+        {
+            string Path = ScriptCreator.Create("CommandTemplate.txt", "MyCommand.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/ExecutCommand", false, 80)]
+        public static void CreateExecutCommand()
+        {
+            string Path = ScriptCreator.Create("ExecutCommandTemplate.txt", "MyExecutCommand.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/TargetedCommand", false, 80)]
+        public static void CreateTargetedCommand()
+        {
+            string Path = ScriptCreator.Create("TargetedCommandTemplate.txt", "MyTargetedCommand.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/LifecycleCommand", false, 80)]
+        public static void CreateLifecycleCommand()
+        {
+            string Path = ScriptCreator.Create("LifecycleCommandTemplate.txt", "MyLifecycleCommand.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/ActionCommand", false, 80)]
+        public static void CreateActionCommand()
+        {
+            string Path = ScriptCreator.Create("ActionCommandTemplate.txt", "MyActionCommand.cs");
+        }
+
 
 
         // Editor

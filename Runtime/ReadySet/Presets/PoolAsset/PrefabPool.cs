@@ -22,20 +22,20 @@ namespace RealMethod
 
 
         // Private Variable
-        private byte UseCashData = 0; //0:NoCashing 1:CashLocation 2:CashLocation&Rotation 3:Transform 4:CashLocation&Duration 5:CashL&R&D
-        private Vector3 CashPosition = Vector3.zero;
-        private Quaternion CashRotation = Quaternion.identity;
-        private Vector3 CashScale = Vector3.one;
+        private byte UseCacheData = 0; //0:NoCashing 1:CashLocation 2:CashLocation&Rotation 3:Transform 4:CashLocation&Duration 5:CashL&R&D
+        private Vector3 CachePosition = Vector3.zero;
+        private Quaternion CacheRotation = Quaternion.identity;
+        private Vector3 CacheScale = Vector3.one;
 
 
         // Functions
         public Transform Spawn(Vector3 location, Quaternion rotation, float duration)
         {
-            UseCashData = 5;
+            UseCacheData = 5;
             if (UseDynamicDuration)
             {
-                CashPosition = location;
-                CashRotation = rotation;
+                CachePosition = location;
+                CacheRotation = rotation;
                 Duration = duration;
                 return Spawn();
             }
@@ -47,12 +47,12 @@ namespace RealMethod
         }
         public Transform Spawn(Vector3 location, Quaternion rotation, Vector3 scale)
         {
-            UseCashData = 3;
+            UseCacheData = 3;
             if (!UseDynamicDuration)
             {
-                CashPosition = location;
-                CashRotation = rotation;
-                CashScale = scale;
+                CachePosition = location;
+                CacheRotation = rotation;
+                CacheScale = scale;
                 return Spawn();
             }
             else
@@ -63,11 +63,11 @@ namespace RealMethod
         }
         public Transform Spawn(Vector3 location, Quaternion rotation)
         {
-            UseCashData = 2;
+            UseCacheData = 2;
             if (!UseDynamicDuration)
             {
-                CashPosition = location;
-                CashRotation = rotation;
+                CachePosition = location;
+                CacheRotation = rotation;
                 return Spawn();
             }
             else
@@ -78,10 +78,10 @@ namespace RealMethod
         }
         public Transform Spawn(Vector3 location, float duration)
         {
-            UseCashData = 4;
+            UseCacheData = 4;
             if (UseDynamicDuration)
             {
-                CashPosition = location;
+                CachePosition = location;
                 Duration = duration;
                 return Spawn();
             }
@@ -93,10 +93,10 @@ namespace RealMethod
         }
         public Transform Spawn(Vector3 location)
         {
-            UseCashData = 1;
+            UseCacheData = 1;
             if (!UseDynamicDuration)
             {
-                CashPosition = location;
+                CachePosition = location;
                 return Spawn();
             }
             else
@@ -107,7 +107,7 @@ namespace RealMethod
         }
         public Transform Spawn()
         {
-            UseCashData = 0;
+            UseCacheData = 0;
             Transform result = Request();
             OnSpawn?.Invoke(result);
             return result;
@@ -143,32 +143,32 @@ namespace RealMethod
         }
         protected override void PreProcess(Transform Comp)
         {
-            switch (UseCashData)
+            switch (UseCacheData)
             {
                 case 1:
-                    Comp.transform.position = CashPosition;
+                    Comp.transform.position = CachePosition;
                     break;
                 case 2:
-                    Comp.transform.position = CashPosition;
-                    Comp.transform.rotation = CashRotation;
+                    Comp.transform.position = CachePosition;
+                    Comp.transform.rotation = CacheRotation;
                     break;
                 case 3:
-                    Comp.transform.position = CashPosition;
-                    Comp.transform.rotation = CashRotation;
-                    if (CashScale != Vector3.one)
+                    Comp.transform.position = CachePosition;
+                    Comp.transform.rotation = CacheRotation;
+                    if (CacheScale != Vector3.one)
                     {
-                        Comp.transform.localScale = CashScale;
+                        Comp.transform.localScale = CacheScale;
                     }
                     break;
                 case 4:
-                    Comp.transform.position = CashPosition;
+                    Comp.transform.position = CachePosition;
                     break;
                 case 5:
-                    Comp.transform.position = CashPosition;
-                    Comp.transform.rotation = CashRotation;
+                    Comp.transform.position = CachePosition;
+                    Comp.transform.rotation = CacheRotation;
                     break;
                 default:
-                    Debug.LogWarning($"For this CashStage ({UseCashData}) is Not implemented any Preprocessing");
+                    Debug.LogWarning($"For this CashStage ({UseCacheData}) is Not implemented any Preprocessing");
                     break;
             }
         }

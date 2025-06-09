@@ -14,7 +14,6 @@ namespace RealMethod
         protected override void UpdateItem(InventoryItemAsset target, int Quantity)
         {
         }
-
         protected override void RemoveItem()
         {
         }
@@ -25,7 +24,6 @@ namespace RealMethod
         {
 
         }
-
 
     }
 }
