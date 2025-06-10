@@ -34,12 +34,22 @@ namespace RealMethod
             }
         }
 
+        // Virtual Methods
+        public virtual IEnumerator GetLoadScneCorotine(SceneReference TargetScene)
+        {
+            return LoadSceneAsync(TargetScene);
+        }
+        public virtual IEnumerator GetLoadWorldCorotine(WorldSceneAsset WorldScene)
+        {
+            return LoadWorldAsync(WorldScene);
+        }
+
         // Abstract Methods
         protected abstract void NewWorld(World target);
         protected abstract void NewAdditiveWorld(World target);
 
         // Corotine
-        public IEnumerator LoadSceneAsync(SceneReference scene)
+        private IEnumerator LoadSceneAsync(SceneReference scene)
         {
             if (IsLoading == true)
             {
@@ -81,7 +91,7 @@ namespace RealMethod
             IsLoading = false;
             OnSceneLoading?.Invoke(false);
         }
-        public IEnumerator LoadWorldAsync(WorldSceneAsset WS)
+        private IEnumerator LoadWorldAsync(WorldSceneAsset WS)
         {
             if (IsLoading == true)
             {

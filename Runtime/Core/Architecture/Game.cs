@@ -168,26 +168,28 @@ namespace RealMethod
             Target = null;
             return false;
         }
-        public static void OpenScene(SceneReference TargetScene)
+        public static Coroutine OpenScene(SceneReference TargetScene)
         {
             if (!Service.IsLoading && SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(TargetScene).buildIndex)
             {
-                Instance.StartCoroutine(Service.LoadSceneAsync(TargetScene));
+                return Instance.StartCoroutine(Service.GetLoadScneCorotine(TargetScene));
             }
             else
             {
                 Debug.LogWarning("The scene is already loaded.");
+                return null;
             }
         }
-        public static void OpenWorld(WorldSceneAsset WorldScene)
+        public static Coroutine OpenWorld(WorldSceneAsset WorldScene)
         {
             if (!Service.IsLoading && SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.GetPersistent()).buildIndex)
             {
-                Instance.StartCoroutine(Service.LoadWorldAsync(WorldScene));
+                return Instance.StartCoroutine(Service.GetLoadWorldCorotine(WorldScene));
             }
             else
             {
                 Debug.LogWarning("The scene is already loaded.");
+                return null;
             }
         }
         public static T FindManager<T>() where T : class
