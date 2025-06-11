@@ -14,7 +14,7 @@ namespace RealMethod
         // Load Scene 
         public Action<bool> OnSceneLoading;
         public Action<float> OnSceneLoadingProcess;
-        public bool IsLoading { get; private set; }
+        public bool IsLoading { get; protected set; }
         public float FadeTime = 0;
 
         // Any World in Awake time acall this method
