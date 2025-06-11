@@ -7,6 +7,7 @@ namespace RealMethod
     {
         protected override void AwakeWorld()
         {
+            Debug.Log("DefaultWorld Awaked");
         }
     }
 }

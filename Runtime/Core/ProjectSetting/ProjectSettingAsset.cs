@@ -103,7 +103,13 @@ namespace RealMethod
         }
         public Type GetGameServiceClass()
         {
-            return Type.GetType(GameService);
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var type = assembly.GetType(GameService);
+                if (type != null)
+                    return type;
+            }
+            return null;
         }
         public void SetGameServiceClass(Type type)
         {

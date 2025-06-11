@@ -11,9 +11,11 @@ namespace RealMethod
         }
         protected override void GameInitialized()
         {
+            Debug.Log("DefultGame Initialized");
         }
         protected override void WorldSynced(World NewWorld)
         {
+            Debug.Log("New World Synced to Game");
         }
     }
 }
