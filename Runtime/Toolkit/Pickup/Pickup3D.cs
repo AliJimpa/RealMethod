@@ -1,12 +1,12 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Toolkit/Pickup/Pickup3D")]
     public class Pickup3D : PickupCollider
     {
-        public UnityEvent<Collider> OnPickedUpBy;
+        public Action<Collider> OnPickedUpBy;
         protected override bool CanPickedUp(Collider Picker)
         {
             return true;
