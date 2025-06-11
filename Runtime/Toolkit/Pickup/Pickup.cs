@@ -127,7 +127,11 @@ namespace RealMethod
     {
         private void OnValidate()
         {
-            m_Collider.isTrigger = true;
+            Collider Sidecollide = GetComponent<Collider>();
+            if (Sidecollide)
+            {
+                Sidecollide.isTrigger = true;
+            }
         }
 
 
@@ -147,7 +151,11 @@ namespace RealMethod
     {
         private void OnValidate()
         {
-            m_Collider.isTrigger = true;
+            Collider2D Sidecollide = GetComponent<Collider2D>();
+            if (Sidecollide)
+            {
+                Sidecollide.isTrigger = true;
+            }
         }
 
 
