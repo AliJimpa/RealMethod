@@ -41,7 +41,7 @@ namespace RealMethod.Editor
 
             if (GUILayout.Button("Get Value by Time"))
             {
-                outputValue = animationCurve.GetValue(inputTime);
+                outputValue = animationCurve[inputTime];
                 //Debug.Log($"Value at time {inputTime}: {outputValue}");
             }
 

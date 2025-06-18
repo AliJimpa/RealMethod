@@ -3,34 +3,27 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "CurveAsset", menuName = "RealMethod/Misc/CurveAsset", order = 1)]
-    public class CurveAsset : ScriptableObject
+    public class CurveAsset : DataAsset
     {
         [Header("Asset")]
         [SerializeField]
-        private AnimationCurve Curve;
+        private AnimationCurve _Curve;
 
 
-        public float GetValue(float Time)
+        public AnimationCurve Curve => _Curve;
+        public float Length => _Curve.length;
+        public Keyframe[] Key => _Curve.keys;
+
+
+        public float this[float Time]
         {
-            return Curve.Evaluate(Time);
+            get => _Curve.Evaluate(Time);
         }
 
         public float GetTime(float Value)
         {
-            return FindTimeByValue(Curve, Value);
+            return FindTimeByValue(_Curve, Value);
         }
-
-        public float Getlength()
-        {
-            return Curve.length;
-        }
-
-        public AnimationCurve GetCurve()
-        {
-            return Curve;
-        }
-
-
 
         /// <summary>
         /// Finds the time corresponding to a given value in the AnimationCurve.
@@ -51,8 +44,6 @@ namespace RealMethod
             Debug.LogWarning("Value not found in curve within a reasonable precision.");
             return -1f;
         }
-
-
 
     }
 
