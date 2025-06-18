@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    public class RuleEvent : MonoBehaviour
+    public sealed class RuleEvent : MonoBehaviour
     {
         [Header("Rule")]
         [SerializeField]
