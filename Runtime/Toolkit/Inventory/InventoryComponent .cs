@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Toolkit/Inventory/Inventory")]
-    public class InventoryComponent : InventoryStorage
+    public sealed class InventoryComponent : InventoryStorage
     {
         protected override void PostAwake()
         {

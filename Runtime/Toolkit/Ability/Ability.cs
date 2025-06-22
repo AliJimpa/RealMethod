@@ -19,8 +19,8 @@ namespace RealMethod
             Active,
             Deactive,
             Delete,
-            Apply,
         }
+
 
         [Header("Setting")]
         [SerializeField]
@@ -29,28 +29,20 @@ namespace RealMethod
         private UpdateMethod Method = UpdateMethod.Update;
         [SerializeField]
         private AbilityBehavior Behavior;
+        [SerializeField, ShowInInspectorByEnum("Behavior", 1, 3)]
+        private SendMessageOptions MessageOption;
 
         public Action<AbilityCommand> OnCreated;
         public Action<AbilityCommand> OnActive;
         public Action<AbilityCommand> OnDeactive;
         public Action<AbilityCommand> OnDeleted;
 
-        private Hictionary<AbilityCommand> Abilities = new Hictionary<AbilityCommand>();
+        private Hictionary<AbilityCommand> Abilities = new Hictionary<AbilityCommand>(5);
 
 
-        public AbilityCommand[] ActiveAbilityCommand
-        {
-            get
-            {
-                var result = new List<AbilityCommand>();
-                foreach (var ability in Abilities.GetValues())
-                {
-                    result.Add(ability);
-                }
-                return result.ToArray();
-            }
-        }
         public bool HasAbility => Abilities.Count > 0;
+        public int Count => Abilities.Count;
+
         public AbilityCommand this[string Name]
         {
             get => Abilities[Name];
@@ -119,13 +111,14 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool Apply(AbilityCommand command, Ability target)
+        public bool Apply(UnityEngine.Object author, AbilityCommand command, Ability target)
         {
             if (!Abilities.ContainsKey(command.Name))
             {
                 command.transform.SetParent(target.transform);
                 Abilities.Add(command.Name, command);
-                MessageBehavior(AbilityState.Apply, command);
+                command.GetComponent<ICommandInitiator>().Initiate(author, this);
+                MessageBehavior(AbilityState.Create, command);
                 return true;
             }
             else
@@ -184,7 +177,17 @@ namespace RealMethod
         }
         public bool Delete(GameObject prefab)
         {
-            return Delete(prefab.GetComponent<AbilityCommand>().Name);
+            AbilityCommand Targetcommand = prefab.GetComponent<AbilityCommand>();
+            if (Targetcommand)
+            {
+                return Delete(Targetcommand.Name);
+            }
+            else
+            {
+                Debug.LogError($"Delete Ability Failed: The prefab with with ID '{Targetcommand.name}' Doesnot have AbillityCommand.");
+                return false;
+            }
+
         }
         public bool Move(string name, Ability target)
         {
@@ -199,7 +202,7 @@ namespace RealMethod
                 Abilities[name].GetComponent<ICommandInitiator>().Initiate(this, target);
                 Abilities[name].transform.SetParent(target.transform);
                 target.Abilities.Add(name, Abilities[name]);
-                target.MessageBehavior(AbilityState.Delete, Abilities[name]);
+                target.MessageBehavior(AbilityState.Create, Abilities[name]);
                 MessageBehavior(AbilityState.Delete, Abilities[name]);
                 Abilities.Remove(name);
                 return true;
@@ -211,6 +214,22 @@ namespace RealMethod
             }
 
 
+        }
+        public AbilityCommand[] CopyActiveAbilities()
+        {
+            var result = new List<AbilityCommand>();
+            foreach (var ability in Abilities.GetValues())
+            {
+                if (!ability.IsFinished)
+                {
+                    result.Add(ability);
+                }
+            }
+            return result.ToArray();
+        }
+        public AbilityCommand[] CopyAbilities()
+        {
+            return Abilities.GetValues();
         }
 
         private void UpdateAbility()
@@ -238,20 +257,53 @@ namespace RealMethod
                     case AbilityState.Delete:
                         OnDeleted?.Invoke(command);
                         break;
-                    case AbilityState.Apply:
-                        OnActive?.Invoke(command);
-                        break;
                 }
             }
 
             if (Behavior == AbilityBehavior.SendMessage || Behavior == AbilityBehavior.Both)
             {
-                SendMessage("OnAbilityUpdated", State, SendMessageOptions.RequireReceiver);
+                switch (State)
+                {
+                    case AbilityState.Create:
+                        SendMessage("OnAbilityCreate", command, MessageOption);
+                        break;
+                    case AbilityState.Active:
+                        SendMessage("OnAbilityActive", command, MessageOption);
+                        OnActive?.Invoke(command);
+                        break;
+                    case AbilityState.Deactive:
+                        SendMessage("OnAbilityDeactive", command, MessageOption);
+                        break;
+                    case AbilityState.Delete:
+                        SendMessage("OnAbilityDelete", command, MessageOption);
+                        break;
+                }
             }
 
+            switch (State)
+            {
+                case AbilityState.Create:
+                    CreateAbility(command);
+                    break;
+                case AbilityState.Active:
+                    ActiveAbility(command);
+                    break;
+                case AbilityState.Deactive:
+                    DeactiveAbility(command);
+                    break;
+                case AbilityState.Delete:
+                    DeleteAbility(command);
+                    break;
+            }
         }
 
+
+        protected abstract void ActiveAbility(AbilityCommand Ability);
+        protected abstract void CreateAbility(AbilityCommand Ability);
+        protected abstract void DeleteAbility(AbilityCommand Ability);
+        protected abstract void DeactiveAbility(AbilityCommand Ability);
     }
+
 
     public abstract class AbilityCommand : LifecycleCommand
     {

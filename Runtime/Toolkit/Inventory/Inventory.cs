@@ -17,7 +17,8 @@ namespace RealMethod
             None,
             Action,
             SendMessage,
-            Broadcast
+            Broadcast,
+            ActionAndMessage,
         }
 
         [Header("Setting")]
@@ -45,7 +46,7 @@ namespace RealMethod
 
         private void Awake()
         {
-            if (AddDefaultItem())
+            if (UseDefaultItem())
             {
                 if (DefaultItem != null)
                 {
@@ -237,6 +238,10 @@ namespace RealMethod
                         case BehaviorType.Broadcast:
                             gameObject.BroadcastMessage("OnItemAdded", target, SendMessageOptions.RequireReceiver);
                             break;
+                        case BehaviorType.ActionAndMessage:
+                            OnItemAdded?.Invoke(target, quantity);
+                            gameObject.SendMessage("OnItemAdded", target, SendMessageOptions.RequireReceiver);
+                            break;
                         default:
                             break;
                     }
@@ -254,6 +259,10 @@ namespace RealMethod
                             break;
                         case BehaviorType.Broadcast:
                             gameObject.BroadcastMessage("OnItemUpdated", target, SendMessageOptions.RequireReceiver);
+                            break;
+                        case BehaviorType.ActionAndMessage:
+                            OnItemUpdated?.Invoke(target, quantity);
+                            gameObject.SendMessage("OnItemUpdated", target, SendMessageOptions.RequireReceiver);
                             break;
                         default:
                             break;
@@ -273,6 +282,10 @@ namespace RealMethod
                         case BehaviorType.Broadcast:
                             gameObject.BroadcastMessage("OnItemRemove", SendMessageOptions.RequireReceiver);
                             break;
+                        case BehaviorType.ActionAndMessage:
+                            OnItemRemove?.Invoke();
+                            gameObject.SendMessage("OnItemRemove", SendMessageOptions.RequireReceiver);
+                            break;
                         default:
                             break;
                     }
@@ -282,13 +295,14 @@ namespace RealMethod
         }
 
         // Abstract Methods 
+        public abstract bool Load();
+        public abstract bool Save();
         protected abstract void PostAwake();
-        protected abstract bool AddDefaultItem();
+        protected abstract bool UseDefaultItem();
         protected abstract void AddItem(InventoryItemAsset target);
         protected abstract void UpdateItem(InventoryItemAsset target, int Quantity);
         protected abstract void RemoveItem();
-        public abstract bool Load();
-        public abstract bool Save();
+
     }
     public abstract class InventoryStorage : Inventory
     {
@@ -296,12 +310,20 @@ namespace RealMethod
         [SerializeField]
         private bool LoadOnAwake = false;
         [SerializeField]
-        protected SaveFile SaveSlot;
+        private SaveFile _SaveFile;
+
+        public SaveFile SaveSlot => _SaveFile;
+
+        // Protected Methods
+        protected void SetSaveFile(SaveFile NewFile)
+        {
+            _SaveFile = NewFile;
+        }
 
         // override Methods
         public sealed override bool Load()
         {
-            if (SaveSlot is IInventoryData File)
+            if (_SaveFile is IInventorySave File)
             {
                 if (File.IsExistInventoryData(this))
                 {
@@ -326,9 +348,9 @@ namespace RealMethod
         }
         public sealed override bool Save()
         {
-            if (SaveSlot)
+            if (_SaveFile)
             {
-                if (SaveSlot is IInventoryData File)
+                if (_SaveFile is IInventorySave File)
                 {
                     File.SaveInventory(this, Items.GetValues());
                     OnSaved();
@@ -346,11 +368,11 @@ namespace RealMethod
                 return false;
             }
         }
-        protected sealed override bool AddDefaultItem()
+        protected sealed override bool UseDefaultItem()
         {
             if (LoadOnAwake)
             {
-                if (SaveSlot)
+                if (_SaveFile)
                 {
                     return !Load();
                 }
@@ -360,7 +382,7 @@ namespace RealMethod
                     if (Data)
                     {
                         Data.LoadFile();
-                        SaveSlot = Data.File;
+                        _SaveFile = Data.File;
                         return !Load();
                     }
                     else
@@ -381,78 +403,5 @@ namespace RealMethod
         protected abstract void OnSaved();
     }
 
-    public abstract class InventoryItemAsset : ItemAsset
-    {
-        public abstract void PickedUp(Inventory owner, int quantity);
-        public abstract void Cahanged(int quantity);
-        public abstract void Dropped(Inventory owner);
-        public abstract bool CanChange(bool IsAdded);
-        public abstract bool CanPickUp(Inventory owner);
-        public abstract bool CanDropp(Inventory owner);
-    }
-    public abstract class InventoryItemAsset<T> : InventoryItemAsset where T : Enum
-    {
-        [Header("Inventory")]
-        [SerializeField]
-        protected T Type;
-    }
-
-    public class InventoryItemProperty
-    {
-        [SerializeField]
-        private string ItemName;
-        [SerializeField]
-        private InventoryItemAsset ItemAsset;
-        [SerializeField]
-        private int ItemQuantity;
-        [SerializeField]
-        private int ItemCapacity;
-        // Just for Getter Serialize Variable
-        public InventoryItemAsset Asset => ItemAsset;
-        public int Quantity => ItemQuantity;
-        public int Capacity => ItemCapacity;
-
-        public InventoryItemProperty(InventoryItemAsset asset, int quantity, int capacity = 0)
-        {
-            ItemAsset = asset;
-            ItemQuantity = quantity;
-            ItemCapacity = capacity;
-        }
-
-        public bool Add(int value = 1)
-        {
-            ItemQuantity = ItemQuantity + value;
-            if (ItemQuantity <= Capacity || Capacity == 0)
-            {
-                return true;
-            }
-            else
-            {
-                ItemQuantity = Capacity;
-                return false;
-            }
-        }
-        public bool Remove(int value = 1)
-        {
-            ItemQuantity = ItemQuantity - value;
-            if (ItemQuantity <= 0)
-            {
-                ItemQuantity = 0;
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-    }
-
-    public interface IInventoryData
-    {
-        InventoryItemProperty[] LoadInventory(Inventory owner);
-        void SaveInventory(Inventory owner, InventoryItemProperty[] Data);
-        bool IsExistInventoryData(Inventory owner);
-
-    }
 
 }
