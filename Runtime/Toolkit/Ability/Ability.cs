@@ -87,7 +87,7 @@ namespace RealMethod
         {
             if (Abilities.ContainsKey(name))
             {
-                Abilities[name].GetComponent<ILiveCommand>().StartCommand();
+                Abilities[name].GetComponent<ICommandLife>().StartCommand();
                 MessageBehavior(AbilityState.Active, Abilities[name]);
                 return true;
             }
@@ -101,7 +101,7 @@ namespace RealMethod
         {
             if (Abilities.ContainsKey(name))
             {
-                Abilities[name].GetComponent<ILiveCommand>().StopCommand();
+                Abilities[name].GetComponent<ICommandLife>().StopCommand();
                 MessageBehavior(AbilityState.Deactive, Abilities[name]);
                 return true;
             }
@@ -236,7 +236,7 @@ namespace RealMethod
         {
             foreach (var ability in Abilities.GetValues())
             {
-                ability.GetComponent<ILiveCommand>().UpdateCommand();
+                ability.GetComponent<ICommandLife>().UpdateCommand();
             }
         }
         private void MessageBehavior(AbilityState State, AbilityCommand command)
@@ -343,7 +343,7 @@ namespace RealMethod
         // Unity Method
         private void OnDestroy()
         {
-            ((ILiveCommand)this).StopCommand();
+            ((ICommandLife)this).StopCommand();
         }
     }
 

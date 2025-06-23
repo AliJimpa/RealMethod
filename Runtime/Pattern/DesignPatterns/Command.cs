@@ -72,7 +72,7 @@ namespace RealMethod
 
 
     //A longer-living command with start, update, end — like an ability/effect.
-    public interface ILiveCommand
+    public interface ICommandLife
     {
         /// <summary> Called when the command starts. </summary>
         void StartCommand(float Duration = 0);
@@ -86,7 +86,7 @@ namespace RealMethod
         bool IsFinished { get; }
     }
     ////////////// Note : You shoul implement Desable() for Stoped & Update() for UpdateCommand.
-    public abstract class LifecycleCommand : Command, ILiveCommand
+    public abstract class LifecycleCommand : Command, ICommandLife
     {
         // Public Variable
         public bool IsValidated { get; private set; }
@@ -130,7 +130,7 @@ namespace RealMethod
         // Implement ILiveCommand Interface
         public float ElapsedTime => lifeTime;
         public bool IsFinished => !isRunning;
-        void ILiveCommand.StartCommand(float Duration)
+        void ICommandLife.StartCommand(float Duration)
         {
             float NewDuration = PreProcessDuration(Duration);
             if (IsValidated)
@@ -146,7 +146,7 @@ namespace RealMethod
                 Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
             }
         }
-        void ILiveCommand.UpdateCommand()
+        void ICommandLife.UpdateCommand()
         {
             if (!isRunning)
             {
@@ -165,7 +165,7 @@ namespace RealMethod
                     if (hasDuration)
                     {
                         lifeTime = 0;
-                        ((ILiveCommand)this).StopCommand();
+                        ((ICommandLife)this).StopCommand();
                         return;
                     }
                 }
@@ -180,7 +180,7 @@ namespace RealMethod
                 Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
             }
         }
-        void ILiveCommand.StopCommand()
+        void ICommandLife.StopCommand()
         {
             if (IsValidated)
             {
@@ -202,7 +202,7 @@ namespace RealMethod
         protected abstract void OnEnd();
     }
     // A longer-living command that controled
-    public interface IBehaviourCommand
+    public interface ICommandBehaviour
     {
         /// <summary> Called to pause the command temporarily. </summary>
         void PauseCommand();
@@ -214,7 +214,7 @@ namespace RealMethod
         bool IsPaused { get; }
     }
     ////////////// Note : You shoul implement Desable() for Pause & Update() for UpdateCommand.
-    public abstract class ActionCommand : LifecycleCommand, IBehaviourCommand
+    public abstract class ActionCommand : LifecycleCommand, ICommandBehaviour
     {
         // Public Variable
         public System.Action<LifecycleCommand> OnPaused;
@@ -231,20 +231,20 @@ namespace RealMethod
 
         // Implement ILiveCommand Interface
         public bool IsPaused => !islive;
-        void IBehaviourCommand.PauseCommand()
+        void ICommandBehaviour.PauseCommand()
         {
             islive = false;
             OnPause();
             OnPaused?.Invoke(this);
         }
-        void IBehaviourCommand.ResumeCommand()
+        void ICommandBehaviour.ResumeCommand()
         {
             islive = true;
         }
-        void IBehaviourCommand.ResetCommand(float Duration)
+        void ICommandBehaviour.ResetCommand(float Duration)
         {
             OnReset();
-            ((ILiveCommand)this).StartCommand(Duration);
+            ((ICommandLife)this).StartCommand(Duration);
         }
 
         // Abstract Methods

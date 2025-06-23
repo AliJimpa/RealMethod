@@ -6,101 +6,151 @@ namespace RealMethod
     public abstract class DataManager : MonoBehaviour, IGameManager
     {
 
-        [Header("SaveFile")]
+        [Header("Basic")]
         [SerializeField]
-        private bool AutoLoad = true;
-        [SerializeField] private SaveFile file;
-        public SaveFile File => file;
+        private bool LoadAwake = true;
+        [SerializeField]
+        protected SaveFile[] StableFiles;
 
-
+        // Actions
         public Action<SaveFile> OnFileChanged;
         public Action<SaveFile> OnFileLoaded;
         public Action<SaveFile> OnFileSaved;
 
+        public byte Logindex { get; private set; }
+        public string[] DataLog { get; private set; }
 
+
+
+        // Implement IGameManager Interface
         public MonoBehaviour GetManagerClass()
         {
             return this;
         }
         public void InitiateManager(bool AlwaysLoaded)
         {
-            if (File)
+            Logindex = 0;
+            DataLog = new string[5];
+
+            foreach (var file in StableFiles)
             {
-                File.OnActiveted(this);
-                if (AutoLoad)
+                file.OnStable(this);
+                if (LoadAwake)
                 {
-                    if (IsExistFile())
-                        LoadFile();
+                    if (IsExistFile(file))
+                        LoadFile(file);
                 }
             }
         }
         public abstract void InitiateService(Service service);
 
 
-
-        [ContextMenu("SaveFile")]
-        public void SaveFile()
+        // Public Functions
+        public void SaveFile(int Index)
         {
-            if (File == null)
+            if (Array.IsValidIndex(StableFiles, Index))
+            {
+                SaveFile(StableFiles[Index]);
+            }
+            else
+            {
+                Debug.LogError("Invalid index passed to SaveFile: " + Index);
+            }
+        }
+        public void SaveFile(SaveFile file)
+        {
+            if (file == null)
             {
                 Debug.LogError("File is not valid");
                 return;
             }
-            OnSaveFile(File);
-            File.OnSaved();
-            OnFileSaved?.Invoke(File);
+            OnSaveFile(file);
+            file.OnSaved();
+            OnFileSaved?.Invoke(file);
         }
-        [ContextMenu("LoadFile")]
-        public void LoadFile()
+        public void LoadFile(int Index)
         {
-            if (File == null)
+            if (Array.IsValidIndex(StableFiles, Index))
             {
-                Debug.LogError("File Does not valid");
-                return;
-            }
-
-            OnLoadFile(File);
-            File.OnLoaded();
-            OnFileLoaded?.Invoke(File);
-        }
-        [ContextMenu("DeleteFilew")]
-        public void DeleteFile()
-        {
-            if (File == null)
-            {
-                Debug.LogError("File Does not valid");
-                return;
-            }
-
-            OnDelete(File);
-            File.OnDeleted();
-        }
-        public bool IsExistFile()
-        {
-            if (File == null)
-            {
-                Debug.LogError("File Does not valid");
-                return false;
-            }
-            return IsExist(File);
-        }
-        public bool SetFile(SaveFile newfile)
-        {
-            if (newfile)
-            {
-                if (File != newfile)
-                {
-                    File?.OnDiactiveted(this);
-                    file = newfile;
-                    File.OnActiveted(this);
-                    OnFileChanged?.Invoke(File);
-                }
-                return true;
+                LoadFile(StableFiles[Index]);
             }
             else
             {
+                Debug.LogError("Invalid index passed to LoadFile: " + Index);
+            }
+        }
+        public void LoadFile(SaveFile file)
+        {
+            if (file == null)
+            {
+                Debug.LogError("File Does not valid");
+                return;
+            }
+
+            OnLoadFile(file);
+            file.OnLoaded();
+            OnFileLoaded?.Invoke(file);
+        }
+        public void DeleteFile(int Index)
+        {
+            if (Array.IsValidIndex(StableFiles, Index))
+            {
+                DeleteFile(StableFiles[Index]);
+            }
+            else
+            {
+                Debug.LogError("Invalid index passed to DeleteFile: " + Index);
+            }
+        }
+        public void DeleteFile(SaveFile file)
+        {
+            if (file == null)
+            {
+                Debug.LogError("File Does not valid");
+                return;
+            }
+
+            OnDelete(file);
+            file.OnDeleted();
+        }
+        public bool IsExistFile(int Index)
+        {
+            if (Array.IsValidIndex(StableFiles, Index))
+            {
+                return IsExistFile(StableFiles[Index]);
+            }
+            else
+            {
+                Debug.LogError("Invalid index passed to IsExistFile: " + Index);
+                return false;
+            }
+        }
+        public bool IsExistFile(SaveFile file)
+        {
+            if (file == null)
+            {
                 Debug.LogError("File Does not valid");
                 return false;
+            }
+            return IsExist(file);
+        }
+
+
+        // Protected Function
+        protected void WriteLog(string message, SaveFile file)
+        {
+            if (Application.isPlaying && DataLog != null)
+            {
+                if (Logindex == 0)
+                {
+                    DataLog[0] = $"{DateTime.Now} -- {file.name} -- {message}";
+                    Logindex++;
+                }
+                else
+                {
+                    DataLog[Logindex % DataLog.Length] = $"{DateTime.Now} -- {file.name} -- {message}";
+                    Logindex++;
+                }
             }
         }
 
@@ -113,27 +163,59 @@ namespace RealMethod
 
     }
 
-    public abstract class DataManager<T> : DataManager where T : Enum
+    public abstract class SaveFile : DataAsset
     {
-        [Header("FileSystem")]
-        [SerializeField] private T method;
-        public T Method => method;
-    }
-
-    public abstract class SaveFile : ScriptableObject
-    {
-        public Action<SaveFile> OnModify;
-        public abstract void OnActiveted(DataManager manager);
+        public abstract void OnStable(DataManager manager);
         public abstract void OnLoaded();
         public abstract void OnSaved();
         public abstract void OnDeleted();
         public abstract void Default();
-        public abstract void OnDiactiveted(DataManager manager);
 
+
+        // Private Methods
         [ContextMenu("ResetToDefault")]
         private void BacktoDefault()
         {
             Default();
+        }
+        [ContextMenu("Save")]
+        private void SaveSelf()
+        {
+            var manager = FindFirstObjectByType<DataManager>();
+            if (manager != null)
+            {
+                manager.SaveFile(this);
+            }
+            else
+            {
+                Debug.LogError("No DataManager found in the scene.");
+            }
+        }
+        [ContextMenu("Load")]
+        private void LoadSelf()
+        {
+            var manager = FindFirstObjectByType<DataManager>();
+            if (manager != null)
+            {
+                manager.LoadFile(this);
+            }
+            else
+            {
+                Debug.LogError("No DataManager found in the scene.");
+            }
+        }
+        [ContextMenu("Delete")]
+        private void DeleteSelf()
+        {
+            var manager = FindFirstObjectByType<DataManager>();
+            if (manager != null)
+            {
+                manager.DeleteFile(this);
+            }
+            else
+            {
+                Debug.LogError("No DataManager found in the scene.");
+            }
         }
 
     }

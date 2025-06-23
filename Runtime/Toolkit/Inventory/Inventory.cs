@@ -381,8 +381,7 @@ namespace RealMethod
                     DataManager Data = Game.FindManager<DataManager>();
                     if (Data)
                     {
-                        Data.LoadFile();
-                        _SaveFile = Data.File;
+                        Data.LoadFile(_SaveFile);
                         return !Load();
                     }
                     else
