@@ -2,19 +2,10 @@ using UnityEngine;
 using RealMethod;
 using System;
 
-
-[Serializable]
-public enum ItemType
-{
-    Waepon,
-    poison,
-    flower
-}
-
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : ItemAsset<ItemType> 
+public class #SCRIPTNAME# : InventoryItemAsset
 {
-    // Base TableAsset Methods
+    // Base InventoryItemAsset Methods
     public override void PickedUp(Inventory owner, int quantity)
     {
 

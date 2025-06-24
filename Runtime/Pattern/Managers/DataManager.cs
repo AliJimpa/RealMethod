@@ -8,7 +8,7 @@ namespace RealMethod
 
         [Header("Basic")]
         [SerializeField]
-        private bool LoadAwake = true;
+        private bool LoadOnAwake = true;
         [SerializeField]
         protected SaveFile[] StableFiles;
 
@@ -35,7 +35,7 @@ namespace RealMethod
             foreach (var file in StableFiles)
             {
                 file.OnStable(this);
-                if (LoadAwake)
+                if (LoadOnAwake)
                 {
                     if (IsExistFile(file))
                         LoadFile(file);

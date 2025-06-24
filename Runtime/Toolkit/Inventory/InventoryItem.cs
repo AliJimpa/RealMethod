@@ -62,12 +62,6 @@ namespace RealMethod
         public abstract bool CanPickUp(Inventory owner);
         public abstract bool CanDropp(Inventory owner);
     }
-    public abstract class InventoryItemAsset<T> : InventoryItemAsset where T : Enum
-    {
-        [Header("Inventory")]
-        [SerializeField]
-        protected T Type;
-    }
 
-
+    
 }
