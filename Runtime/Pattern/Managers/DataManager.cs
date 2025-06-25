@@ -10,7 +10,7 @@ namespace RealMethod
         [SerializeField]
         private bool LoadOnAwake = true;
         [SerializeField]
-        protected SaveFile[] StableFiles;
+        private SaveFile[] StableFiles;
 
         // Actions
         public Action<SaveFile> OnFileChanged;
@@ -19,6 +19,13 @@ namespace RealMethod
 
         public byte Logindex { get; private set; }
         public string[] DataLog { get; private set; }
+
+        // Operators
+        public SaveFile this[int Index]
+        {
+            get => StableFiles[Index];
+            protected set => StableFiles[Index] = value;
+        }
 
 
 
