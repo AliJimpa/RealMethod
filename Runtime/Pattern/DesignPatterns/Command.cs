@@ -80,6 +80,8 @@ namespace RealMethod
         void UpdateCommand();
         /// <summary> Called to pause the command temporarily. </summary>
         void StopCommand();
+        /// <summary> Called to Clear initating command. </summary>
+        void ClearCommand();
         /// <summary> Elapsed time since command Live. </summary>
         float ElapsedTime { get; }
         // <summary> Whether the command has finished execution. </summary>
@@ -98,7 +100,7 @@ namespace RealMethod
         // Private Variable
         private bool hasDuration = false;
         private float lifeTime;
-        private bool isRunning = false;
+        private bool islive = false;
 
 
         // Override Methods
@@ -122,14 +124,22 @@ namespace RealMethod
         }
 
         // Methods
+        public void Finish()
+        {
+            if (islive)
+            {
+                ((ICommandLife)this).StopCommand();
+            }
+        }
         protected virtual float PreProcessDuration(float StartDuration)
         {
             return StartDuration;
         }
 
+
         // Implement ILiveCommand Interface
         public float ElapsedTime => lifeTime;
-        public bool IsFinished => !isRunning;
+        public bool IsFinished => !islive;
         void ICommandLife.StartCommand(float Duration)
         {
             float NewDuration = PreProcessDuration(Duration);
@@ -139,7 +149,7 @@ namespace RealMethod
                 lifeTime = NewDuration > 0 ? NewDuration : 0;
                 OnBegin();
                 OnStarted?.Invoke(this);
-                isRunning = true;
+                islive = true;
             }
             else
             {
@@ -148,7 +158,7 @@ namespace RealMethod
         }
         void ICommandLife.UpdateCommand()
         {
-            if (!isRunning)
+            if (!islive)
             {
                 return;
             }
@@ -184,7 +194,7 @@ namespace RealMethod
         {
             if (IsValidated)
             {
-                isRunning = false;
+                islive = false;
                 OnEnd();
                 OnFinished?.Invoke(this);
             }
@@ -192,6 +202,13 @@ namespace RealMethod
             {
                 Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
             }
+        }
+        void ICommandLife.ClearCommand()
+        {
+            Finish();
+            IsValidated = false;
+            MyAuthor = null;
+            MyOwner = null;
         }
 
         // Abstract Methods
@@ -218,28 +235,30 @@ namespace RealMethod
     {
         // Public Variable
         public System.Action<LifecycleCommand> OnPaused;
+        public System.Action<LifecycleCommand> OnResumed;
 
         // Private Variable
-        private bool islive = true;
+        private bool isRunning = true;
 
         // Override Methods
-        protected sealed override bool CanUpdate()
+        protected override bool CanUpdate()
         {
-            return islive;
+            return isRunning;
         }
 
-
         // Implement ILiveCommand Interface
-        public bool IsPaused => !islive;
+        public bool IsPaused => !isRunning;
         void ICommandBehaviour.PauseCommand()
         {
-            islive = false;
+            isRunning = false;
             OnPause();
             OnPaused?.Invoke(this);
         }
         void ICommandBehaviour.ResumeCommand()
         {
-            islive = true;
+            isRunning = true;
+            OnResume();
+            OnResumed?.Invoke(this);
         }
         void ICommandBehaviour.ResetCommand(float Duration)
         {
@@ -249,9 +268,9 @@ namespace RealMethod
 
         // Abstract Methods
         protected abstract void OnPause();
+        protected abstract void OnResume();
         protected abstract void OnReset();
     }
-
 
 
 }

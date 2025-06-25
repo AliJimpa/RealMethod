@@ -21,9 +21,9 @@ namespace RealMethod
             {
                 if (BaseComponent.Count > 0)
                 {
-                    foreach (var Ability in BaseComponent.CopyAbilities())
+                    foreach (var power in BaseComponent.CopyAbilities())
                     {
-                        EditorGUILayout.LabelField($"Name: {Ability.Name} - Status: {Ability.OnFinished}");
+                        EditorGUILayout.LabelField($"Name: {power.Label} - Status: {GetState(power)}");
                     }
                 }
                 EditorGUILayout.Space();
@@ -31,6 +31,28 @@ namespace RealMethod
             }
 
 
+        }
+
+
+
+
+        private string GetState(Power targetpower)
+        {
+            if (targetpower.IsFinished)
+            {
+                return "Deactive";
+            }
+            else
+            {
+                if (targetpower.IsPaused)
+                {
+                    return "Paused";
+                }
+                else
+                {
+                    return "Active";
+                }
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace RealMethod
@@ -15,10 +16,10 @@ namespace RealMethod
         }
         public enum AbilityState
         {
-            Create,
+            Add,
             Active,
             Deactive,
-            Delete,
+            Remove,
             Modefiy,
         }
 
@@ -33,11 +34,11 @@ namespace RealMethod
         [SerializeField, ShowInInspectorByEnum("Behavior", 1, 3)]
         private SendMessageOptions MessageOption;
 
-        public Action<Power> OnCreated;
-        public Action<Power> OnActive;
-        public Action<Power> OnDeactive;
-        public Action<Power> OnDeleted;
-        public Action<Power> OnModified;
+        public Action<Power> OnAddPower;
+        public Action<Power> OnActivePower;
+        public Action<Power> OnDeactivePower;
+        public Action<Power> OnRemovePower;
+        public Action<Power> OnModifiyPower;
 
         private Hictionary<Power> Abilities = new Hictionary<Power>(5);
 
@@ -45,10 +46,10 @@ namespace RealMethod
         public bool HasAbility => Abilities.Count > 0;
         public int Count => Abilities.Count;
 
-        public Power this[string Name]
+        public Power this[string label]
         {
-            get => Abilities[Name];
-            set => Abilities[Name] = value;
+            get => Abilities[label];
+            protected set => Abilities[label] = value;
         }
 
 
@@ -85,94 +86,119 @@ namespace RealMethod
             }
         }
 
-        public bool Active(string name)
+        public bool Active(string label)
         {
-            if (Abilities.ContainsKey(name))
+            if (Abilities.ContainsKey(label))
             {
-                Abilities[name].gameObject.SetActive(true);
-                Abilities[name].GetComponent<ICommandLife>().StartCommand();
-                MessageBehavior(AbilityState.Active, Abilities[name]);
+                Abilities[label].GetComponent<ICommandLife>().StartCommand();
+                MessageBehavior(AbilityState.Active, Abilities[label]);
                 return true;
             }
             else
             {
-                Debug.LogError($"Active Ability Failed: No ability with ID '{name}' exists.");
+                Debug.LogError($"Active Ability Failed: No ability with ID '{label}' exists.");
                 return false;
             }
         }
-        public bool Active(string name, float Duration)
+        public bool Active(string label, float Duration)
         {
-            if (Abilities.ContainsKey(name))
+            if (Abilities.ContainsKey(label))
             {
-                Abilities[name].gameObject.SetActive(true);
-                Abilities[name].GetComponent<ICommandLife>().StartCommand(Duration);
-                MessageBehavior(AbilityState.Active, Abilities[name]);
+                Abilities[label].GetComponent<ICommandLife>().StartCommand(Duration);
+                MessageBehavior(AbilityState.Active, Abilities[label]);
                 return true;
             }
             else
             {
-                Debug.LogError($"Active Ability Failed: No ability with ID '{name}' exists.");
+                Debug.LogError($"Active Ability Failed: No ability with ID '{label}' exists.");
                 return false;
             }
         }
-        public bool Deactive(string name)
+        public bool Deactive(string label)
         {
-            if (Abilities.ContainsKey(name))
+            if (Abilities.ContainsKey(label))
             {
-                Abilities[name].GetComponent<ICommandLife>().StopCommand();
-                Abilities[name].gameObject.SetActive(false);
-                MessageBehavior(AbilityState.Deactive, Abilities[name]);
+                Abilities[label].GetComponent<ICommandLife>().StopCommand();
+                MessageBehavior(AbilityState.Deactive, Abilities[label]);
                 return true;
             }
             else
             {
-                Debug.LogError($"Active Ability Failed: No ability with ID '{name}' exists.");
+                Debug.LogError($"Active Ability Failed: No ability with ID '{label}' exists.");
                 return false;
             }
         }
-        public bool Pause(string name)
+        public bool Pause(string label)
         {
-            if (Abilities.ContainsKey(name))
+            if (Abilities.ContainsKey(label))
             {
-                Abilities[name].GetComponent<ICommandBehaviour>().PauseCommand();
-                Abilities[name].enabled = false;
-                MessageBehavior(AbilityState.Modefiy, Abilities[name]);
+                Abilities[label].GetComponent<ICommandBehaviour>().PauseCommand();
+                MessageBehavior(AbilityState.Modefiy, Abilities[label]);
                 return true;
             }
             else
             {
-                Debug.LogError($"Pause Ability Failed: No ability with ID '{name}' exists.");
+                Debug.LogError($"Pause Ability Failed: No ability with ID '{label}' exists.");
                 return false;
             }
         }
-        public bool Resume(string name)
+        public bool Resume(string label)
         {
-            if (Abilities.ContainsKey(name))
+            if (Abilities.ContainsKey(label))
             {
-                Abilities[name].GetComponent<ICommandBehaviour>().ResumeCommand();
-                Abilities[name].enabled = true;
-                MessageBehavior(AbilityState.Modefiy, Abilities[name]);
+                Abilities[label].GetComponent<ICommandBehaviour>().ResumeCommand();
+                MessageBehavior(AbilityState.Modefiy, Abilities[label]);
                 return true;
             }
             else
             {
-                Debug.LogError($"Resume Ability Failed: No ability with ID '{name}' exists.");
+                Debug.LogError($"Resume Ability Failed: No ability with ID '{label}' exists.");
+                return false;
+            }
+        }
+        public bool ResetPower(string label)
+        {
+            if (Abilities.ContainsKey(label))
+            {
+                Abilities[label].GetComponent<ICommandBehaviour>().ResetCommand();
+                MessageBehavior(AbilityState.Modefiy, Abilities[label]);
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"Active Ability Failed: No ability with ID '{label}' exists.");
                 return false;
             }
         }
         public bool Apply(UnityEngine.Object author, Power command, Ability target)
         {
-            if (!Abilities.ContainsKey(command.Name))
+            if (!Abilities.ContainsKey(command.Label))
             {
                 command.transform.SetParent(target.transform);
-                Abilities.Add(command.Name, command);
+                Abilities.Add(command.Label, command);
                 command.GetComponent<ICommandInitiator>().Initiate(author, this);
-                MessageBehavior(AbilityState.Create, command);
+                MessageBehavior(AbilityState.Add, command);
                 return true;
             }
             else
             {
-                Debug.LogWarning($"Apply Ability Failed: An ability with ID '{command.Name}' already exists.");
+                Debug.LogWarning($"Apply Ability Failed: An ability with ID '{command.Label}' already exists.");
+                return false;
+            }
+        }
+        public bool Deny(string label)
+        {
+            if (Abilities.ContainsKey(label))
+            {
+                Abilities[label].GetComponent<ICommandLife>().ClearCommand();
+                Abilities[label].transform.SetParent(null);
+                Abilities.Remove(label);
+                MessageBehavior(AbilityState.Remove, null);
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning($"Deny Ability Failed:  No ability with ID '{label}' exists.");
                 return false;
             }
         }
@@ -198,29 +224,33 @@ namespace RealMethod
             }
 
             GameObject SpawnedObject = Instantiate(prefab, transform);
-            SpawnedObject.name = $"Ability_{command.Name}";
+            SpawnedObject.name = $"{command.Label}_Power";
             Power TargetCommand = SpawnedObject.GetComponent<Power>();
             TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, this);
-            Abilities.Add(TargetCommand.Name, TargetCommand);
+            Abilities.Add(TargetCommand.Label, TargetCommand);
             if (AutoActive)
             {
                 Active(prefab.name);
             }
-            MessageBehavior(AbilityState.Create, TargetCommand);
+            else
+            {
+                SpawnedObject.gameObject.SetActive(false);
+            }
+            MessageBehavior(AbilityState.Add, TargetCommand);
             return true;
         }
-        public bool Delete(string name)
+        public bool Delete(string label)
         {
-            if (Abilities.ContainsKey(name))
+            if (Abilities.ContainsKey(label))
             {
-                MessageBehavior(AbilityState.Delete, Abilities[name]);
-                Destroy(Abilities[name].gameObject);
-                Abilities.Remove(name);
+                MessageBehavior(AbilityState.Remove, Abilities[label]);
+                Destroy(Abilities[label].gameObject);
+                Abilities.Remove(label);
                 return true;
             }
             else
             {
-                Debug.LogError($"Delete Ability Failed: No ability with ID '{name}' exists.");
+                Debug.LogError($"Delete Ability Failed: No ability with ID '{label}' exists.");
                 return false;
             }
         }
@@ -229,7 +259,7 @@ namespace RealMethod
             Power Targetcommand = prefab.GetComponent<Power>();
             if (Targetcommand)
             {
-                return Delete(Targetcommand.Name);
+                return Delete(Targetcommand.Label);
             }
             else
             {
@@ -238,7 +268,7 @@ namespace RealMethod
             }
 
         }
-        public bool Move(string name, Ability target)
+        public bool Move(string label, Ability target)
         {
             if (target == null)
             {
@@ -246,19 +276,19 @@ namespace RealMethod
                 return false;
             }
 
-            if (Abilities.ContainsKey(name))
+            if (Abilities.ContainsKey(label))
             {
-                Abilities[name].GetComponent<ICommandInitiator>().Initiate(this, target);
-                Abilities[name].transform.SetParent(target.transform);
-                target.Abilities.Add(name, Abilities[name]);
-                target.MessageBehavior(AbilityState.Create, Abilities[name]);
-                MessageBehavior(AbilityState.Delete, Abilities[name]);
-                Abilities.Remove(name);
+                Abilities[label].GetComponent<ICommandInitiator>().Initiate(this, target);
+                Abilities[label].transform.SetParent(target.transform);
+                target.Abilities.Add(label, Abilities[label]);
+                target.MessageBehavior(AbilityState.Add, Abilities[label]);
+                MessageBehavior(AbilityState.Remove, Abilities[label]);
+                Abilities.Remove(label);
                 return true;
             }
             else
             {
-                Debug.LogError($"Delete Ability Failed: No ability with ID '{name}' exists.");
+                Debug.LogError($"Delete Ability Failed: No ability with ID '{label}' exists.");
                 return false;
             }
 
@@ -294,20 +324,20 @@ namespace RealMethod
             {
                 switch (State)
                 {
-                    case AbilityState.Create:
-                        OnCreated?.Invoke(command);
+                    case AbilityState.Add:
+                        OnAddPower?.Invoke(command);
                         break;
                     case AbilityState.Active:
-                        OnActive?.Invoke(command);
+                        OnActivePower?.Invoke(command);
                         break;
                     case AbilityState.Deactive:
-                        OnDeactive?.Invoke(command);
+                        OnDeactivePower?.Invoke(command);
                         break;
-                    case AbilityState.Delete:
-                        OnDeleted?.Invoke(command);
+                    case AbilityState.Remove:
+                        OnRemovePower?.Invoke(command);
                         break;
                     case AbilityState.Modefiy:
-                        OnModified?.Invoke(command);
+                        OnModifiyPower?.Invoke(command);
                         break;
                 }
             }
@@ -316,29 +346,29 @@ namespace RealMethod
             {
                 switch (State)
                 {
-                    case AbilityState.Create:
-                        SendMessage("OnAbilityCreate", command, MessageOption);
+                    case AbilityState.Add:
+                        SendMessage("OnPowerAdded", command, MessageOption);
                         break;
                     case AbilityState.Active:
-                        SendMessage("OnAbilityActive", command, MessageOption);
-                        OnActive?.Invoke(command);
+                        SendMessage("OnPowerActivated", command, MessageOption);
+                        OnActivePower?.Invoke(command);
                         break;
                     case AbilityState.Deactive:
-                        SendMessage("OnAbilityDeactive", command, MessageOption);
+                        SendMessage("OnPowerDeactivated", command, MessageOption);
                         break;
-                    case AbilityState.Delete:
-                        SendMessage("OnAbilityDelete", command, MessageOption);
+                    case AbilityState.Remove:
+                        SendMessage("OnPowerRemoved", command, MessageOption);
                         break;
                     case AbilityState.Modefiy:
-                        SendMessage("OnAbilityModify", command, MessageOption);
+                        SendMessage("OnPowerModefiy", command, MessageOption);
                         break;
                 }
             }
 
             switch (State)
             {
-                case AbilityState.Create:
-                    CreateAbility(command);
+                case AbilityState.Add:
+                    AddAbility(command);
                     break;
                 case AbilityState.Active:
                     ActiveAbility(command);
@@ -346,8 +376,8 @@ namespace RealMethod
                 case AbilityState.Deactive:
                     DeactiveAbility(command);
                     break;
-                case AbilityState.Delete:
-                    DeleteAbility(command);
+                case AbilityState.Remove:
+                    RemoveAbility(command);
                     break;
                 case AbilityState.Modefiy:
                     ModefiyAbility(command);
@@ -357,8 +387,8 @@ namespace RealMethod
 
 
         protected abstract void ActiveAbility(Power Ability);
-        protected abstract void CreateAbility(Power Ability);
-        protected abstract void DeleteAbility(Power Ability);
+        protected abstract void AddAbility(Power Ability);
+        protected abstract void RemoveAbility(Power Ability);
         protected abstract void DeactiveAbility(Power Ability);
         protected abstract void ModefiyAbility(Power Ability);
     }
@@ -368,33 +398,81 @@ namespace RealMethod
     {
         [Header("General")]
         [SerializeField]
-        private string AbilityName;
+        private string PowerLabel;
         [SerializeField, Tooltip("Ziro means infinit")]
         private float LifeTime;
-        public float Duration => LifeTime;
-        public string Name => AbilityName;
+        public float Duration => HiddeTime == -1 ? LifeTime : HiddeTime;
+        public string Label => PowerLabel;
+
+        // Private Variable
+        private float HiddeTime = -1;
+
 
         // Implemented Override Methods
         protected sealed override void OnInitiate()
         {
-            enabled = true;
-            if (MyAuthor is Ability && MyOwner is Ability)
+            gameObject.SetActive(false);
+            enabled = false;
+            if (MyOwner is Ability Result)
             {
-                OnAssign(MyAuthor as Ability);
+                OnAssign(Result);
             }
             else
             {
-                OnAssign(MyOwner as Ability);
+                Debug.LogError("Ther Owner Should be Ability Class");
             }
         }
-        protected override float PreProcessDuration(float StartDuration)
+        protected sealed override void OnBegin()
         {
-            return LifeTime;
+            gameObject.SetActive(true);
+            OnStartPower();
+        }
+        protected sealed override void OnUpdate()
+        {
+            OnTickPower(ElapsedTime / Duration);
+        }
+        protected sealed override void OnEnd()
+        {
+            gameObject.SetActive(false);
+            enabled = false;
+            OnFinishPower();
+        }
+        protected sealed override void OnPause()
+        {
+            enabled = false;
+            OnPause(true);
+        }
+        protected sealed override void OnResume()
+        {
+            enabled = true;
+            OnPause(false);
+        }
+        protected sealed override float PreProcessDuration(float StartDuration)
+        {
+            if (StartDuration > 0)
+            {
+                HiddeTime = StartDuration;
+                return StartDuration;
+            }
+            else
+            {
+                HiddeTime = -1;
+                return LifeTime;
+            }
+        }
+        protected sealed override bool CanUpdate()
+        {
+            return enabled && gameObject.activeSelf;
         }
 
 
         // Abstract Method
         protected abstract void OnAssign(Ability target);
+        protected abstract void OnStartPower();
+        protected abstract void OnTickPower(float alpha);
+        protected abstract void OnFinishPower();
+        protected abstract void OnPause(bool stop);
+
 
         // Unity Method
         private void OnDestroy()
@@ -402,5 +480,7 @@ namespace RealMethod
             ((ICommandLife)this).StopCommand();
         }
     }
+
+
 
 }

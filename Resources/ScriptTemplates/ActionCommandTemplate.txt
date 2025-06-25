@@ -29,7 +29,9 @@ public class #SCRIPTNAME# : ActionCommand
     }
     protected override void OnPause()
     {
-
+    }
+    protected override void OnResume()
+    {
     }
     protected override void OnReset()
     {
