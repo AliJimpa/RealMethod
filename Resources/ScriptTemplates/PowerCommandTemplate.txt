@@ -1,0 +1,33 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : Power
+{
+    // StartDuration : that duration set when ability activate
+    // Duration : the parameter set it in command component
+    protected override float PreProcessDuration(float StartDuration)
+    {
+        return Duration;
+    }
+
+    // Base Power Methods
+    protected override void OnAssign(Ability target)
+    {
+    }
+    protected override void OnBegin()
+    {
+    }
+    protected override void OnUpdate()
+    {
+    }
+    protected override void OnEnd()
+    {
+    }
+    protected override void OnPause()
+    {
+    }
+    protected override void OnReset()
+    {
+    }
+
+
+}

@@ -19,6 +19,7 @@ namespace RealMethod
             Active,
             Deactive,
             Delete,
+            Modefiy,
         }
 
 
@@ -32,18 +33,19 @@ namespace RealMethod
         [SerializeField, ShowInInspectorByEnum("Behavior", 1, 3)]
         private SendMessageOptions MessageOption;
 
-        public Action<AbilityCommand> OnCreated;
-        public Action<AbilityCommand> OnActive;
-        public Action<AbilityCommand> OnDeactive;
-        public Action<AbilityCommand> OnDeleted;
+        public Action<Power> OnCreated;
+        public Action<Power> OnActive;
+        public Action<Power> OnDeactive;
+        public Action<Power> OnDeleted;
+        public Action<Power> OnModified;
 
-        private Hictionary<AbilityCommand> Abilities = new Hictionary<AbilityCommand>(5);
+        private Hictionary<Power> Abilities = new Hictionary<Power>(5);
 
 
         public bool HasAbility => Abilities.Count > 0;
         public int Count => Abilities.Count;
 
-        public AbilityCommand this[string Name]
+        public Power this[string Name]
         {
             get => Abilities[Name];
             set => Abilities[Name] = value;
@@ -87,7 +89,23 @@ namespace RealMethod
         {
             if (Abilities.ContainsKey(name))
             {
+                Abilities[name].gameObject.SetActive(true);
                 Abilities[name].GetComponent<ICommandLife>().StartCommand();
+                MessageBehavior(AbilityState.Active, Abilities[name]);
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"Active Ability Failed: No ability with ID '{name}' exists.");
+                return false;
+            }
+        }
+        public bool Active(string name, float Duration)
+        {
+            if (Abilities.ContainsKey(name))
+            {
+                Abilities[name].gameObject.SetActive(true);
+                Abilities[name].GetComponent<ICommandLife>().StartCommand(Duration);
                 MessageBehavior(AbilityState.Active, Abilities[name]);
                 return true;
             }
@@ -102,6 +120,7 @@ namespace RealMethod
             if (Abilities.ContainsKey(name))
             {
                 Abilities[name].GetComponent<ICommandLife>().StopCommand();
+                Abilities[name].gameObject.SetActive(false);
                 MessageBehavior(AbilityState.Deactive, Abilities[name]);
                 return true;
             }
@@ -111,7 +130,37 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool Apply(UnityEngine.Object author, AbilityCommand command, Ability target)
+        public bool Pause(string name)
+        {
+            if (Abilities.ContainsKey(name))
+            {
+                Abilities[name].GetComponent<ICommandBehaviour>().PauseCommand();
+                Abilities[name].enabled = false;
+                MessageBehavior(AbilityState.Modefiy, Abilities[name]);
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"Pause Ability Failed: No ability with ID '{name}' exists.");
+                return false;
+            }
+        }
+        public bool Resume(string name)
+        {
+            if (Abilities.ContainsKey(name))
+            {
+                Abilities[name].GetComponent<ICommandBehaviour>().ResumeCommand();
+                Abilities[name].enabled = true;
+                MessageBehavior(AbilityState.Modefiy, Abilities[name]);
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"Resume Ability Failed: No ability with ID '{name}' exists.");
+                return false;
+            }
+        }
+        public bool Apply(UnityEngine.Object author, Power command, Ability target)
         {
             if (!Abilities.ContainsKey(command.Name))
             {
@@ -129,10 +178,10 @@ namespace RealMethod
         }
         public bool Create(GameObject prefab, UnityEngine.Object author, bool AutoActive = false)
         {
-            AbilityCommand command = prefab.GetComponent<AbilityCommand>();
+            Power command = prefab.GetComponent<Power>();
             if (command == null)
             {
-                Debug.LogError($"Create Ability Failed: The GameObject '{prefab.name}' does not have a command of type '{typeof(AbilityCommand).Name}'.");
+                Debug.LogError($"Create Ability Failed: The GameObject '{prefab.name}' does not have a command of type '{typeof(Power).Name}'.");
                 return false;
             }
 
@@ -150,7 +199,7 @@ namespace RealMethod
 
             GameObject SpawnedObject = Instantiate(prefab, transform);
             SpawnedObject.name = $"Ability_{command.Name}";
-            AbilityCommand TargetCommand = SpawnedObject.GetComponent<AbilityCommand>();
+            Power TargetCommand = SpawnedObject.GetComponent<Power>();
             TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, this);
             Abilities.Add(TargetCommand.Name, TargetCommand);
             if (AutoActive)
@@ -177,7 +226,7 @@ namespace RealMethod
         }
         public bool Delete(GameObject prefab)
         {
-            AbilityCommand Targetcommand = prefab.GetComponent<AbilityCommand>();
+            Power Targetcommand = prefab.GetComponent<Power>();
             if (Targetcommand)
             {
                 return Delete(Targetcommand.Name);
@@ -215,9 +264,9 @@ namespace RealMethod
 
 
         }
-        public AbilityCommand[] CopyActiveAbilities()
+        public Power[] CopyActiveAbilities()
         {
-            var result = new List<AbilityCommand>();
+            var result = new List<Power>();
             foreach (var ability in Abilities.GetValues())
             {
                 if (!ability.IsFinished)
@@ -227,7 +276,7 @@ namespace RealMethod
             }
             return result.ToArray();
         }
-        public AbilityCommand[] CopyAbilities()
+        public Power[] CopyAbilities()
         {
             return Abilities.GetValues();
         }
@@ -239,7 +288,7 @@ namespace RealMethod
                 ability.GetComponent<ICommandLife>().UpdateCommand();
             }
         }
-        private void MessageBehavior(AbilityState State, AbilityCommand command)
+        private void MessageBehavior(AbilityState State, Power command)
         {
             if (Behavior == AbilityBehavior.Action || Behavior == AbilityBehavior.Both)
             {
@@ -256,6 +305,9 @@ namespace RealMethod
                         break;
                     case AbilityState.Delete:
                         OnDeleted?.Invoke(command);
+                        break;
+                    case AbilityState.Modefiy:
+                        OnModified?.Invoke(command);
                         break;
                 }
             }
@@ -277,6 +329,9 @@ namespace RealMethod
                     case AbilityState.Delete:
                         SendMessage("OnAbilityDelete", command, MessageOption);
                         break;
+                    case AbilityState.Modefiy:
+                        SendMessage("OnAbilityModify", command, MessageOption);
+                        break;
                 }
             }
 
@@ -294,18 +349,22 @@ namespace RealMethod
                 case AbilityState.Delete:
                     DeleteAbility(command);
                     break;
+                case AbilityState.Modefiy:
+                    ModefiyAbility(command);
+                    break;
             }
         }
 
 
-        protected abstract void ActiveAbility(AbilityCommand Ability);
-        protected abstract void CreateAbility(AbilityCommand Ability);
-        protected abstract void DeleteAbility(AbilityCommand Ability);
-        protected abstract void DeactiveAbility(AbilityCommand Ability);
+        protected abstract void ActiveAbility(Power Ability);
+        protected abstract void CreateAbility(Power Ability);
+        protected abstract void DeleteAbility(Power Ability);
+        protected abstract void DeactiveAbility(Power Ability);
+        protected abstract void ModefiyAbility(Power Ability);
     }
 
 
-    public abstract class AbilityCommand : LifecycleCommand
+    public abstract class Power : ActionCommand
     {
         [Header("General")]
         [SerializeField]
@@ -328,14 +387,11 @@ namespace RealMethod
                 OnAssign(MyOwner as Ability);
             }
         }
-        protected sealed override float PreProcessDuration(float StartDuration)
+        protected override float PreProcessDuration(float StartDuration)
         {
             return LifeTime;
         }
-        protected sealed override bool CanUpdate()
-        {
-            return enabled;
-        }
+
 
         // Abstract Method
         protected abstract void OnAssign(Ability target);

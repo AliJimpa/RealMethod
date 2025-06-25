@@ -209,7 +209,7 @@ namespace RealMethod
         /// <summary> Called to resume the command after a pause. </summary>
         void ResumeCommand();
         /// <summary> Resets command state (useful for pooling). </summary>
-        void ResetCommand(float Duration);
+        void ResetCommand(float Duration = 0);
         /// <summary> Whether the command is currently paused. </summary>
         bool IsPaused { get; }
     }

@@ -8,24 +8,9 @@ namespace RealMethod
         bool IsActivate { get; }
     }
 
-    public abstract class Act : Command, IActTrigger
+    public abstract class Act : Command
     {
-        public bool IsActivate => throw new System.NotImplementedException();
-
-        public void ActiveAct()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool CanActiveAct(object Author)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void DeactiveAct()
-        {
-            throw new System.NotImplementedException();
-        }
+        
     }
 
 }

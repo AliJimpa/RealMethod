@@ -4,10 +4,10 @@ namespace RealMethod.Editor
 {
     class Ability_ScriptTemplate
     {
-        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Ability/AbilityCommand", false, 80)]
-        public static void CreateAbilityCommand()
+        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Ability/Power", false, 80)]
+        public static void CreatePowerCommand()
         {
-            string Path = ScriptCreator.Create("AbilityCommandTemplate.txt", "MyAbilityCommand.cs");
+            string Path = ScriptCreator.Create("PowerCommandTemplate.txt", "MyPower.cs");
         }
     }
 }
