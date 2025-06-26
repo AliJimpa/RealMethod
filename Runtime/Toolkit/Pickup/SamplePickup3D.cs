@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Toolkit/Pickup/Pickup3D")]
-    public sealed class Pickup3D : PickupCollider3D
+    [AddComponentMenu("RealMethod/Toolkit/Pickup/SamplePickup3D")]
+    public sealed class SamplePickup3D : PickupCollider3D
     {
         public Action<Collider> OnPickedUpBy;
         protected override bool CanPickedUp(Collider Picker)

@@ -1,0 +1,14 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : Pickup<YOURCOLLIDER>
+{
+    // Base Pickup Methods
+    protected override bool CanPickedUp(YOURCOLLIDER Picker)
+    {
+        return enabled;
+    }
+    protected override void OnPickedUp(YOURCOLLIDER Picker)
+    {
+
+    }
+}
