@@ -22,11 +22,10 @@ namespace RealMethod
             TriggerEnter,
             TriggerExit
         }
-
     }
     public abstract class Pickup<T> : Pickup where T : Component
     {
-        [Header("Pickup")]
+        [Header("Basic")]
         [SerializeField]
         protected bool compareTag = true;
         [SerializeField, TagSelector, ConditionalHide("compareTag", true, false)]
@@ -38,7 +37,7 @@ namespace RealMethod
         [SerializeField]
         protected SendMessageOptions SendMessageMethod;
         [SerializeField]
-        protected UnityEvent OnPickup;
+        protected UnityEvent<T> OnPickup;
 
         /// Private Variable
         protected T m_Collider;
@@ -106,11 +105,11 @@ namespace RealMethod
                     SendMessage("OnPickup", Picker, SendMessageMethod);
                     break;
                 case PickupBehavior.UnityEvent:
-                    OnPickup.Invoke();
+                    OnPickup.Invoke(Picker);
                     break;
                 case PickupBehavior.Both:
                     SendMessage("OnPickup", Picker, SendMessageMethod);
-                    OnPickup.Invoke();
+                    OnPickup.Invoke(Picker);
                     break;
                 default:
                     break;
@@ -122,9 +121,11 @@ namespace RealMethod
     }
 
 
+
     [RequireComponent(typeof(Collider))]
-    public abstract class PickupCollider : Pickup<Collider>
+    public abstract class PickupCollider3D : Pickup<Collider>
     {
+        // Unity Methods
         private void OnValidate()
         {
             Collider Sidecollide = GetComponent<Collider>();
@@ -133,8 +134,6 @@ namespace RealMethod
                 Sidecollide.isTrigger = true;
             }
         }
-
-
         private void OnTriggerEnter(Collider other)
         {
             CheckPicking(other, PickType.TriggerEnter);
@@ -145,10 +144,10 @@ namespace RealMethod
         }
     }
 
-
     [RequireComponent(typeof(Collider2D))]
     public abstract class PickupCollider2D : Pickup<Collider2D>
     {
+        // Unity Methods
         private void OnValidate()
         {
             Collider2D Sidecollide = GetComponent<Collider2D>();
@@ -157,13 +156,10 @@ namespace RealMethod
                 Sidecollide.isTrigger = true;
             }
         }
-
-
         private void OnTriggerEnter2D(Collider2D collision)
         {
             CheckPicking(collision, PickType.TriggerEnter);
         }
-
         private void OnTriggerExit2D(Collider2D collision)
         {
             CheckPicking(collision, PickType.TriggerExit);
