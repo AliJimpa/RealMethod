@@ -1,5 +1,5 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace RealMethod
 {
@@ -14,7 +14,7 @@ namespace RealMethod
         {
             Nothing,
             SendMessage,
-            UnityEvent,
+            Action,
             Both
         }
         protected enum PickType
@@ -31,13 +31,12 @@ namespace RealMethod
         [SerializeField, TagSelector, ConditionalHide("compareTag", true, false)]
         protected string Tag = "Player";
         [SerializeField]
-        protected PickType Timing;
-        [Space, SerializeField]
+        protected PickType State;
+        [SerializeField]
         protected PickupBehavior Behavior;
-        [SerializeField]
-        protected SendMessageOptions SendMessageMethod;
-        [SerializeField]
-        protected UnityEvent<T> OnPickup;
+
+        // Action
+        public Action<T> OnPickedUp;
 
         /// Private Variable
         protected T m_Collider;
@@ -53,7 +52,7 @@ namespace RealMethod
             if (!enabled)
                 return;
 
-            if (type != Timing)
+            if (type != State)
                 return;
 
             if (compareTag)
@@ -63,14 +62,14 @@ namespace RealMethod
                     IPicker Picker = other.GetComponent<IPicker>();
                     if (Picker != null)
                     {
-                        if (Picker.CanTake(this) && CanPickedUp(other))
+                        if (Picker.CanTake(this) && CanPickUp(other))
                         {
                             PickedUp(other);
                         }
                     }
                     else
                     {
-                        if (CanPickedUp(other))
+                        if (CanPickUp(other))
                         {
                             PickedUp(other);
                         }
@@ -82,14 +81,14 @@ namespace RealMethod
                 IPicker Picker = other.GetComponent<IPicker>();
                 if (Picker != null)
                 {
-                    if (Picker.CanTake(this) && CanPickedUp(other))
+                    if (Picker.CanTake(this) && CanPickUp(other))
                     {
                         PickedUp(other);
                     }
                 }
                 else
                 {
-                    if (CanPickedUp(other))
+                    if (CanPickUp(other))
                     {
                         PickedUp(other);
                     }
@@ -98,26 +97,26 @@ namespace RealMethod
         }
         private void PickedUp(T Picker)
         {
-            OnPickedUp(Picker);
+            OnPickUp(Picker);
             switch (Behavior)
             {
                 case PickupBehavior.SendMessage:
-                    SendMessage("OnPickup", Picker, SendMessageMethod);
+                    SendMessage("OnPickedUp", Picker, SendMessageOptions.RequireReceiver);
                     break;
-                case PickupBehavior.UnityEvent:
-                    OnPickup.Invoke(Picker);
+                case PickupBehavior.Action:
+                    OnPickedUp?.Invoke(Picker);
                     break;
                 case PickupBehavior.Both:
-                    SendMessage("OnPickup", Picker, SendMessageMethod);
-                    OnPickup.Invoke(Picker);
+                    SendMessage("OnPickedUp", Picker, SendMessageOptions.RequireReceiver);
+                    OnPickedUp?.Invoke(Picker);
                     break;
                 default:
                     break;
             }
         }
 
-        protected abstract void OnPickedUp(T Picker);
-        protected abstract bool CanPickedUp(T Picker);
+        protected abstract void OnPickUp(T Picker);
+        protected abstract bool CanPickUp(T Picker);
     }
 
 
@@ -125,13 +124,26 @@ namespace RealMethod
     [RequireComponent(typeof(Collider))]
     public abstract class PickupCollider3D : Pickup<Collider>
     {
+        [Header("Collider")]
+        public bool DrawDebug = true;
+        [ConditionalHide("DrawDebug", true, false)]
+        public Color DebugColor = new Color(0, 1, 0, 0.2f);
+
         // Unity Methods
         private void OnValidate()
         {
             Collider Sidecollide = GetComponent<Collider>();
             if (Sidecollide)
             {
-                Sidecollide.isTrigger = true;
+                if (Sidecollide is MeshCollider m_meshcollider)
+                {
+                    m_meshcollider.convex = true;
+                    m_meshcollider.isTrigger = true;
+                }
+                else
+                {
+                    Sidecollide.isTrigger = true;
+                }
             }
         }
         private void OnTriggerEnter(Collider other)
@@ -142,6 +154,63 @@ namespace RealMethod
         {
             CheckPicking(other, PickType.TriggerExit);
         }
+
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (DrawDebug)
+            {
+                Collider Sidecollide = GetComponent<Collider>();
+                if (Sidecollide != null && Sidecollide.isTrigger && Sidecollide.enabled)
+                {
+                    switch (Sidecollide)
+                    {
+                        case BoxCollider box:
+                            DrawBoxCollider(box);
+                            break;
+                        case SphereCollider sphere:
+                            DrawSpherCollider(sphere);
+                            break;
+                        default:
+                            Debug.LogWarning("Cant' Draw Debug for This Collider");
+                            DrawDebug = false;
+                            break;
+                    }
+                }
+            }
+        }
+        protected void DrawBoxCollider(BoxCollider boxCollider)
+        {
+            Gizmos.color = DebugColor;
+
+            // Get box collider properties
+            Vector3 center = boxCollider.center;
+            Vector3 size = boxCollider.size;
+
+            // Transform to world position
+            Matrix4x4 cubeTransform = Matrix4x4.TRS(transform.position, transform.rotation, transform.localScale);
+            Gizmos.matrix = cubeTransform;
+
+            // Draw wire cube
+            Gizmos.DrawWireCube(center, size);
+
+            // Optional: Draw a semi-transparent filled cube
+            Gizmos.color = new Color(DebugColor.r, DebugColor.g, DebugColor.b, DebugColor.a);
+            Gizmos.DrawCube(center, size);
+        }
+        protected void DrawSpherCollider(SphereCollider sphere)
+        {
+            Vector3 center = sphere.center;
+            float radius = sphere.radius;
+
+            Gizmos.DrawWireSphere(center, radius);
+            Gizmos.color = new Color(DebugColor.r, DebugColor.g, DebugColor.b, 0.2f);
+            Gizmos.DrawSphere(center, radius);
+        }
+#endif
+
+
     }
 
     [RequireComponent(typeof(Collider2D))]

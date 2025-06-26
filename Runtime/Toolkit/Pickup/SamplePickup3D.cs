@@ -1,17 +1,18 @@
-using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Toolkit/Pickup/SamplePickup3D")]
     public sealed class SamplePickup3D : PickupCollider3D
     {
-        public Action<Collider> OnPickedUpBy;
-        protected override bool CanPickedUp(Collider Picker)
+        [Header("Sample")]
+        public UnityEvent<Collider> OnPickedUpBy;
+        protected override bool CanPickUp(Collider Picker)
         {
             return enabled;
         }
-        protected override void OnPickedUp(Collider Picker)
+        protected override void OnPickUp(Collider Picker)
         {
             OnPickedUpBy?.Invoke(Picker);
         }
