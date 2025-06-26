@@ -53,7 +53,7 @@ namespace RealMethod
         }
 
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if (StartAbility != null)
             {
@@ -386,11 +386,11 @@ namespace RealMethod
         }
 
 
-        protected abstract void ActiveAbility(Power Ability);
-        protected abstract void AddAbility(Power Ability);
-        protected abstract void RemoveAbility(Power Ability);
-        protected abstract void DeactiveAbility(Power Ability);
-        protected abstract void ModefiyAbility(Power Ability);
+        protected abstract void ActiveAbility(Power PowerUp);
+        protected abstract void AddAbility(Power PowerUp);
+        protected abstract void RemoveAbility(Power PowerUp);
+        protected abstract void DeactiveAbility(Power PowerUp);
+        protected abstract void ModefiyAbility(Power PowerUp);
     }
 
 
