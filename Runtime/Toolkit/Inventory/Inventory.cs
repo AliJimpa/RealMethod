@@ -75,7 +75,7 @@ namespace RealMethod
         }
         public int GetQuantity(InventoryItemAsset asset)
         {
-            return GetQuantity(asset.Name);
+            return GetQuantity(asset.name);
         }
         public bool IsValidItem(string Name)
         {
@@ -83,11 +83,11 @@ namespace RealMethod
         }
         public bool CreateNewItem(InventoryItemAsset item, int Quantity, int ItemCapacity)
         {
-            if (!Items.ContainsKey(item.Name))
+            if (!Items.ContainsKey(item.name))
             {
                 if (item.CanPickUp(this))
                 {
-                    Items.Add(item.Name, new InventoryItemProperty(item, Quantity, ItemCapacity));
+                    Items.Add(item.name, new InventoryItemProperty(item, Quantity, ItemCapacity));
                     SendInventoryMessage(ItemState.Create, item, Quantity);
                     return true;
                 }
@@ -98,7 +98,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Item with this Name {item.Name} already there");
+                Debug.LogWarning($"Item with this Name {item.name} already there");
                 return false;
             }
         }
@@ -106,11 +106,11 @@ namespace RealMethod
         {
             if (Items.Count < _capacity || _capacity == 0)
             {
-                if (Items.ContainsKey(item.Name))
+                if (Items.ContainsKey(item.name))
                 {
                     if (item.CanChange(true))
                     {
-                        Items[item.Name].Add(Quantity);
+                        Items[item.name].Add(Quantity);
                         SendInventoryMessage(ItemState.Update, item, Quantity);
                     }
                 }
@@ -118,7 +118,7 @@ namespace RealMethod
                 {
                     if (item.CanPickUp(this))
                     {
-                        Items.Add(item.Name, new InventoryItemProperty(item, Quantity));
+                        Items.Add(item.name, new InventoryItemProperty(item, Quantity));
                         SendInventoryMessage(ItemState.Create, item, Quantity);
                     }
                 }

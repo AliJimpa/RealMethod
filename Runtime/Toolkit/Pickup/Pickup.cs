@@ -130,7 +130,7 @@ namespace RealMethod
         public Color DebugColor = new Color(0, 1, 0, 0.2f);
 
         // Unity Methods
-        private void OnValidate()
+        protected virtual void OnValidate()
         {
             Collider Sidecollide = GetComponent<Collider>();
             if (Sidecollide)
@@ -217,7 +217,7 @@ namespace RealMethod
     public abstract class PickupCollider2D : Pickup<Collider2D>
     {
         // Unity Methods
-        private void OnValidate()
+        protected virtual void OnValidate()
         {
             Collider2D Sidecollide = GetComponent<Collider2D>();
             if (Sidecollide)

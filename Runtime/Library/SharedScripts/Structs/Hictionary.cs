@@ -24,10 +24,6 @@ namespace RealMethod
         {
             return List.ContainsKey(Hash128.Compute(Name));
         }
-        public bool ContainsKey(InventoryItemAsset Asset)
-        {
-            return ContainsKey(Asset.Name);
-        }
         public void Add(string Name, T Value)
         {
             List.Add(Hash128.Compute(Name), Value);
