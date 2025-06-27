@@ -469,7 +469,6 @@ namespace RealMethod
             }
         }
 
-
         // Abstract Method
         protected abstract void OnAssign(Ability target);
         protected abstract void OnStartPower();
@@ -477,12 +476,20 @@ namespace RealMethod
         protected abstract void OnFinishPower();
         protected abstract void OnPause(bool stop);
 
-
         // Unity Method
         protected virtual void OnDestroy()
         {
             Finish();
         }
+
+
+#if UNITY_EDITOR
+        protected void ChangeLabel(string NewName)
+        {
+            PowerLabel = NewName;
+        }
+#endif
+
     }
 
 
