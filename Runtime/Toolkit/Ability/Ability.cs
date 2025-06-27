@@ -453,11 +453,13 @@ namespace RealMethod
         {
             if (Tick)
             {
+                Duration = StartDuration > 0 ? StartDuration : LifeTime;
+                return Duration;
+            }
+            else
+            {
                 return 0;
             }
-
-            Duration = StartDuration > 0 ? StartDuration : LifeTime;
-            return Duration;
         }
         protected sealed override bool CanUpdate()
         {
