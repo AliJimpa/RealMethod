@@ -425,6 +425,7 @@ namespace RealMethod
         protected sealed override void OnBegin()
         {
             gameObject.SetActive(true);
+            enabled = true;
             OnStartPower();
         }
         protected sealed override void OnUpdate()
