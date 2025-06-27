@@ -86,6 +86,10 @@ namespace RealMethod
             }
         }
 
+        public bool IsValidPower(string label)
+        {
+            return Abilities.ContainsKey(label);
+        }
         public bool Active(string label)
         {
             if (Abilities.ContainsKey(label))
@@ -221,7 +225,7 @@ namespace RealMethod
                 return false;
             }
 
-            if (Abilities.ContainsKey(prefab.name))
+            if (Abilities.ContainsKey(command.Label))
             {
                 Debug.LogError($"Create Ability Failed: An ability with ID '{prefab.name}' already exists.");
                 return false;
