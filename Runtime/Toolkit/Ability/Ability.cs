@@ -170,11 +170,11 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool Apply(UnityEngine.Object author, Power command, Ability target)
+        public bool Apply(Power command, Transform target, UnityEngine.Object author)
         {
             if (!Abilities.ContainsKey(command.Label))
             {
-                command.transform.SetParent(target.transform);
+                command.transform.SetParent(target);
                 Abilities.Add(command.Label, command);
                 command.GetComponent<ICommandInitiator>().Initiate(author, this);
                 MessageBehavior(AbilityState.Add, command);
@@ -204,6 +204,10 @@ namespace RealMethod
         }
         public bool Create(GameObject prefab, UnityEngine.Object author, bool AutoActive = false)
         {
+            return Create(prefab, transform, author, AutoActive);
+        }
+        public bool Create(GameObject prefab, Transform parent, UnityEngine.Object author, bool AutoActive = false)
+        {
             Power command = prefab.GetComponent<Power>();
             if (command == null)
             {
@@ -223,7 +227,7 @@ namespace RealMethod
                 return false;
             }
 
-            GameObject SpawnedObject = Instantiate(prefab, transform);
+            GameObject SpawnedObject = Instantiate(prefab, parent);
             SpawnedObject.name = $"{command.Label}_Power";
             Power TargetCommand = SpawnedObject.GetComponent<Power>();
             TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, this);
@@ -278,12 +282,9 @@ namespace RealMethod
 
             if (Abilities.ContainsKey(label))
             {
-                Abilities[label].GetComponent<ICommandInitiator>().Initiate(this, target);
-                Abilities[label].transform.SetParent(target.transform);
-                target.Abilities.Add(label, Abilities[label]);
-                target.MessageBehavior(AbilityState.Add, Abilities[label]);
-                MessageBehavior(AbilityState.Remove, Abilities[label]);
-                Abilities.Remove(label);
+                Power TargetPower = Abilities[label];
+                Deny(label);
+                target.Apply(TargetPower, target.transform, this);
                 return true;
             }
             else
