@@ -69,7 +69,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Ther isnt any item with this Name");
+                Debug.LogWarning("Ther isnt any item with this Name [Be sure to use object.name is not Item.Name]");
                 return -1;
             }
         }
@@ -80,6 +80,10 @@ namespace RealMethod
         public bool IsValidItem(string Name)
         {
             return Items.ContainsKey(Name);
+        }
+        public bool IsValidItem(InventoryItemAsset asset)
+        {
+            return Items.ContainsKey(asset.name);
         }
         public bool CreateNewItem(InventoryItemAsset item, int Quantity, int ItemCapacity)
         {
@@ -152,7 +156,7 @@ namespace RealMethod
                             }
                             else
                             {
-                                Debug.LogError($"Can't Remove Item With this Name {Name}");
+                                Debug.LogError($"Can't Remove Item With this Name {Name} [Be sure to use object.name is not Item.Name]");
                             }
                             return true;
                         }
@@ -171,7 +175,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Ther isnt any Item with this Name {Name}");
+                Debug.LogWarning($"Ther isnt any Item with this Name {Name} [Be sure to use object.name is not Item.Name]");
                 return false;
             }
         }
@@ -188,7 +192,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Ther isnt any Item With this Name {Name}");
+                Debug.LogWarning($"Ther isnt any Item With this Name {Name} [Be sure to use object.name is not Item.Name]");
                 return false;
             }
         }
