@@ -406,7 +406,7 @@ namespace RealMethod
         public string Label => PowerLabel;
 
         // Private Variable
-        private float Duration;
+        private float Duration = 0;
 
 
         // Implemented Override Methods
