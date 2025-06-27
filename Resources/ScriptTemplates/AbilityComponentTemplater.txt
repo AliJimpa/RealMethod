@@ -3,19 +3,14 @@ using RealMethod;
 public class #SCRIPTNAME# : Ability
 {
     // Base Ability Methods
-    protected override void ActiveAbility(Power PowerUp)
-    {
-    }
-    protected override void AddAbility(Power PowerUp)
-    {
-    }
-    protected override void DeactiveAbility(Power PowerUp)
-    {
-    }
-    protected override void ModefiyAbility(Power PowerUp)
-    {
-    }
-    protected override void RemoveAbility(Power PowerUp)
-    {
-    }
+    protected abstract void OnPowerAdded(Power PowerUp)
+    {}
+    protected abstract void OnPowerActivated(Power PowerUp)
+    {}
+    protected abstract void OnPowerDeactivated(Power PowerUp)
+    {}
+    protected abstract void OnPowerRemoved(Power PowerUp)
+    {}
+    protected abstract void OnPowerModefied(Power PowerUp)
+    {}
 }

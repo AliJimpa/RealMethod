@@ -158,37 +158,43 @@ namespace RealMethod
         }
         void ICommandLife.UpdateCommand()
         {
+            // Check Started
             if (!islive)
             {
                 return;
             }
 
-            if (IsValidated)
+            // Check Initiate
+            if (!IsValidated)
             {
+                Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
+                return;
+            }
 
-                if (lifeTime > 0)
-                {
-                    lifeTime -= Time.deltaTime;
-                }
-                else
-                {
-                    if (hasDuration)
-                    {
-                        lifeTime = 0;
-                        ((ICommandLife)this).StopCommand();
-                        return;
-                    }
-                }
+            // Gate for Puse Updating Command
+            if (!CanUpdate())
+            {
+                return;
+            }
 
-                if (CanUpdate())
-                {
-                    OnUpdate();
-                }
+            // Handel Lifetime Command
+            if (lifeTime > 0)
+            {
+                // Calculate Time
+                lifeTime -= Time.deltaTime;
             }
             else
             {
-                Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
+                if (hasDuration)
+                {
+                    // Stop Command Teime over
+                    lifeTime = 0;
+                    ((ICommandLife)this).StopCommand();
+                    return;
+                }
             }
+
+            OnUpdate();
         }
         void ICommandLife.StopCommand()
         {

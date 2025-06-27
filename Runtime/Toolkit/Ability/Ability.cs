@@ -347,17 +347,17 @@ namespace RealMethod
                 switch (State)
                 {
                     case AbilityState.Add:
-                        SendMessage("OnPowerAdded", command, MessageOption);
+                        SendMessage("OnAddPower", command, MessageOption);
                         break;
                     case AbilityState.Active:
-                        SendMessage("OnPowerActivated", command, MessageOption);
+                        SendMessage("OnActivePower", command, MessageOption);
                         OnActivePower?.Invoke(command);
                         break;
                     case AbilityState.Deactive:
-                        SendMessage("OnPowerDeactivated", command, MessageOption);
+                        SendMessage("OnDeactivePower", command, MessageOption);
                         break;
                     case AbilityState.Remove:
-                        SendMessage("OnPowerRemoved", command, MessageOption);
+                        SendMessage("OnRemovePower", command, MessageOption);
                         break;
                     case AbilityState.Modefiy:
                         SendMessage("OnPowerModefiy", command, MessageOption);
@@ -368,29 +368,28 @@ namespace RealMethod
             switch (State)
             {
                 case AbilityState.Add:
-                    AddAbility(command);
+                    OnPowerAdded(command);
                     break;
                 case AbilityState.Active:
-                    ActiveAbility(command);
+                    OnPowerActivated(command);
                     break;
                 case AbilityState.Deactive:
-                    DeactiveAbility(command);
+                    OnPowerDeactivated(command);
                     break;
                 case AbilityState.Remove:
-                    RemoveAbility(command);
+                    OnPowerRemoved(command);
                     break;
                 case AbilityState.Modefiy:
-                    ModefiyAbility(command);
+                    OnPowerModefied(command);
                     break;
             }
         }
 
-
-        protected abstract void ActiveAbility(Power PowerUp);
-        protected abstract void AddAbility(Power PowerUp);
-        protected abstract void RemoveAbility(Power PowerUp);
-        protected abstract void DeactiveAbility(Power PowerUp);
-        protected abstract void ModefiyAbility(Power PowerUp);
+        protected abstract void OnPowerAdded(Power PowerUp);
+        protected abstract void OnPowerActivated(Power PowerUp);
+        protected abstract void OnPowerDeactivated(Power PowerUp);
+        protected abstract void OnPowerRemoved(Power PowerUp);
+        protected abstract void OnPowerModefied(Power PowerUp);
     }
 
 
@@ -399,13 +398,14 @@ namespace RealMethod
         [Header("General")]
         [SerializeField]
         private string PowerLabel;
-        [SerializeField, Tooltip("Ziro means infinit")]
+        [SerializeField]
+        protected bool Tick = true;
+        [SerializeField, Tooltip("Ziro means infinit"), ConditionalHide("Tick", true, false)]
         private float LifeTime;
-        public float Duration => HiddeTime == -1 ? LifeTime : HiddeTime;
         public string Label => PowerLabel;
 
         // Private Variable
-        private float HiddeTime = -1;
+        private float Duration;
 
 
         // Implemented Override Methods
@@ -449,20 +449,24 @@ namespace RealMethod
         }
         protected sealed override float PreProcessDuration(float StartDuration)
         {
-            if (StartDuration > 0)
+            if (Tick)
             {
-                HiddeTime = StartDuration;
-                return StartDuration;
+                return 0;
             }
-            else
-            {
-                HiddeTime = -1;
-                return LifeTime;
-            }
+
+            Duration = StartDuration > 0 ? StartDuration : LifeTime;
+            return Duration;
         }
         protected sealed override bool CanUpdate()
         {
-            return enabled && gameObject.activeSelf;
+            if (Tick)
+            {
+                return enabled && gameObject.activeSelf;
+            }
+            else
+            {
+                return false;
+            }
         }
 
 
@@ -475,9 +479,9 @@ namespace RealMethod
 
 
         // Unity Method
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
-            ((ICommandLife)this).StopCommand();
+            Finish();
         }
     }
 
