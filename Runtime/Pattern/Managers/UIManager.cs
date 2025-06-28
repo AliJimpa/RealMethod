@@ -135,7 +135,7 @@ namespace RealMethod
             }
             return SpawnedObject;
         }
-        public GameObject AddLayer(MonoBehaviour Owner, GameObject Prefab, string Name)
+        public GameObject AddLayer(GameObject Prefab, MonoBehaviour Owner, string Name)
         {
             GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
             Layers.Add(Name, SpawnedObject);
