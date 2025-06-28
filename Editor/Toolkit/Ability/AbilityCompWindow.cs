@@ -23,7 +23,7 @@ namespace RealMethod
                 {
                     foreach (var power in BaseComponent.CopyAbilities())
                     {
-                        EditorGUILayout.LabelField($"Name: {power.Label} - Status: {GetState(power)}");
+                        EditorGUILayout.LabelField($"Name: {power.Label} - Status: {GetState(power)}  [{GetlifeTime(power)}]");
                     }
                 }
                 EditorGUILayout.Space();
@@ -54,5 +54,18 @@ namespace RealMethod
                 }
             }
         }
+        private string GetlifeTime(Power targetpower)
+        {
+            if (targetpower.ElapsedTime == 0)
+            {
+                return "Infinit";
+            }
+            else
+            {
+                return targetpower.ElapsedTime.ToString();
+            }
+        }
+
+
     }
 }
