@@ -17,7 +17,7 @@ namespace RealMethod
         public bool IsLoading { get; protected set; }
         public float FadeTime = 0;
 
-        // Any World in Awake time acall this method
+        // Any World in Awake time call this method
         public bool IntroduceWorld(World world)
         {
             if (Game.World == null)

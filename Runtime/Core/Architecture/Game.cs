@@ -74,19 +74,16 @@ namespace RealMethod
             return null;
         }
         // Protected Methods
-        protected bool NeedComponent<t>(out t TargetRef) where t : MonoBehaviour
+        protected T NeedComponent<T>() where T : MonoBehaviour
         {
-            TargetRef = gameObject.GetComponent<t>();
-            if (TargetRef == null)
+            T Result = gameObject.GetComponent<T>();
+            if (Result == null)
             {
-                TargetRef = gameObject.AddComponent<t>();
-                Debug.LogWarning($"Component of type {typeof(t).Name} was not found. [A new one has been added].");
-                return false;
+                Result = gameObject.AddComponent<T>();
+                Debug.LogWarning($"Component of type {typeof(T).Name} was not found. [A new one has been added].");
+
             }
-            else
-            {
-                return true;
-            }
+            return Result;
         }
         // Private Methods
         private void ReplaceWorld(World NewWorld)
