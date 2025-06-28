@@ -74,13 +74,13 @@ namespace RealMethod
             return null;
         }
         // Protected Methods
-        protected T NeedComponent<T>() where T : MonoBehaviour
+        protected T NeedManager<T>() where T : MonoBehaviour
         {
-            T Result = gameObject.GetComponent<T>();
+            T Result = GetManager<T>();
             if (Result == null)
             {
                 Result = gameObject.AddComponent<T>();
-                Debug.LogWarning($"Component of type {typeof(T).Name} was not found. [A new one has been added].");
+                Debug.LogWarning($"Manager of type {typeof(T).Name} was not found. [A new one has been added].");
 
             }
             return Result;
