@@ -29,23 +29,25 @@ namespace RealMethod
         [SerializeField]
         private InventoryItemAsset[] DefaultItem;
 
+        public bool IsLoading { get; protected set; }
         public int Capacity => _capacity;
         public bool IsEnoughCapacity => _capacity > 0 ? Items.Count < _capacity : true;
         public int Count => Items.Count;
         public Action<InventoryItemAsset, int> OnItemAdded;
         public Action<InventoryItemAsset, int> OnItemUpdated;
-        public Action OnItemRemove;
+        public Action OnItemRemoved;
 
         protected Hictionary<InventoryItemProperty> Items = new Hictionary<InventoryItemProperty>(5);
 
 
-        public InventoryItemAsset this[string Name]
+        public InventoryItemAsset this[string itemname]
         {
-            get => Items[Name].Asset;
+            get => Items[itemname].Asset;
         }
 
         private void Awake()
         {
+            IsLoading = false;
             if (UseDefaultItem())
             {
                 if (DefaultItem != null)
@@ -61,15 +63,15 @@ namespace RealMethod
         }
 
         // public methods
-        public int GetQuantity(string Name)
+        public int GetQuantity(string itemname)
         {
-            if (Items.ContainsKey(Name))
+            if (Items.ContainsKey(itemname))
             {
-                return Items[Name].Quantity;
+                return Items[itemname].Quantity;
             }
             else
             {
-                Debug.LogWarning("Ther isnt any item with this Name [Be sure to use object.name is not Item.Name]");
+                Debug.LogWarning("Ther isnt any item with this Name [Be sure to use ItemName or Object.name]");
                 return -1;
             }
         }
@@ -77,9 +79,9 @@ namespace RealMethod
         {
             return GetQuantity(asset.name);
         }
-        public bool IsValidItem(string Name)
+        public bool IsValidItem(string itemname)
         {
-            return Items.ContainsKey(Name);
+            return Items.ContainsKey(itemname);
         }
         public bool IsValidItem(InventoryItemAsset asset)
         {
@@ -134,10 +136,10 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool RemoveItem(string Name, int Quantity = 1)
+        public bool RemoveItem(string itemname, int Quantity = 1)
         {
             InventoryItemProperty target;
-            if (Items.TryGetValue(Name, out target))
+            if (Items.TryGetValue(itemname, out target))
             {
                 if (target.Asset.CanChange(true))
                 {
@@ -150,13 +152,13 @@ namespace RealMethod
                     {
                         if (target.Asset.CanDropp(this))
                         {
-                            if (Items.Remove(Name))
+                            if (Items.Remove(itemname))
                             {
                                 SendInventoryMessage(ItemState.Delete, null, 0);
                             }
                             else
                             {
-                                Debug.LogError($"Can't Remove Item With this Name {Name} [Be sure to use object.name is not Item.Name]");
+                                Debug.LogError($"Can't Remove Item With this Name {itemname} [Be sure to use ItemName or Object.name]");
                             }
                             return true;
                         }
@@ -175,15 +177,15 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Ther isnt any Item with this Name {Name} [Be sure to use object.name is not Item.Name]");
+                Debug.LogWarning($"Ther isnt any Item with this Name {itemname} [Be sure to use ItemName or Object.name]");
                 return false;
             }
         }
-        public bool DeleteItem(string Name)
+        public bool DeleteItem(string itemname)
         {
-            if (Items.ContainsKey(Name))
+            if (Items.ContainsKey(itemname))
             {
-                bool Result = Items.Remove(Name);
+                bool Result = Items.Remove(itemname);
                 if (Result)
                 {
                     SendInventoryMessage(ItemState.Delete, null, 0);
@@ -192,7 +194,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Ther isnt any Item With this Name {Name} [Be sure to use object.name is not Item.Name]");
+                Debug.LogWarning($"Ther isnt any Item With this Name {itemname} [Be sure to use ItemName or Object.name]");
                 return false;
             }
         }
@@ -278,17 +280,17 @@ namespace RealMethod
                     switch (Behavior)
                     {
                         case BehaviorType.Action:
-                            OnItemRemove?.Invoke();
+                            OnItemRemoved?.Invoke();
                             break;
                         case BehaviorType.SendMessage:
-                            gameObject.SendMessage("OnItemRemove", SendMessageOptions.RequireReceiver);
+                            gameObject.SendMessage("OnItemRemoved", SendMessageOptions.RequireReceiver);
                             break;
                         case BehaviorType.Broadcast:
-                            gameObject.BroadcastMessage("OnItemRemove", SendMessageOptions.RequireReceiver);
+                            gameObject.BroadcastMessage("OnItemRemoved", SendMessageOptions.RequireReceiver);
                             break;
                         case BehaviorType.ActionAndMessage:
-                            OnItemRemove?.Invoke();
-                            gameObject.SendMessage("OnItemRemove", SendMessageOptions.RequireReceiver);
+                            OnItemRemoved?.Invoke();
+                            gameObject.SendMessage("OnItemRemoved", SendMessageOptions.RequireReceiver);
                             break;
                         default:
                             break;
@@ -331,11 +333,13 @@ namespace RealMethod
             {
                 if (File.IsExistInventoryData(this))
                 {
+                    IsLoading = true;
                     Clear();
                     foreach (var property in File.LoadInventory(this))
                     {
                         AddItem(property.Asset, property.Quantity);
                     }
+                    IsLoading = false;
                     OnLoaded();
                     return true;
                 }

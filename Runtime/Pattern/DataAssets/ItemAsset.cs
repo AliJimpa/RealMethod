@@ -6,8 +6,8 @@ namespace RealMethod
     {
         [Header("Basic")]
         [SerializeField]
-        protected string _name;
-        public string Name => _name;
+        protected string title;
+        public string Title => title;
         [SerializeField]
         protected Texture2D _icon;
         public Texture2D Icon => _icon;
@@ -27,14 +27,14 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("ItemAsset: Icon is not assigned for item '" + _name + "'.");
+                Debug.LogWarning("ItemAsset: Icon is not assigned for item '" + title + "'.");
                 return null;
             }
         }
 #if UNITY_EDITOR
         protected void ChangeName(string NewName)
         {
-            _name = NewName;
+            title = NewName;
         }
 #endif
 
