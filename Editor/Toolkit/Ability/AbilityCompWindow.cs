@@ -56,14 +56,22 @@ namespace RealMethod
         }
         private string GetlifeTime(Power targetpower)
         {
-            if (targetpower.ElapsedTime == 0)
+            if (targetpower.IsFinished)
             {
-                return "Infinit";
+                return "-";
             }
             else
             {
-                return targetpower.ElapsedTime.ToString();
+                if (targetpower.ElapsedTime == 0)
+                {
+                    return "Infinit";
+                }
+                else
+                {
+                    return targetpower.ElapsedTime.ToString();
+                }
             }
+
         }
 
 
