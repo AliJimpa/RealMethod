@@ -13,9 +13,10 @@ namespace RealMethod
         private string ActionMap;
         [SerializeField]
         private string[] Inputs;
-
+        public int Count => Inputs.Length;
         public InputActionMap Map { get; private set; }
         private InputAction[] Actions;
+
 
         public InputAction this[int index]
         {
@@ -40,6 +41,20 @@ namespace RealMethod
                 }
                 return Actions[System.Array.IndexOf(Inputs, name)];
             }
+        }
+        
+        public InputMethod()
+        {
+            Inputs = new string[1];
+        }
+        public InputMethod(int InputCount)
+        {
+            Inputs = new string[InputCount];
+        }
+        public InputMethod(int InputCount, InputActionMap ActionMap)
+        {
+            Inputs = new string[InputCount];
+            Map = ActionMap;
         }
 
         public void EnableMap(bool CheckValidate = false)
@@ -89,6 +104,14 @@ namespace RealMethod
                 return;
             }
         }
-
+        public void SetInputName(int index , string name)
+        {
+            if (Actions == null || index < 0 || index >= Actions.Length)
+            {
+                Debug.LogError($"InputMethod: Input Not Match [You have to call MatchInputs()]");
+                throw new IndexOutOfRangeException();
+            }
+            Inputs[index] = name;
+        }
     }
 }
