@@ -35,8 +35,8 @@ namespace RealMethod
         [SerializeField]
         private string ActionMap;
         [SerializeField]
-        private InputState[] Inputs;
-        public int Count => Inputs.Length;
+        private InputState[] Actions;
+        public int Count => Actions.Length;
         public InputActionMap Map { get; private set; }
         public bool IsActive => Map != null;
         public Action<bool> OnInputMethodActive;
@@ -48,22 +48,22 @@ namespace RealMethod
         {
             get
             {
-                if (Inputs == null || index < 0 || index >= Inputs.Length)
+                if (Actions == null || index < 0 || index >= Actions.Length)
                 {
                     throw new ArgumentException($"there isn't any input with this {index} in '{this}'.");
                 }
-                return Inputs[index].Action;
+                return Actions[index].Action;
             }
         }
         public InputAction this[string name]
         {
             get
             {
-                if (Inputs == null || name == string.Empty)
+                if (Actions == null || name == string.Empty)
                 {
                     throw new ArgumentException($"there isn't any input with this {name} in '{this}'.");
                 }
-                return Inputs[System.Array.IndexOf(Inputs, name)].Action;
+                return Actions[System.Array.IndexOf(Actions, name)].Action;
             }
         }
 
@@ -134,11 +134,11 @@ namespace RealMethod
                     Active();
             }
 
-            if (Inputs != null)
+            if (Actions != null)
             {
-                for (int i = 0; i < Inputs.Length; i++)
+                for (int i = 0; i < Actions.Length; i++)
                 {
-                    Inputs[i].SetAction(Map.FindAction(Inputs[i].InputName, true));
+                    Actions[i].SetAction(Map.FindAction(Actions[i].InputName, true));
                 }
             }
             else
@@ -151,19 +151,19 @@ namespace RealMethod
         }
         public void EnableInput(string name)
         {
-            int targetindex = System.Array.IndexOf(Inputs, name);
-            Inputs[targetindex].Enable = true;
+            int targetindex = System.Array.IndexOf(Actions, name);
+            Actions[targetindex].Enable = true;
         }
         public void DisableInput(string name)
         {
-            int targetindex = System.Array.IndexOf(Inputs, name);
-            Inputs[targetindex].Enable = false;
+            int targetindex = System.Array.IndexOf(Actions, name);
+            Actions[targetindex].Enable = false;
         }
         T ReadValue<T>(int index) where T : struct
         {
-            if (Inputs[index].Enable)
+            if (Actions[index].Enable)
             {
-                return Inputs[index].Action.ReadValue<T>();
+                return Actions[index].Action.ReadValue<T>();
             }
             else
             {
@@ -172,9 +172,9 @@ namespace RealMethod
         }
         T ReadValue<T>(int index, T disableValue) where T : struct
         {
-            if (Inputs[index].Enable)
+            if (Actions[index].Enable)
             {
-                return Inputs[index].Action.ReadValue<T>();
+                return Actions[index].Action.ReadValue<T>();
             }
             else
             {
@@ -183,10 +183,10 @@ namespace RealMethod
         }
         T ReadValue<T>(string name) where T : struct
         {
-            int targetindex = System.Array.IndexOf(Inputs, name);
-            if (Inputs[targetindex].Enable)
+            int targetindex = System.Array.IndexOf(Actions, name);
+            if (Actions[targetindex].Enable)
             {
-                return Inputs[targetindex].Action.ReadValue<T>();
+                return Actions[targetindex].Action.ReadValue<T>();
             }
             else
             {
@@ -195,10 +195,10 @@ namespace RealMethod
         }
         T ReadValue<T>(string name, T disableValue) where T : struct
         {
-            int targetindex = System.Array.IndexOf(Inputs, name);
-            if (Inputs[targetindex].Enable)
+            int targetindex = System.Array.IndexOf(Actions, name);
+            if (Actions[targetindex].Enable)
             {
-                return Inputs[targetindex].Action.ReadValue<T>();
+                return Actions[targetindex].Action.ReadValue<T>();
             }
             else
             {
