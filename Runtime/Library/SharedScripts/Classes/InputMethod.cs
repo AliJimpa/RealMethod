@@ -7,111 +7,203 @@ namespace RealMethod
     [Serializable]
     public class InputMethod
     {
+        [Serializable]
+        private struct InputState
+        {
+            public string InputName;
+            public bool Enable;
+            public InputAction Action { get; private set; }
+            public InputState(string name, bool enable)
+            {
+                InputName = name;
+                Enable = enable;
+                Action = null;
+            }
+            public InputState(string name, bool enable, InputAction action)
+            {
+                InputName = name;
+                Enable = enable;
+                Action = action;
+            }
+            public void SetAction(InputAction action)
+            {
+                Action = action;
+            }
+        }
         [SerializeField]
         private InputActionAsset InputAsset;
         [SerializeField]
         private string ActionMap;
         [SerializeField]
-        private string[] Inputs;
+        private InputState[] Inputs;
         public int Count => Inputs.Length;
         public InputActionMap Map { get; private set; }
-        private InputAction[] Actions;
+        public bool IsActive => Map != null;
+        public Action<bool> OnInputMethodActive;
+        public Action<string> OnMapEnable;
+        public Action<string> OnMapDisable;
 
 
         public InputAction this[int index]
         {
             get
             {
-                if (Actions == null || index < 0 || index >= Actions.Length)
+                if (Inputs == null || index < 0 || index >= Inputs.Length)
                 {
-                    Debug.LogError($"InputMethod: Input Not Match [You have to call MatchInputs()]");
-                    throw new IndexOutOfRangeException();
+                    throw new ArgumentException($"there isn't any input with this {index} in '{this}'.");
                 }
-                return Actions[index];
+                return Inputs[index].Action;
             }
         }
         public InputAction this[string name]
         {
             get
             {
-                if (Actions == null || name == string.Empty)
+                if (Inputs == null || name == string.Empty)
                 {
-                    Debug.LogError($"InputMethod: Input Not Match [You have to call MatchInputs()]");
-                    throw new IndexOutOfRangeException();
+                    throw new ArgumentException($"there isn't any input with this {name} in '{this}'.");
                 }
-                return Actions[System.Array.IndexOf(Inputs, name)];
+                return Inputs[System.Array.IndexOf(Inputs, name)].Action;
             }
-        }
-        
-        public InputMethod()
-        {
-            Inputs = new string[1];
-        }
-        public InputMethod(int InputCount)
-        {
-            Inputs = new string[InputCount];
-        }
-        public InputMethod(int InputCount, InputActionMap ActionMap)
-        {
-            Inputs = new string[InputCount];
-            Map = ActionMap;
         }
 
-        public void EnableMap(bool CheckValidate = false)
+        // Constructor Class
+        public InputMethod()
         {
-            if (CheckValidate && Map != null)
+
+        }
+        public InputMethod(InputActionMap actionMap)
+        {
+            Map = actionMap;
+        }
+
+        // Public Methods
+        public void Active()
+        {
+            if (Map == null)
             {
-                Debug.LogWarning("You have already Map First DisableMap");
-                return;
+                Map = InputAsset.FindActionMap(ActionMap, true);
+                OnInputMethodActive?.Invoke(true);
             }
+        }
+        public void Deactive()
+        {
+            if (Map != null)
+            {
+                Map = null;
+                OnInputMethodActive?.Invoke(false);
+            }
+        }
+        public void EnableMap(bool throwIfNotFound = true)
+        {
+            if (!IsActive)
+                Active();
+
 
             if (ActionMap != string.Empty)
             {
-                Map = InputAsset.FindActionMap(ActionMap, true);
                 Map.Enable();
+                OnMapEnable?.Invoke(ActionMap);
             }
             else
             {
-                Debug.LogError("InputMethod: ActionMap name is empty. Cannot enable InputActionMap.");
+                if (throwIfNotFound)
+                {
+                    throw new ArgumentException($"ActionMap name is empty in '{this}'.");
+                }
             }
 
-            Actions = new InputAction[Inputs.Length];
         }
-        public void DisableMap()
+        public void DisableMap(bool throwIfNotFound = true)
         {
             if (Map != null)
             {
                 Map.Disable();
+                OnMapDisable?.Invoke(ActionMap);
+            }
+        }
+        public void AssignInputs(bool autoEnableMap = true, bool throwIfNotFound = true)
+        {
+            if (autoEnableMap)
+            {
+                EnableMap();
             }
             else
             {
-                Debug.LogError("InputMethod: No InputActionMap to disable. [FirstEnabled]");
+                if (!IsActive)
+                    Active();
             }
-        }
 
-        public void MatchInputs()
-        {
-            if (Map != null && Inputs != null)
+            if (Inputs != null)
             {
                 for (int i = 0; i < Inputs.Length; i++)
                 {
-                    Actions[i] = Map.FindAction(Inputs[i], true);
+                    Inputs[i].SetAction(Map.FindAction(Inputs[i].InputName, true));
                 }
             }
             else
             {
-                Debug.LogError("InputMethod: Map or Inputs is null. Cannot match inputs.[EnableMap & Write your Inputs Name]");
-                return;
+                if (throwIfNotFound)
+                {
+                    throw new ArgumentException($"You didn't have any input for assign in '{this}'.");
+                }
             }
         }
-        public void SetInputName(int index , string name)
+        public void EnableInput(string name)
         {
-            if (Actions == null || index < 0 || index >= Actions.Length)
+            int targetindex = System.Array.IndexOf(Inputs, name);
+            Inputs[targetindex].Enable = true;
+        }
+        public void DisableInput(string name)
+        {
+            int targetindex = System.Array.IndexOf(Inputs, name);
+            Inputs[targetindex].Enable = false;
+        }
+        T ReadValue<T>(int index) where T : struct
+        {
+            if (Inputs[index].Enable)
             {
-                Debug.LogError($"InputMethod: Input Not Match [You have to call MatchInputs()]");
-                throw new IndexOutOfRangeException();
+                return Inputs[index].Action.ReadValue<T>();
             }
-            Inputs[index] = name;
+            else
+            {
+                return default;
+            }
+        }
+        T ReadValue<T>(int index, T disableValue) where T : struct
+        {
+            if (Inputs[index].Enable)
+            {
+                return Inputs[index].Action.ReadValue<T>();
+            }
+            else
+            {
+                return disableValue;
+            }
+        }
+        T ReadValue<T>(string name) where T : struct
+        {
+            int targetindex = System.Array.IndexOf(Inputs, name);
+            if (Inputs[targetindex].Enable)
+            {
+                return Inputs[targetindex].Action.ReadValue<T>();
+            }
+            else
+            {
+                return default;
+            }
+        }
+        T ReadValue<T>(string name, T disableValue) where T : struct
+        {
+            int targetindex = System.Array.IndexOf(Inputs, name);
+            if (Inputs[targetindex].Enable)
+            {
+                return Inputs[targetindex].Action.ReadValue<T>();
+            }
+            else
+            {
+                return disableValue;
+            }
         }
     }
 }
