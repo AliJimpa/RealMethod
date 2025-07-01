@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [CreateAssetMenu(fileName = "CurveConfig", menuName = "RealMethod/Misc/CurveConfig", order = 1)]
-    public class CurveConfig : ConfigAsset
+    [CreateAssetMenu(fileName = "CurveAsset", menuName = "RealMethod/Misc/CurveAsset", order = 1)]
+    public class CurveAsset : ConfigAsset
     {
         [Header("Asset")]
         [SerializeField]
