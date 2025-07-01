@@ -124,11 +124,6 @@ namespace RealMethod
     [RequireComponent(typeof(Collider))]
     public abstract class PickupCollider3D : Pickup<Collider>
     {
-        [Header("Collider")]
-        public bool DrawDebug = true;
-        [ConditionalHide("DrawDebug", true, false)]
-        public Color DebugColor = new Color(0, 1, 0, 0.2f);
-
         // Unity Methods
         protected virtual void OnValidate()
         {
@@ -157,9 +152,14 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR
+        [Header("Debug")]
+        public bool draw = true;
+        [ConditionalHide("draw", true, false)]
+        public Color color = new Color(0, 1, 0, 0.2f);
+
         private void OnDrawGizmos()
         {
-            if (DrawDebug)
+            if (draw)
             {
                 Collider Sidecollide = GetComponent<Collider>();
                 if (Sidecollide != null && Sidecollide.isTrigger && Sidecollide.enabled)
@@ -174,7 +174,7 @@ namespace RealMethod
                             break;
                         default:
                             Debug.LogWarning("Cant' Draw Debug for This Collider");
-                            DrawDebug = false;
+                            draw = false;
                             break;
                     }
                 }
@@ -182,7 +182,7 @@ namespace RealMethod
         }
         protected void DrawBoxCollider(BoxCollider boxCollider)
         {
-            Gizmos.color = DebugColor;
+            Gizmos.color = color;
 
             // Get box collider properties
             Vector3 center = boxCollider.center;
@@ -196,7 +196,7 @@ namespace RealMethod
             Gizmos.DrawWireCube(center, size);
 
             // Optional: Draw a semi-transparent filled cube
-            Gizmos.color = new Color(DebugColor.r, DebugColor.g, DebugColor.b, DebugColor.a);
+            Gizmos.color = new Color(color.r, color.g, color.b, color.a);
             Gizmos.DrawCube(center, size);
         }
         protected void DrawSpherCollider(SphereCollider sphere)
@@ -205,7 +205,7 @@ namespace RealMethod
             float radius = sphere.radius;
 
             Gizmos.DrawWireSphere(center, radius);
-            Gizmos.color = new Color(DebugColor.r, DebugColor.g, DebugColor.b, 0.2f);
+            Gizmos.color = new Color(color.r, color.g, color.b, 0.2f);
             Gizmos.DrawSphere(center, radius);
         }
 #endif
