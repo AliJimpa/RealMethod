@@ -12,10 +12,8 @@ namespace RealMethod
         private GameObject prefab;
         [SerializeField]
         private bool autoDespawn = true;
-        [SerializeField, ConditionalHide("AutoDespown", true, false)]
-        private bool overrideDuration = true;
-        [SerializeField, ConditionalHide("UseDynamicDuration", true, true)]
-        private float Duration = 2;
+        [SerializeField , ConditionalHide("autoDespawn",true,false)]
+        private float duration = 2;
 
         //Actions
         public Action<Transform> OnSpawn;
@@ -26,84 +24,54 @@ namespace RealMethod
         private Vector3 CachePosition = Vector3.zero;
         private Quaternion CacheRotation = Quaternion.identity;
         private Vector3 CacheScale = Vector3.one;
+        private float CacheDuration = 0;
 
 
         // Functions
-        public Transform Spawn(Vector3 location, Quaternion rotation, float duration)
+        public Transform Spawn(Vector3 location, Quaternion rotation, float overrideDuration)
         {
             UseCacheData = 5;
-            if (overrideDuration)
-            {
-                CachePosition = location;
-                CacheRotation = rotation;
-                Duration = duration;
-                return Spawn();
-            }
-            else
-            {
-                Debug.LogError("OverrideDuration should enable in your PoolAsset");
-                return null;
-            }
+            CachePosition = location;
+            CacheRotation = rotation;
+            CacheDuration = overrideDuration;
+            return Spawn();
         }
         public Transform Spawn(Vector3 location, Quaternion rotation, Vector3 scale)
         {
             UseCacheData = 3;
-            if (!overrideDuration)
-            {
-                CachePosition = location;
-                CacheRotation = rotation;
-                CacheScale = scale;
-                return Spawn();
-            }
-            else
-            {
-                Debug.LogError("In DynamicDuration You sould Spawn Object Without Time");
-                return null;
-            }
+            CachePosition = location;
+            CacheRotation = rotation;
+            CacheScale = scale;
+            CacheDuration = duration;
+            return Spawn();
         }
         public Transform Spawn(Vector3 location, Quaternion rotation)
         {
             UseCacheData = 2;
-            if (!overrideDuration)
-            {
-                CachePosition = location;
-                CacheRotation = rotation;
-                return Spawn();
-            }
-            else
-            {
-                Debug.LogError("In DynamicDuration You sould Spawn Object Without Time");
-                return null;
-            }
+            CachePosition = location;
+            CacheRotation = rotation;
+            CacheDuration = duration;
+            return Spawn();
         }
-        public Transform Spawn(Vector3 location, float duration)
+        public Transform Spawn(Vector3 location, float overrideDuration)
         {
             UseCacheData = 4;
-            if (overrideDuration)
-            {
-                CachePosition = location;
-                Duration = duration;
-                return Spawn();
-            }
-            else
-            {
-                Debug.LogError("OverrideDuration should enable in your PoolAsset");
-                return null;
-            }
+            CachePosition = location;
+            CacheDuration = overrideDuration;
+            return Spawn();
         }
         public Transform Spawn(Vector3 location)
         {
             UseCacheData = 1;
-            if (!overrideDuration)
-            {
-                CachePosition = location;
-                return Spawn();
-            }
-            else
-            {
-                Debug.LogError("In DynamicDuration You sould Spawn Object With Time");
-                return null;
-            }
+            CachePosition = location;
+            CacheDuration = duration;
+            return Spawn();
+        }
+        public Transform Spawn(float overrideDuration)
+        {
+            UseCacheData = 0;
+            CacheDuration = overrideDuration;
+            return Spawn();
         }
         public Transform Spawn()
         {
@@ -188,11 +156,12 @@ namespace RealMethod
         private IEnumerator PoolBack(Transform Transf)
         {
             // Befor Timer
-            yield return new WaitForSeconds(Duration);
+            yield return new WaitForSeconds(CacheDuration);
             // After Time
             Return(Transf);
             yield return null;
         }
+
 
     }
 }
