@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [RequireComponent(typeof(Collider)), AddComponentMenu("RealMethod/General/Trigger3D")]
-    public sealed class CommandTrigger3D : MonoBehaviour
+    public sealed class Trigger3D : MonoBehaviour
     {
         private enum TriggerTime
         {
