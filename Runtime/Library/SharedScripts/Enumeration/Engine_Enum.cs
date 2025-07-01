@@ -8,9 +8,16 @@ namespace RealMethod
         FixedUpdate = 4
 
     }
-    enum LoadStage
+    public enum LoadStage
     {
         Ascync,
         Scync
     }
+    public enum TriggerStage
+    {
+        None = 0,
+        Enter = 1,
+        Exit = 2,
+    }
+
 }
