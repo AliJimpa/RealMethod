@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/ToolKit/Actor/Actor")]
+    [AddComponentMenu("RealMethod/Toolkit/Actor/Actor")]
     public class Actor : MonoBehaviour
     {
         private enum ActorType

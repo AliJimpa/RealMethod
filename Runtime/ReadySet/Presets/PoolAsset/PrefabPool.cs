@@ -9,11 +9,11 @@ namespace RealMethod
     {
         [Header("Setting")]
         [SerializeField]
-        private GameObject Prefab;
+        private GameObject prefab;
         [SerializeField]
-        private bool AutoDespown = true;
+        private bool autoDespawn = true;
         [SerializeField, ConditionalHide("AutoDespown", true, false)]
-        private bool UseDynamicDuration = true;
+        private bool overrideDuration = true;
         [SerializeField, ConditionalHide("UseDynamicDuration", true, true)]
         private float Duration = 2;
 
@@ -32,7 +32,7 @@ namespace RealMethod
         public Transform Spawn(Vector3 location, Quaternion rotation, float duration)
         {
             UseCacheData = 5;
-            if (UseDynamicDuration)
+            if (overrideDuration)
             {
                 CachePosition = location;
                 CacheRotation = rotation;
@@ -41,14 +41,14 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogError("The PoolObject Should be DynamicDuration");
+                Debug.LogError("OverrideDuration should enable in your PoolAsset");
                 return null;
             }
         }
         public Transform Spawn(Vector3 location, Quaternion rotation, Vector3 scale)
         {
             UseCacheData = 3;
-            if (!UseDynamicDuration)
+            if (!overrideDuration)
             {
                 CachePosition = location;
                 CacheRotation = rotation;
@@ -64,7 +64,7 @@ namespace RealMethod
         public Transform Spawn(Vector3 location, Quaternion rotation)
         {
             UseCacheData = 2;
-            if (!UseDynamicDuration)
+            if (!overrideDuration)
             {
                 CachePosition = location;
                 CacheRotation = rotation;
@@ -79,7 +79,7 @@ namespace RealMethod
         public Transform Spawn(Vector3 location, float duration)
         {
             UseCacheData = 4;
-            if (UseDynamicDuration)
+            if (overrideDuration)
             {
                 CachePosition = location;
                 Duration = duration;
@@ -87,14 +87,14 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogError("The PoolObject Should be DynamicDuration");
+                Debug.LogError("OverrideDuration should enable in your PoolAsset");
                 return null;
             }
         }
         public Transform Spawn(Vector3 location)
         {
             UseCacheData = 1;
-            if (!UseDynamicDuration)
+            if (!overrideDuration)
             {
                 CachePosition = location;
                 return Spawn();
@@ -107,31 +107,30 @@ namespace RealMethod
         }
         public Transform Spawn()
         {
-            UseCacheData = 0;
             Transform result = Request();
             OnSpawn?.Invoke(result);
             return result;
         }
         public void Despawn()
         {
-            if (!AutoDespown)
+            if (!autoDespawn)
             {
                 Return();
             }
             else
             {
-                Debug.LogError("The Pool Object has AutoDespawn");
+                Debug.LogError("Can't Despawn, AutoDespawn in your PoolAsset is Enable");
             }
         }
         public void Despawn(Transform target)
         {
-            if (!AutoDespown)
+            if (!autoDespawn)
             {
                 Return(target);
             }
             else
             {
-                Debug.LogError("The Pool Object has AutoDespawn");
+                Debug.LogError("Can't Despawn, AutoDespawn in your PoolAsset is Enable");
             }
         }
 
@@ -145,6 +144,8 @@ namespace RealMethod
         {
             switch (UseCacheData)
             {
+                case 0:
+                    break;
                 case 1:
                     Comp.transform.position = CachePosition;
                     break;
@@ -168,18 +169,18 @@ namespace RealMethod
                     Comp.transform.rotation = CacheRotation;
                     break;
                 default:
-                    Debug.LogWarning($"For this CashStage ({UseCacheData}) is Not implemented any Preprocessing");
+                    Debug.LogWarning($"For this CacheStage ({UseCacheData}) is Not implemented any Preprocessing");
                     break;
             }
         }
         protected override Transform CreateObject()
         {
-            GameObject Target = Instantiate(Prefab);
+            GameObject Target = Instantiate(prefab);
             return Target.transform;
         }
         protected override IEnumerator PostProcess(Transform Comp)
         {
-            return AutoDespown ? PoolBack(Comp) : null;
+            return autoDespawn ? PoolBack(Comp) : null;
         }
 
 
