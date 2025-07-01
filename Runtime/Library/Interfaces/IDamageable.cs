@@ -5,13 +5,13 @@ namespace RealMethod
     public interface IDamage
     {
         /// <summary>
-        /// Called when the object dies or is destroyed due to damage.
-        /// </summary>
-        void Die();
-        /// <summary>
         /// Returns true if the object is already dead.
         /// </summary>
         bool IsDead { get; }
+        /// <summary>
+        /// Called when the object dies or is destroyed due to damage.
+        /// </summary>
+        void Die();
     }
     /// <summary>
     /// Interface for objects that can take and restore damage.
