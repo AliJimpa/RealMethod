@@ -11,7 +11,14 @@ namespace RealMethod
         private bool Prewarmed = false;
 
 
-        // Public Methods
+        // Base DataAsset Methods
+        public override void OnEditorPlay()
+        {
+            //base.OnEditorPlay();
+            Prewarmed = false;
+        }
+
+        // Public Functions
         public void Prewarm(int amount = 1)
         {
             if (Prewarmed)
@@ -85,14 +92,7 @@ namespace RealMethod
             Clear();
         }
 
-        //virtual methods
-        protected virtual void Clear()
-        {
-            Available.Clear();
-            Prewarmed = false;
-        }
-
-        // Protected Method
+        // Protected Functions
         protected T Request()
         {
             if (!IsInitiateRoot())
@@ -126,8 +126,13 @@ namespace RealMethod
             Value.gameObject.SetActive(false);
             Available.Push(Value);
         }
+        protected virtual void Clear()
+        {
+            Available.Clear();
+            Prewarmed = false;
+        }
 
-        // Private Methods
+        // Private Functions
         private void CallPoolBackEvent(T Target, IEnumerator Corotine)
         {
             MonoBehaviour MonoComp = Target.GetComponent<MonoBehaviour>();

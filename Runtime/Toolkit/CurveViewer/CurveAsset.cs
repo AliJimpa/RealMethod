@@ -2,24 +2,24 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [CreateAssetMenu(fileName = "CurveAsset", menuName = "RealMethod/Misc/CurveAsset", order = 1)]
-    public class CurveAsset : DataAsset
+    [CreateAssetMenu(fileName = "CurveConfig", menuName = "RealMethod/Misc/CurveConfig", order = 1)]
+    public class CurveConfig : ConfigAsset
     {
         [Header("Asset")]
         [SerializeField]
         private AnimationCurve _Curve;
 
-
         public AnimationCurve Curve => _Curve;
         public float Length => _Curve.length;
         public Keyframe[] Key => _Curve.keys;
-
 
         public float this[float Time]
         {
             get => _Curve.Evaluate(Time);
         }
 
+
+        // Public Functions
         public float GetTime(float Value)
         {
             return FindTimeByValue(_Curve, Value);
@@ -44,6 +44,7 @@ namespace RealMethod
             Debug.LogWarning("Value not found in curve within a reasonable precision.");
             return -1f;
         }
+
 
     }
 

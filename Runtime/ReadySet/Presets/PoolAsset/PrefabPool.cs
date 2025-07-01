@@ -151,7 +151,6 @@ namespace RealMethod
             return autoDespawn ? PoolBack(Comp) : null;
         }
 
-
         // IEnumerator
         private IEnumerator PoolBack(Transform Transf)
         {

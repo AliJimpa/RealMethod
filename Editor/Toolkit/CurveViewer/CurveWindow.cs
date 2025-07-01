@@ -5,7 +5,7 @@ namespace RealMethod.Editor
 {
     public class CurveWindow : EditorWindow
     {
-        private CurveAsset animationCurve;
+        private CurveConfig animationCurve;
         private float inputTime = 0f;
         private float inputValue = 0f;
         private float outputValue = 0f;
@@ -23,7 +23,7 @@ namespace RealMethod.Editor
 
             // Animation Curve Field
             EditorGUILayout.LabelField("Animation Curve:");
-            animationCurve = (CurveAsset)EditorGUILayout.ObjectField("CurveAsset", animationCurve, typeof(CurveAsset), false);
+            animationCurve = (CurveConfig)EditorGUILayout.ObjectField("CurveAsset", animationCurve, typeof(CurveConfig), false);
 
             if (animationCurve == null)
             {

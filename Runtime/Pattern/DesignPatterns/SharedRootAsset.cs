@@ -6,7 +6,7 @@ namespace RealMethod
     {
         private Transform RootObject;
 
-        // Basic Methods
+        // Public Functions
         public bool IsInitiateRoot()
         {
             return RootObject;
@@ -21,6 +21,7 @@ namespace RealMethod
             return RootObject;
         }
 
+        
         //Abstract Methods
         protected abstract void OnRootInitiate(Transform Root);
     }
