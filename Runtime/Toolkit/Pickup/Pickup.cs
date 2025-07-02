@@ -5,94 +5,70 @@ namespace RealMethod
 {
     public interface IPicker
     {
-        public bool CanTake(Pickup item);
+        public bool CanTake(Trigger trigger);
     }
-
-    public abstract class Pickup : MonoBehaviour
+    public abstract class Pickup<T> : Trigger<T> where T : Component
     {
-        protected enum PickupBehavior
+        private enum PickupBehavior
         {
             Nothing,
             SendMessage,
             Action,
             Both
         }
-        protected enum PickType
-        {
-            TriggerEnter,
-            TriggerExit
-        }
-    }
-    public abstract class Pickup<T> : Pickup where T : Component
-    {
-        [Header("Basic")]
+        [Header("Pickup")]
         [SerializeField]
-        protected bool compareTag = true;
-        [SerializeField, TagSelector, ConditionalHide("compareTag", true, false)]
-        protected string Tag = "Player";
-        [SerializeField]
-        protected PickType State;
-        [SerializeField]
-        protected PickupBehavior Behavior;
+        private PickupBehavior Behavior;
 
         // Action
         public Action<T> OnPickedUp;
 
-        /// Private Variable
-        protected T m_Collider;
-
-        private void Awake()
+        // Trigger Methods
+        protected override bool CanEnter(T other)
         {
-            m_Collider = GetComponent<T>();
-            if (!m_Collider) Debug.LogWarning("Collider Component cant find");
+            if (!base.CanEnter(other))
+                return false;
+
+            return CheckPicking(other);
+        }
+        protected override bool CanStay(T other)
+        {
+            if (!base.CanStay(other))
+                return false;
+
+            return CheckPicking(other);
+        }
+        protected override bool CanExit(T other)
+        {
+            if (!base.CanExit(other))
+                return false;
+
+            return CheckPicking(other);
+        }
+        protected override void OnEnter(T other)
+        {
+            PickedUp(other);
+        }
+        protected override void OnStay(T other)
+        {
+            PickedUp(other);
+        }
+        protected override void OnExit(T other)
+        {
+            PickedUp(other);
         }
 
-        protected void CheckPicking(T other, PickType type)
+        // Private Functions
+        private bool CheckPicking(T other)
         {
-            if (!enabled)
-                return;
-
-            if (type != State)
-                return;
-
-            if (compareTag)
+            IPicker Picker = other.GetComponent<IPicker>();
+            if (Picker != null)
             {
-                if (other.CompareTag(Tag))
-                {
-                    IPicker Picker = other.GetComponent<IPicker>();
-                    if (Picker != null)
-                    {
-                        if (Picker.CanTake(this) && CanPickUp(other))
-                        {
-                            PickedUp(other);
-                        }
-                    }
-                    else
-                    {
-                        if (CanPickUp(other))
-                        {
-                            PickedUp(other);
-                        }
-                    }
-                }
+                return Picker.CanTake(this) && CanPickUp(other);
             }
             else
             {
-                IPicker Picker = other.GetComponent<IPicker>();
-                if (Picker != null)
-                {
-                    if (Picker.CanTake(this) && CanPickUp(other))
-                    {
-                        PickedUp(other);
-                    }
-                }
-                else
-                {
-                    if (CanPickUp(other))
-                    {
-                        PickedUp(other);
-                    }
-                }
+                return CanPickUp(other);
             }
         }
         private void PickedUp(T Picker)
@@ -115,125 +91,9 @@ namespace RealMethod
             }
         }
 
+        // Abstract Method
         protected abstract void OnPickUp(T Picker);
         protected abstract bool CanPickUp(T Picker);
-    }
-
-
-
-    [RequireComponent(typeof(Collider))]
-    public abstract class PickupCollider3D : Pickup<Collider>
-    {
-        // Unity Methods
-        protected virtual void OnValidate()
-        {
-            Collider Sidecollide = GetComponent<Collider>();
-            if (Sidecollide)
-            {
-                if (Sidecollide is MeshCollider m_meshcollider)
-                {
-                    m_meshcollider.convex = true;
-                    m_meshcollider.isTrigger = true;
-                }
-                else
-                {
-                    Sidecollide.isTrigger = true;
-                }
-            }
-        }
-        private void OnTriggerEnter(Collider other)
-        {
-            CheckPicking(other, PickType.TriggerEnter);
-        }
-        private void OnTriggerExit(Collider other)
-        {
-            CheckPicking(other, PickType.TriggerExit);
-        }
-
-
-#if UNITY_EDITOR
-        [Header("Debug")]
-        public bool draw = true;
-        [ConditionalHide("draw", true, false)]
-        public Color color = new Color(0, 1, 0, 0.2f);
-
-        private void OnDrawGizmos()
-        {
-            if (draw)
-            {
-                Collider Sidecollide = GetComponent<Collider>();
-                if (Sidecollide != null && Sidecollide.isTrigger && Sidecollide.enabled)
-                {
-                    switch (Sidecollide)
-                    {
-                        case BoxCollider box:
-                            DrawBoxCollider(box);
-                            break;
-                        case SphereCollider sphere:
-                            DrawSpherCollider(sphere);
-                            break;
-                        default:
-                            Debug.LogWarning("Cant' Draw Debug for This Collider");
-                            draw = false;
-                            break;
-                    }
-                }
-            }
-        }
-        protected void DrawBoxCollider(BoxCollider boxCollider)
-        {
-            Gizmos.color = color;
-
-            // Get box collider properties
-            Vector3 center = boxCollider.center;
-            Vector3 size = boxCollider.size;
-
-            // Transform to world position
-            Matrix4x4 cubeTransform = Matrix4x4.TRS(transform.position, transform.rotation, transform.localScale);
-            Gizmos.matrix = cubeTransform;
-
-            // Draw wire cube
-            Gizmos.DrawWireCube(center, size);
-
-            // Optional: Draw a semi-transparent filled cube
-            Gizmos.color = new Color(color.r, color.g, color.b, color.a);
-            Gizmos.DrawCube(center, size);
-        }
-        protected void DrawSpherCollider(SphereCollider sphere)
-        {
-            Vector3 center = sphere.center;
-            float radius = sphere.radius;
-
-            Gizmos.DrawWireSphere(center, radius);
-            Gizmos.color = new Color(color.r, color.g, color.b, 0.2f);
-            Gizmos.DrawSphere(center, radius);
-        }
-#endif
-
-
-    }
-
-    [RequireComponent(typeof(Collider2D))]
-    public abstract class PickupCollider2D : Pickup<Collider2D>
-    {
-        // Unity Methods
-        protected virtual void OnValidate()
-        {
-            Collider2D Sidecollide = GetComponent<Collider2D>();
-            if (Sidecollide)
-            {
-                Sidecollide.isTrigger = true;
-            }
-        }
-        private void OnTriggerEnter2D(Collider2D collision)
-        {
-            CheckPicking(collision, PickType.TriggerEnter);
-        }
-        private void OnTriggerExit2D(Collider2D collision)
-        {
-            CheckPicking(collision, PickType.TriggerExit);
-        }
-
     }
 
 }

@@ -23,8 +23,6 @@ namespace RealMethod
         private float VelocityForceMultiplier = 1;
         [Space]
         [SerializeField]
-        private bool dissolvet = true;
-        [SerializeField]
         private float dissolvetime = 8;
         [Header("َAdvance")]
         [SerializeField, ReadOnly]

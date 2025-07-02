@@ -3,8 +3,8 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Toolkit/Pickup/SamplePickup2D")]
-    public sealed class SamplePickup2D : PickupCollider2D
+    [RequireComponent(typeof(Collider2D)), AddComponentMenu("RealMethod/Toolkit/Pickup/Pickup2D")]
+    public sealed class Pickup2D : Pickup<Collider2D>
     {
         [Header("Sample")]
         public UnityEvent<Collider2D> OnPickedUpBy;
