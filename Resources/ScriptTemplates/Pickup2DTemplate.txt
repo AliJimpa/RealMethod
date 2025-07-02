@@ -7,8 +7,9 @@ public class #SCRIPTNAME# : Pickup3D
     {
         return true;
     }
-    protected override void OnPickUp(Collider2D Picker)
+    protected override void OnStay(Collider2D Picker)
     {
+
     }
     protected override void OnStayPicking()
     {

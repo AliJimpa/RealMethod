@@ -12,7 +12,7 @@ namespace RealMethod
         {
             return enabled;
         }
-        protected override void OnStayPicking()
+        protected override void OnStay(Collider Picker)
         {
 
         }

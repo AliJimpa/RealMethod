@@ -49,10 +49,6 @@ namespace RealMethod
         {
             PickedUp(other);
         }
-        protected override void OnStay(T other)
-        {
-            OnStayPicking();
-        }
         protected override void OnExit(T other)
         {
             PickedUp(other);
@@ -94,7 +90,6 @@ namespace RealMethod
         // Abstract Method
         protected abstract bool CanPickUp(T Picker);
         protected abstract void OnPickUp(T Picker);
-        protected abstract void OnStayPicking();
 
     }
 
@@ -109,6 +104,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Enter;
                 OnEnter(other);
+                OnTriggered(other, TriggerStage.Enter);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -118,6 +114,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Stay;
                 OnStay(other);
+                OnTriggered(other, TriggerStage.Stay);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -127,6 +124,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Exit;
                 OnExit(other);
+                OnTriggered(other, TriggerStage.Exit);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -142,6 +140,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Enter;
                 OnEnter(collision);
+                OnTriggered(collision, TriggerStage.Enter);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -151,6 +150,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Stay;
                 OnStay(collision);
+                OnTriggered(collision, TriggerStage.Stay);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -160,6 +160,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Exit;
                 OnEnter(collision);
+                OnTriggered(collision, TriggerStage.Exit);
                 CurrentState = TriggerStage.None;
             }
         }

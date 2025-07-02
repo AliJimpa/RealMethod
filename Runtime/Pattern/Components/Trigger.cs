@@ -20,6 +20,8 @@ namespace RealMethod
         [SerializeField]
         protected TriggerMethods Mode = TriggerMethods.Enter_Exit;
         public TriggerStage CurrentState { get; protected set; } = TriggerStage.None;
+        public delegate void TriggerEvent(Component other, TriggerStage stage);
+        public TriggerEvent OnTriggered;
     }
     public abstract class Trigger<T> : Trigger where T : Component
     {
@@ -214,6 +216,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Enter;
                 OnEnter(other);
+                OnTriggered(other, TriggerStage.Enter);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -223,6 +226,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Stay;
                 OnStay(other);
+                OnTriggered(other, TriggerStage.Stay);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -232,6 +236,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Exit;
                 OnExit(other);
+                OnTriggered(other, TriggerStage.Exit);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -247,6 +252,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Enter;
                 OnEnter(collision);
+                OnTriggered(collision, TriggerStage.Enter);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -256,6 +262,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Stay;
                 OnStay(collision);
+                OnTriggered(collision, TriggerStage.Stay);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -265,6 +272,7 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Exit;
                 OnEnter(collision);
+                OnTriggered(collision, TriggerStage.Exit);
                 CurrentState = TriggerStage.None;
             }
         }
