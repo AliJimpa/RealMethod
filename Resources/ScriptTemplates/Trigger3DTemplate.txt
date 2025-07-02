@@ -1,0 +1,15 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : Trigger3D
+{
+    // Trigger Methods
+    protected override void OnEnter(Collider other)
+    {
+    }
+    protected override void OnStay(Collider other)
+    {
+    }
+    protected override void OnExit(Collider other)
+    {
+    }
+}

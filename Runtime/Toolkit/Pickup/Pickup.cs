@@ -51,7 +51,7 @@ namespace RealMethod
         }
         protected override void OnStay(T other)
         {
-            PickedUp(other);
+            OnStayPicking();
         }
         protected override void OnExit(T other)
         {
@@ -92,8 +92,77 @@ namespace RealMethod
         }
 
         // Abstract Method
-        protected abstract void OnPickUp(T Picker);
         protected abstract bool CanPickUp(T Picker);
+        protected abstract void OnPickUp(T Picker);
+        protected abstract void OnStayPicking();
+
+    }
+
+
+    [RequireComponent(typeof(Collider))]
+    public abstract class Pickup3D : Pickup<Collider>
+    {
+        // Collider Message
+        private void OnTriggerEnter(Collider other)
+        {
+            if (CanEnter(other))
+            {
+                CurrentState = TriggerStage.Enter;
+                OnEnter(other);
+                CurrentState = TriggerStage.None;
+            }
+        }
+        private void OnTriggerStay(Collider other)
+        {
+            if (CanStay(other))
+            {
+                CurrentState = TriggerStage.Stay;
+                OnStay(other);
+                CurrentState = TriggerStage.None;
+            }
+        }
+        private void OnTriggerExit(Collider other)
+        {
+            if (CanExit(other))
+            {
+                CurrentState = TriggerStage.Exit;
+                OnExit(other);
+                CurrentState = TriggerStage.None;
+            }
+        }
+
+    }
+    [RequireComponent(typeof(Collider2D))]
+    public abstract class Pickup2D : Pickup<Collider2D>
+    {
+        // Collider Message
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (CanEnter(collision))
+            {
+                CurrentState = TriggerStage.Enter;
+                OnEnter(collision);
+                CurrentState = TriggerStage.None;
+            }
+        }
+        private void OnTriggerStay2D(Collider2D collision)
+        {
+            if (CanStay(collision))
+            {
+                CurrentState = TriggerStage.Stay;
+                OnStay(collision);
+                CurrentState = TriggerStage.None;
+            }
+        }
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (CanExit(collision))
+            {
+                CurrentState = TriggerStage.Exit;
+                OnEnter(collision);
+                CurrentState = TriggerStage.None;
+            }
+        }
     }
 
 }

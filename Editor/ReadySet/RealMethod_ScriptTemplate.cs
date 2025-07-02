@@ -159,10 +159,15 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("ActionCommandTemplate.txt", "MyActionCommand.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Component/Trigger", false, 80)]
-        public static void CreateTrigger()
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Component/Trigger3D", false, 80)]
+        public static void CreateTrigger3D()
         {
-            string Path = ScriptCreator.Create("TriggerComponentTemplate.txt", "MyTrigger.cs");
+            string Path = ScriptCreator.Create("Trigger3DTemplate.txt", "MyTrigger.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Component/Trigger2D", false, 80)]
+        public static void CreateTrigger2D()
+        {
+            string Path = ScriptCreator.Create("Trigger2DTemplate.txt", "MyTrigger.cs");
         }
 
 

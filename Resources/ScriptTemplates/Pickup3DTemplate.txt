@@ -1,0 +1,16 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : Pickup3D
+{
+    // Pickup Methods
+    protected override bool CanPickUp(Collider Picker)
+    {
+        return true;
+    }
+    protected override void OnPickUp(Collider Picker)
+    {
+    }
+    protected override void OnStayPicking()
+    {
+    }
+}
