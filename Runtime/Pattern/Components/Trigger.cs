@@ -18,7 +18,7 @@ namespace RealMethod
         [SerializeField, ConditionalHide("CheckTag", true, false), TagSelector]
         protected string CompairTag = "Player";
         [SerializeField]
-        protected TriggerMethods Call { get; private set; } = TriggerMethods.Enter_Exit;
+        protected TriggerMethods Call = TriggerMethods.Enter_Exit;
         public TriggerStage CurrentState { get; protected set; } = TriggerStage.None;
     }
     public abstract class Trigger<T> : Trigger where T : Component
