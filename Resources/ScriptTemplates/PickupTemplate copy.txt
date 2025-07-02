@@ -1,8 +1,9 @@
 using RealMethod;
 
+[RequireComponent(typeof(YOURCOLLIDER))]
 public class #SCRIPTNAME# : Pickup<YOURCOLLIDER>
 {
-    // Base Pickup Methods
+    // Pickup Methods
     protected override bool CanPickedUp(YOURCOLLIDER Picker)
     {
         return enabled;
