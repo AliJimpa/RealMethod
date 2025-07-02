@@ -160,6 +160,7 @@ namespace RealMethod
             if (Target)
             {
                 Destroy(Target);
+                Layers.Remove(Name);
                 return true;
             }
             else
