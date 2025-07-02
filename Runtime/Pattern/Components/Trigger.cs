@@ -18,7 +18,7 @@ namespace RealMethod
         [SerializeField, ConditionalHide("CheckTag", true, false), TagSelector]
         protected string CompairTag = "Player";
         [SerializeField]
-        protected TriggerMethods Call = TriggerMethods.Enter_Exit;
+        protected TriggerMethods Mode = TriggerMethods.Enter_Exit;
         public TriggerStage CurrentState { get; protected set; } = TriggerStage.None;
     }
     public abstract class Trigger<T> : Trigger where T : Component
@@ -29,7 +29,7 @@ namespace RealMethod
             if (!enabled)
                 return false;
 
-            if (Call == TriggerMethods.Enter || Call == TriggerMethods.Enter_Exit || Call == TriggerMethods.All)
+            if (Mode == TriggerMethods.Enter || Mode == TriggerMethods.Enter_Exit || Mode == TriggerMethods.All)
             {
                 if (CheckTag)
                 {
@@ -50,7 +50,7 @@ namespace RealMethod
             if (!enabled)
                 return false;
 
-            if (Call == TriggerMethods.Stay || Call == TriggerMethods.All)
+            if (Mode == TriggerMethods.Stay || Mode == TriggerMethods.All)
             {
                 if (CheckTag)
                 {
@@ -71,7 +71,7 @@ namespace RealMethod
             if (!enabled)
                 return false;
 
-            if (Call == TriggerMethods.Exit || Call == TriggerMethods.Enter_Exit || Call == TriggerMethods.All)
+            if (Mode == TriggerMethods.Exit || Mode == TriggerMethods.Enter_Exit || Mode == TriggerMethods.All)
             {
                 if (CheckTag)
                 {
