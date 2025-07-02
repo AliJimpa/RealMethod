@@ -99,7 +99,7 @@ namespace RealMethod
 
         // Private Variable
         private bool hasDuration = false;
-        private float lifeTime;
+        private float lifeTime = -1;
         private bool islive = false;
 
 
@@ -127,9 +127,13 @@ namespace RealMethod
         public void Finish()
         {
             if (islive)
-            {
                 ((ICommandLife)this).StopCommand();
-            }
+        }
+        protected void ResetValues()
+        {
+            islive = false;
+            lifeTime = -1;
+            hasDuration = false;
         }
         protected virtual float PreProcessDuration(float StartDuration)
         {
@@ -142,14 +146,17 @@ namespace RealMethod
         public bool IsFinished => !islive;
         void ICommandLife.StartCommand(float Duration)
         {
-            float NewDuration = PreProcessDuration(Duration);
             if (IsValidated)
             {
-                hasDuration = NewDuration > 0;
-                lifeTime = NewDuration > 0 ? NewDuration : 0;
-                OnBegin();
-                OnStarted?.Invoke(this);
-                islive = true;
+                if (!islive)
+                {
+                    float NewDuration = PreProcessDuration(Duration);
+                    hasDuration = NewDuration > 0;
+                    lifeTime = NewDuration > 0 ? NewDuration : 0;
+                    OnBegin();
+                    OnStarted?.Invoke(this);
+                    islive = true;
+                }
             }
             else
             {
@@ -158,16 +165,16 @@ namespace RealMethod
         }
         void ICommandLife.UpdateCommand()
         {
-            // Check Started
-            if (!islive)
-            {
-                return;
-            }
-
             // Check Initiate
             if (!IsValidated)
             {
                 Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
+                return;
+            }
+
+            // Check Started
+            if (!islive)
+            {
                 return;
             }
 
@@ -189,7 +196,7 @@ namespace RealMethod
                 {
                     // Stop Command Teime over
                     lifeTime = 0;
-                    ((ICommandLife)this).StopCommand();
+                    Finish();
                     return;
                 }
             }
@@ -200,9 +207,12 @@ namespace RealMethod
         {
             if (IsValidated)
             {
-                islive = false;
-                OnEnd();
-                OnFinished?.Invoke(this);
+                if (islive)
+                {
+                    islive = false;
+                    OnEnd();
+                    OnFinished?.Invoke(this);
+                }
             }
             else
             {
@@ -231,8 +241,10 @@ namespace RealMethod
         void PauseCommand();
         /// <summary> Called to resume the command after a pause. </summary>
         void ResumeCommand();
+        /// <summary> Called to reset the command propetries. </summary>
+        void ResetCommand();
         /// <summary> Resets command state (useful for pooling). </summary>
-        void ResetCommand(float Duration = 0);
+        void RestartCommand(float Duration = 0);
         /// <summary> Whether the command is currently paused. </summary>
         bool IsPaused { get; }
     }
@@ -266,8 +278,16 @@ namespace RealMethod
             OnResume();
             OnResumed?.Invoke(this);
         }
-        void ICommandBehaviour.ResetCommand(float Duration)
+        void ICommandBehaviour.ResetCommand()
         {
+            ResetValues();
+            isRunning = true;
+            OnReset();
+        }
+        void ICommandBehaviour.RestartCommand(float Duration)
+        {
+            ResetValues();
+            isRunning = true;
             OnReset();
             ((ICommandLife)this).StartCommand(Duration);
         }

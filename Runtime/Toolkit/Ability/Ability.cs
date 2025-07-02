@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace RealMethod
@@ -23,7 +22,6 @@ namespace RealMethod
             Modefiy,
         }
 
-
         [Header("Setting")]
         [SerializeField]
         private GameObject[] StartAbility;
@@ -34,6 +32,7 @@ namespace RealMethod
         [SerializeField, ShowInInspectorByEnum("Behavior", 1, 3)]
         private SendMessageOptions MessageOption;
 
+        // Actions
         public Action<Power> OnAddPower;
         public Action<Power> OnActivePower;
         public Action<Power> OnDeactivePower;
@@ -41,10 +40,9 @@ namespace RealMethod
         public Action<Power> OnModifiyPower;
 
         private Hictionary<Power> Abilities = new Hictionary<Power>(5);
-
-
         public bool HasAbility => Abilities.Count > 0;
         public int Count => Abilities.Count;
+
 
         public Power this[string label]
         {
@@ -53,6 +51,7 @@ namespace RealMethod
         }
 
 
+        // Unity Methods
         protected virtual void Awake()
         {
             if (StartAbility != null)
@@ -63,7 +62,6 @@ namespace RealMethod
                 }
             }
         }
-
         private void LateUpdate()
         {
             if (Method == UpdateMethod.LateUpdate)
@@ -86,109 +84,160 @@ namespace RealMethod
             }
         }
 
-        public bool IsValidPower(string label)
+        // Public Functions
+        public bool IsValid(Power power)
+        {
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
+            {
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return false;
+            }
+#endif
+            return IsValid(power.Label);
+        }
+        public bool IsValid(string label)
         {
             return Abilities.ContainsKey(label);
         }
-        public bool Active(string label)
+        public void Active(Power power)
         {
-            if (Abilities.ContainsKey(label))
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
             {
-                Abilities[label].GetComponent<ICommandLife>().StartCommand();
-                MessageBehavior(AbilityState.Active, Abilities[label]);
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return;
+            }
+#endif
+            Active(power.Label);
+        }
+        public void Active(string label)
+        {
+            Abilities[label].GetComponent<ICommandLife>().StartCommand();
+            MessageBehavior(AbilityState.Active, Abilities[label]);
+        }
+        public void Active(Power power, float Duration)
+        {
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
+            {
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return;
+            }
+#endif
+            Active(power.Label, Duration);
+        }
+        public void Active(string label, float Duration)
+        {
+            Abilities[label].GetComponent<ICommandLife>().StartCommand(Duration);
+            MessageBehavior(AbilityState.Active, Abilities[label]);
+        }
+        public void Deactive(Power power)
+        {
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
+            {
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return;
+            }
+#endif
+            Deactive(power.Label);
+        }
+        public void Deactive(string label)
+        {
+            Abilities[label].GetComponent<ICommandLife>().StopCommand();
+            MessageBehavior(AbilityState.Deactive, Abilities[label]);
+        }
+        public void Pause(Power power)
+        {
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
+            {
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return;
+            }
+#endif
+            Pause(power.Label);
+        }
+        public void Pause(string label)
+        {
+            Abilities[label].GetComponent<ICommandBehaviour>().PauseCommand();
+            MessageBehavior(AbilityState.Modefiy, Abilities[label]);
+        }
+        public void Resume(Power power)
+        {
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
+            {
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return;
+            }
+#endif
+            Resume(power.Label);
+        }
+        public void Resume(string label)
+        {
+            Abilities[label].GetComponent<ICommandBehaviour>().ResumeCommand();
+            MessageBehavior(AbilityState.Modefiy, Abilities[label]);
+        }
+        public void ResetPower(Power power)
+        {
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
+            {
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return;
+            }
+#endif
+            ResetPower(power.Label);
+        }
+        public void ResetPower(string label)
+        {
+            Abilities[label].GetComponent<ICommandBehaviour>().RestartCommand();
+            MessageBehavior(AbilityState.Modefiy, Abilities[label]);
+        }
+        public bool Apply(Power power, Transform target, UnityEngine.Object author)
+        {
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
+            {
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return false;
+            }
+#endif
+            if (!Abilities.ContainsKey(power.Label))
+            {
+                power.transform.SetParent(target);
+                Abilities.Add(power.Label, power);
+                power.GetComponent<ICommandInitiator>().Initiate(author, this);
+                MessageBehavior(AbilityState.Add, power);
                 return true;
             }
             else
             {
-                Debug.LogError($"Active Ability Failed: No ability with ID '{label}' exists.");
+                Debug.LogWarning($"Apply Power Failed: An ability with ID '{power.Label}' already exists.");
                 return false;
             }
         }
-        public bool Active(string label, float Duration)
+        public bool Deny(Power power)
         {
-            if (Abilities.ContainsKey(label))
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
             {
-                Abilities[label].GetComponent<ICommandLife>().StartCommand(Duration);
-                MessageBehavior(AbilityState.Active, Abilities[label]);
-                return true;
-            }
-            else
-            {
-                Debug.LogError($"Active Ability Failed: No ability with ID '{label}' exists.");
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
                 return false;
             }
-        }
-        public bool Deactive(string label)
-        {
-            if (Abilities.ContainsKey(label))
-            {
-                Abilities[label].GetComponent<ICommandLife>().StopCommand();
-                MessageBehavior(AbilityState.Deactive, Abilities[label]);
-                return true;
-            }
-            else
-            {
-                Debug.LogError($"Active Ability Failed: No ability with ID '{label}' exists.");
-                return false;
-            }
-        }
-        public bool Pause(string label)
-        {
-            if (Abilities.ContainsKey(label))
-            {
-                Abilities[label].GetComponent<ICommandBehaviour>().PauseCommand();
-                MessageBehavior(AbilityState.Modefiy, Abilities[label]);
-                return true;
-            }
-            else
-            {
-                Debug.LogError($"Pause Ability Failed: No ability with ID '{label}' exists.");
-                return false;
-            }
-        }
-        public bool Resume(string label)
-        {
-            if (Abilities.ContainsKey(label))
-            {
-                Abilities[label].GetComponent<ICommandBehaviour>().ResumeCommand();
-                MessageBehavior(AbilityState.Modefiy, Abilities[label]);
-                return true;
-            }
-            else
-            {
-                Debug.LogError($"Resume Ability Failed: No ability with ID '{label}' exists.");
-                return false;
-            }
-        }
-        public bool ResetPower(string label)
-        {
-            if (Abilities.ContainsKey(label))
-            {
-                Abilities[label].GetComponent<ICommandBehaviour>().ResetCommand();
-                MessageBehavior(AbilityState.Modefiy, Abilities[label]);
-                return true;
-            }
-            else
-            {
-                Debug.LogError($"Active Ability Failed: No ability with ID '{label}' exists.");
-                return false;
-            }
-        }
-        public bool Apply(Power command, Transform target, UnityEngine.Object author)
-        {
-            if (!Abilities.ContainsKey(command.Label))
-            {
-                command.transform.SetParent(target);
-                Abilities.Add(command.Label, command);
-                command.GetComponent<ICommandInitiator>().Initiate(author, this);
-                MessageBehavior(AbilityState.Add, command);
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning($"Apply Ability Failed: An ability with ID '{command.Label}' already exists.");
-                return false;
-            }
+#endif
+            return Deny(power.Label);
         }
         public bool Deny(string label)
         {
@@ -206,29 +255,29 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool Create(GameObject prefab, UnityEngine.Object author, bool AutoActive = false)
+        public Power Create(GameObject prefab, UnityEngine.Object author, bool AutoActive = false)
         {
             return Create(prefab, transform, author, AutoActive);
         }
-        public bool Create(GameObject prefab, Transform parent, UnityEngine.Object author, bool AutoActive = false)
+        public Power Create(GameObject prefab, Transform parent, UnityEngine.Object author, bool AutoActive = false)
         {
             Power command = prefab.GetComponent<Power>();
             if (command == null)
             {
-                Debug.LogError($"Create Ability Failed: The GameObject '{prefab.name}' does not have a command of type '{typeof(Power).Name}'.");
-                return false;
+                Debug.LogError($"Create Power Failed: The GameObject '{prefab.name}' does not have a command of type '{typeof(Power).Name}'.");
+                return null;
             }
 
             if (author == null)
             {
-                Debug.LogError($"Spawn Command Failed: Author Not valid.");
-                return false;
+                Debug.LogError($"Create Power Failed: Author Not valid.");
+                return null;
             }
 
             if (Abilities.ContainsKey(command.Label))
             {
-                Debug.LogError($"Create Ability Failed: An ability with ID '{prefab.name}' already exists.");
-                return false;
+                Debug.LogError($"Create Power Failed: An ability with ID '{prefab.name}' already exists.");
+                return null;
             }
 
             GameObject SpawnedObject = Instantiate(prefab, parent);
@@ -245,7 +294,19 @@ namespace RealMethod
                 SpawnedObject.gameObject.SetActive(false);
             }
             MessageBehavior(AbilityState.Add, TargetCommand);
-            return true;
+            return TargetCommand;
+        }
+        public bool Delete(Power power)
+        {
+            // Ensure the command is a scene object, not an asset
+#if UNITY_EDITOR
+            if (UnityEditor.AssetDatabase.Contains(power.gameObject))
+            {
+                Debug.LogError($"Apply Power Failed: The Power '{power.Label}' is an asset, not a scene object.");
+                return false;
+            }
+#endif
+            return Delete(power.Label);
         }
         public bool Delete(string label)
         {
@@ -258,23 +319,9 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogError($"Delete Ability Failed: No ability with ID '{label}' exists.");
+                Debug.LogError($"Delete Power Failed: No ability with ID '{label}' exists.");
                 return false;
             }
-        }
-        public bool Delete(GameObject prefab)
-        {
-            Power Targetcommand = prefab.GetComponent<Power>();
-            if (Targetcommand)
-            {
-                return Delete(Targetcommand.Label);
-            }
-            else
-            {
-                Debug.LogError($"Delete Ability Failed: The prefab with with ID '{Targetcommand.name}' Doesnot have AbillityCommand.");
-                return false;
-            }
-
         }
         public bool Move(string label, Ability target)
         {
@@ -293,11 +340,9 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogError($"Delete Ability Failed: No ability with ID '{label}' exists.");
+                Debug.LogError($"Delete Power Failed: No ability with ID '{label}' exists.");
                 return false;
             }
-
-
         }
         public Power[] CopyActiveAbilities()
         {
@@ -397,17 +442,16 @@ namespace RealMethod
         protected abstract void OnPowerModefied(Power PowerUp);
     }
 
-
     public abstract class Power : ActionCommand
     {
-        [Header("General")]
+        [Header("Power")]
         [SerializeField]
-        private string PowerLabel;
+        private string label;
         [SerializeField]
         protected bool Tick = true;
         [SerializeField, Tooltip("Ziro means infinit"), ConditionalHide("Tick", true, false)]
         private float LifeTime;
-        public string Label => PowerLabel;
+        public string Label => label;
 
         // Private Variable
         private float Duration = 0;
@@ -424,24 +468,24 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogError("Ther Owner Should be Ability Class");
+                Debug.LogError("The 'Owner' should be 'Ability' Class!");
             }
         }
         protected sealed override void OnBegin()
         {
             gameObject.SetActive(true);
             enabled = true;
-            OnStartPower();
+            OnStart();
         }
         protected sealed override void OnUpdate()
         {
-            OnTickPower(ElapsedTime / Duration);
+            OnTick(ElapsedTime / Duration);
         }
         protected sealed override void OnEnd()
         {
             gameObject.SetActive(false);
             enabled = false;
-            OnFinishPower();
+            OnFinish();
         }
         protected sealed override void OnPause()
         {
@@ -462,7 +506,7 @@ namespace RealMethod
             }
             else
             {
-                return 0;
+                return -1;
             }
         }
         protected sealed override bool CanUpdate()
@@ -479,27 +523,19 @@ namespace RealMethod
 
         // Abstract Method
         protected abstract void OnAssign(Ability target);
-        protected abstract void OnStartPower();
-        protected abstract void OnTickPower(float alpha);
-        protected abstract void OnFinishPower();
+        protected abstract void OnStart();
+        protected abstract void OnTick(float alpha);
+        protected abstract void OnFinish();
         protected abstract void OnPause(bool stop);
-
-        // Unity Method
-        protected virtual void OnDestroy()
-        {
-            Finish();
-        }
 
 
 #if UNITY_EDITOR
         protected void ChangeLabel(string NewName)
         {
-            PowerLabel = NewName;
+            label = NewName;
         }
 #endif
 
     }
-
-
 
 }

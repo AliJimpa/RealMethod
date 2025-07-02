@@ -6,18 +6,19 @@ public class #SCRIPTNAME# : Power
     protected override void OnAssign(Ability target)
     {
     }
-    protected override void OnStartPower()
+    protected override void OnStart()
     {
     }
-    protected override void OnTickPower(float alpha)
+    protected override void OnTick(float alpha)
     {
     }
-    protected override void OnFinishPower()
+    protected override void OnFinish()
     {
     }
     protected override void OnPause(bool stop)
     {
     }
+    
     // Base ActionCommand Method
     protected override void OnReset()
     {
