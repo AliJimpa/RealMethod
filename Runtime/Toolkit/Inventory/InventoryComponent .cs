@@ -5,9 +5,6 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Toolkit/Inventory/Inventory")]
     public sealed class InventoryComponent : InventoryStorage
     {
-        protected override void PostAwake()
-        {
-        }
         protected override void AddItem(InventoryItemAsset target)
         {
         }

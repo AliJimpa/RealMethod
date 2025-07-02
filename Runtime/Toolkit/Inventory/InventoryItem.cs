@@ -9,13 +9,12 @@ namespace RealMethod
         private string ItemName;
         [SerializeField]
         private InventoryItemAsset ItemAsset;
+        public InventoryItemAsset Asset => ItemAsset;
         [SerializeField]
         private int ItemQuantity;
+        public int Quantity => ItemQuantity;
         [SerializeField]
         private int ItemCapacity;
-        // Just for Getter Serialize Variable
-        public InventoryItemAsset Asset => ItemAsset;
-        public int Quantity => ItemQuantity;
         public int Capacity => ItemCapacity;
 
         public InventoryItemProperty(InventoryItemAsset asset, int quantity, int capacity = 0)
@@ -63,5 +62,5 @@ namespace RealMethod
         public abstract bool CanDropp(Inventory owner);
     }
 
-    
+
 }

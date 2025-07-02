@@ -22,15 +22,15 @@ namespace RealMethod
         }
 
         [Header("Setting")]
-        [SerializeField, Tooltip("Zero means No Limit")]
+        [SerializeField, Tooltip("Zero means infinit")]
         private int _capacity = 0;
+        public int Capacity => _capacity;
         [SerializeField]
         private BehaviorType Behavior;
         [SerializeField]
         private InventoryItemAsset[] DefaultItem;
 
         public bool IsLoading { get; protected set; }
-        public int Capacity => _capacity;
         public bool IsEnoughCapacity => _capacity > 0 ? Items.Count < _capacity : true;
         public int Count => Items.Count;
         public Action<InventoryItemAsset, int> OnItemAdded;
@@ -45,7 +45,8 @@ namespace RealMethod
             get => Items[itemname].Asset;
         }
 
-        private void Awake()
+        // Unity Methods
+        protected virtual void Awake()
         {
             IsLoading = false;
             if (UseDefaultItem())
@@ -58,8 +59,6 @@ namespace RealMethod
                     }
                 }
             }
-
-            PostAwake();
         }
 
         // public methods
@@ -87,7 +86,7 @@ namespace RealMethod
         {
             return Items.ContainsKey(asset.name);
         }
-        public bool CreateNewItem(InventoryItemAsset item, int Quantity, int ItemCapacity)
+        public bool AddNewItem(InventoryItemAsset item, int Quantity, int ItemCapacity)
         {
             if (!Items.ContainsKey(item.name))
             {
@@ -303,7 +302,6 @@ namespace RealMethod
         // Abstract Methods 
         public abstract bool Load();
         public abstract bool Save();
-        protected abstract void PostAwake();
         protected abstract bool UseDefaultItem();
         protected abstract void AddItem(InventoryItemAsset target);
         protected abstract void UpdateItem(InventoryItemAsset target, int Quantity);
