@@ -5,19 +5,19 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Toolkit/Inventory/Inventory")]
     public sealed class InventoryComponent : InventoryStorage
     {
-        protected override void AddItem(InventoryItemAsset target)
+        protected override void AddItem(ItemAsset target)
         {
         }
-        protected override void UpdateItem(InventoryItemAsset target, int Quantity)
+        protected override void UpdateItem(ItemAsset target, int Quantity)
         {
         }
         protected override void RemoveItem()
         {
         }
-        protected override void OnLoaded()
+        protected override void OnReaded()
         {
         }
-        protected override void OnSaved()
+        protected override void OnWrited()
         {
 
         }

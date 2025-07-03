@@ -176,14 +176,13 @@ namespace RealMethod
         public abstract void OnLoaded();
         public abstract void OnSaved();
         public abstract void OnDeleted();
-        public abstract void Default();
 
 
         // Private Methods
         [ContextMenu("ResetToDefault")]
         private void BacktoDefault()
         {
-            Default();
+            OnEditorPlay();
         }
         [ContextMenu("Save")]
         private void SaveSelf()

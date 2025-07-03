@@ -1,32 +1,28 @@
-using UnityEngine;
 using RealMethod;
-using System;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : InventoryItemAsset
+public class #SCRIPTNAME# : ItemAsset, IInventoryItem
 {
-    // Base InventoryItemAsset Methods
-    public override void PickedUp(Inventory owner, int quantity)
+    // Implement IInventoryItem Interface
+    public void PickedUp(Inventory owner, int quantity)
     {
-
     }
-    public override void Cahanged(int quantity)
-    {
-
-    }
-    public override void Dropped(Inventory owner)
-    {
-
-    }
-    public override bool CanPickUp(Inventory owner)
+    public bool CanPickUp(Inventory owner)
     {
         return true;
     }
-    public override bool CanChange(bool IsAdded)
+    public void Cahanged(int quantity)
+    {
+    }
+    public bool CanChange(bool IsAdded)
     {
         return true;
     }
-    public override bool CanDropp(Inventory owner)
+    public void Dropped(Inventory owner)
+    {
+    }
+    public bool CanDropp(Inventory owner)
     {
         return true;
     }
