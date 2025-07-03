@@ -216,7 +216,8 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Enter;
                 OnEnter(other);
-                OnTriggered(other, TriggerStage.Enter);
+                if (OnTriggered != null)
+                    OnTriggered(other, TriggerStage.Enter);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -226,7 +227,8 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Stay;
                 OnStay(other);
-                OnTriggered(other, TriggerStage.Stay);
+                if (OnTriggered != null)
+                    OnTriggered(other, TriggerStage.Stay);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -236,7 +238,8 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Exit;
                 OnExit(other);
-                OnTriggered(other, TriggerStage.Exit);
+                if (OnTriggered != null)
+                    OnTriggered(other, TriggerStage.Exit);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -252,7 +255,8 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Enter;
                 OnEnter(collision);
-                OnTriggered(collision, TriggerStage.Enter);
+                if (OnTriggered != null)
+                    OnTriggered(collision, TriggerStage.Enter);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -262,7 +266,8 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Stay;
                 OnStay(collision);
-                OnTriggered(collision, TriggerStage.Stay);
+                if (OnTriggered != null)
+                    OnTriggered(collision, TriggerStage.Stay);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -272,7 +277,8 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Exit;
                 OnEnter(collision);
-                OnTriggered(collision, TriggerStage.Exit);
+                if (OnTriggered != null)
+                    OnTriggered(collision, TriggerStage.Exit);
                 CurrentState = TriggerStage.None;
             }
         }

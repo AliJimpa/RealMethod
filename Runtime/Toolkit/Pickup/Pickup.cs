@@ -20,9 +20,6 @@ namespace RealMethod
         [SerializeField]
         private PickupBehavior Behavior;
 
-        // Action
-        public Action<T> OnPickedUp;
-
         // Trigger Methods
         protected override bool CanEnter(T other)
         {
@@ -76,11 +73,13 @@ namespace RealMethod
                     SendMessage("OnPickedUp", Picker, SendMessageOptions.RequireReceiver);
                     break;
                 case PickupBehavior.Action:
-                    OnPickedUp?.Invoke(Picker);
+                    if (OnTriggered != null)
+                        OnTriggered(Picker, TriggerStage.None);
                     break;
                 case PickupBehavior.Both:
                     SendMessage("OnPickedUp", Picker, SendMessageOptions.RequireReceiver);
-                    OnPickedUp?.Invoke(Picker);
+                    if (OnTriggered != null)
+                        OnTriggered(Picker, TriggerStage.None);
                     break;
                 default:
                     break;
@@ -104,7 +103,6 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Enter;
                 OnEnter(other);
-                OnTriggered(other, TriggerStage.Enter);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -114,7 +112,6 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Stay;
                 OnStay(other);
-                OnTriggered(other, TriggerStage.Stay);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -124,7 +121,6 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Exit;
                 OnExit(other);
-                OnTriggered(other, TriggerStage.Exit);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -140,7 +136,6 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Enter;
                 OnEnter(collision);
-                OnTriggered(collision, TriggerStage.Enter);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -150,7 +145,6 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Stay;
                 OnStay(collision);
-                OnTriggered(collision, TriggerStage.Stay);
                 CurrentState = TriggerStage.None;
             }
         }
@@ -160,7 +154,6 @@ namespace RealMethod
             {
                 CurrentState = TriggerStage.Exit;
                 OnEnter(collision);
-                OnTriggered(collision, TriggerStage.Exit);
                 CurrentState = TriggerStage.None;
             }
         }
