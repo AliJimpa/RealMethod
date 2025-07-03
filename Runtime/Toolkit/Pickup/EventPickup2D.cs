@@ -12,10 +12,6 @@ namespace RealMethod
         {
             return enabled;
         }
-        protected override void OnStay(Collider2D Picker)
-        {
-
-        }
         protected override void OnPickUp(Collider2D Picker)
         {
             OnPickedUpBy?.Invoke(Picker);

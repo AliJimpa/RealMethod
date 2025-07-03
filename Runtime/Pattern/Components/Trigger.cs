@@ -138,10 +138,10 @@ namespace RealMethod
                         switch (My3D)
                         {
                             case BoxCollider box:
-                                DrawBoxCollider(box);
+                                DrawBoxCollider3D(box);
                                 break;
                             case SphereCollider sphere:
-                                DrawSpherCollider(sphere);
+                                DrawSpherCollider3D(sphere);
                                 break;
                             default:
                                 Debug.LogWarning("Cant' Draw Debug for This Collider");
@@ -156,31 +156,31 @@ namespace RealMethod
                     {
                         if (My2D != null && My2D.isTrigger && My2D.enabled)
                         {
-                            // switch (Sidecollide)
-                            // {
-                            //     case BoxCollider box:
-                            //         DrawBoxCollider(box);
-                            //         break;
-                            //     case SphereCollider sphere:
-                            //         DrawSpherCollider(sphere);
-                            //         break;
-                            //     default:
-                            //         Debug.LogWarning("Cant' Draw Debug for This Collider");
-                            //         Draw = false;
-                            //         break;
-                            // }
+                            switch (My2D)
+                            {
+                                case BoxCollider2D box:
+                                    DrawBoxCollider2D(box);
+                                    break;
+                                case CircleCollider2D circle:
+                                    DrawCircleCollider2D(circle);
+                                    break;
+                                default:
+                                    Debug.LogWarning("Cant' Draw Debug for This Collider");
+                                    Draw = false;
+                                    break;
+                            }
                         }
                     }
                 }
             }
         }
-        private void DrawBoxCollider(BoxCollider boxCollider)
+        protected virtual void DrawBoxCollider3D(BoxCollider box)
         {
             Gizmos.color = color;
 
             // Get box collider properties
-            Vector3 center = boxCollider.center;
-            Vector3 size = boxCollider.size;
+            Vector3 center = box.center;
+            Vector3 size = box.size;
 
             // Transform to world position
             Matrix4x4 cubeTransform = Matrix4x4.TRS(transform.position, transform.rotation, transform.localScale);
@@ -193,7 +193,7 @@ namespace RealMethod
             Gizmos.color = new Color(color.r, color.g, color.b, color.a);
             Gizmos.DrawCube(center, size);
         }
-        private void DrawSpherCollider(SphereCollider sphere)
+        protected virtual void DrawSpherCollider3D(SphereCollider sphere)
         {
             Vector3 center = sphere.center;
             float radius = sphere.radius;
@@ -201,6 +201,14 @@ namespace RealMethod
             Gizmos.DrawWireSphere(center, radius);
             Gizmos.color = new Color(color.r, color.g, color.b, 0.2f);
             Gizmos.DrawSphere(center, radius);
+        }
+        protected virtual void DrawBoxCollider2D(BoxCollider2D box)
+        {
+
+        }
+        protected virtual void DrawCircleCollider2D(CircleCollider2D circle)
+        {
+            
         }
 #endif
     }

@@ -21,34 +21,38 @@ namespace RealMethod
         private PickupBehavior Behavior;
 
         // Trigger Methods
-        protected override bool CanEnter(T other)
+        protected sealed override bool CanEnter(T other)
         {
             if (!base.CanEnter(other))
                 return false;
 
             return CheckPicking(other);
         }
-        protected override bool CanStay(T other)
+        protected sealed override bool CanStay(T other)
         {
             if (!base.CanStay(other))
                 return false;
 
             return CheckPicking(other);
         }
-        protected override bool CanExit(T other)
+        protected sealed override bool CanExit(T other)
         {
             if (!base.CanExit(other))
                 return false;
 
             return CheckPicking(other);
         }
-        protected override void OnEnter(T other)
+        protected sealed override void OnEnter(T other)
         {
             PickedUp(other);
         }
-        protected override void OnExit(T other)
+        protected sealed override void OnExit(T other)
         {
             PickedUp(other);
+        }
+        protected sealed override void OnStay(T other)
+        {
+            OnPickUp(other);
         }
 
         // Private Functions
@@ -99,30 +103,30 @@ namespace RealMethod
         // Collider Message
         private void OnTriggerEnter(Collider other)
         {
+            CurrentState = TriggerStage.Enter;
             if (CanEnter(other))
             {
-                CurrentState = TriggerStage.Enter;
                 OnEnter(other);
-                CurrentState = TriggerStage.None;
             }
+            CurrentState = TriggerStage.None;
         }
         private void OnTriggerStay(Collider other)
         {
+            CurrentState = TriggerStage.Stay;
             if (CanStay(other))
             {
-                CurrentState = TriggerStage.Stay;
                 OnStay(other);
-                CurrentState = TriggerStage.None;
             }
+            CurrentState = TriggerStage.None;
         }
         private void OnTriggerExit(Collider other)
         {
+            CurrentState = TriggerStage.Exit;
             if (CanExit(other))
             {
-                CurrentState = TriggerStage.Exit;
                 OnExit(other);
-                CurrentState = TriggerStage.None;
             }
+            CurrentState = TriggerStage.None;
         }
 
     }
@@ -132,30 +136,30 @@ namespace RealMethod
         // Collider Message
         private void OnTriggerEnter2D(Collider2D collision)
         {
+            CurrentState = TriggerStage.Enter;
             if (CanEnter(collision))
             {
-                CurrentState = TriggerStage.Enter;
                 OnEnter(collision);
-                CurrentState = TriggerStage.None;
             }
+            CurrentState = TriggerStage.None;
         }
         private void OnTriggerStay2D(Collider2D collision)
         {
+            CurrentState = TriggerStage.Stay;
             if (CanStay(collision))
             {
-                CurrentState = TriggerStage.Stay;
                 OnStay(collision);
-                CurrentState = TriggerStage.None;
             }
+            CurrentState = TriggerStage.None;
         }
         private void OnTriggerExit2D(Collider2D collision)
         {
+            CurrentState = TriggerStage.Exit;
             if (CanExit(collision))
             {
-                CurrentState = TriggerStage.Exit;
                 OnEnter(collision);
-                CurrentState = TriggerStage.None;
             }
+            CurrentState = TriggerStage.None;
         }
     }
 
