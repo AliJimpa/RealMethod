@@ -83,7 +83,7 @@ namespace RealMethod
         /// <summary> Called to Clear initating command. </summary>
         void ClearCommand();
         /// <summary> Elapsed time since command Live. </summary>
-        float ElapsedTime { get; }
+        float RemainingTime { get; }
         // <summary> Whether the command has finished execution. </summary>
         bool IsFinished { get; }
     }
@@ -98,8 +98,8 @@ namespace RealMethod
         public System.Action<LifecycleCommand> OnFinished;
 
         // Private Variable
-        private bool hasDuration = false;
-        private float lifeTime = -1;
+        private float lifetime = -1;
+        private float residuary = -1;
         private bool islive = false;
 
 
@@ -132,8 +132,8 @@ namespace RealMethod
         protected void ResetValues()
         {
             islive = false;
-            lifeTime = -1;
-            hasDuration = false;
+            lifetime = -1;
+            residuary = -1;
         }
         protected virtual float PreProcessDuration(float StartDuration)
         {
@@ -142,7 +142,9 @@ namespace RealMethod
 
 
         // Implement ILiveCommand Interface
-        public float ElapsedTime => lifeTime;
+        public bool IsInfinit => lifetime == 0;
+        public float RemainingTime => residuary;
+        public float ElapsedTime => lifetime - residuary;
         public bool IsFinished => !islive;
         void ICommandLife.StartCommand(float Duration)
         {
@@ -150,9 +152,8 @@ namespace RealMethod
             {
                 if (!islive)
                 {
-                    float NewDuration = PreProcessDuration(Duration);
-                    hasDuration = NewDuration > 0;
-                    lifeTime = NewDuration > 0 ? NewDuration : 0;
+                    lifetime = PreProcessDuration(Duration);
+                    residuary = lifetime > 0 ? lifetime : 0;
                     OnBegin();
                     OnStarted?.Invoke(this);
                     islive = true;
@@ -185,17 +186,17 @@ namespace RealMethod
             }
 
             // Handel Lifetime Command
-            if (lifeTime > 0)
+            if (residuary > 0)
             {
                 // Calculate Time
-                lifeTime -= Time.deltaTime;
+                residuary -= Time.deltaTime;
             }
             else
             {
-                if (hasDuration)
+                if (!IsInfinit)
                 {
                     // Stop Command Teime over
-                    lifeTime = 0;
+                    residuary = 0;
                     Finish();
                     return;
                 }

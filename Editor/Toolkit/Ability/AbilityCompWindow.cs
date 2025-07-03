@@ -62,13 +62,13 @@ namespace RealMethod
             }
             else
             {
-                if (targetpower.ElapsedTime == 0)
+                if (targetpower.RemainingTime == 0)
                 {
                     return "Infinit";
                 }
                 else
                 {
-                    return targetpower.ElapsedTime.ToString();
+                    return targetpower.RemainingTime.ToString();
                 }
             }
 

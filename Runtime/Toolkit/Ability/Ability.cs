@@ -479,7 +479,7 @@ namespace RealMethod
         }
         protected sealed override void OnUpdate()
         {
-            OnTick(ElapsedTime / Duration);
+            OnTick(RemainingTime / Duration);
         }
         protected sealed override void OnEnd()
         {
