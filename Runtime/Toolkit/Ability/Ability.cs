@@ -200,7 +200,7 @@ namespace RealMethod
         }
         public void ResetPower(string label)
         {
-            Abilities[label].GetComponent<ICommandBehaviour>().RestartCommand();
+            Abilities[label].GetComponent<ICommandBehaviour>().ResetCommand();
             MessageBehavior(AbilityState.Modefiy, Abilities[label]);
         }
         public bool Apply(Power power, Transform target, UnityEngine.Object author)
