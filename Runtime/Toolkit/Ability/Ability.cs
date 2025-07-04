@@ -475,7 +475,7 @@ namespace RealMethod
         {
             gameObject.SetActive(true);
             enabled = true;
-            OnStart();
+            OnStart(true);
         }
         protected sealed override void OnUpdate()
         {
@@ -485,17 +485,17 @@ namespace RealMethod
         {
             gameObject.SetActive(false);
             enabled = false;
-            OnFinish();
-        }
-        protected sealed override void OnPause()
-        {
-            enabled = false;
-            OnPause(true);
+            OnStop(true);
         }
         protected sealed override void OnResume()
         {
             enabled = true;
-            OnPause(false);
+            OnStart(false);
+        }
+        protected sealed override void OnPause()
+        {
+            enabled = false;
+            OnStop(false);
         }
         protected sealed override float PreProcessDuration(float StartDuration)
         {
@@ -523,10 +523,9 @@ namespace RealMethod
 
         // Abstract Method
         protected abstract void OnAssign(Ability target);
-        protected abstract void OnStart();
+        protected abstract void OnStart(bool IsBegin);
         protected abstract void OnTick(float alpha);
-        protected abstract void OnFinish();
-        protected abstract void OnPause(bool stop);
+        protected abstract void OnStop(bool IsFinish);
 
 
 #if UNITY_EDITOR
