@@ -145,6 +145,7 @@ namespace RealMethod
         public bool IsInfinit => lifetime == 0;
         public float RemainingTime => residuary;
         public float ElapsedTime => lifetime - residuary;
+        public float NormalizedTime => residuary / lifetime;
         public bool IsFinished => !islive;
         void ICommandLife.StartCommand(float Duration)
         {

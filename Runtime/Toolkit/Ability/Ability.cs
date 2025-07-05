@@ -200,7 +200,14 @@ namespace RealMethod
         }
         public void ResetPower(string label)
         {
-            Abilities[label].GetComponent<ICommandBehaviour>().ResetCommand();
+            if (Abilities[label].IsActive)
+            {
+                Abilities[label].GetComponent<ICommandBehaviour>().RestartCommand();
+            }
+            else
+            {
+                Abilities[label].GetComponent<ICommandBehaviour>().ResetCommand();
+            }
             MessageBehavior(AbilityState.Modefiy, Abilities[label]);
         }
         public bool Apply(Power power, Transform target, UnityEngine.Object author)
@@ -447,14 +454,12 @@ namespace RealMethod
         [Header("Power")]
         [SerializeField]
         private string label;
+        public string Label => label;
         [SerializeField]
         protected bool Tick = true;
         [SerializeField, Tooltip("Ziro means infinit"), ConditionalHide("Tick", true, false)]
         private float LifeTime;
-        public string Label => label;
-
-        // Private Variable
-        private float Duration = 0;
+        public bool IsActive => !IsFinished;
 
 
         // Implemented Override Methods
@@ -479,7 +484,7 @@ namespace RealMethod
         }
         protected sealed override void OnUpdate()
         {
-            OnTick(RemainingTime / Duration);
+            OnTick(1 - NormalizedTime);
         }
         protected sealed override void OnEnd()
         {
@@ -499,15 +504,7 @@ namespace RealMethod
         }
         protected sealed override float PreProcessDuration(float StartDuration)
         {
-            if (Tick)
-            {
-                Duration = StartDuration > 0 ? StartDuration : LifeTime;
-                return Duration;
-            }
-            else
-            {
-                return -1;
-            }
+            return StartDuration > 0 ? StartDuration : LifeTime;
         }
         protected sealed override bool CanUpdate()
         {
