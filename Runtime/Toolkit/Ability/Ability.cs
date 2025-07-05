@@ -200,7 +200,7 @@ namespace RealMethod
         }
         public void ResetPower(string label)
         {
-            if (Abilities[label].IsActive)
+            if (Abilities[label].IsActive && !Abilities[label].IsPaused)
             {
                 Abilities[label].GetComponent<ICommandBehaviour>().RestartCommand();
             }
@@ -334,7 +334,7 @@ namespace RealMethod
         {
             if (target == null)
             {
-                Debug.LogError($"Move Ability Failed: Target Ability is null.");
+                Debug.LogError($"Move Power Failed: Target Ability is null.");
                 return false;
             }
 
