@@ -395,26 +395,21 @@ namespace RealMethod
 
         public static bool Widget(string Name)
         {
-            if (Instance != null)
-            {
-                return Instance.uIBox.RemoveLayer(Name);
-            }
-            else
-            {
+            if (Instance == null)
                 return false;
-            }
+            if (Instance.uIBox == null)
+                return false;
+
+            return Instance.uIBox.RemoveLayer(Name);
         }
         public static bool Widget(MonoBehaviour Comp)
         {
-            if (Instance != null)
-            {
-                return Instance.uIBox.RemoveLayer(Comp);
-            }
-            else
-            {
+            if (Instance == null)
                 return false;
-            }
-
+            if (Instance.uIBox == null)
+                return false;
+                
+            return Instance.uIBox.RemoveLayer(Comp);
         }
     }
 
