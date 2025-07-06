@@ -188,6 +188,14 @@ namespace RealMethod
                 return null;
             }
         }
+        public static bool RemoveWidget(string Name)
+        {
+            return Service.uIBox.RemoveLayer(Name);
+        }
+        public static bool RemoveWidget(MonoBehaviour comp)
+        {
+            return Service.uIBox.RemoveLayer(comp);
+        }
         public static AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
         {
             if (Service.audioBox != null)
