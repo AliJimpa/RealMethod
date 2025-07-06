@@ -73,11 +73,6 @@ namespace RealMethod
             }
             return null;
         }
-        // Unity Methods
-        protected virtual void OnDestroy()
-        {
-            GameServices.Clear();
-        }
         // Protected Functions
         protected T NeedManager<T>() where T : MonoBehaviour
         {
