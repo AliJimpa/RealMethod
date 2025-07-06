@@ -64,6 +64,11 @@ namespace RealMethod
             }
             return null;
         }
+        public bool TryAdd(string Name, T Value)
+        {
+            return List.TryAdd(Hash128.Compute(Name), Value);
+        }
+        
 
     }
 }

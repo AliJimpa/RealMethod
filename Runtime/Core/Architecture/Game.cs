@@ -46,7 +46,7 @@ namespace RealMethod
 
         // Private Variable
         private IGameManager[] Managers;
-        private Dictionary<string, Service> GameServices = new Dictionary<string, Service>(10);
+        private Hictionary<Service> GameServices = new Hictionary<Service>(3);
 
 
 
@@ -89,9 +89,9 @@ namespace RealMethod
         private void ReplaceWorld(World NewWorld)
         {
             World = NewWorld;
-            foreach (var service in GameServices)
+            foreach (var service in GameServices.GetValues())
             {
-                service.Value.WorldUpdated();
+                service.WorldUpdated();
             }
             WorldSynced(World);
         }
