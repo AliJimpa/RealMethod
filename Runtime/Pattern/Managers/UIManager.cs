@@ -217,7 +217,7 @@ namespace RealMethod
         }
         public T AddLayer<T>(string Name, GameObject Prefab, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            if (Prefab.GetComponent<IWidget>() != null)
+            if (Prefab.GetComponent<IWidget>() == null)
             {
                 Debug.LogError($"Prefab should has Widget Class Component");
                 return null;
