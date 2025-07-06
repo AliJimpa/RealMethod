@@ -264,9 +264,9 @@ namespace RealMethod
         }
         public Power Create(GameObject prefab, UnityEngine.Object author, bool AutoActive = false)
         {
-            return Create(prefab, transform, author, AutoActive);
+            return Create(prefab, author, transform, AutoActive);
         }
-        public Power Create(GameObject prefab, Transform parent, UnityEngine.Object author, bool AutoActive = false)
+        public Power Create(GameObject prefab, UnityEngine.Object author, Transform parent, bool AutoActive = false)
         {
             Power command = prefab.GetComponent<Power>();
             if (command == null)
@@ -289,19 +289,15 @@ namespace RealMethod
 
             GameObject SpawnedObject = Instantiate(prefab, parent);
             SpawnedObject.name = $"{command.Label}_Power";
-            Power TargetCommand = SpawnedObject.GetComponent<Power>();
-            TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, this);
-            Abilities.Add(TargetCommand.Label, TargetCommand);
+            Power SpawnedPower = SpawnedObject.GetComponent<Power>();
+            SpawnedPower.GetComponent<ICommandInitiator>().Initiate(author, this);
+            Abilities.Add(SpawnedPower.Label, SpawnedPower);
             if (AutoActive)
             {
                 Active(prefab.name);
             }
-            else
-            {
-                SpawnedObject.gameObject.SetActive(false);
-            }
-            MessageBehavior(AbilityState.Add, TargetCommand);
-            return TargetCommand;
+            MessageBehavior(AbilityState.Add, SpawnedPower);
+            return SpawnedPower;
         }
         public bool Delete(Power power)
         {
@@ -519,9 +515,9 @@ namespace RealMethod
         }
 
         // Abstract Method
-        protected abstract void OnAssign(Ability target);
+        protected abstract void OnAssign(Ability Owner);
         protected abstract void OnStart(bool IsBegin);
-        protected abstract void OnTick(float alpha);
+        protected abstract void OnTick(float Alpha);
         protected abstract void OnStop(bool IsFinish);
 
 

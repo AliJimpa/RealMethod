@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.UIElements;
@@ -79,70 +78,128 @@ namespace RealMethod
         //Core Methods
         public GameObject CreateLayer(string Name)
         {
-            GameObject Result = new GameObject(Name);
-            Result.layer = 5;
+            GameObject Result;
             switch (Method)
             {
                 case UIMethod.IMGUI:
+                    Result = new GameObject(Name);
                     break;
                 case UIMethod.uGUI:
-                    Result.AddComponent<Canvas>();
-                    Result.AddComponent<CanvasScaler>();
-                    Result.AddComponent<GraphicRaycaster>();
+                    Result = new GameObject(Name, new Type[3] { typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster) });
                     break;
                 case UIMethod.UI_Toolkit:
-                    Result.AddComponent<UIDocument>();
+                    Result = new GameObject(Name, new Type[1] { typeof(UIDocument) });
                     break;
+                default:
+                    Debug.LogError("Unkown Method!");
+                    return null;
             }
             Result.transform.SetParent(transform);
+            Result.layer = 5;
             Layers.Add(Name, Result);
             return Result;
+        }
+        public T CreateLayer<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
+        {
+            GameObject layer = CreateLayer(Name);
+            if (layer)
+            {
+                T TargetClass = layer.AddComponent<T>();
+                IWidget widget = TargetClass.GetComponent<IWidget>();
+                if (widget != null)
+                {
+                    if (Owner != null)
+                    {
+                        widget.InitiateWidget(Owner);
+                    }
+                    else
+                    {
+                        widget.InitiateWidget(this);
+                        Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
+                    }
+                }
+                return TargetClass;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        public T CreateLayer<T>(string Name) where T : MonoBehaviour
+        {
+            return CreateLayer<T>(Name, this);
         }
         public UIDocument CreateLayer(string Name, VisualTreeAsset UIAsset)
         {
             if (Method == UIMethod.UI_Toolkit)
             {
-                GameObject EmptyObject = new GameObject(Name);
-                EmptyObject.layer = 5;
-                EmptyObject.transform.SetParent(transform);
-                UIDocument Result = EmptyObject.AddComponent<UIDocument>();
-                if (UISetting != null)
+                GameObject layer = CreateLayer(Name);
+                if (layer)
                 {
-                    Result.panelSettings = UISetting;
+                    UIDocument doc = layer.GetComponent<UIDocument>();
+                    if (UISetting != null)
+                    {
+                        doc.panelSettings = UISetting;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[{this}] UISetting is not Valid");
+                    }
+                    doc.visualTreeAsset = UIAsset;
+                    return doc;
                 }
                 else
                 {
-                    Debug.LogWarning("UISetting is not Valid");
+                    return null;
                 }
-                Result.visualTreeAsset = UIAsset;
-                Layers.Add(Name, EmptyObject);
-                return Result;
             }
             else
             {
-                Debug.LogError("Just use for 'UI_Toolkit' Method");
+                Debug.LogError($"[{this}] Method '{Method}' is not UI_Toolkit. Cannot create UIDocument layer.");
                 return null;
             }
         }
-        public GameObject AddLayer(GameObject Prefab, string Name)
+        public T CreateLayer<T>(string Name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
-            Layers.Add(Name, SpawnedObject);
-            IWidget widget = SpawnedObject.GetComponent<IWidget>();
-            if (widget != null)
+            GameObject layer = CreateLayer(Name, UIAsset).gameObject;
+            if (layer)
             {
-                widget.InitiateWidget(this);
+                T TargetClass = layer.AddComponent<T>();
+                IWidget widget = TargetClass.GetComponent<IWidget>();
+                if (widget != null)
+                {
+                    if (Owner != null)
+                    {
+                        widget.InitiateWidget(Owner);
+                    }
+                    else
+                    {
+                        widget.InitiateWidget(this);
+                        Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
+                    }
+                }
+                return TargetClass;
             }
-            return SpawnedObject;
+            else
+            {
+                return null;
+            }
         }
-        public GameObject AddLayer(GameObject Prefab, MonoBehaviour Owner, string Name)
+        public T CreateLayer<T>(string Name, VisualTreeAsset UIAsset) where T : MonoBehaviour
+        {
+            return CreateLayer<T>(Name, UIAsset, this);
+        }
+
+
+
+        public GameObject AddLayer(string Name, GameObject Prefab, MonoBehaviour Owner)
         {
             GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
             Layers.Add(Name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
             if (widget != null)
             {
-                if (Owner)
+                if (Owner != null)
                 {
                     widget.InitiateWidget(Owner);
                 }
@@ -153,6 +210,60 @@ namespace RealMethod
                 }
             }
             return SpawnedObject;
+        }
+        public GameObject AddLayer(string Name, GameObject Prefab)
+        {
+            return AddLayer(Name, Prefab, this);
+        }
+        public T AddLayer<T>(string Name, GameObject Prefab, MonoBehaviour Owner) where T : MonoBehaviour
+        {
+            if (Prefab.GetComponent<IWidget>() != null)
+            {
+                Debug.LogError($"Prefab should has Widget Class Component");
+                return null;
+            }
+
+
+            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
+            Layers.Add(Name, SpawnedObject);
+            IWidget widget = SpawnedObject.GetComponent<IWidget>();
+            if (widget != null)
+            {
+                if (Owner != null)
+                {
+                    widget.InitiateWidget(Owner);
+                }
+                else
+                {
+                    widget.InitiateWidget(this);
+                    Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
+                }
+                return widget.GetWidgetClass() as T;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+        public T AddLayer<T>(string Name, GameObject Prefab) where T : MonoBehaviour
+        {
+            return AddLayer<T>(Name, Prefab, this);
+        }
+
+
+        public bool RemoveLayer<T>(T Comp) where T : MonoBehaviour
+        {
+            GameObject target = Comp.gameObject;
+            string layername = Layers.Find(target);
+            if (layername != string.Empty)
+            {
+                return RemoveLayer(layername);
+            }
+            else
+            {
+                return false;
+            }
         }
         public bool RemoveLayer(string Name)
         {
@@ -309,112 +420,10 @@ namespace RealMethod
             }
         }
 
-        public IWidget CreateWidget<T>(string Name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
-        {
-            GameObject EmptyObject = new GameObject(Name);
-            EmptyObject.layer = 5;
-            EmptyObject.transform.SetParent(transform);
-            T WidgetClass = EmptyObject.AddComponent<T>();
-            IWidget Widget = WidgetClass.GetComponent<IWidget>();
-            if (Widget != null)
-            {
-                if (Owner)
-                {
-                    Widget.InitiateWidget(Owner);
-                }
-                else
-                {
-                    Widget.InitiateWidget(this);
-                    Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Widget Class Doesn't have IWidget");
-            }
-            UIDocument Result = EmptyObject.AddComponent<UIDocument>();
-            if (UISetting != null)
-            {
-                Result.panelSettings = UISetting;
-            }
-            else
-            {
-                Debug.LogWarning("UISetting is not Valid");
-            }
-            Result.visualTreeAsset = UIAsset;
-            Layers.Add(Name, EmptyObject);
-            return Widget;
 
-        }
-        public IWidget CreateWidget<T>(string Name, VisualTreeAsset UIAsset) where T : MonoBehaviour
-        {
-            GameObject EmptyObject = new GameObject(Name);
-            EmptyObject.layer = 5;
-            EmptyObject.transform.SetParent(transform);
-            T WidgetClass = EmptyObject.AddComponent<T>();
-            IWidget Widget = WidgetClass.GetComponent<IWidget>();
-            if (Widget != null)
-            {
-                Widget.InitiateWidget(this);
-            }
-            else
-            {
-                Debug.LogWarning("Widget Class Doesn't have IWidget");
-            }
-            UIDocument Result = EmptyObject.AddComponent<UIDocument>();
-            if (UISetting != null)
-            {
-                Result.panelSettings = UISetting;
-            }
-            else
-            {
-                Debug.LogWarning("UISetting is not Valid");
-            }
-            Result.visualTreeAsset = UIAsset;
-            Layers.Add(Name, EmptyObject);
-            return Widget;
 
-        }
-        public IWidget AddWidget(string Name, GameObject Prefab, MonoBehaviour Owner)
-        {
-            if (Prefab.GetComponent<IWidget>() != null)
-            {
-                GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
-                Layers.Add(Name, SpawnedObject);
-                IWidget widget = SpawnedObject.GetComponent<IWidget>();
-                if (Owner)
-                {
-                    widget.InitiateWidget(Owner);
-                }
-                else
-                {
-                    widget.InitiateWidget(this);
-                    Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
-                }
-                return widget;
-            }
-            else
-            {
-                Debug.LogWarning("Only Prefab that has Widget Class Component");
-                return null;
-            }
-        }
-        public IWidget AddWidget(string Name, GameObject Prefab)
-        {
-            if (Prefab.GetComponent<IWidget>() != null)
-            {
-                GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
-                Layers.Add(Name, SpawnedObject);
-                IWidget widget = SpawnedObject.GetComponent<IWidget>();
-                widget.InitiateWidget(this);
-                return widget;
-            }
-            else
-            {
-                Debug.LogWarning("Only Prefab that has Widget Class Component");
-                return null;
-            }
-        }
+
+
         public bool FindWidgetByName(string Name, out IWidget TargetWidget)
         {
             IWidget Target = Layers[Name].GetComponent<IWidget>();

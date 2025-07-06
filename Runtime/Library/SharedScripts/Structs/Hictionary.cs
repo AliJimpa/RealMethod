@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using NUnit.Framework;
 
 
 namespace RealMethod
@@ -54,7 +53,17 @@ namespace RealMethod
         {
             List.Clear();
         }
-
+        public string Find(T value)
+        {
+            foreach (var dictionary in List)
+            {
+                if (EqualityComparer<T>.Default.Equals(dictionary.Value, value))
+                {
+                    return dictionary.Key.ToString();
+                }
+            }
+            return null;
+        }
 
     }
 }

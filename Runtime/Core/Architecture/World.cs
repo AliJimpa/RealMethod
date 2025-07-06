@@ -120,19 +120,7 @@ namespace RealMethod
         }
         public GameObject AddObject(GameObject Prefab)
         {
-            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity);
-            SpawnedObject.transform.SetParent(this.transform);
-            return SpawnedObject;
-        }
-        public GameObject AddObject(GameObject Prefab, Vector3 location)
-        {
-            GameObject SpawnedObject = Instantiate(Prefab, location, Quaternion.identity);
-            return SpawnedObject;
-        }
-        public GameObject AddObject(GameObject Prefab, Vector3 location , Vector3 Rotation)
-        {
-            GameObject SpawnedObject = Instantiate(Prefab, location, Quaternion.Euler(Rotation));
-            return SpawnedObject;
+            return Instantiate(Prefab, transform);
         }
         public GameObject FindExteraObject(string ObjectName)
         {
@@ -220,7 +208,6 @@ namespace RealMethod
                 Debug.LogWarning($"Ther ExterObject isn't valid");
                 return false;
             }
-
         }
         // Private Methods
         private void NewServiceCreated(Service NewService)

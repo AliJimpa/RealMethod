@@ -79,11 +79,12 @@ namespace RealMethod
             }
         }
 
-        public static IWidget Widget<T>(string name, VisualTreeAsset uIAsset, MonoBehaviour owner) where T : MonoBehaviour
+
+        public static T Widget<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
         {
             if (Service.uIBox != null)
             {
-                return Service.uIBox.CreateWidget<T>(name, uIAsset, owner);
+                return Service.uIBox.CreateLayer<T>(Name, Owner);
             }
             else
             {
@@ -91,11 +92,11 @@ namespace RealMethod
                 return null;
             }
         }
-        public static IWidget Widget<T>(string name, VisualTreeAsset uIAsset) where T : MonoBehaviour
+        public static T Widget<T>(string Name) where T : MonoBehaviour
         {
             if (Service.uIBox != null)
             {
-                return Service.uIBox.CreateWidget<T>(name, uIAsset);
+                return Service.uIBox.CreateLayer<T>(Name);
             }
             else
             {
@@ -103,11 +104,11 @@ namespace RealMethod
                 return null;
             }
         }
-        public static IWidget Widget(string name, GameObject prefab, MonoBehaviour owner)
+        public static UIDocument Widget(string Name, VisualTreeAsset UIAsset)
         {
             if (Service.uIBox != null)
             {
-                return Service.uIBox.AddWidget(name, prefab, owner);
+                return Service.uIBox.CreateLayer(Name, UIAsset);
             }
             else
             {
@@ -115,11 +116,71 @@ namespace RealMethod
                 return null;
             }
         }
-        public static IWidget Widget(string name, GameObject prefab)
+        public static T Widget<T>(string Name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
         {
             if (Service.uIBox != null)
             {
-                return Service.uIBox.AddWidget(name, prefab);
+                return Service.uIBox.CreateLayer<T>(Name, UIAsset, Owner);
+            }
+            else
+            {
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                return null;
+            }
+        }
+        public static T Widget<T>(string Name, VisualTreeAsset UIAsset) where T : MonoBehaviour
+        {
+            if (Service.uIBox != null)
+            {
+                return Service.uIBox.CreateLayer<T>(Name, UIAsset);
+            }
+            else
+            {
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                return null;
+            }
+        }
+        public static GameObject Widget(string Name, GameObject Prefab, MonoBehaviour Owner)
+        {
+            if (Service.uIBox != null)
+            {
+                return Service.uIBox.AddLayer(Name, Prefab, Owner);
+            }
+            else
+            {
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                return null;
+            }
+        }
+        public static GameObject Widget(string Name, GameObject Prefab)
+        {
+            if (Service.uIBox != null)
+            {
+                return Service.uIBox.AddLayer(Name, Prefab);
+            }
+            else
+            {
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                return null;
+            }
+        }
+        public static T Widget<T>(string Name, GameObject Prefab, MonoBehaviour Owner) where T : MonoBehaviour
+        {
+            if (Service.uIBox != null)
+            {
+                return Service.uIBox.AddLayer<T>(Name, Prefab, Owner);
+            }
+            else
+            {
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                return null;
+            }
+        }
+        public static T Widget<T>(string Name, GameObject Prefab) where T : MonoBehaviour
+        {
+            if (Service.uIBox != null)
+            {
+                return Service.uIBox.AddLayer<T>(Name, Prefab);
             }
             else
             {
@@ -230,10 +291,6 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T Component<T>(GameObject target) where T : MonoBehaviour
-        {
-            return target.AddComponent<T>();
-        }
         public static T Component<T>(string name)
         {
             GameObject emptyobjec = new GameObject(name);
@@ -251,13 +308,29 @@ namespace RealMethod
         {
             return Game.World.AddObject(prefab);
         }
-        public static GameObject Prefab(GameObject prefab, Vector3 location)
+        public static GameObject Prefab(GameObject prefab, Transform parent)
         {
-            return Game.World.AddObject(prefab, location);
+            return Object.Instantiate(prefab, parent);
+        }
+        public static GameObject Prefab(GameObject prefab, Transform parent, bool instantiateInWorldSpace)
+        {
+            return Object.Instantiate(prefab, parent, instantiateInWorldSpace);
         }
         public static GameObject Prefab(GameObject prefab, Vector3 location, Vector3 rotation)
         {
-            return Game.World.AddObject(prefab, location, rotation);
+            return Object.Instantiate(prefab, location, Quaternion.Euler(rotation));
+        }
+        public static GameObject Prefab(GameObject prefab, Vector3 location)
+        {
+            return Object.Instantiate(prefab, location, Quaternion.identity);
+        }
+        public static GameObject Prefab(GameObject prefab, Vector3 location, Vector3 rotation, Transform parent)
+        {
+            return Object.Instantiate(prefab, location, Quaternion.Euler(rotation), parent);
+        }
+        public static GameObject Prefab(GameObject prefab, UnityEngine.SceneManagement.Scene scene)
+        {
+            return Object.Instantiate(prefab, scene) as GameObject;
         }
         public static MeshRenderer Mesh(Mesh geometry)
         {
