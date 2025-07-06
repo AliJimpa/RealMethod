@@ -46,6 +46,7 @@ namespace RealMethod
         }
         public override void End(object Author)
         {
+            AntiSpawn = null;
             instance = null;
         }
 
@@ -394,11 +395,26 @@ namespace RealMethod
 
         public static bool Widget(string Name)
         {
-            return Instance.uIBox.RemoveLayer(Name);
+            if (Instance != null)
+            {
+                return Instance.uIBox.RemoveLayer(Name);
+            }
+            else
+            {
+                return false;
+            }
         }
         public static bool Widget(MonoBehaviour Comp)
         {
-            return Instance.uIBox.RemoveLayer(Comp);
+            if (Instance != null)
+            {
+                return Instance.uIBox.RemoveLayer(Comp);
+            }
+            else
+            {
+                return false;
+            }
+
         }
     }
 
