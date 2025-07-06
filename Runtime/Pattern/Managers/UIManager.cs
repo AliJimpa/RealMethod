@@ -19,18 +19,18 @@ namespace RealMethod
         [Header("UI")]
         [SerializeField] private UIMethod method = UIMethod.uGUI;
         public UIMethod Method => method;
-
         [SerializeField, ShowInInspectorByEnum("method", 2)]
         private PanelSettings UISetting;
-
         // Actions 
         public Action<CanvasGroup, bool> OnFadeIn;
         public Action<CanvasGroup, bool> OnFadeOut;
-
         // Private Variable
         private Hictionary<GameObject> Layers = new Hictionary<GameObject>(5);
 
 
+
+
+        // Implement IGameManager Interface
         public MonoBehaviour GetManagerClass()
         {
             return this;
@@ -53,7 +53,8 @@ namespace RealMethod
             }
         }
 
-
+        // Unity Methods
+#if UNITY_EDITOR
         private void OnValidate()
         {
             switch (Method)
@@ -73,9 +74,13 @@ namespace RealMethod
                     break;
             }
         }
+#endif
 
-
-        //Core Methods
+        //Public Functions
+        public bool IsValid(string Name)
+        {
+            return Layers.ContainsKey(Name);
+        }
         public GameObject CreateLayer(string Name)
         {
             GameObject Result;
@@ -189,9 +194,6 @@ namespace RealMethod
         {
             return CreateLayer<T>(Name, UIAsset, this);
         }
-
-
-
         public GameObject AddLayer(string Name, GameObject Prefab, MonoBehaviour Owner)
         {
             GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
@@ -250,8 +252,6 @@ namespace RealMethod
         {
             return AddLayer<T>(Name, Prefab, this);
         }
-
-
         public bool RemoveLayer<T>(T Comp) where T : MonoBehaviour
         {
             GameObject target = Comp.gameObject;
@@ -267,17 +267,19 @@ namespace RealMethod
         }
         public bool RemoveLayer(string Name)
         {
-            GameObject Target = Layers[Name];
-            if (Target)
+            if (IsValid(Name))
             {
-                Destroy(Target);
+                GameObject Target = Layers[Name];
+                
+                if (Target != null)
+                    Destroy(Target);
+                
                 Layers.Remove(Name);
+
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
         public GameObject FindLayer(string Name)
         {
@@ -419,11 +421,6 @@ namespace RealMethod
                 Debug.LogError("Just use for 'uGUI' Method");
             }
         }
-
-
-
-
-
         public bool FindWidgetByName(string Name, out IWidget TargetWidget)
         {
             IWidget Target = Layers[Name].GetComponent<IWidget>();
@@ -438,7 +435,6 @@ namespace RealMethod
                 return false;
             }
         }
-
         public T FindClassInLayers<T>() where T : class
         {
             T Reslut = null;
