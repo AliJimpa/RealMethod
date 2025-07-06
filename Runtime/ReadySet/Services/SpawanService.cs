@@ -383,9 +383,12 @@ namespace RealMethod
 
         public Despawn(UIManager ui, AudioManager audio)
         {
-            Instance = this;
-            uIBox = ui;
-            audioBox = audio;
+            if (Instance == null)
+            {
+                Instance = this;
+                uIBox = ui;
+                audioBox = audio;
+            }
         }
 
 
