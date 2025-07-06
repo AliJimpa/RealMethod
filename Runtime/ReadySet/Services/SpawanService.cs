@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UIElements;
@@ -24,6 +23,8 @@ namespace RealMethod
             }
             private set { }
         }
+
+        private Despawn AntiSpawn;
         private AudioManager audioBox;
         private UIManager uIBox;
 
@@ -32,6 +33,7 @@ namespace RealMethod
             if (instance == null)
             {
                 instance = this;
+                AntiSpawn = new Despawn(uIBox, audioBox);
             }
             else
             {
@@ -49,8 +51,7 @@ namespace RealMethod
 
         public void BringManager(IGameManager manager)
         {
-            Debug.Log(manager);
-
+            // Brind AudioManager
             if (manager.GetManagerClass() is AudioManager audiomanager)
             {
                 if (audioBox == null)
@@ -63,6 +64,7 @@ namespace RealMethod
                 }
             }
 
+            // Brind UIManagerF
             if (manager.GetManagerClass() is UIManager uIManager)
             {
                 if (uIBox == null)
@@ -79,7 +81,7 @@ namespace RealMethod
             }
         }
 
-
+        // UI
         public static T Widget<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
         {
             if (Service.uIBox != null)
@@ -188,14 +190,8 @@ namespace RealMethod
                 return null;
             }
         }
-        public static bool RemoveWidget(string Name)
-        {
-            return Service.uIBox.RemoveLayer(Name);
-        }
-        public static bool RemoveWidget(MonoBehaviour comp)
-        {
-            return Service.uIBox.RemoveLayer(comp);
-        }
+
+        // Sound
         public static AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
         {
             if (Service.audioBox != null)
@@ -286,6 +282,8 @@ namespace RealMethod
                 return source;
             }
         }
+
+        // Particle
         public static ParticleSystem Particle(GameObject prefab, Vector3 location)
         {
             ParticleSystem ParticleSmple = prefab.GetComponent<ParticleSystem>();
@@ -299,15 +297,8 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T Component<T>(string name)
-        {
-            GameObject emptyobjec = new GameObject(name);
-            return emptyobjec.GetComponent<T>();
-        }
-        public static T Class<T>() where T : Object, new()
-        {
-            return new T();
-        }
+
+        // Memory
         public static GameObject GameObject(string name)
         {
             return new GameObject(name);
@@ -339,6 +330,15 @@ namespace RealMethod
         public static GameObject Prefab(GameObject prefab, UnityEngine.SceneManagement.Scene scene)
         {
             return Object.Instantiate(prefab, scene) as GameObject;
+        }
+        public static T Component<T>(string name)
+        {
+            GameObject emptyobjec = new GameObject(name);
+            return emptyobjec.GetComponent<T>();
+        }
+        public static T Class<T>() where T : Object, new()
+        {
+            return new T();
         }
         public static MeshRenderer Mesh(Mesh geometry)
         {
@@ -373,4 +373,31 @@ namespace RealMethod
             return ScriptableObject.CreateInstance<T>();
         }
     }
+
+
+    public sealed class Despawn
+    {
+        private static Despawn Instance;
+        private UIManager uIBox;
+        private AudioManager audioBox;
+
+        public Despawn(UIManager ui, AudioManager audio)
+        {
+            Instance = this;
+            uIBox = ui;
+            audioBox = audio;
+        }
+
+
+        public static bool Widget(string Name)
+        {
+            return Instance.uIBox.RemoveLayer(Name);
+        }
+        public static bool Widget(MonoBehaviour Comp)
+        {
+            return Instance.uIBox.RemoveLayer(Comp);
+        }
+    }
+
+
 }
