@@ -73,7 +73,12 @@ namespace RealMethod
             }
             return null;
         }
-        // Protected Methods
+        // Unity Methods
+        protected virtual void OnDestroy()
+        {
+            GameServices.Clear();
+        }
+        // Protected Functions
         protected T NeedManager<T>() where T : MonoBehaviour
         {
             T Result = GetManager<T>();
@@ -85,7 +90,7 @@ namespace RealMethod
             }
             return Result;
         }
-        // Private Methods
+        // Private Functions
         private void ReplaceWorld(World NewWorld)
         {
             World = NewWorld;
@@ -95,7 +100,7 @@ namespace RealMethod
             }
             WorldSynced(World);
         }
-        // Public Static Methods
+        // Public Static Functions
         public static T CastInstance<T>() where T : class
         {
             if (Instance is T CastedInstance)
@@ -225,7 +230,7 @@ namespace RealMethod
                 return AlternativeInstance;
             }
         }
-        // Private Static Methods
+        // Private Static Functions
         private static void InitializeGame(bool CreateInstance = true)
         {
             // Load Project Setting
