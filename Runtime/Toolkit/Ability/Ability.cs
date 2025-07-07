@@ -294,7 +294,7 @@ namespace RealMethod
             Abilities.Add(SpawnedPower.Label, SpawnedPower);
             if (AutoActive)
             {
-                Active(prefab.name);
+                Active(SpawnedPower.Label);
             }
             MessageBehavior(AbilityState.Add, SpawnedPower);
             return SpawnedPower;
