@@ -462,8 +462,6 @@ namespace RealMethod
         private SaveFile _SaveFile;
         public SaveFile file => _SaveFile;
 
-        private DataManager savesystem;
-
 
         // override Methods
         protected sealed override IInventoryStorage GetStorage()
@@ -489,7 +487,7 @@ namespace RealMethod
         protected sealed override bool IsStorageLoaded()
         {
             // Find Data Maanger 
-            savesystem = Game.FindManager<DataManager>();
+            DataManager savesystem = Game.FindManager<DataManager>();
             if (savesystem != null)
             {
                 if (savesystem.IsExistFile(_SaveFile))

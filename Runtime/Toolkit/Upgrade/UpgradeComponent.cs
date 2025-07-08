@@ -10,14 +10,13 @@ namespace RealMethod
         public UnityEvent<UpgradeItem> Unlocked;
 
         // Base Upgrade Methods
-        protected override void OnItemUpdated(UpgradeItem item, bool unlocked)
+        protected override void OnLockedAsset(UpgradeItem item)
         {
-            if (unlocked)
-            {
-                Unlocked?.Invoke(item);
-            }
         }
-
+        protected override void OnUnlockedAsset(UpgradeItem item)
+        {
+            Unlocked?.Invoke(item);
+        }
     }
 
 

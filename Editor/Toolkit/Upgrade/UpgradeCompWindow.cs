@@ -21,10 +21,10 @@ namespace RealMethod
             {
                 if (BaseComponent.Count > 0)
                 {
-                    foreach (var item in BaseComponent.CopyItemsByClass<UpgradeItem>())
+                    foreach (UpgradeItem item in BaseComponent.CopyItemsByClass<UpgradeItem>())
                     {
                         //EditorGUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField($"Name: {item.Title}({item.name}) - Status: {item} ");
+                        EditorGUILayout.LabelField($"Name: {item.Title} - Status: {item.IsUnlocked} ");
                         // if (GUILayout.Button("Find"))
                         // {
                         //     Selection.activeObject = item;

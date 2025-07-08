@@ -197,30 +197,12 @@ namespace RealMethod
     {
         [Header("Save")]
         [SerializeField]
-        private bool AutoSave = true;
-        [SerializeField]
         private bool UseCustomFile = false;
         [SerializeField, ConditionalHide("UseCustomFile", true, false)]
         private SaveFile _SaveFile;
         public SaveFile File => _SaveFile;
 
-        private DataManager savesystem;
-
         // Upgrade Methods
-        protected sealed override void OnUnlockedAsset(UpgradeItem item)
-        {
-            if (AutoSave)
-                savesystem.SaveFile(_SaveFile);
-
-            OnItemUpdated(item, true);
-        }
-        protected sealed override void OnLockedAsset(UpgradeItem item)
-        {
-            if (AutoSave)
-                savesystem.SaveFile(_SaveFile);
-
-            OnItemUpdated(item, false);
-        }
         protected sealed override IUpgradeStorage GetStorage()
         {
             if (UseCustomFile)
@@ -244,7 +226,7 @@ namespace RealMethod
         protected sealed override bool IsStorageLoaded()
         {
             // Find Data Maanger 
-            savesystem = Game.FindManager<DataManager>();
+            DataManager savesystem = Game.FindManager<DataManager>();
             if (savesystem != null)
             {
                 if (savesystem.IsExistFile(_SaveFile))
@@ -257,9 +239,6 @@ namespace RealMethod
             return false;
         }
 
-
-        // Abstract Methods
-        protected abstract void OnItemUpdated(UpgradeItem item, bool unlocked);
 
     }
 
