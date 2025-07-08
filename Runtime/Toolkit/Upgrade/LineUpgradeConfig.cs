@@ -24,7 +24,7 @@ namespace RealMethod
     {
         public override void OnAwake(Upgrade owner)
         {
-
+            
         }
     }
 

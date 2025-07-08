@@ -10,7 +10,10 @@ namespace RealMethod
         [Header("Setting")]
         [SerializeField]
         private bool UsePlayerPrefs = true;
+        [Header("Storage")]
+        [SerializeField]
         private List<string> Avalable;
+        [SerializeField]
         private List<string> UnAvalibal;
 
         // Base SaveFile Method
@@ -37,7 +40,12 @@ namespace RealMethod
         protected override void OnDeleted()
         {
             if (UsePlayerPrefs)
+            {
                 PlayerPrefs.DeleteKey("UpgradeFile");
+                Avalable = null;
+                UnAvalibal = null;
+            }
+
         }
 
 
