@@ -15,7 +15,7 @@ namespace RealMethod.Editor
             if (UseProject)
             {
                 ProjectSettingAsset ProjectSetting = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(settingsPath);
-                templatePath = Path.Combine(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityCategory.ScriptTemplate).Path, templateFileName);
+                templatePath = Path.Combine(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityAsset.ScriptTemplate).Path, templateFileName);
             }
             else
             {

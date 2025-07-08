@@ -40,7 +40,7 @@ namespace RealMethod
             }
             private set { }
         }
-        public static GameSettingAsset Setting { get; private set; }
+        public static GameConfig Config { get; private set; }
         public static World World { get; private set; }
         public static GameService Service { get; private set; }
 
@@ -290,15 +290,15 @@ namespace RealMethod
                 // CreateStartService Abstract
                 AlternativeInstance.GameServiceCreated();
                 // Set Game Setting Asset 
-                if (ProjectSettings.GetGameSetting() != null)
+                if (ProjectSettings.GetGameConfig() != null)
                 {
-                    Setting = ProjectSettings.GetGameSetting();
+                    Config = ProjectSettings.GetGameConfig();
                 }
                 else
                 {
-                    Setting = ScriptableObject.CreateInstance<DefaultGameSetting>();
+                    Config = ScriptableObject.CreateInstance<DefaultGameConfig>();
                 }
-                Setting.GameStarted(AlternativeInstance);
+                Config.GameStarted(AlternativeInstance);
                 // Initiate GamePrefab & Managers
                 List<IGameManager> CashManagers = new List<IGameManager>(5);
                 foreach (var obj in ProjectSettings.GetGamePrefabs())

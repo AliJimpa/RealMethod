@@ -10,13 +10,13 @@ namespace RealMethod
         [Serializable]
         public struct FolderAddress
         {
-            public IdentityCategory Identity;
+            public IdentityAsset Identity;
             public string Path;
             public string FolderName => System.IO.Path.GetFileName(Path);
         }
 
         [Serializable]
-        public enum IdentityCategory
+        public enum IdentityAsset
         {
             Scene = 0,
             Script = 1,
@@ -46,7 +46,7 @@ namespace RealMethod
         [SerializeField]
         private string GameService = "RealMethod.DefaultGameService";
         [SerializeField]
-        private GameSettingAsset GameSetting;
+        private GameConfig GameConfig;
         [SerializeField]
         private GameObject GamePrefab_1;
         [SerializeField]
@@ -57,24 +57,24 @@ namespace RealMethod
         public FolderAddress[] ProjectStructure = new FolderAddress[19]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},
-        new FolderAddress { Identity = (IdentityCategory)1, Path = "Assets/2_Scripts" },
-        new FolderAddress { Identity = (IdentityCategory)2, Path = "Assets/3_Prefabs"},
-        new FolderAddress { Identity = (IdentityCategory)3, Path = "Assets/4_Data"  },
-        new FolderAddress { Identity = (IdentityCategory)4, Path = "Assets/5_Meshes"},
-        new FolderAddress { Identity = (IdentityCategory)5, Path = "Assets/Sprites"},
-        new FolderAddress { Identity = (IdentityCategory)6, Path = "Assets/7_Misc/Textures"},
-        new FolderAddress { Identity = (IdentityCategory)7, Path = "Assets/7_Misc/Videos"},
-        new FolderAddress { Identity = (IdentityCategory)8, Path = "Assets/7_Misc/Materials"},
-        new FolderAddress { Identity = (IdentityCategory)9, Path = "Assets/6_Shader"},
-        new FolderAddress { Identity = (IdentityCategory)10, Path = "Assets/8_Sound&Music"},
-        new FolderAddress { Identity = (IdentityCategory)11, Path = "Assets/9_VFX"},
-        new FolderAddress { Identity = (IdentityCategory)12, Path = "Assets/10_Animation"},
-        new FolderAddress { Identity = (IdentityCategory)13, Path = "Assets/7_Misc"},
-        new FolderAddress { Identity = (IdentityCategory)14, Path = "Assets/Developer"},
-        new FolderAddress { Identity = (IdentityCategory)15, Path = "Assets/Resources"},
-        new FolderAddress { Identity = (IdentityCategory)16, Path = "Assets/~Thirdparty"},
-        new FolderAddress { Identity = (IdentityCategory)17, Path = "Assets/4_Data/PCG"},
-        new FolderAddress { Identity = (IdentityCategory)18, Path = "Assets/7_Misc/Templates/Scripts"}
+        new FolderAddress { Identity = (IdentityAsset)1, Path = "Assets/2_Scripts" },
+        new FolderAddress { Identity = (IdentityAsset)2, Path = "Assets/3_Prefabs"},
+        new FolderAddress { Identity = (IdentityAsset)3, Path = "Assets/4_Data"  },
+        new FolderAddress { Identity = (IdentityAsset)4, Path = "Assets/5_Meshes"},
+        new FolderAddress { Identity = (IdentityAsset)5, Path = "Assets/Sprites"},
+        new FolderAddress { Identity = (IdentityAsset)6, Path = "Assets/7_Misc/Textures"},
+        new FolderAddress { Identity = (IdentityAsset)7, Path = "Assets/7_Misc/Videos"},
+        new FolderAddress { Identity = (IdentityAsset)8, Path = "Assets/7_Misc/Materials"},
+        new FolderAddress { Identity = (IdentityAsset)9, Path = "Assets/6_Shader"},
+        new FolderAddress { Identity = (IdentityAsset)10, Path = "Assets/8_Sound&Music"},
+        new FolderAddress { Identity = (IdentityAsset)11, Path = "Assets/9_VFX"},
+        new FolderAddress { Identity = (IdentityAsset)12, Path = "Assets/10_Animation"},
+        new FolderAddress { Identity = (IdentityAsset)13, Path = "Assets/7_Misc"},
+        new FolderAddress { Identity = (IdentityAsset)14, Path = "Assets/Developer"},
+        new FolderAddress { Identity = (IdentityAsset)15, Path = "Assets/Resources"},
+        new FolderAddress { Identity = (IdentityAsset)16, Path = "Assets/~Thirdparty"},
+        new FolderAddress { Identity = (IdentityAsset)17, Path = "Assets/4_Data/PCG"},
+        new FolderAddress { Identity = (IdentityAsset)18, Path = "Assets/7_Misc/Templates/Scripts"}
         };
 
 
@@ -124,9 +124,9 @@ namespace RealMethod
             }
 
         }
-        public GameSettingAsset GetGameSetting()
+        public GameConfig GetGameConfig()
         {
-            return GameSetting;
+            return GameConfig;
         }
         public GameObject[] GetGamePrefabs()
         {
@@ -136,7 +136,7 @@ namespace RealMethod
                                 GamePrefab_3,
                             };
         }
-        public FolderAddress FindAddres(IdentityCategory identity)
+        public FolderAddress FindAddres(IdentityAsset identity)
         {
             foreach (var PS in ProjectStructure)
             {

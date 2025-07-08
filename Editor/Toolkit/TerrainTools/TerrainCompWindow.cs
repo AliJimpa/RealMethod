@@ -94,7 +94,7 @@ namespace RealMethod.Editor
 
             CashFile = new EP_ScriptableObject<PCGCashAsset>("Cash", editor);
             CashAddress = new EP_String("Address", editor);
-            CashAddress.SetValue(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityCategory.PCG).Path + "/TerrainCash.asset");
+            CashAddress.SetValue(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityAsset.PCG).Path + "/TerrainCash.asset");
         }
 
         public void OnRender()

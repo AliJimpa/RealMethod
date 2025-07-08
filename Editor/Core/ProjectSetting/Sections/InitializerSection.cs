@@ -33,7 +33,7 @@ namespace RealMethod.Editor
             gameService.Draw(projectSettings, "GameService", "Game Service");
 
             // GameSettingAsset
-            EditorGUILayout.PropertyField(projectSettings.FindProperty("GameSetting"), new GUIContent("Game Setting"));
+            EditorGUILayout.PropertyField(projectSettings.FindProperty("GameConfig"), new GUIContent("Game Config"));
 
             //GameInitialPrefabs
             EditorGUILayout.PropertyField(projectSettings.FindProperty("GamePrefab_1"), new GUIContent("Game Prefab (1)"));

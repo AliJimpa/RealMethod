@@ -8,9 +8,18 @@ namespace RealMethod
         {
             Debug.Log("DefaultGameService Started");
         }
-        public override void WorldUpdated() { }
-        protected override void NewWorld(World target) { }
-        protected override void NewAdditiveWorld(World target) { }
-        public override void End(object Author) { }
+        public override void WorldUpdated()
+        {
+        }
+        protected override void NewWorld(World target)
+        {
+        }
+        protected override void NewAdditiveWorld(World target)
+        {
+        }
+        public override void End(object Author)
+        {
+            Debug.LogError("DefaultGameService Ended [This should not happent]");
+        }
     }
 }
