@@ -11,7 +11,7 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR
-        /// This method runs once at game start, calls OnReset on loaded assets
+        /// This method runs once at game start, calls OnEditorPlay
         [UnityEditor.InitializeOnEnterPlayMode]
         private static void EditorReset()
         {
@@ -25,6 +25,7 @@ namespace RealMethod
                 asset.OnEditorPlay();
             }
         }
+        
         /// <summary>
         /// Custom reset method you override in children
         /// (Editor only)

@@ -8,9 +8,9 @@ using System.Linq;
 namespace RealMethod.Editor
 {
     [InitializeOnLoad]
-    public static class ConfigFieldValidator
+    public static class ConfigAssetValidator
     {
-        static ConfigFieldValidator()
+        static ConfigAssetValidator()
         {
             EditorApplication.delayCall += ValidateAllConfigs;
         }

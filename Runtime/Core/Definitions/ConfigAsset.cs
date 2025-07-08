@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace RealMethod
 {
-    public abstract class ConfigAsset : DataAsset
+    public abstract class ConfigAsset : ScriptableObject
     {
 #if UNITY_EDITOR
         private void ValidateImmutableFields()
