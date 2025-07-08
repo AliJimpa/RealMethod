@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using UnityEngine;
+
 namespace RealMethod
 {
-    [CreateAssetMenu(menuName = "Upgrade Tree/Upgrade")]
+
     public class UpgradeData : ScriptableObject
     {
         public string upgradeName;
