@@ -189,11 +189,18 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T FindManager<T>() where T : class
+        public static T FindManager<T>() where T : MonoBehaviour
         {
+            T Result = null;
+            
             if (World != null)
             {
-                return World.GetManager<T>();
+                Result = World.GetManager<T>();
+            }
+
+            if (Result != null)
+            {
+                return Result;
             }
             return Instance.GetManager<T>();
         }

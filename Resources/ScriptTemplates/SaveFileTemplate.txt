@@ -5,24 +5,16 @@ using UnityEngine;
 public class #SCRIPTNAME# : SaveFile
 {
     // Base SaveFile Method
-    public override void OnActiveted(DataManager manager)
+    protected override void OnActiveted(DataManager manager)
     {
     }
-    public override void OnSaved()
+    protected override void OnSaved()
     {
     }
-    public override void OnLoaded()
+    protected override void OnLoaded()
     {
     }
-
-    public override void OnDeleted()
+    protected override void OnDeleted()
     {
     }
-    public override void Default()
-    {
-    }
-    public override void OnDiactiveted(DataManager manager)
-    {
-    }
-
 }
