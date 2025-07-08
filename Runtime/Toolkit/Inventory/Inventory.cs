@@ -123,7 +123,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Ther isnt any item with this Name [Be sure to use ItemName or Object.name]");
+                Debug.LogWarning("Ther isnt any item with this Name [Be sure to use ItemTitle]");
                 return -1;
             }
         }
@@ -131,7 +131,7 @@ namespace RealMethod
         {
             if (GetInterface(item) != null)
             {
-                return GetQuantity(item.name);
+                return GetQuantity(item.Title);
             }
             else
             {
@@ -146,7 +146,7 @@ namespace RealMethod
         {
             if (GetInterface(item) != null)
             {
-                return Items.ContainsKey(item.name);
+                return Items.ContainsKey(item.Title);
             }
             else
             {
@@ -159,11 +159,11 @@ namespace RealMethod
             if (invitem == null)
                 return false;
 
-            if (!Items.ContainsKey(item.name))
+            if (!Items.ContainsKey(item.Title))
             {
                 if (invitem.CanPickUp(this))
                 {
-                    Items.Add(item.name, new InventoryItemProperty(item, Quantity, ItemCapacity));
+                    Items.Add(item.Title, new InventoryItemProperty(item, Quantity, ItemCapacity));
                     SendInventoryMessage(ItemState.Create, item, Quantity);
                     return true;
                 }
@@ -174,7 +174,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Item with this Name {item.name} already there");
+                Debug.LogWarning($"Item with this Name {item.Title} already there");
                 return false;
             }
         }
@@ -186,11 +186,11 @@ namespace RealMethod
 
             if (Items.Count < _capacity || _capacity == 0)
             {
-                if (Items.ContainsKey(item.name))
+                if (Items.ContainsKey(item.Title))
                 {
                     if (invitem.CanChange(true))
                     {
-                        Items[item.name].Add(Quantity);
+                        Items[item.Title].Add(Quantity);
                         SendInventoryMessage(ItemState.Update, item, Quantity);
                     }
                 }
@@ -198,7 +198,7 @@ namespace RealMethod
                 {
                     if (invitem.CanPickUp(this))
                     {
-                        Items.Add(item.name, new InventoryItemProperty(item, Quantity));
+                        Items.Add(item.Title, new InventoryItemProperty(item, Quantity));
                         SendInventoryMessage(ItemState.Create, item, Quantity);
                     }
                 }
@@ -236,7 +236,7 @@ namespace RealMethod
                             }
                             else
                             {
-                                Debug.LogError($"Can't Remove Item With this Name {itemName} [Be sure to use ItemName or Object.name]");
+                                Debug.LogError($"Can't Remove Item With this Name {itemName} [Be sure to use ItemTitle]");
                             }
                             return true;
                         }
@@ -255,7 +255,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Ther isnt any Item with this Name {itemName} [Be sure to use ItemName or Object.name]");
+                Debug.LogWarning($"Ther isnt any Item with this Name {itemName} [Be sure to use ItemTitle]");
                 return false;
             }
         }
@@ -272,7 +272,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Ther isnt any Item With this Name {itemName} [Be sure to use ItemName or Object.name]");
+                Debug.LogWarning($"Ther isnt any Item With this Name {itemName} [Be sure to use ItemTitle]");
                 return false;
             }
         }
