@@ -100,7 +100,6 @@ namespace RealMethod
         private Hictionary<InventoryItemProperty> Items = new Hictionary<InventoryItemProperty>(5);
         protected IInventoryStorage storage { get; private set; }
         public int Count => Items.Count;
-        public bool IsLoading { get; protected set; } = false;
 
 
         public ItemAsset this[string itemName]
@@ -346,6 +345,7 @@ namespace RealMethod
         public void Clear()
         {
             Items.Clear();
+            storage.Clear();
         }
 
         // Protected Functions
@@ -450,8 +450,6 @@ namespace RealMethod
         protected abstract void RemoveItem();
         protected abstract IInventoryStorage GetStorage();
         protected abstract bool IsStorageLoaded();
-
-
 
     }
 

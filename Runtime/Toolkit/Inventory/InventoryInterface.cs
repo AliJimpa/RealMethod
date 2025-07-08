@@ -6,8 +6,9 @@ namespace RealMethod
         void CreateItem(InventoryItemProperty item);
         void DestroyItem(string name);
         // amount > 0 : AddQuantity , amount < 0 RemoveqQuantity , amount = 0 ZiroQuantity
-        void UpdateQuantity(string name, int amount); 
+        void UpdateQuantity(string name, int amount);
         void UpdateCapacity(int value);
+        void Clear();
     }
 
     public interface IInventoryItem

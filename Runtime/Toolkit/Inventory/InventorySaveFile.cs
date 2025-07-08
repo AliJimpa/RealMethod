@@ -12,11 +12,11 @@ namespace RealMethod
         private bool UsePlayerPrefs = true;
         [Header("Storage")]
         [SerializeField]
-        private List<string> ItemsName;
+        private List<string> ItemsName = new List<string>(3);
         [SerializeField]
-        private List<int> ItemsQuantity;
+        private List<int> ItemsQuantity = new List<int>(3);
         [SerializeField]
-        private List<int> ItemsCapacity;
+        private List<int> ItemsCapacity = new List<int>(3);
 
 
         // SaveFile Methods
@@ -45,7 +45,13 @@ namespace RealMethod
         }
         protected override void OnDeleted()
         {
-            PlayerPrefs.DeleteKey("InventoryFile");
+            if (UsePlayerPrefs)
+            {
+                PlayerPrefs.DeleteKey("InventoryFile");
+                ItemsName = null;
+                ItemsQuantity = null;
+                ItemsCapacity = null;
+            }
         }
 
 
@@ -81,7 +87,7 @@ namespace RealMethod
             int Target = GetIndexItem(name);
             ItemsCapacity[Target] = value;
         }
-        public InventoryItemProperty[] GetItems()
+        InventoryItemProperty[] IInventoryStorage.GetItems()
         {
             // Load All Assets
             var allItems = Resources.LoadAll<ItemAsset>("");
@@ -101,7 +107,12 @@ namespace RealMethod
             }
             return Result.ToArray();
         }
-
+        void IInventoryStorage.Clear()
+        {
+            ItemsName.Clear();
+            ItemsQuantity.Clear();
+            ItemsCapacity.Clear();
+        }
 
         // Private Functions
         private int GetIndexItem(string name)
