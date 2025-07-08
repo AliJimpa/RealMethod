@@ -1,18 +1,33 @@
+using System;
+using System.Data.SqlTypes;
 using UnityEngine;
 
 namespace RealMethod
 {
     public abstract class Upgrade : MonoBehaviour
     {
-        [Header("Config")]
+        private enum UpgradeBehavior
+        {
+            Nothing,
+            SendMessage,
+            Action,
+            Both,
+        }
+
+        [Header("Setting")]
         [SerializeField]
         private UpgradeConfig[] Configs;
+        [SerializeField]
+        private UpgradeBehavior Behavior;
 
+
+        public Action<UpgradeAsset> OnUnlocked;
+        public Action<UpgradeAsset> OnLocked;
 
 
         private Hictionary<UpgradeAsset> UpgradesAsset = new Hictionary<UpgradeAsset>(5);
         public int Count => UpgradesAsset.Count;
-        private UpgradeSaveFile SaveFile;
+        private IUpgradeStorage Sotrage;
         private DataManager SaveManager;
 
 
@@ -25,11 +40,13 @@ namespace RealMethod
             {
                 Debug.LogError($"Can't find manager [{typeof(DataManager)}] ! ");
                 enabled = false;
+                return;
             }
 
             // Create Clone of all UpgradeAssets
             foreach (var conf in Configs)
             {
+                conf.OnAwake(this);
                 UpgradeAsset previousasset = null;
                 foreach (var Uasset in conf.line)
                 {
@@ -44,25 +61,40 @@ namespace RealMethod
             }
 
             // Create SaveFile
-            SaveFile = ScriptableObject.CreateInstance<UpgradeSaveFile>();
-            SaveFile.name = "RMUpgradeSaveFile";
-
-
-            // Load File
-            if (SaveManager.IsExistFile(SaveFile))
+            SaveFile File = GetSaveFile(SaveManager);
+            if (File == null)
             {
-                SaveManager.LoadFile(SaveFile);
+                Debug.LogWarning("SaveFile is Not Valid");
+                enabled = false;
+                return;
+            }
+
+            if (File is IUpgradeStorage IStore)
+            {
+                Sotrage = IStore;
+                // Load File
+                if (SaveManager.IsExistFile(File))
+                {
+                    SaveManager.LoadFile(File);
+                }
+                else
+                {
+                    Sotrage.Initiate(this, UpgradesAsset.GetKeys());
+                }
             }
             else
             {
-                SaveFile.Initiate(this , UpgradesAsset.GetKeys());
+                Debug.LogError("Save file Should Implement IUpgradeStorage, You can Use UpgradeSaveFile Class");
+                enabled = false;
+                return;
             }
+
         }
 
         // Publci Functions
         public bool IsUnlocked(string Title)
         {
-            return SaveFile.IsUnAvalibal(Title);
+            return Sotrage.IsUnAvalibal(Title);
         }
         public bool CanUnlock(string Title)
         {
@@ -99,10 +131,11 @@ namespace RealMethod
         // Private Functions
         private void UnlockeAsset(UpgradeAsset asset, bool free)
         {
-            if (SaveFile.SwapToUnAvalibal(asset.Title))
+            if (Sotrage.SwapToUnAvalibal(asset.Title))
             {
                 IUpgradeable IController = asset;
                 IController.SetUnlock(free);
+                MessageBehavior(asset, true);
             }
             else
             {
@@ -111,24 +144,61 @@ namespace RealMethod
         }
         private void LockAsset(UpgradeAsset asset)
         {
-            if (SaveFile.SwapToAvalibal(asset.Title))
+            if (Sotrage.SwapToAvalibal(asset.Title))
             {
                 IUpgradeable IController = asset;
                 IController.SetLock();
+                MessageBehavior(asset, false);
             }
             else
             {
                 Debug.LogError("There is issue please Remove UpgradeSavefile");
             }
         }
+        private void MessageBehavior(UpgradeAsset Asset, bool isunlock)
+        {
+            if (Behavior == UpgradeBehavior.Action || Behavior == UpgradeBehavior.Both)
+            {
+                if (isunlock)
+                {
+                    OnUnlocked?.Invoke(Asset);
+                }
+                else
+                {
+                    OnLocked?.Invoke(Asset);
+                }
+            }
+
+            if (Behavior == UpgradeBehavior.SendMessage || Behavior == UpgradeBehavior.Both)
+            {
+                if (isunlock)
+                {
+                    SendMessage("OnUnlocked", SendMessageOptions.RequireReceiver);
+                }
+                else
+                {
+                    SendMessage("OnLocked", SendMessageOptions.RequireReceiver);
+                }
+            }
+
+            if (isunlock)
+            {
+                OnUnlockedAsset(Asset);
+            }
+            else
+            {
+                OnLockedAsset(Asset);
+            }
+
+        }
+
 
         // Abstract Methods
-        public abstract void InitiateService(Service service);
+        protected abstract void OnUnlockedAsset(UpgradeAsset asset);
+        protected abstract void OnLockedAsset(UpgradeAsset asset);
+        protected abstract SaveFile GetSaveFile(DataManager savesystem);
 
     }
-
-
-
 
 
 }

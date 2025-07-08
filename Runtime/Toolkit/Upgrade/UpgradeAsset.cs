@@ -11,8 +11,9 @@ namespace RealMethod
         private string description;
         [SerializeField]
         private List<UpgradeAsset> dependency = new List<UpgradeAsset>(1);
-        public Action<UpgradeAsset> OnUnlocked;
 
+        // Actions
+        public Action<UpgradeAsset> OnUnlocked;
 
         protected Upgrade Owner { get; private set; }
         private bool IsUnlocked => Owner.IsUnlocked(Title);
@@ -92,7 +93,6 @@ namespace RealMethod
         protected abstract void PayCost();
         protected abstract void OnUnlock();
         protected abstract void OnReset();
-
-
     }
+
 }
