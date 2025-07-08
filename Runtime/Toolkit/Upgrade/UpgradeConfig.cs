@@ -19,7 +19,7 @@ namespace RealMethod
     }
 
 
-    [CreateAssetMenu(fileName = "LineUpgradeConfig", menuName = "RealMethod/Upgrade/LineUpgradeConfig", order = 1)]
+    [CreateAssetMenu(fileName = "UpgradeConfig", menuName = "RealMethod/Upgrade/UpgradeConfig", order = 1)]
     public class LineUpgradeConfig : UpgradeConfig
     {
         public override void OnAwake(Upgrade owner)

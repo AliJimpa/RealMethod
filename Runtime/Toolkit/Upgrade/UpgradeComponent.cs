@@ -53,7 +53,6 @@ namespace RealMethod
         }
     }
 
-
     public class UpgradeSaveFile_Prefs : UpgradeSaveFile
     {
         // Base SaveFile Method
@@ -76,4 +75,5 @@ namespace RealMethod
             PlayerPrefs.DeleteKey("UpgradeFile");
         }
     }
+
 }

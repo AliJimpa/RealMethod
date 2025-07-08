@@ -9,44 +9,45 @@ namespace RealMethod
         protected List<string> UnAvalibal;
 
         // Implement IUpgradeStorage Interface
-        void IUpgradeStorage.Initiate(Upgrade Owner, string[] StartList)
+        void IUpgradeStorage.Initiate(Upgrade owner, UpgradeAsset[] list)
         {
-            Avalable = StartList.ToList();
+            string[] UNames = list.Select(upgrade => upgrade.Title).ToArray();
+            Avalable = UNames.ToList();
             UnAvalibal = new List<string>(Avalable.Count);
         }
-        bool IUpgradeStorage.SwapToUnAvalibal(string target)
+        bool IUpgradeStorage.SwapToUnAvalibal(UpgradeAsset target)
         {
             foreach (var Uname in Avalable)
             {
-                if (Uname == target)
+                if (Uname == target.Title)
                 {
-                    Avalable.Remove(target);
-                    UnAvalibal.Add(target);
+                    Avalable.Remove(target.Title);
+                    UnAvalibal.Add(target.Title);
                     return true;
                 }
             }
             return false;
         }
-        bool IUpgradeStorage.SwapToAvalibal(string target)
+        bool IUpgradeStorage.SwapToAvalibal(UpgradeAsset target)
         {
             foreach (var Uname in UnAvalibal)
             {
-                if (Uname == target)
+                if (Uname == target.Title)
                 {
-                    UnAvalibal.Remove(target);
-                    Avalable.Add(target);
+                    UnAvalibal.Remove(target.Title);
+                    Avalable.Add(target.Title);
                     return true;
                 }
             }
             return false;
         }
-        bool IUpgradeStorage.IsUnAvalibal(string target)
+        bool IUpgradeStorage.IsUnAvalibal(UpgradeAsset target)
         {
-            return UnAvalibal.Contains(target);
+            return UnAvalibal.Contains(target.Title);
         }
-        bool IUpgradeStorage.IsAvalabel(string target)
+        bool IUpgradeStorage.IsAvalabel(UpgradeAsset target)
         {
-            return Avalable.Contains(target);
+            return Avalable.Contains(target.Title);
         }
 
     }

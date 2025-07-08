@@ -11,10 +11,10 @@ namespace RealMethod
 
     public interface IUpgradeStorage
     {
-        void Initiate(Upgrade Owner, string[] StartList);
-        bool SwapToUnAvalibal(string target);
-        bool SwapToAvalibal(string target);
-        bool IsUnAvalibal(string target);
-        bool IsAvalabel(string target);
+        void Initiate(Upgrade owner, UpgradeAsset[] list);
+        bool SwapToUnAvalibal(UpgradeAsset target);
+        bool SwapToAvalibal(UpgradeAsset target);
+        bool IsUnAvalibal(UpgradeAsset target);
+        bool IsAvalabel(UpgradeAsset target);
     }
 }

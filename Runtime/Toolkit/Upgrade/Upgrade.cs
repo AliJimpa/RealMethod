@@ -79,7 +79,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Sotrage.Initiate(this, UpgradesAsset.GetKeys());
+                    Sotrage.Initiate(this, UpgradesAsset.GetValues());
                 }
             }
             else
@@ -94,7 +94,7 @@ namespace RealMethod
         // Publci Functions
         public bool IsUnlocked(string Title)
         {
-            return Sotrage.IsUnAvalibal(Title);
+            return Sotrage.IsUnAvalibal(FindAsset(Title));
         }
         public bool CanUnlock(string Title)
         {
@@ -131,7 +131,7 @@ namespace RealMethod
         // Private Functions
         private void UnlockeAsset(UpgradeAsset asset, bool free)
         {
-            if (Sotrage.SwapToUnAvalibal(asset.Title))
+            if (Sotrage.SwapToUnAvalibal(asset))
             {
                 IUpgradeable IController = asset;
                 IController.SetUnlock(free);
@@ -144,7 +144,7 @@ namespace RealMethod
         }
         private void LockAsset(UpgradeAsset asset)
         {
-            if (Sotrage.SwapToAvalibal(asset.Title))
+            if (Sotrage.SwapToAvalibal(asset))
             {
                 IUpgradeable IController = asset;
                 IController.SetLock();
@@ -199,6 +199,5 @@ namespace RealMethod
         protected abstract SaveFile GetSaveFile(DataManager savesystem);
 
     }
-
 
 }
