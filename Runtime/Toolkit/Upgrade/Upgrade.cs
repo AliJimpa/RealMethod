@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.SqlTypes;
 using UnityEngine;
 
@@ -103,7 +104,18 @@ namespace RealMethod
         {
             return Items[Title];
         }
-
+        public T[] CopyItemsByClass<T>() where T : UpgradeItem
+        {
+            List<T> Result = new List<T>();
+            foreach (var item in Items.GetValues())
+            {
+                if (item is T finditem)
+                {
+                    Result.Add(finditem);
+                }
+            }
+            return Result.ToArray();
+        }
 
         // Private Functions
         private void UnlockeAsset(UpgradeItem item, bool free)
