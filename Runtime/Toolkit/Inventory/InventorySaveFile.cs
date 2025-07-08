@@ -7,7 +7,7 @@ namespace RealMethod
     [CreateAssetMenu(fileName = "InventorySaveFile", menuName = "RealMethod/Inventory/SaveFile", order = 1)]
     public class InventorySaveFile : SaveFile, IInventorySave
     {
-        [Header("Inventory")]
+        [Header("Setting")]
         [SerializeField]
         private bool UsePlayerPrefs = true;
         [SerializeField]

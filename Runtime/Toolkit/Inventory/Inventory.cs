@@ -414,7 +414,6 @@ namespace RealMethod
         private bool ReadOnAwake = false;
         [SerializeField]
         private SaveFile _SaveFile;
-
         public SaveFile File => _SaveFile;
 
 
