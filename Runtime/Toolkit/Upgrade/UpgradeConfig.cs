@@ -7,8 +7,8 @@ namespace RealMethod
     {
         [Header("Assets")]
         [SerializeField]
-        private UpgradeAsset[] Line;
-        public UpgradeAsset[] line => Line;
+        private UpgradeItem[] Line;
+        public UpgradeItem[] line => Line;
         [Header("Setting")]
         [SerializeField]
         private bool chainDependency = false;

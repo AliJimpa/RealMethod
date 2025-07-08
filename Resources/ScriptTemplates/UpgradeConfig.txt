@@ -1,0 +1,12 @@
+using RealMethod;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : UpgradeConfig
+{
+    // UpgradeConfig Methods
+    public override void OnAwake(Upgrade owner)
+    {
+
+    }
+}

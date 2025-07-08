@@ -4,17 +4,17 @@ namespace RealMethod
 {
     public interface IUpgradeable
     {
-        bool Initiate(Upgrade owner, UpgradeConfig config, UpgradeAsset previous);
+        bool Initiate(Upgrade owner, UpgradeConfig config, UpgradeItem previous);
         void SetUnlock(bool free = false);
         void SetLock();
     }
 
     public interface IUpgradeStorage
     {
-        void Initiate(Upgrade owner, UpgradeAsset[] list);
-        bool SwapToUnAvalibal(UpgradeAsset target);
-        bool SwapToAvalibal(UpgradeAsset target);
-        bool IsUnAvalibal(UpgradeAsset target);
-        bool IsAvalabel(UpgradeAsset target);
+        void CreateNewItems(UpgradeItem[] list);
+        bool SwapToUnAvalibal(UpgradeItem target);
+        bool SwapToAvalibal(UpgradeItem target);
+        bool IsUnAvalibal(UpgradeItem target);
+        bool IsAvalabel(UpgradeItem target);
     }
 }

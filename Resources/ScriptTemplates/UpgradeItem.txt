@@ -1,0 +1,36 @@
+using RealMethod;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : UpgradeItem
+{
+    protected enum UpgradeType
+    {
+        PlayerPower,
+        PlayerHealth,
+        PlayerSpeed,
+    }
+
+    [SerializeField]
+    private UpgradeType Kind;
+    protected UpgradeType kind => Kind;
+
+
+    // UpgradeItem Methods
+    protected override void Instantiate(UpgradeConfig config)
+    {
+    }
+    protected override bool Prerequisites()
+    {
+        return true;
+    }
+    protected override void PayCost()
+    {
+    }
+    protected override void OnUnlock()
+    {
+    }
+    protected override void OnReset()
+    {
+    }
+}

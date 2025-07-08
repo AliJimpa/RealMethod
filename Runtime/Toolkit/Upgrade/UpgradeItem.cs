@@ -4,23 +4,23 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class UpgradeAsset : ItemAsset, IUpgradeable
+    public abstract class UpgradeItem : ItemAsset, IUpgradeable
     {
         [Header("Upgrade")]
         [SerializeField, TextArea]
         private string description;
         [SerializeField]
-        private List<UpgradeAsset> dependency = new List<UpgradeAsset>(1);
+        private List<UpgradeItem> dependency = new List<UpgradeItem>(1);
 
         // Actions
-        public Action<UpgradeAsset> OnUnlocked;
+        public Action<UpgradeItem> OnUnlocked;
 
         protected Upgrade Owner { get; private set; }
         private bool IsUnlocked => Owner.IsUnlocked(Title);
 
 
         // Implement IUpgradeable Interface
-        bool IUpgradeable.Initiate(Upgrade owner, UpgradeConfig config, UpgradeAsset previous)
+        bool IUpgradeable.Initiate(Upgrade owner, UpgradeConfig config, UpgradeItem previous)
         {
             if (owner == null)
             {

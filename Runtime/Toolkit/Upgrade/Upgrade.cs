@@ -21,80 +21,57 @@ namespace RealMethod
         private UpgradeBehavior Behavior;
 
 
-        public Action<UpgradeAsset> OnUnlocked;
-        public Action<UpgradeAsset> OnLocked;
+        public Action<UpgradeItem> OnUnlocked;
+        public Action<UpgradeItem> OnLocked;
 
 
-        private Hictionary<UpgradeAsset> UpgradesAsset = new Hictionary<UpgradeAsset>(5);
-        public int Count => UpgradesAsset.Count;
-        private IUpgradeStorage Sotrage;
-        private DataManager SaveManager;
+        private Hictionary<UpgradeItem> Items = new Hictionary<UpgradeItem>(5);
+        public int Count => Items.Count;
+        private IUpgradeStorage sotrage;
 
 
         // Unity Methods
         protected virtual void Awake()
         {
-            // Find Data Maanger 
-            SaveManager = Game.FindManager<DataManager>();
-            if (SaveManager == null)
-            {
-                Debug.LogError($"Can't find manager [{typeof(DataManager)}] ! ");
-                enabled = false;
-                return;
-            }
-
             // Create Clone of all UpgradeAssets
             foreach (var conf in Configs)
             {
                 conf.OnAwake(this);
-                UpgradeAsset previousasset = null;
+                UpgradeItem previousasset = null;
                 foreach (var Uasset in conf.line)
                 {
-                    UpgradeAsset NewAsset = Instantiate(Uasset);
+                    UpgradeItem NewAsset = Instantiate(Uasset);
                     IUpgradeable IController = NewAsset;
                     if (IController.Initiate(this, conf, previousasset))
                     {
-                        UpgradesAsset.Add(Uasset.Title, NewAsset);
+                        Items.Add(Uasset.Title, NewAsset);
                         previousasset = NewAsset;
                     }
                 }
             }
 
             // Create SaveFile
-            SaveFile File = GetSaveFile(SaveManager);
-            if (File == null)
+            sotrage = GetStorage();
+            if (sotrage != null)
             {
-                Debug.LogWarning("SaveFile is Not Valid");
-                enabled = false;
-                return;
-            }
-
-            if (File is IUpgradeStorage IStore)
-            {
-                Sotrage = IStore;
-                // Load File
-                if (SaveManager.IsExistFile(File))
+                // Load or Create
+                if (!IsStorageLoaded())
                 {
-                    SaveManager.LoadFile(File);
-                }
-                else
-                {
-                    Sotrage.Initiate(this, UpgradesAsset.GetValues());
+                    sotrage.CreateNewItems(Items.GetValues());
                 }
             }
             else
             {
-                Debug.LogError("Save file Should Implement IUpgradeStorage, You can Use UpgradeSaveFile Class");
+                Debug.LogWarning("Storage is Not Valid");
                 enabled = false;
                 return;
             }
-
         }
 
         // Publci Functions
         public bool IsUnlocked(string Title)
         {
-            return Sotrage.IsUnAvalibal(FindAsset(Title));
+            return sotrage.IsUnAvalibal(FindAsset(Title));
         }
         public bool CanUnlock(string Title)
         {
@@ -122,50 +99,50 @@ namespace RealMethod
                 Debug.LogWarning("This asset is already Locked");
             }
         }
-        public UpgradeAsset FindAsset(string Title)
+        public UpgradeItem FindAsset(string Title)
         {
-            return UpgradesAsset[Title];
+            return Items[Title];
         }
 
 
         // Private Functions
-        private void UnlockeAsset(UpgradeAsset asset, bool free)
+        private void UnlockeAsset(UpgradeItem item, bool free)
         {
-            if (Sotrage.SwapToUnAvalibal(asset))
+            if (sotrage.SwapToUnAvalibal(item))
             {
-                IUpgradeable IController = asset;
+                IUpgradeable IController = item;
                 IController.SetUnlock(free);
-                MessageBehavior(asset, true);
+                MessageBehavior(item, true);
             }
             else
             {
                 Debug.LogError("There is issue please Remove UpgradeSavefile");
             }
         }
-        private void LockAsset(UpgradeAsset asset)
+        private void LockAsset(UpgradeItem item)
         {
-            if (Sotrage.SwapToAvalibal(asset))
+            if (sotrage.SwapToAvalibal(item))
             {
-                IUpgradeable IController = asset;
+                IUpgradeable IController = item;
                 IController.SetLock();
-                MessageBehavior(asset, false);
+                MessageBehavior(item, false);
             }
             else
             {
                 Debug.LogError("There is issue please Remove UpgradeSavefile");
             }
         }
-        private void MessageBehavior(UpgradeAsset Asset, bool isunlock)
+        private void MessageBehavior(UpgradeItem item, bool isunlock)
         {
             if (Behavior == UpgradeBehavior.Action || Behavior == UpgradeBehavior.Both)
             {
                 if (isunlock)
                 {
-                    OnUnlocked?.Invoke(Asset);
+                    OnUnlocked?.Invoke(item);
                 }
                 else
                 {
-                    OnLocked?.Invoke(Asset);
+                    OnLocked?.Invoke(item);
                 }
             }
 
@@ -183,20 +160,93 @@ namespace RealMethod
 
             if (isunlock)
             {
-                OnUnlockedAsset(Asset);
+                OnUnlockedAsset(item);
             }
             else
             {
-                OnLockedAsset(Asset);
+                OnLockedAsset(item);
             }
-
         }
 
 
         // Abstract Methods
-        protected abstract void OnUnlockedAsset(UpgradeAsset asset);
-        protected abstract void OnLockedAsset(UpgradeAsset asset);
-        protected abstract SaveFile GetSaveFile(DataManager savesystem);
+        protected abstract void OnUnlockedAsset(UpgradeItem item);
+        protected abstract void OnLockedAsset(UpgradeItem item);
+        protected abstract IUpgradeStorage GetStorage();
+        protected abstract bool IsStorageLoaded();
+    }
+
+    public abstract class UpgradeStorage : Upgrade
+    {
+        [Header("Save")]
+        private bool AutoSave = true;
+        [SerializeField]
+        private bool UseCustomFile = false;
+        [SerializeField, ConditionalHide("UseCustomFile", true, false)]
+        private SaveFile _SaveFile;
+        public SaveFile File => _SaveFile;
+
+        private DataManager savesystem;
+
+        // Upgrade Methods
+        protected sealed override void OnUnlockedAsset(UpgradeItem item)
+        {
+            if (AutoSave)
+                savesystem.SaveFile(_SaveFile);
+
+            OnAssetUpdate(item, true);
+        }
+        protected sealed override void OnLockedAsset(UpgradeItem item)
+        {
+            if (AutoSave)
+                savesystem.SaveFile(_SaveFile);
+
+            OnAssetUpdate(item, false);
+        }
+        protected sealed override bool IsStorageLoaded()
+        {
+            // Find Data Maanger 
+            savesystem = Game.FindManager<DataManager>();
+            if (savesystem == null)
+            {
+                Debug.LogError($"Can't find manager [{typeof(DataManager)}] ! ");
+                enabled = false;
+                return false;
+            }
+
+            if (savesystem.IsExistFile(_SaveFile))
+            {
+                savesystem.LoadFile(_SaveFile);
+                return true;
+            }
+
+            return false;
+
+        }
+        protected sealed override IUpgradeStorage GetStorage()
+        {
+            if (UseCustomFile)
+            {
+                if (_SaveFile is IUpgradeStorage newstorage)
+                {
+                    return newstorage;
+                }
+                else
+                {
+                    Debug.LogError("IUpgradeStorage Interface not implemented in CustomSavefile.");
+                    return null;
+                }
+
+            }
+
+            _SaveFile = ScriptableObject.CreateInstance<UpgradeSaveFile>();
+            _SaveFile.name = "RMUpgradeSaveFile";
+            return _SaveFile as IUpgradeStorage;
+        }
+
+
+        // Abstract Methods
+        protected abstract void OnAssetUpdate(UpgradeItem item, bool unlocked);
 
     }
 
