@@ -14,13 +14,5 @@ namespace RealMethod
         protected override void RemoveItem()
         {
         }
-        protected override void OnReaded()
-        {
-        }
-        protected override void OnWrited()
-        {
-
-        }
-
     }
 }

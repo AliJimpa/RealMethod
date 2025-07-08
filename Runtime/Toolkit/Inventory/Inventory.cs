@@ -8,10 +8,9 @@ namespace RealMethod
     public class InventoryItemProperty
     {
         [SerializeField]
-        private string ItemName;
-        [SerializeField]
         private ItemAsset ItemAsset;
         public ItemAsset Asset => ItemAsset;
+        public string Name => Asset.Title;
         [SerializeField]
         private int ItemQuantity;
         public int Quantity => ItemQuantity;
@@ -19,11 +18,17 @@ namespace RealMethod
         private int ItemCapacity;
         public int Capacity => ItemCapacity;
 
-        public InventoryItemProperty(ItemAsset asset, int quantity, int capacity = 0)
+        public InventoryItemProperty(ItemAsset asset, int quantity, int capacity)
         {
             ItemAsset = asset;
             ItemQuantity = quantity;
             ItemCapacity = capacity;
+        }
+        public InventoryItemProperty(ItemAsset asset, int quantity)
+        {
+            ItemAsset = asset;
+            ItemQuantity = quantity;
+            ItemCapacity = 0;
         }
 
         public bool Add(int value = 1)
@@ -51,6 +56,10 @@ namespace RealMethod
             {
                 return true;
             }
+        }
+        public void NewCpacity(int amount)
+        {
+            ItemCapacity = amount;
         }
     }
 
@@ -81,7 +90,6 @@ namespace RealMethod
         private BehaviorType Behavior;
         [SerializeField]
         private ItemAsset[] DefaultItem;
-        public bool IsLoading { get; protected set; }
 
         // Actions
         public Action<ItemAsset, int> OnItemAdded;
@@ -90,7 +98,9 @@ namespace RealMethod
 
         // Private Variable
         private Hictionary<InventoryItemProperty> Items = new Hictionary<InventoryItemProperty>(5);
+        protected IInventoryStorage storage { get; private set; }
         public int Count => Items.Count;
+        public bool IsLoading { get; protected set; } = false;
 
 
         public ItemAsset this[string itemName]
@@ -101,20 +111,30 @@ namespace RealMethod
         // Unity Methods
         protected virtual void Awake()
         {
-            IsLoading = false;
-            if (UseDefaultItem())
+            storage = GetStorage();
+            if (storage != null)
             {
-                if (DefaultItem != null)
+                // Load or Create
+                if (!IsStorageLoaded())
                 {
-                    foreach (var item in DefaultItem)
+                    if (DefaultItem != null)
                     {
-                        AddItem(item);
+                        foreach (var item in DefaultItem)
+                        {
+                            AddItem(item);
+                        }
                     }
                 }
             }
+            else
+            {
+                Debug.LogWarning("Storage is Not Valid");
+                enabled = false;
+                return;
+            }
         }
 
-        // public methods
+        // Public Functions
         public int GetQuantity(string itemName)
         {
             if (Items.ContainsKey(itemName))
@@ -153,7 +173,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool AddNewItem(ItemAsset item, int Quantity, int ItemCapacity)
+        public bool AddNewItem(ItemAsset item, int quantity, int capacity)
         {
             IInventoryItem invitem = GetInterface(item);
             if (invitem == null)
@@ -163,8 +183,10 @@ namespace RealMethod
             {
                 if (invitem.CanPickUp(this))
                 {
-                    Items.Add(item.Title, new InventoryItemProperty(item, Quantity, ItemCapacity));
-                    SendInventoryMessage(ItemState.Create, item, Quantity);
+                    InventoryItemProperty NewItem = new InventoryItemProperty(item, quantity, capacity);
+                    Items.Add(item.Title, NewItem);
+                    storage.CreateItem(NewItem);
+                    MessageBehavior(ItemState.Create, item, quantity);
                     return true;
                 }
                 else
@@ -178,7 +200,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool AddItem(ItemAsset item, int Quantity = 1)
+        public bool AddItem(ItemAsset item, int quantity = 1)
         {
             IInventoryItem invitem = GetInterface(item);
             if (invitem == null)
@@ -190,16 +212,19 @@ namespace RealMethod
                 {
                     if (invitem.CanChange(true))
                     {
-                        Items[item.Title].Add(Quantity);
-                        SendInventoryMessage(ItemState.Update, item, Quantity);
+                        Items[item.Title].Add(quantity);
+                        storage.UpdateQuantity(item.Title, quantity);
+                        MessageBehavior(ItemState.Update, item, quantity);
                     }
                 }
                 else
                 {
                     if (invitem.CanPickUp(this))
                     {
-                        Items.Add(item.Title, new InventoryItemProperty(item, Quantity));
-                        SendInventoryMessage(ItemState.Create, item, Quantity);
+                        InventoryItemProperty NewItem = new InventoryItemProperty(item, quantity);
+                        Items.Add(item.Title, NewItem);
+                        storage.CreateItem(NewItem);
+                        MessageBehavior(ItemState.Create, item, quantity);
                     }
                 }
                 return true;
@@ -210,7 +235,22 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool RemoveItem(string itemName, int Quantity = 1)
+        public bool SetItemCapacity(string itemName, int newCpacity)
+        {
+            InventoryItemProperty target;
+            if (Items.TryGetValue(itemName, out target))
+            {
+                storage.UpdateCapacity(newCpacity);
+                target.NewCpacity(newCpacity);
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"Can't Find Item With this Name {itemName} [Be sure to use ItemTitle]");
+                return false;
+            }
+        }
+        public bool RemoveItem(string itemName, int quantity = 1)
         {
             InventoryItemProperty target;
             if (Items.TryGetValue(itemName, out target))
@@ -221,9 +261,10 @@ namespace RealMethod
 
                 if (invitem.CanChange(true))
                 {
-                    if (target.Remove(Quantity))
+                    if (target.Remove(quantity))
                     {
-                        SendInventoryMessage(ItemState.Update, target.Asset, target.Quantity);
+                        storage.UpdateQuantity(itemName, -quantity);
+                        MessageBehavior(ItemState.Update, target.Asset, target.Quantity);
                         return true;
                     }
                     else
@@ -232,7 +273,8 @@ namespace RealMethod
                         {
                             if (Items.Remove(itemName))
                             {
-                                SendInventoryMessage(ItemState.Delete, null, 0);
+                                storage.DestroyItem(itemName);
+                                MessageBehavior(ItemState.Delete, null, 0);
                             }
                             else
                             {
@@ -242,7 +284,8 @@ namespace RealMethod
                         }
                         else
                         {
-                            SendInventoryMessage(ItemState.Update, target.Asset, 0);
+                            storage.UpdateQuantity(itemName, 0);
+                            MessageBehavior(ItemState.Update, target.Asset, 0);
                             return true;
                         }
 
@@ -266,7 +309,8 @@ namespace RealMethod
                 bool Result = Items.Remove(itemName);
                 if (Result)
                 {
-                    SendInventoryMessage(ItemState.Delete, null, 0);
+                    storage.DestroyItem(itemName);
+                    MessageBehavior(ItemState.Delete, null, 0);
                 }
                 return Result;
             }
@@ -299,6 +343,12 @@ namespace RealMethod
             }
             return null;
         }
+        public void Clear()
+        {
+            Items.Clear();
+        }
+
+        // Protected Functions
         protected InventoryItemProperty[] GetCopyItemsProperty()
         {
             var values = Items.GetValues();
@@ -306,12 +356,8 @@ namespace RealMethod
             values.CopyTo(copy, 0);
             return copy;
         }
-        public void Clear()
-        {
-            Items.Clear();
-        }
 
-        // private Methods
+        // Private Functions
         private IInventoryItem GetInterface(ItemAsset item)
         {
             if (item is IInventoryItem InvItem)
@@ -324,7 +370,7 @@ namespace RealMethod
                 return null;
             }
         }
-        private void SendInventoryMessage(ItemState state, ItemAsset target, int quantity)
+        private void MessageBehavior(ItemState state, ItemAsset target, int quantity)
         {
             IInventoryItem invitem = GetInterface(target);
             switch (state)
@@ -399,89 +445,69 @@ namespace RealMethod
         }
 
         // Abstract Methods 
-        public abstract bool ReadFromSaveFile(SaveFile file);
-        public abstract bool WriteToSaveFile(SaveFile file);
-        protected abstract bool UseDefaultItem();
         protected abstract void AddItem(ItemAsset target);
         protected abstract void UpdateItem(ItemAsset target, int Quantity);
         protected abstract void RemoveItem();
+        protected abstract IInventoryStorage GetStorage();
+        protected abstract bool IsStorageLoaded();
+
+
 
     }
+
     public abstract class InventoryStorage : Inventory
     {
         [Header("Save")]
         [SerializeField]
-        private bool ReadOnAwake = false;
-        [SerializeField]
+        private bool UseCustomFile = false;
+        [SerializeField, ConditionalHide("UseCustomFile", true, false)]
         private SaveFile _SaveFile;
-        public SaveFile File => _SaveFile;
+        public SaveFile file => _SaveFile;
+
+        private DataManager savesystem;
 
 
         // override Methods
-        public sealed override bool ReadFromSaveFile(SaveFile file)
+        protected sealed override IInventoryStorage GetStorage()
         {
-            if (file is IInventorySave Inventoryfile)
+            if (UseCustomFile)
             {
-                if (Inventoryfile.IsExistInventoryData(this))
+                if (_SaveFile is IInventoryStorage newstorage)
                 {
-                    IsLoading = true;
-                    Clear();
-                    foreach (var property in Inventoryfile.ReadInventoryData(this))
+                    return newstorage;
+                }
+                else
+                {
+                    Debug.LogWarning("IUpgradeStorage Interface not implemented in CustomSavefile.");
+                    UseCustomFile = false;
+                }
+
+            }
+
+            _SaveFile = ScriptableObject.CreateInstance<InventorySaveFile>();
+            _SaveFile.name = "RMInventorySaveFile";
+            return _SaveFile as IInventoryStorage;
+        }
+        protected sealed override bool IsStorageLoaded()
+        {
+            // Find Data Maanger 
+            savesystem = Game.FindManager<DataManager>();
+            if (savesystem != null)
+            {
+                if (savesystem.IsExistFile(_SaveFile))
+                {
+                    savesystem.LoadFile(_SaveFile);
+                    foreach (var item in storage.GetItems())
                     {
-                        AddItem(property.Asset, property.Quantity);
+                        AddNewItem(item.Asset, item.Quantity, item.Capacity);
                     }
-                    IsLoading = false;
-                    OnReaded();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                Debug.LogWarning("IInventorySave Interface not implemented in Savefile. ReadFile Failed");
-                return false;
-            }
-        }
-        public sealed override bool WriteToSaveFile(SaveFile file)
-        {
-            if (file is IInventorySave Inventoryfile)
-            {
-                Inventoryfile.WriteInventoryData(this, GetCopyItemsProperty());
-                OnWrited();
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning("IInventorySave Interface not implemented in Savefile. WriteFile Failed");
-                return false;
-            }
-        }
-        protected sealed override bool UseDefaultItem()
-        {
-            if (ReadOnAwake)
-            {
-                if (_SaveFile)
-                {
-                    return !ReadFromSaveFile(_SaveFile);
-                }
-                else
-                {
-                    Debug.LogError("SaveFile Is Not Valid for ReadFile");
                     return true;
                 }
             }
-            else
-            {
-                return true;
-            }
+
+            return false;
         }
 
-        // Abstract Methods 
-        protected abstract void OnReaded();
-        protected abstract void OnWrited();
     }
 
 }

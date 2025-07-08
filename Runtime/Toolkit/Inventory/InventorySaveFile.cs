@@ -5,15 +5,18 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "InventorySaveFile", menuName = "RealMethod/Inventory/SaveFile", order = 1)]
-    public class InventorySaveFile : SaveFile, IInventorySave
+    public class InventorySaveFile : SaveFile, IInventoryStorage
     {
         [Header("Setting")]
         [SerializeField]
         private bool UsePlayerPrefs = true;
+        [Header("Storage")]
         [SerializeField]
-        private string[] InventoryAssets;
+        private List<string> ItemsName;
         [SerializeField]
-        private int[] InventoryQuantity;
+        private List<int> ItemsQuantity;
+        [SerializeField]
+        private List<int> ItemsCapacity;
 
 
         // SaveFile Methods
@@ -25,59 +28,85 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
             {
-                RM_PlayerPrefs.SetArray("PlayerItemsName", InventoryAssets);
-                RM_PlayerPrefs.SetArray("PlayerItemsQuantity", InventoryQuantity);
-                RM_PlayerPrefs.SetBool("Playerinventory", true);
+                RM_PlayerPrefs.SetArray("ItemsName", ItemsName.ToArray());
+                RM_PlayerPrefs.SetArray("ItemsQuantity", ItemsQuantity.ToArray());
+                RM_PlayerPrefs.SetArray("ItemsCapacity", ItemsCapacity.ToArray());
+                RM_PlayerPrefs.SetBool("InventoryFile", true);
             }
         }
         protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
             {
-                InventoryAssets = RM_PlayerPrefs.GetArray<string>("PlayerItemsName");
-                InventoryQuantity = RM_PlayerPrefs.GetArray<int>("PlayerItemsQuantity");
+                ItemsName = RM_PlayerPrefs.GetArray<string>("ItemsName").ToList();
+                ItemsQuantity = RM_PlayerPrefs.GetArray<int>("ItemsQuantity").ToList();
+                ItemsCapacity = RM_PlayerPrefs.GetArray<int>("ItemsQuantity").ToList();
             }
         }
         protected override void OnDeleted()
         {
-            PlayerPrefs.DeleteKey("Playerinventory");
+            PlayerPrefs.DeleteKey("InventoryFile");
         }
 
 
-
-
         // Implement IInventorySave Interface
-        public InventoryItemProperty[] ReadInventoryData(Inventory owner)
+        void IInventoryStorage.CreateItem(InventoryItemProperty item)
         {
+            ItemsName.Add(item.Name);
+            ItemsQuantity.Add(item.Quantity);
+            ItemsCapacity.Add(item.Capacity);
+        }
+        void IInventoryStorage.DestroyItem(string name)
+        {
+            int Target = GetIndexItem(name);
+            ItemsName.RemoveAt(Target);
+            ItemsQuantity.RemoveAt(Target);
+            ItemsCapacity.RemoveAt(Target);
+        }
+        void IInventoryStorage.UpdateQuantity(string name, int amount)
+        {
+            int Target = GetIndexItem(name);
+            if (amount != 0)
+            {
+                ItemsQuantity[Target] += amount;
+            }
+            else
+            {
+                ItemsQuantity[Target] = 0;
+            }
+
+        }
+        void IInventoryStorage.UpdateCapacity(int value)
+        {
+            int Target = GetIndexItem(name);
+            ItemsCapacity[Target] = value;
+        }
+        public InventoryItemProperty[] GetItems()
+        {
+            // Load All Assets
             var allItems = Resources.LoadAll<ItemAsset>("");
             var itemDict = allItems.ToDictionary(item => item.name, item => item);
+
             List<InventoryItemProperty> Result = new List<InventoryItemProperty>();
-            for (int i = 0; i < InventoryAssets.Length; i++)
+            for (int i = 0; i < ItemsName.Count; i++)
             {
-                if (itemDict[InventoryAssets[i]] != null)
+                if (itemDict[ItemsName[i]] != null)
                 {
-                    Result.Add(new InventoryItemProperty(itemDict[InventoryAssets[i]], InventoryQuantity[i]));
+                    Result.Add(new InventoryItemProperty(itemDict[ItemsName[i]], ItemsQuantity[i], ItemsCapacity[i]));
                 }
                 else
                 {
-                    Debug.LogError($"Cant Find Item from GameSetting {InventoryAssets[i]}");
+                    Debug.LogError($"Cant Find Item from GameSetting {ItemsName[i]}");
                 }
             }
             return Result.ToArray();
         }
-        public void WriteInventoryData(Inventory owner, InventoryItemProperty[] Data)
+
+
+        // Private Functions
+        private int GetIndexItem(string name)
         {
-            Dictionary<string, int> Result = new Dictionary<string, int>();
-            foreach (var property in Data)
-            {
-                Result.Add(property.Asset.name, property.Quantity);
-            }
-            InventoryAssets = new List<string>(Result.Keys).ToArray();
-            InventoryQuantity = new List<int>(Result.Values).ToArray();
-        }
-        public bool IsExistInventoryData(Inventory owner)
-        {
-            return PlayerPrefs.HasKey("Playerinventory");
+            return ItemsName.IndexOf(name);
         }
 
     }

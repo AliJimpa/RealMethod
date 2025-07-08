@@ -1,10 +1,13 @@
 namespace RealMethod
 {
-    public interface IInventorySave
+    public interface IInventoryStorage
     {
-        InventoryItemProperty[] ReadInventoryData(Inventory owner);
-        void WriteInventoryData(Inventory owner, InventoryItemProperty[] Data);
-        bool IsExistInventoryData(Inventory owner);
+        InventoryItemProperty[] GetItems();
+        void CreateItem(InventoryItemProperty item);
+        void DestroyItem(string name);
+        // amount > 0 : AddQuantity , amount < 0 RemoveqQuantity , amount = 0 ZiroQuantity
+        void UpdateQuantity(string name, int amount); 
+        void UpdateCapacity(int value);
     }
 
     public interface IInventoryItem
