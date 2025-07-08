@@ -17,20 +17,20 @@ namespace RealMethod
 
 
         // SaveFile Methods
-        public override void OnStable(DataManager manager)
+        protected override void OnStable(DataManager manager)
         {
 
         }
-        public override void OnSaved()
+        protected override void OnSaved()
         {
             if (UsePlayerPrefs)
             {
                 RM_PlayerPrefs.SetArray("PlayerItemsName", InventoryAssets);
                 RM_PlayerPrefs.SetArray("PlayerItemsQuantity", InventoryQuantity);
-                PlayerPrefs.SetInt("Playerinventory", 1);
+                RM_PlayerPrefs.SetBool("Playerinventory", true);
             }
         }
-        public override void OnLoaded()
+        protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
             {
@@ -38,7 +38,7 @@ namespace RealMethod
                 InventoryQuantity = RM_PlayerPrefs.GetArray<int>("PlayerItemsQuantity");
             }
         }
-        public override void OnDeleted()
+        protected override void OnDeleted()
         {
             PlayerPrefs.DeleteKey("Playerinventory");
         }

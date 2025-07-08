@@ -3,6 +3,15 @@ using System;
 
 namespace RealMethod
 {
+    public interface IDataPersistence
+    {
+        void Initiate(DataManager manager);
+        void Load();
+        void Save();
+        void Remove();
+    }
+
+
     public abstract class DataManager : MonoBehaviour, IGameManager
     {
 
@@ -41,7 +50,8 @@ namespace RealMethod
 
             foreach (var file in StableFiles)
             {
-                file.OnStable(this);
+                IDataPersistence DataFile = file;
+                DataFile.Initiate(this);
                 if (LoadOnAwake)
                 {
                     if (IsExistFile(file))
@@ -72,7 +82,8 @@ namespace RealMethod
                 return;
             }
             OnSaveFile(file);
-            file.OnSaved();
+            IDataPersistence DataFile = file;
+            DataFile.Save();
             OnFileSaved?.Invoke(file);
         }
         public void LoadFile(int Index)
@@ -95,7 +106,8 @@ namespace RealMethod
             }
 
             OnLoadFile(file);
-            file.OnLoaded();
+            IDataPersistence DataFile = file;
+            DataFile.Load();
             OnFileLoaded?.Invoke(file);
         }
         public void DeleteFile(int Index)
@@ -118,7 +130,8 @@ namespace RealMethod
             }
 
             OnDelete(file);
-            file.OnDeleted();
+            IDataPersistence DataFile = file;
+            DataFile.Remove();
         }
         public bool IsExistFile(int Index)
         {
@@ -170,22 +183,42 @@ namespace RealMethod
 
     }
 
-    public abstract class SaveFile : DataAsset
+    public abstract class SaveFile : DataAsset, IDataPersistence
     {
-        public abstract void OnStable(DataManager manager);
-        public abstract void OnLoaded();
-        public abstract void OnSaved();
-        public abstract void OnDeleted();
+
+        // Implement IDataPersistence Interface
+        void IDataPersistence.Initiate(DataManager manager)
+        {
+            OnStable(manager);
+        }
+        void IDataPersistence.Save()
+        {
+            OnSaved();
+        }
+        void IDataPersistence.Load()
+        {
+            OnLoaded();
+        }
+        void IDataPersistence.Remove()
+        {
+            OnDeleted();
+        }
 
 
-        // Private Methods
+        protected abstract void OnStable(DataManager manager);
+        protected abstract void OnLoaded();
+        protected abstract void OnSaved();
+        protected abstract void OnDeleted();
+
+
+#if UNITY_EDITOR
         [ContextMenu("ResetToDefault")]
-        private void BacktoDefault()
+        private void Editor_BacktoDefault()
         {
             OnEditorPlay();
         }
         [ContextMenu("Save")]
-        private void SaveSelf()
+        private void Editor_SaveSelf()
         {
             var manager = FindFirstObjectByType<DataManager>();
             if (manager != null)
@@ -198,7 +231,7 @@ namespace RealMethod
             }
         }
         [ContextMenu("Load")]
-        private void LoadSelf()
+        private void Editor_LoadSelf()
         {
             var manager = FindFirstObjectByType<DataManager>();
             if (manager != null)
@@ -211,7 +244,7 @@ namespace RealMethod
             }
         }
         [ContextMenu("Delete")]
-        private void DeleteSelf()
+        private void Editor_Delete()
         {
             var manager = FindFirstObjectByType<DataManager>();
             if (manager != null)
@@ -223,6 +256,7 @@ namespace RealMethod
                 Debug.LogError("No DataManager found in the scene.");
             }
         }
+#endif
 
     }
 
