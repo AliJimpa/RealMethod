@@ -3,21 +3,35 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    static class Math
+    static class RM_Math
     {
+
+        // Map
         public static float MapRangedClamp(float value, float inMin, float inMax, float outMin, float outMax)
         {
             float mappedValue = (value - inMin) / (inMax - inMin) * (outMax - outMin) + outMin;
 
             return Mathf.Clamp(mappedValue, outMin, outMax);
         }
-
         public static bool IsInRange(float value, float min, float max, bool inclusiveMin = true, bool inclusiveMax = true)
         {
             bool isAboveMin = inclusiveMin ? value >= min : value > min;
             bool isBelowMax = inclusiveMax ? value <= max : value < max;
             return isAboveMin && isBelowMax;
         }
+
+
+        // Array
+        public static float SumFloatArray(float[] array)
+        {
+            float sum = 0f;
+            foreach (float value in array)
+            {
+                sum += value;
+            }
+            return sum;
+        }
+
 
         /// <summary>
         /// Interpolates a value from Current to Target, applying a given speed over DeltaTime.

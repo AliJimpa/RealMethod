@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RealMethod
 {
-    static class Random
+    static class RM_Random
     {
         public static T Shuffle<T>(T[] array)
         {
@@ -27,7 +28,7 @@ namespace RealMethod
         public static T Wheel<T>(ref Dictionary<T, float> DataBase)
         {
             float[] weightlist = new float[DataBase.Values.Count];
-            float Rnd = UnityEngine.Random.Range(0, Array.SumArray(weightlist));
+            float Rnd = Random.Range(0, RM_Math.SumFloatArray(weightlist));
             T Result = default(T);
             foreach (var item in DataBase)
             {
