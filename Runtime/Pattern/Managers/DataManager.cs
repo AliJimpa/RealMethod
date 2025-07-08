@@ -55,7 +55,7 @@ namespace RealMethod
         // Public Functions
         public void SaveFile(int Index)
         {
-            if (Array.IsValidIndex(StableFiles, Index))
+            if (StableFiles.IsValidIndex(Index))
             {
                 SaveFile(StableFiles[Index]);
             }
@@ -77,7 +77,7 @@ namespace RealMethod
         }
         public void LoadFile(int Index)
         {
-            if (Array.IsValidIndex(StableFiles, Index))
+            if (StableFiles.IsValidIndex(Index))
             {
                 LoadFile(StableFiles[Index]);
             }
@@ -100,7 +100,7 @@ namespace RealMethod
         }
         public void DeleteFile(int Index)
         {
-            if (Array.IsValidIndex(StableFiles, Index))
+            if (StableFiles.IsValidIndex(Index))
             {
                 DeleteFile(StableFiles[Index]);
             }
@@ -122,7 +122,7 @@ namespace RealMethod
         }
         public bool IsExistFile(int Index)
         {
-            if (Array.IsValidIndex(StableFiles, Index))
+            if (StableFiles.IsValidIndex(Index))
             {
                 return IsExistFile(StableFiles[Index]);
             }

@@ -25,8 +25,8 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
             {
-                SaveArrayPrefs("PlayerItemsName", InventoryAssets);
-                SaveArrayPrefs("PlayerItemsQuantity", InventoryQuantity);
+                RM_PlayerPrefs.SetArray("PlayerItemsName", InventoryAssets);
+                RM_PlayerPrefs.SetArray("PlayerItemsQuantity", InventoryQuantity);
                 PlayerPrefs.SetInt("Playerinventory", 1);
             }
         }
@@ -34,8 +34,8 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
             {
-                InventoryAssets = LoadArrayPrefs<string>("PlayerItemsName");
-                InventoryQuantity = LoadArrayPrefs<int>("PlayerItemsQuantity");
+                InventoryAssets = RM_PlayerPrefs.GetArray<string>("PlayerItemsName");
+                InventoryQuantity = RM_PlayerPrefs.GetArray<int>("PlayerItemsQuantity");
             }
         }
         public override void OnDeleted()
@@ -78,21 +78,6 @@ namespace RealMethod
         public bool IsExistInventoryData(Inventory owner)
         {
             return PlayerPrefs.HasKey("Playerinventory");
-        }
-
-
-        protected void SaveArrayPrefs<T>(string key, T[] array)
-        {
-            string joined = string.Join("|", array); // Use a delimiter unlikely to appear in your strings
-            PlayerPrefs.SetString(key, joined);
-            PlayerPrefs.Save();
-        }
-        protected T[] LoadArrayPrefs<T>(string key)
-        {
-            if (!PlayerPrefs.HasKey(key)) return new T[0];
-
-            string joined = PlayerPrefs.GetString(key);
-            return joined.Split('|').Select(s => (T)System.Convert.ChangeType(s, typeof(T))).ToArray(); // Convert each string to T
         }
 
     }
