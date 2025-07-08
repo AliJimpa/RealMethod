@@ -15,7 +15,7 @@ namespace RealMethod
     }
 
 
-    public class UpgradeManager : MonoBehaviour
+    public class Hallole : MonoBehaviour
     {
         public List<UpgradeData> availableUpgrades;
         public List<UpgradeData> unlockedUpgrades;
