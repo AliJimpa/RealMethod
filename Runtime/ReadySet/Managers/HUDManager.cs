@@ -1,3 +1,4 @@
+using Codice.Client.BaseCommands;
 using UnityEngine;
 
 namespace RealMethod
@@ -7,7 +8,10 @@ namespace RealMethod
     {
         public override void InitiateService(Service newService)
         {
-
+            if (newService is Spawn spawnservice)
+            {
+                spawnservice.BringManager(this);
+            }
         }
         public override bool IsMaster()
         {
