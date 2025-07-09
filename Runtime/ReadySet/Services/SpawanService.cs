@@ -6,18 +6,18 @@ namespace RealMethod
 {
     public sealed class Spawn : Service
     {
-        private static Spawn instance;
-        public static Spawn Service
+        private static Spawn CacheInstance = null;
+        public static Spawn instance
         {
             get
             {
-                if (instance != null)
+                if (CacheInstance != null)
                 {
-                    return instance;
+                    return CacheInstance;
                 }
                 else
                 {
-                    Debug.LogError("For Spawning You need Add SpawnService in Game. [Game Class > GameServiceCreated Method]");
+                    Debug.LogError("For Spawning You need Add SpawnService in Game. [GameClass > GameServiceCreated Method]");
                     return null;
                 }
             }
@@ -28,11 +28,12 @@ namespace RealMethod
         private AudioManager audioBox;
         private UIManager uIBox;
 
+        // Base Service
         protected override void OnStart(object Author)
         {
-            if (instance == null)
+            if (CacheInstance == null)
             {
-                instance = this;
+                CacheInstance = this;
                 AntiSpawn = new Despawn(uIBox, audioBox);
             }
             else
@@ -47,9 +48,10 @@ namespace RealMethod
         protected override void OnEnd(object Author)
         {
             AntiSpawn = null;
-            instance = null;
+            CacheInstance = null;
         }
 
+        // Public Functions
         public void BringManager(IGameManager manager)
         {
             // Brind AudioManager
@@ -85,9 +87,9 @@ namespace RealMethod
         // UI
         public static T Widget<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.CreateLayer<T>(Name, Owner);
+                return instance.uIBox.CreateLayer<T>(Name, Owner);
             }
             else
             {
@@ -97,9 +99,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name) where T : MonoBehaviour
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.CreateLayer<T>(Name);
+                return instance.uIBox.CreateLayer<T>(Name);
             }
             else
             {
@@ -109,9 +111,9 @@ namespace RealMethod
         }
         public static UIDocument Widget(string Name, VisualTreeAsset UIAsset)
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.CreateLayer(Name, UIAsset);
+                return instance.uIBox.CreateLayer(Name, UIAsset);
             }
             else
             {
@@ -121,9 +123,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.CreateLayer<T>(Name, UIAsset, Owner);
+                return instance.uIBox.CreateLayer<T>(Name, UIAsset, Owner);
             }
             else
             {
@@ -133,9 +135,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name, VisualTreeAsset UIAsset) where T : MonoBehaviour
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.CreateLayer<T>(Name, UIAsset);
+                return instance.uIBox.CreateLayer<T>(Name, UIAsset);
             }
             else
             {
@@ -145,9 +147,9 @@ namespace RealMethod
         }
         public static GameObject Widget(string Name, GameObject Prefab, MonoBehaviour Owner)
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.AddLayer(Name, Prefab, Owner);
+                return instance.uIBox.AddLayer(Name, Prefab, Owner);
             }
             else
             {
@@ -157,9 +159,9 @@ namespace RealMethod
         }
         public static GameObject Widget(string Name, GameObject Prefab)
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.AddLayer(Name, Prefab);
+                return instance.uIBox.AddLayer(Name, Prefab);
             }
             else
             {
@@ -169,9 +171,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name, GameObject Prefab, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.AddLayer<T>(Name, Prefab, Owner);
+                return instance.uIBox.AddLayer<T>(Name, Prefab, Owner);
             }
             else
             {
@@ -181,9 +183,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name, GameObject Prefab) where T : MonoBehaviour
         {
-            if (Service.uIBox != null)
+            if (instance.uIBox != null)
             {
-                return Service.uIBox.AddLayer<T>(Name, Prefab);
+                return instance.uIBox.AddLayer<T>(Name, Prefab);
             }
             else
             {
@@ -195,9 +197,9 @@ namespace RealMethod
         // Sound
         public static AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
         {
-            if (Service.audioBox != null)
+            if (instance.audioBox != null)
             {
-                return Service.audioBox.PlaySound2D(clip, autoDestroy);
+                return instance.audioBox.PlaySound2D(clip, autoDestroy);
             }
             else
             {
@@ -217,9 +219,9 @@ namespace RealMethod
         }
         public static AudioSource Sound2D(AudioClip clip, AudioMixerGroup group, bool autoDestroy = true)
         {
-            if (Service.audioBox != null)
+            if (instance.audioBox != null)
             {
-                return Service.audioBox.PlaySound2D(clip, group, autoDestroy);
+                return instance.audioBox.PlaySound2D(clip, group, autoDestroy);
             }
             else
             {
@@ -240,9 +242,9 @@ namespace RealMethod
         }
         public static AudioSource Sound3D(AudioClip clip, Vector3 location, bool autoDestroy = true)
         {
-            if (Service.audioBox != null)
+            if (instance.audioBox != null)
             {
-                return Service.audioBox.PlaySound(clip, location, autoDestroy);
+                return instance.audioBox.PlaySound(clip, location, autoDestroy);
             }
             else
             {
@@ -262,9 +264,9 @@ namespace RealMethod
         }
         public static AudioSource Sound3D(AudioClip clip, AudioMixerGroup group, Vector3 location, bool autoDestroy = true)
         {
-            if (Service.audioBox != null)
+            if (instance.audioBox != null)
             {
-                return Service.audioBox.PlaySound(clip, group, location, autoDestroy);
+                return instance.audioBox.PlaySound(clip, group, location, autoDestroy);
             }
             else
             {
