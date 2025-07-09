@@ -16,7 +16,7 @@ namespace RealMethod
         void Deleted(object author);
     }
 
-    public abstract class Service : IService
+    public abstract class Service : Object, IService
     {
         // Implement IService Interface
         void IService.Created(object author)
