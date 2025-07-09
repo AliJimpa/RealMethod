@@ -20,10 +20,8 @@ namespace RealMethod
         [SerializeField]
         private UpgradeBehavior Behavior;
 
-
         public Action<UpgradeItem> OnUnlocked;
         public Action<UpgradeItem> OnLocked;
-
 
         private Hictionary<UpgradeItem> Items = new Hictionary<UpgradeItem>(5);
         protected IUpgradeStorage storage { get; private set; }
@@ -72,7 +70,11 @@ namespace RealMethod
         // Publci Functions
         public bool IsUnlocked(string Title)
         {
-            return storage.IsUnAvalibal(FindAsset(Title));
+            if (storage != null)
+            {
+                return storage.IsUnAvalibal(FindAsset(Title));
+            }
+            return false;
         }
         public bool CanUnlock(string Title)
         {

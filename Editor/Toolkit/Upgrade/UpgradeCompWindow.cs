@@ -23,14 +23,7 @@ namespace RealMethod
                 {
                     foreach (UpgradeItem item in BaseComponent.CopyItemsByClass<UpgradeItem>())
                     {
-                        //EditorGUILayout.BeginHorizontal();
                         EditorGUILayout.LabelField($"Name: {item.Title} - Status: {item.IsUnlocked} ");
-                        // if (GUILayout.Button("Find"))
-                        // {
-                        //     Selection.activeObject = item;
-                        //     EditorGUIUtility.PingObject(item);
-                        // }
-                        //EditorGUILayout.EndHorizontal();
                     }
                 }
                 EditorGUILayout.Space();

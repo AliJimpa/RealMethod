@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [CreateAssetMenu(fileName = "InventorySaveFile", menuName = "RealMethod/Inventory/SaveFile", order = 1)]
+    [CreateAssetMenu(fileName = "UpgradeSaveFile", menuName = "RealMethod/Upgrade/SaveFile", order = 1)]
     public class UpgradeSaveFile : SaveFile, IUpgradeStorage
     {
         [Header("Setting")]

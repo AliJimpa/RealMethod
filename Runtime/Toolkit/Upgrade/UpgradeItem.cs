@@ -16,7 +16,7 @@ namespace RealMethod
         public Action<UpgradeItem> OnUnlocked;
 
         protected Upgrade Owner { get; private set; }
-        private bool IsUnlocked => Owner.IsUnlocked(Title);
+        public bool IsUnlocked => Owner != null ? Owner.IsUnlocked(Title) : false;
 
 
         // Implement IUpgradeable Interface
