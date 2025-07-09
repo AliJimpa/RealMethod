@@ -33,6 +33,8 @@ namespace RealMethod
         private Pose[] FractionPoses;
         public bool IsReseting { get; private set; } = false;
 
+        private Coroutine dissolvecorotine;
+
 
         // ExecutCommand Methods
         protected override bool OnInitiate(UnityEngine.Object author, UnityEngine.Object owner)
@@ -121,7 +123,7 @@ namespace RealMethod
                 AddCustomForce(rb, explosionForce, tranfome.position);
             }
             if (dissolve)
-                StartCoroutine(Dissolve(dissolvetime));
+                dissolvecorotine = StartCoroutine(Dissolve(dissolvetime));
             return GetDamagedObject();
         }
         public GameObject Fracture(Collider other)
@@ -142,7 +144,7 @@ namespace RealMethod
                 AddCustomForce(rb, finalExplosionForce, explosionPosition);
             }
             if (dissolve)
-                StartCoroutine(Dissolve(dissolvetime));
+                dissolvecorotine = StartCoroutine(Dissolve(dissolvetime));
             return GetDamagedObject();
         }
         public GameObject GetHealthyObject()
@@ -210,11 +212,17 @@ namespace RealMethod
         }
         private IEnumerator LerpReset(Rigidbody body, Pose pose, float resetDuration)
         {
-            float elapsed = 0f;
-            Pose EndPose = GetWorldLocarion(pose);
-            Pose StartPose = new Pose(body.transform.position, body.transform.rotation);
+            if (dissolvecorotine != null)
+            {
+                StopCoroutine(dissolvecorotine);
+            }
 
-            
+            float elapsed = 0f;
+            Pose StartPose = new Pose(body.transform.position, body.transform.rotation);
+            Pose EndPose = GetWorldLocarion(pose);
+
+
+
             while (elapsed < resetDuration)
             {
                 float t = elapsed / resetDuration;
@@ -227,7 +235,7 @@ namespace RealMethod
                 yield return null;
             }
 
-            body.transform.SetPositionAndRotation(pose.position, pose.rotation);
+            body.transform.SetPositionAndRotation(EndPose.position, EndPose.rotation);
             HealthyObject.SetActive(true);
             DamagedObject.SetActive(false);
             IsReseting = false;
