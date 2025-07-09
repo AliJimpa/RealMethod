@@ -133,6 +133,7 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("WidgetToolkitTemplate.txt", "MyWidgetToolkit.cs");
         }
+
         // Pattern
         [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/BaseCommand", false, 80)]
         public static void CreateCommand()
@@ -169,8 +170,6 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("Trigger2DTemplate.txt", "MyTrigger.cs");
         }
-
-
 
         // Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Editor/SettingSection", false, 80)]
