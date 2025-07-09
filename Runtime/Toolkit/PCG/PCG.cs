@@ -16,7 +16,7 @@ namespace RealMethod
         [SerializeField]
         private PCGType Type;
         [SerializeField]
-        private PCGResourceAsset Resource;
+        private PCGResourceConfig Resource;
         [SerializeField, ShowInInspectorByEnum("Type", 1)]
         private PCGGenerationAsset Generation;
         [SerializeField, ShowInInspectorByEnum("Type", 0)]
@@ -147,7 +147,7 @@ namespace RealMethod
             Generation.PostProcess(ref MyCash);
             yield return new WaitForEndOfFrame();
         }
-        private IEnumerator PCG_Initiate(PCGResourceAsset resurce, PCGCashAsset cashfile)
+        private IEnumerator PCG_Initiate(PCGResourceConfig resurce, PCGCashAsset cashfile)
         {
             if (cashfile.IsValid)
             {
@@ -184,7 +184,7 @@ namespace RealMethod
                 Debug.LogWarning($"PCGCashAsset {cashfile.name} is not valid");
             }
         }
-        private IEnumerator PCG_Initiate(PCGResourceAsset resurce, PCGData[] cashdata)
+        private IEnumerator PCG_Initiate(PCGResourceConfig resurce, PCGData[] cashdata)
         {
             Slots[0] = new GameObject(Generation.name).transform;
             GameObject BackgroundLayer = new GameObject("Background");

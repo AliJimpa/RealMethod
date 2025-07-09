@@ -177,7 +177,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static Coroutine OpenWorld(WorldSceneAsset WorldScene)
+        public static Coroutine OpenWorld(WorldSceneConfig WorldScene)
         {
             if (!Service.IsLoading && SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.GetPersistent()).buildIndex)
             {

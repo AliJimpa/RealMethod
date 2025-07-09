@@ -39,7 +39,7 @@ namespace RealMethod
         {
             return LoadSceneAsync(TargetScene);
         }
-        public virtual IEnumerator GetLoadWorldCorotine(WorldSceneAsset WorldScene)
+        public virtual IEnumerator GetLoadWorldCorotine(WorldSceneConfig WorldScene)
         {
             return LoadWorldAsync(WorldScene);
         }
@@ -91,7 +91,7 @@ namespace RealMethod
             IsLoading = false;
             OnSceneLoading?.Invoke(false);
         }
-        private IEnumerator LoadWorldAsync(WorldSceneAsset WS)
+        private IEnumerator LoadWorldAsync(WorldSceneConfig WS)
         {
             if (IsLoading == true)
             {

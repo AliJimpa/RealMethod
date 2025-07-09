@@ -27,7 +27,7 @@ namespace RealMethod
             Scale = Vector3.one;
         }
 
-        public PCGSourceLayer GetLayer(PCGResourceAsset Resource)
+        public PCGSourceLayer GetLayer(PCGResourceConfig Resource)
         {
             return Resource.GetSource(PrefabID).Layer;
         }
@@ -65,17 +65,17 @@ namespace RealMethod
         [SerializeField]
         private List<PCGOrder> FullItem = new List<PCGOrder>();
 
-        private PCGResourceAsset MyResource;
+        private PCGResourceConfig MyResource;
 
 
-        public PCGData[] GetFullProcess(PCGResourceAsset resource)
+        public PCGData[] GetFullProcess(PCGResourceConfig resource)
         {
             PCGData[] Result = PreProcess(resource);
             Process(ref Result);
             PostProcess(ref Result);
             return Result;
         }
-        public PCGData[] PreProcess(PCGResourceAsset resource)
+        public PCGData[] PreProcess(PCGResourceConfig resource)
         {
             MyResource = resource;
             List<PCGData> Result = new List<PCGData>();
@@ -325,6 +325,10 @@ namespace RealMethod
             }
         }
 
+        public override void OnEditorPlay()
+        {
+            PrintGuide();
+        }
     }
 
 

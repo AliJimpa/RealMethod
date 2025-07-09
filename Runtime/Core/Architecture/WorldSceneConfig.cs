@@ -9,7 +9,7 @@ using UnityEditor.SceneManagement;
 namespace RealMethod
 {
    [CreateAssetMenu(fileName = "WorldScene", menuName = "Scene/WorldScene", order = 1)]
-   public class WorldSceneAsset : DataAsset
+   public class WorldSceneConfig : ConfigAsset
    {
       [Header("Config")]
       [SerializeField]

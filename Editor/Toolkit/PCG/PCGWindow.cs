@@ -63,7 +63,7 @@ namespace RealMethod.Editor
         }
 
         // Fields
-        private EP_ScriptableObject<PCGResourceAsset> Resurce;
+        private EP_ScriptableObject<PCGResourceConfig> Resurce;
         private EP_ScriptableObject<PCGGenerationAsset> Genration;
         private EP_ScriptableObject<PCGCashAsset> Cash;
         private EP_List<GD_Class> SelectedData;
@@ -102,7 +102,7 @@ namespace RealMethod.Editor
                 Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
             }
 
-            Resurce = new EP_ScriptableObject<PCGResourceAsset>("Resurce", this);
+            Resurce = new EP_ScriptableObject<PCGResourceConfig>("Resurce", this);
             Genration = new EP_ScriptableObject<PCGGenerationAsset>("Genration", this);
             Cash = new EP_ScriptableObject<PCGCashAsset>("Cash", this);
             SelectedData = new EP_List<GD_Class>("Data", this);

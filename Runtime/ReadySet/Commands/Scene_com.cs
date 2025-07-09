@@ -24,7 +24,7 @@ namespace RealMethod
         [SerializeField, ShowInInspectorByEnum("method", 2)]
         private SceneReference sceneAsset;
         [SerializeField, ShowInInspectorByEnum("method", 3)]
-        private WorldSceneAsset worldAsset;
+        private WorldSceneConfig worldAsset;
         [Header("Setting")]
         [SerializeField, ShowInInspectorByEnum("method", 0, 1)]
         private bool IsAsync = false;

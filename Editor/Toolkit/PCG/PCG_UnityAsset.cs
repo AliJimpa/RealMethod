@@ -1,6 +1,6 @@
 namespace RealMethod.Editor
 {
-    public class PCGResource_UnityAsset : AssetHandeler<PCGResourceAsset, DataAsset>
+    public class PCGResource_UnityAsset : AssetHandeler<PCGResourceConfig, DataAsset>
     {
         protected override void Initialized()
         {
@@ -18,7 +18,7 @@ namespace RealMethod.Editor
         {
             return "Icons/Toolkit/PCGResource";
         }
-        protected override void DoubleClick(PCGResourceAsset asset)
+        protected override void DoubleClick(PCGResourceConfig asset)
         {
 
         }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public class PCGCashAsset : DataAsset
+    public class PCGCashAsset : ConfigAsset
     {
         [SerializeField]
         private PCGData[] CashData;
