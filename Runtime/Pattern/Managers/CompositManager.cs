@@ -30,13 +30,12 @@ namespace RealMethod
         [SerializeField]
         private AudioMixerSnapshot[] Snapshots;
         [SerializeField]
-        private string stateservice = string.Empty;
-        [SerializeField]
         private float SnapshotTime = 2;
 
 
-        public bool IsConnectService { get; private set; }
-        protected StateService GameState;
+
+        protected StateService stateServ;
+        public bool IsServiceRegistered => stateServ != null;
 
         // Operators
         public AudioSource this[int index]
@@ -54,28 +53,25 @@ namespace RealMethod
                 Destroy(this);
             }
 
-            if (!IsConnectService && stateservice != string.Empty)
+            if (!IsServiceRegistered)
             {
-                if (Game.TryFindService(stateservice, out GameState))
+                if (Game.TryFindService(out stateServ))
                 {
-                    GameState.OnStateChanged += OnStateChanged;
+                    stateServ.OnStateChanged += OnStateChanged;
                     OnStateConnect();
-                    IsConnectService = true;
                 }
                 else
                 {
-                    Debug.LogError($"Cant find any State with this name '{stateservice}'");
-                    IsConnectService = false;
+                    Debug.LogError($"Cant find any StateService!");
                 }
             }
         }
         public override void InitiateService(Service service)
         {
-            if (!IsConnectService && service is StateService GameState)
+            if (!IsServiceRegistered)
             {
-                GameState.OnStateChanged += OnStateChanged;
+                stateServ.OnStateChanged += OnStateChanged;
                 OnStateConnect();
-                IsConnectService = true;
             }
         }
 

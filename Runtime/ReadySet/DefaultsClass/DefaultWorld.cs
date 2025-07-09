@@ -9,5 +9,9 @@ namespace RealMethod
         {
             Debug.Log("DefaultWorld Awaked");
         }
+        protected override void DestroyWorld()
+        {
+            Debug.Log("DefaultWorld Destroyed");
+        }
     }
 }

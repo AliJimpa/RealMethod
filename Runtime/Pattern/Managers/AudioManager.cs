@@ -4,7 +4,7 @@ using UnityEngine.Audio;
 
 namespace RealMethod
 {
-    
+
     public abstract class AudioManager : MixerManager
     {
         [Header("Audio")]
@@ -20,7 +20,7 @@ namespace RealMethod
                 Destroy(this);
             }
 
-            if (Game.TryFindService("Spawn", out Service target) && target is Spawn SpawnServ)
+            if (Game.TryFindService(out Spawn SpawnServ))
             {
                 SpawnServ.BringManager(this);
             }

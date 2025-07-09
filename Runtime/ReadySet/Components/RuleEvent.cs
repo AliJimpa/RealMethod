@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
+    [AddComponentMenu("RealMethod/General/RuleEvent")]
     public sealed class RuleEvent : MonoBehaviour
     {
         [Header("Rule")]
@@ -12,43 +13,38 @@ namespace RealMethod
         private bool CallOnAwake = false;
         [SerializeField]
         private UnityEvent<bool> RuleEffect;
-        [Header("Advance")]
-        [SerializeField]
-        private string ServiceName = "GameRule";
-        [SerializeField, ShowOnly]
-        private bool IsConnectRule = false;
 
-        private RuleService RuleBox;
+        private RuleService ruleServ;
+        public bool IsServiceRegistered => ruleServ != null;
 
         private void Awake()
         {
-            if (Game.TryFindService(ServiceName, out RuleBox))
+            if (Game.TryFindService(out ruleServ))
             {
-                if (RuleBox.IsValid(Rule))
+                if (ruleServ.IsValid(Rule))
                 {
-                    RuleBox.BindRule(Rule, OnRuleChanged);
-                    IsConnectRule = true;
+                    ruleServ.BindRule(Rule, OnRuleChanged);
                     if (CallOnAwake)
                     {
-                        RuleEffect.Invoke(RuleBox.InEffect(Rule));
+                        RuleEffect.Invoke(ruleServ.InEffect(Rule));
                     }
                 }
                 else
                 {
-                    RuleBox.OnAddedRule += OnNewRuleCreate;
+                    ruleServ.OnAddedRule += OnNewRuleCreate;
                 }
             }
             else
             {
-                Debug.LogError($"RuleEvent: Could not find service '{ServiceName}' for on GameObject '{gameObject.name}'.");
+                Debug.LogError($"RuleEvent: Could not find 'RuleService' for on GameObject '{gameObject.name}'.");
                 enabled = false;
             }
         }
         private void OnDisable()
         {
-            if (RuleBox != null)
+            if (ruleServ != null)
             {
-                RuleBox.OnAddedRule -= OnNewRuleCreate;
+                ruleServ.OnAddedRule -= OnNewRuleCreate;
             }
         }
 
@@ -56,19 +52,14 @@ namespace RealMethod
         {
             return Rule;
         }
-        public bool IsConnect()
-        {
-            return IsConnectRule;
-        }
 
 
         private void OnNewRuleCreate(string Name)
         {
             if (Name == Rule)
             {
-                RuleBox.BindRule(Rule, OnRuleChanged);
-                IsConnectRule = true;
-                RuleBox.OnAddedRule -= OnNewRuleCreate;
+                ruleServ.BindRule(Rule, OnRuleChanged);
+                ruleServ.OnAddedRule -= OnNewRuleCreate;
             }
         }
         private void OnRuleChanged(Observer obs)

@@ -3,10 +3,12 @@ using RealMethod;
 public class #SCRIPTNAME# : World
 {
 
-    // Base World Methods
+    // World Methods
     protected override void AwakeWorld()
     {
-        throw new System.NotImplementedException();
+    }
+    protected override void DestroyWorld()
+    {
     }
 
 }

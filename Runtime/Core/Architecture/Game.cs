@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 namespace RealMethod
 {
@@ -46,7 +47,8 @@ namespace RealMethod
 
         // Private Variable
         private IGameManager[] Managers;
-        private Hictionary<Service> GameServices = new Hictionary<Service>(3);
+        private List<Service> GameServices;
+
 
 
 
@@ -89,7 +91,7 @@ namespace RealMethod
         private void ReplaceWorld(World NewWorld)
         {
             World = NewWorld;
-            foreach (var service in GameServices.GetValues())
+            foreach (var service in GameServices)
             {
                 service.WorldUpdated();
             }
@@ -120,50 +122,61 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T CreateService<T>(string Name, object Author) where T : class
+        public static T AddService<T>(object author) where T : Service, new()
         {
-            Service newService = Activator.CreateInstance<T>() as Service;
-            if (Instance.GameServices.TryAdd(Name, newService))
+            // Check if a service of this type already exists
+            if (Instance.GameServices.Any(s => s.GetType() == typeof(T)))
             {
-                Service.OnServiceCreate?.Invoke(newService);
-                if (Instance.Managers != null)
-                {
-                    foreach (var manager in Instance.Managers)
-                    {
-                        manager.InitiateService(newService);
-                    }
-                }
-                newService.Start(Author);
-                return newService as T;
-            }
-            else
-            {
-                Debug.LogWarning($"A service with the name '{Name}' already exists and will not be replaced.");
+                Debug.LogWarning($"Service of type {typeof(T).Name} already exists.");
                 return null;
             }
-        }
-        public static bool DeleteService(string Name, object Author)
-        {
-            if (!Instance.GameServices.TryGetValue(Name, out var Result))
-                return false;
 
-            Result.End(Author);
-            Instance.GameServices.Remove(Name);
-            return true;
-        }
-        public static T FindService<T>(string Name) where T : Service
-        {
-            return Instance.GameServices[Name] as T;
-        }
-        public static bool TryFindService<T>(string Name, out T Target) where T : Service
-        {
-            if (Instance.GameServices.TryGetValue(Name, out Service service) && service is T tService)
+            T newService = new T();
+            Instance.GameServices.Add(newService);
+
+            Service.OnServiceCreate?.Invoke(newService);
+            if (Instance.Managers != null)
             {
-                Target = tService;
+                foreach (var manager in Instance.Managers)
+                {
+                    manager.InitiateService(newService);
+                }
+            }
+            newService.Start(author);
+
+            return newService;
+        }
+        public static bool RemoveService<T>(object author) where T : Service
+        {
+            var service = Instance.GameServices.FirstOrDefault(s => s.GetType() == typeof(T));
+            if (service != null)
+            {
+                service.End(author);
+                Instance.GameServices.Remove(service);
                 return true;
             }
-            Target = null;
+
+            Debug.LogWarning($"Service of type {typeof(T).Name} not found to remove.");
             return false;
+        }
+        public static T GetService<T>() where T : Service
+        {
+            return Instance.GameServices.OfType<T>().FirstOrDefault();
+        }
+        public static Service GetService(Type type)
+        {
+            if (!typeof(Service).IsAssignableFrom(type))
+            {
+                Debug.LogError($"Type {type.Name} is not a valid Service.");
+                return null;
+            }
+
+            return Instance.GameServices.FirstOrDefault(s => s.GetType() == type);
+        }
+        public static bool TryFindService<T>(out T service) where T : Service
+        {
+            service = Instance.GameServices.OfType<T>().FirstOrDefault();
+            return service != null;
         }
         public static Coroutine OpenScene(SceneReference TargetScene)
         {
@@ -192,7 +205,7 @@ namespace RealMethod
         public static T FindManager<T>() where T : MonoBehaviour
         {
             T Result = null;
-            
+
             if (World != null)
             {
                 Result = World.GetManager<T>();
@@ -285,6 +298,7 @@ namespace RealMethod
                 {
                     Service = new DefaultGameService();
                 }
+                AlternativeInstance.GameServices = new List<Service>(3);
                 Service.OnWorldUpdate += AlternativeInstance.ReplaceWorld;
                 Service.Start(AlternativeInstance);
                 // CreateStartService Abstract

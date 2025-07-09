@@ -174,19 +174,17 @@ namespace RealMethod
                     if (SpawnPoint)
                     {
                         PlayerObject = Instantiate(DefualtPlayer, SpawnPoint.position, SpawnPoint.rotation);
-                        Destroy(SpawnPoint.gameObject);
                     }
                     else
                     {
-                        PlayerObject = Instantiate(DefualtPlayer, this.transform);
+                        PlayerObject = Instantiate(DefualtPlayer, transform.position, Quaternion.identity);
                     }
                     return true;
                 }
                 else
                 {
                     PlayerObject = new GameObject("Player");
-                    if (SpawnPoint)
-                        Destroy(SpawnPoint.gameObject);
+                    PlayerObject.tag = "Player";
                     return true;
                 }
 
@@ -222,5 +220,6 @@ namespace RealMethod
         }
         // Abstract Methods
         protected abstract void AwakeWorld();
+        protected abstract void DestroyWorld();
     }
 }

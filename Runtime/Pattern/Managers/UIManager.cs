@@ -47,7 +47,7 @@ namespace RealMethod
                 }
             }
 
-            if (Game.TryFindService("Spawn", out Service target) && target is Spawn SpawnServ)
+            if (Game.TryFindService(out Spawn SpawnServ))
             {
                 SpawnServ.BringManager(this);
             }
@@ -270,10 +270,10 @@ namespace RealMethod
             if (IsValid(Name))
             {
                 GameObject Target = Layers[Name];
-                
+
                 if (Target != null)
                     Destroy(Target);
-                
+
                 Layers.Remove(Name);
 
                 return true;

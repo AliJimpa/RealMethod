@@ -23,13 +23,12 @@ namespace RealMethod
             if (Game.World == null)
             {
                 OnWorldUpdate?.Invoke(world);
-                NewWorld(world);
                 return true;
             }
             else
             {
-                OnAdditiveWorld?.Invoke(world);
                 NewAdditiveWorld(world);
+                OnAdditiveWorld?.Invoke(world);
                 return false;
             }
         }
@@ -45,7 +44,6 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        protected abstract void NewWorld(World target);
         protected abstract void NewAdditiveWorld(World target);
 
         // Corotine
