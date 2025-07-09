@@ -11,7 +11,6 @@ namespace RealMethod
         {
             BaseComponent = (Ability)target;
         }
-
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
@@ -32,9 +31,6 @@ namespace RealMethod
 
 
         }
-
-
-
 
         private string GetState(Power targetpower)
         {
@@ -73,7 +69,5 @@ namespace RealMethod
             }
 
         }
-
-
     }
 }

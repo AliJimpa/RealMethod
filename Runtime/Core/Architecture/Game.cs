@@ -50,9 +50,7 @@ namespace RealMethod
         private List<Service> GameServices;
 
 
-
-
-        // Public Metthods
+        // Public Functions
         public T GetManager<T>() where T : class
         {
             foreach (var manager in Managers)
@@ -74,6 +72,10 @@ namespace RealMethod
                 }
             }
             return null;
+        }
+        public string[] GetAllServiceNames()
+        {
+            return GameServices.Select(service => service.GetType().Name).ToArray();
         }
         // Protected Functions
         protected T NeedManager<T>() where T : MonoBehaviour
