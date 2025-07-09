@@ -10,13 +10,14 @@ namespace RealMethod
     {
         [Header("Setting")]
         [SerializeField]
-        public ParticleSystem Particle;
+        private ParticleSystem Particles;
+
 
         //Actions
         public Action<ParticleSystem> OnSpawn;
 
         // Private Variable
-        private byte UseCacheData = 0; //0:NoCashing 1:CashLocation 2:CashLocation&Rotation 3:Transform
+        private byte UseCacheData = 0; //0:NoCashing 1:CachePosition 2:CachePosition&Rotation 3:CacheTransform 
         private Vector3 CachePosition = Vector3.zero;
         private Quaternion CacheRotation = Quaternion.identity;
         private Vector3 CacheScale = Vector3.one;
@@ -46,7 +47,6 @@ namespace RealMethod
         }
         public ParticleSystem Spawn()
         {
-            UseCacheData = 0;
             ParticleSystem result = Request();
             OnSpawn?.Invoke(result);
             return result;
@@ -62,6 +62,8 @@ namespace RealMethod
         {
             switch (UseCacheData)
             {
+                case 0:
+                    break;
                 case 1:
                     Comp.transform.position = CachePosition;
                     break;
@@ -78,14 +80,13 @@ namespace RealMethod
                     }
                     break;
                 default:
-                    Debug.LogWarning($"For this CashStage ({UseCacheData}) is Not implemented any Preprocessing");
+                    Debug.LogWarning($"For this CacheStage ({UseCacheData}) is Not implemented any Preprocessing");
                     break;
             }
         }
         protected override ParticleSystem CreateObject()
         {
-            var NewObject = Instantiate(Particle, Vector3.zero, Quaternion.identity);
-            return NewObject.GetComponent<ParticleSystem>();
+            return Instantiate(Particles, Vector3.zero, Quaternion.identity);
         }
         protected override IEnumerator PostProcess(ParticleSystem Comp)
         {
@@ -93,12 +94,24 @@ namespace RealMethod
         }
 
 
+        // Base DataAsset Methods
+        public override void OnEditorPlay()
+        {
+            base.OnEditorPlay();
+            UseCacheData = 0;
+        }
+
+
+
         // IEnumerator
         private IEnumerator PoolBack(ParticleSystem particle)
         {
             particle.Play();
-            yield return new WaitForSeconds(particle.main.duration);
-            particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            if (particle.main.loop)
+            {
+                yield return new WaitForSeconds(particle.main.duration);
+                particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
             yield return new WaitUntil(() => particle.particleCount == 0);
             this.Return(particle);
             yield return null;

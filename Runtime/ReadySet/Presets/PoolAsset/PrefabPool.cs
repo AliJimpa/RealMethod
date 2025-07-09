@@ -12,7 +12,7 @@ namespace RealMethod
         private GameObject prefab;
         [SerializeField]
         private bool autoDespawn = true;
-        [SerializeField , ConditionalHide("autoDespawn",true,false)]
+        [SerializeField, ConditionalHide("autoDespawn", true, false)]
         private float duration = 2;
 
         //Actions
@@ -20,7 +20,7 @@ namespace RealMethod
 
 
         // Private Variable
-        private byte UseCacheData = 0; //0:NoCashing 1:CashLocation 2:CashLocation&Rotation 3:Transform 4:CashLocation&Duration 5:CashL&R&D
+        private byte UseCacheData = 0; //0:NoCashing 1:CachePosition 2:CachePosition&Rotation 3:CacheTransform 
         private Vector3 CachePosition = Vector3.zero;
         private Quaternion CacheRotation = Quaternion.identity;
         private Vector3 CacheScale = Vector3.one;
@@ -28,13 +28,13 @@ namespace RealMethod
 
 
         // Functions
-        public Transform Spawn(Vector3 location, Quaternion rotation, float overrideDuration)
+        public Transform Spawn(Vector3 location, Quaternion rotation, Vector3 scale , float overrideDuration)
         {
-            UseCacheData = 5;
+            UseCacheData = 3;
             CachePosition = location;
             CacheRotation = rotation;
-            CacheDuration = overrideDuration;
-            return Spawn();
+            CacheScale = scale;
+            return Spawn(overrideDuration);
         }
         public Transform Spawn(Vector3 location, Quaternion rotation, Vector3 scale)
         {
@@ -42,39 +42,44 @@ namespace RealMethod
             CachePosition = location;
             CacheRotation = rotation;
             CacheScale = scale;
-            CacheDuration = duration;
             return Spawn();
+        }
+        public Transform Spawn(Vector3 location, Quaternion rotation, float overrideDuration)
+        {
+            UseCacheData = 2;
+            CachePosition = location;
+            CacheRotation = rotation;
+            return Spawn(overrideDuration);
         }
         public Transform Spawn(Vector3 location, Quaternion rotation)
         {
             UseCacheData = 2;
             CachePosition = location;
             CacheRotation = rotation;
-            CacheDuration = duration;
             return Spawn();
         }
         public Transform Spawn(Vector3 location, float overrideDuration)
         {
-            UseCacheData = 4;
+            UseCacheData = 1;
             CachePosition = location;
-            CacheDuration = overrideDuration;
-            return Spawn();
+            return Spawn(overrideDuration);
         }
         public Transform Spawn(Vector3 location)
         {
             UseCacheData = 1;
             CachePosition = location;
-            CacheDuration = duration;
             return Spawn();
         }
         public Transform Spawn(float overrideDuration)
         {
-            UseCacheData = 0;
             CacheDuration = overrideDuration;
-            return Spawn();
+            Transform result = Request();
+            OnSpawn?.Invoke(result);
+            return result;
         }
         public Transform Spawn()
         {
+            CacheDuration = duration;
             Transform result = Request();
             OnSpawn?.Invoke(result);
             return result;
@@ -129,13 +134,6 @@ namespace RealMethod
                         Comp.transform.localScale = CacheScale;
                     }
                     break;
-                case 4:
-                    Comp.transform.position = CachePosition;
-                    break;
-                case 5:
-                    Comp.transform.position = CachePosition;
-                    Comp.transform.rotation = CacheRotation;
-                    break;
                 default:
                     Debug.LogWarning($"For this CacheStage ({UseCacheData}) is Not implemented any Preprocessing");
                     break;
@@ -149,6 +147,14 @@ namespace RealMethod
         protected override IEnumerator PostProcess(Transform Comp)
         {
             return autoDespawn ? PoolBack(Comp) : null;
+        }
+
+        // Base DataAsset Methods
+        public override void OnEditorPlay()
+        {
+            base.OnEditorPlay();
+            UseCacheData = 0;
+            CacheDuration = 0;
         }
 
         // IEnumerator

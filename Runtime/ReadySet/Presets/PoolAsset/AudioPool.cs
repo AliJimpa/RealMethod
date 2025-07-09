@@ -10,7 +10,7 @@ namespace RealMethod
     {
         [Header("Setting")]
         [SerializeField]
-        private AudioClip[] TargetClip = new AudioClip[1];
+        private AudioClip[] Clips = new AudioClip[1];
         [SerializeField]
         private AudioMixerGroup Group;
         [SerializeField, Range(0, 1)]
@@ -25,53 +25,86 @@ namespace RealMethod
 
 
         // Private Variable
-        private byte UseCacheData = 0; //0:NoCashing 1:CashLocation 2:CashLocation&Rotation 3:Transform
+        private byte UseCacheData = 0; //0,1:NoCashing 2,3:CachePosition 4,5:CachePosition&Rotation 6,7:CacheTransform 
         private Vector3 CachePosition = Vector3.zero;
         private Quaternion CacheRotation = Quaternion.identity;
         private Vector3 CacheScale = Vector3.one;
+        private int CacheIndex = 0;
 
 
         // Functions
-        public AudioSource Spawn(Vector3 location, Quaternion rotation, Vector3 scale)
+        public AudioSource Spawn(Vector3 location, Quaternion rotation, Vector3 scale, int index)
         {
-            UseCacheData = 3;
+            UseCacheData = 7;
+            CacheIndex = index;
             CachePosition = location;
             CacheRotation = rotation;
             CacheScale = scale;
             return Spawn();
         }
-        public AudioSource Spawn(Vector3 location, Quaternion rotation)
+        public AudioSource Spawn(Vector3 location, Quaternion rotation, Vector3 scale)
         {
-            UseCacheData = 2;
+            UseCacheData = 6;
+            CachePosition = location;
+            CacheRotation = rotation;
+            CacheScale = scale;
+            return Spawn();
+        }
+        public AudioSource Spawn(Vector3 location, Quaternion rotation, int index)
+        {
+            UseCacheData = 5;
+            CacheIndex = index;
             CachePosition = location;
             CacheRotation = rotation;
             return Spawn();
         }
+        public AudioSource Spawn(Vector3 location, Quaternion rotation)
+        {
+            UseCacheData = 4;
+            CachePosition = location;
+            CacheRotation = rotation;
+            return Spawn();
+        }
+        public AudioSource Spawn(Vector3 location, int index)
+        {
+            UseCacheData = 3;
+            CacheIndex = index;
+            CachePosition = location;
+            return Spawn();
+        }
         public AudioSource Spawn(Vector3 location)
         {
-            UseCacheData = 1;
+            UseCacheData = 2;
             CachePosition = location;
+            return Spawn();
+        }
+        public AudioSource Spawn(int index)
+        {
+            UseCacheData = 1;
+            CacheIndex = index;
             return Spawn();
         }
         public AudioSource Spawn()
         {
-            UseCacheData = 0;
             AudioSource result = Request();
             OnSpawn?.Invoke(result);
             return result;
         }
 
         // Private Functions
-        private void RandomizeAudioSource(AudioSource source)
+        private AudioClip GetRandomClip()
         {
-            int clipLength = TargetClip.Length;
+            int clipLength = Clips.Length;
             if (clipLength > 1)
             {
                 int randomIndex = UnityEngine.Random.Range(0, clipLength - 1);
-                source.clip = TargetClip[randomIndex];
+                return Clips[randomIndex];
+            }
+            else
+            {
+                return Clips[0];
             }
         }
-
 
         // Base PoolAsset Methods
         protected override void OnRootInitiate(Transform Root)
@@ -90,14 +123,41 @@ namespace RealMethod
         {
             switch (UseCacheData)
             {
+                case 0:
+                    Comp.clip = GetRandomClip();
+                    break;
                 case 1:
-                    Comp.transform.position = CachePosition;
+                    Comp.clip = Clips[CacheIndex];
                     break;
                 case 2:
+                    Comp.clip = GetRandomClip();
+                    Comp.transform.position = CachePosition;
+                    break;
+                case 3:
+                    Comp.clip = Clips[CacheIndex];
+                    Comp.transform.position = CachePosition;
+                    break;
+                case 4:
+                    Comp.clip = GetRandomClip();
                     Comp.transform.position = CachePosition;
                     Comp.transform.rotation = CacheRotation;
                     break;
-                case 3:
+                case 5:
+                    Comp.clip = Clips[CacheIndex];
+                    Comp.transform.position = CachePosition;
+                    Comp.transform.rotation = CacheRotation;
+                    break;
+                case 6:
+                    Comp.clip = GetRandomClip();
+                    Comp.transform.position = CachePosition;
+                    Comp.transform.rotation = CacheRotation;
+                    if (CacheScale != Vector3.one)
+                    {
+                        Comp.transform.localScale = CacheScale;
+                    }
+                    break;
+                case 7:
+                    Comp.clip = Clips[CacheIndex];
                     Comp.transform.position = CachePosition;
                     Comp.transform.rotation = CacheRotation;
                     if (CacheScale != Vector3.one)
@@ -106,21 +166,21 @@ namespace RealMethod
                     }
                     break;
                 default:
-                    Debug.LogWarning($"For this CashStage ({UseCacheData}) is Not implemented any Preprocessing");
+                    Debug.LogWarning($"For this CacheStage ({UseCacheData}) is Not implemented any Preprocessing");
                     break;
             }
         }
         protected override AudioSource CreateObject()
         {
             int randomIndex = 0;
-            if (TargetClip.Length > 1)
+            if (Clips.Length > 1)
             {
-                randomIndex = UnityEngine.Random.Range(0, TargetClip.Length - 1);
+                randomIndex = UnityEngine.Random.Range(0, Clips.Length - 1);
             }
 
-            GameObject AudioObject = new GameObject("Audio_" + TargetClip[randomIndex].name);
+            string ObjName = Clips.Length > 1 ? "Multi" : Clips[0].name;
+            GameObject AudioObject = new GameObject("Audio_" + ObjName);
             AudioSource source = AudioObject.AddComponent<AudioSource>();
-            source.clip = TargetClip[randomIndex];
             source.outputAudioMixerGroup = Group;
             source.spatialBlend = spatialBlend;
             source.minDistance = rolloffDistanceMin;
@@ -132,11 +192,16 @@ namespace RealMethod
             return PoolBack(Comp);
         }
 
+        // Base DataAsset Methods
+        public override void OnEditorPlay()
+        {
+            base.OnEditorPlay();
+            UseCacheData = 0;
+        }
 
         // IEnumerator
         private IEnumerator PoolBack(AudioSource source)
         {
-            RandomizeAudioSource(source);
             source.Play();
             yield return new WaitForSeconds(source.clip.length);
             source.Stop();
