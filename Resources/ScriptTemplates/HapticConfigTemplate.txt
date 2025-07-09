@@ -1,0 +1,29 @@
+using UnityEngine;
+using RealMethod;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : HapticConfig<HapticMethod, bool>
+{
+    enum HapticMethod
+    {
+        [Tooltip("Use HAR.PlayConstant() to play a haptic effect with constant amplitude.")]
+        ConstantEffect,
+        [Tooltip("Use HAR.PlayTransient() for rapid haptic feedback based on game events.")]
+        Transient,
+        [Tooltip("Use HAR.PlayTransient() for rapid haptic feedback based on game events.")]
+        MultiTransient,
+        [Tooltip("Use HAR.Play() for basic haptic patterns.")]
+        BasicPattern,
+        [Tooltip("Use HAR.PlayAdvanced() to fine-tune Amplitude, Pitch, and Transient parameters.")]
+        Advance,
+        [Tooltip("Just Some Interhaptics Presets")]
+        Preset,
+    }
+
+    // HapticConfig Method
+    protected abstract bool OnProduce(HapticMethod method)
+    {
+        
+    }
+
+}

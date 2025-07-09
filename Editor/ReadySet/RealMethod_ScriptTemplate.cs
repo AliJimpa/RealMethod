@@ -95,11 +95,6 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("ItemAssetTemplate.txt", "MyItemAsset.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/ConfigAsset", false, 80)]
-        public static void CreateConfigAsset()
-        {
-            string Path = ScriptCreator.Create("ConfigAssetTemplate.txt", "MyConfigAsset.cs");
-        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Asset/SharedRootAsset", false, 80)]
         public static void CreateSharedRootAsset()
         {
@@ -120,6 +115,19 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("TableTemplate.txt", "MyTableAsset.cs");
         }
+
+        //Config
+        [MenuItem("Assets/Create/Scripting/RealMethod/Config/ConfigAsset", false, 80)]
+        public static void CreateConfigAsset()
+        {
+            string Path = ScriptCreator.Create("ConfigAssetTemplate.txt", "MyConfigAsset.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Config/Haptic", false, 80)]
+        public static void CreateHapticConfig()
+        {
+            string Path = ScriptCreator.Create("HapticConfigTemplate.txt", "MyHaptic.cs");
+        }
+
 
 
         // UI
