@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public class StaticEffect : Effect
+    public class PoolEffect : Effect
     {
         [Header("Resource")]
         [SerializeField]
@@ -21,6 +21,10 @@ namespace RealMethod
         protected override void OnProduce()
         {
             SpawnPool(pose.position, pose.rotation);
+            if (hasParent)
+            {
+                Debug.LogWarning("PoolEffect Cant set parent");
+            }
         }
         protected override void OnHold(bool enable)
         {

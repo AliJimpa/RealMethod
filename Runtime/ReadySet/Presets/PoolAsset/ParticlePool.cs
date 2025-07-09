@@ -10,7 +10,7 @@ namespace RealMethod
     {
         [Header("Setting")]
         [SerializeField]
-        private ParticleSystem Particles;
+        private ParticleSystem Particle;
 
 
         //Actions
@@ -86,7 +86,7 @@ namespace RealMethod
         }
         protected override ParticleSystem CreateObject()
         {
-            return Instantiate(Particles, Vector3.zero, Quaternion.identity);
+            return Instantiate(Particle, Vector3.zero, Quaternion.identity);
         }
         protected override IEnumerator PostProcess(ParticleSystem Comp)
         {

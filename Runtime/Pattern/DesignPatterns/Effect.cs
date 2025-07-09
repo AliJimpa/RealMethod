@@ -7,7 +7,7 @@ namespace RealMethod
     public abstract class Effect
     {
         private Transform MyParent = null;
-        public Transform prent => MyParent;
+        public Transform parent => MyParent;
         protected bool hasParent => MyParent != null;
         private Pose effectPose = new Pose();
         protected bool hasPose { get; private set; } = false;
