@@ -6,17 +6,17 @@ public class #SCRIPTNAME# : HapticConfig<HapticMethod, YUORINITIATOR>
 {
     enum HapticMethod
     {
-        [Tooltip("Use HAR.PlayConstant() to play a haptic effect with constant amplitude.")]
+        [EnumDescription("Use HAR.PlayConstant() to play a haptic effect with constant amplitude.")]
         ConstantEffect,
-        [Tooltip("Use HAR.PlayTransient() for rapid haptic feedback based on game events.")]
+        [EnumDescription("Use HAR.PlayTransient() for rapid haptic feedback based on game events.")]
         Transient,
-        [Tooltip("Use HAR.PlayTransient() for rapid haptic feedback based on game events.")]
+        [EnumDescription("Use HAR.PlayTransient() for rapid haptic feedback based on game events.")]
         MultiTransient,
-        [Tooltip("Use HAR.Play() for basic haptic patterns.")]
+        [EnumDescription("Use HAR.Play() for basic haptic patterns.")]
         BasicPattern,
-        [Tooltip("Use HAR.PlayAdvanced() to fine-tune Amplitude, Pitch, and Transient parameters.")]
+        [EnumDescription("Use HAR.PlayAdvanced() to fine-tune Amplitude, Pitch, and Transient parameters.")]
         Advance,
-        [Tooltip("Just Some Interhaptics Presets")]
+        [EnumDescription("Just Some Interhaptics Presets")]
         Preset,
     }
 
