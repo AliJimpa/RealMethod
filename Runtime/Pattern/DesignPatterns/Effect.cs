@@ -1,53 +1,89 @@
-using System;
 using UnityEngine;
 
 namespace RealMethod
 {
-    [Serializable]
     public abstract class Effect
     {
-        private Transform MyParent = null;
-        public Transform parent => MyParent;
-        protected bool hasParent => MyParent != null;
-        private Pose effectPose = new Pose();
-        protected bool hasPose { get; private set; } = false;
-        public Pose pose => effectPose;
+        // Base Variable
         private bool isRunning = false;
         public bool IsPuse => !isRunning;
-        private bool isStarted = true;
+        private bool isStarted = false;
         public bool IsFinish => !isStarted;
+        // Cache Variable
+        private Transform cacheParent = null;
+        private Pose cachPose = new Pose();
+        private float cacheSize = 1;
 
         // Public Functions
+        public void Play(Transform parent, Vector3 location, Quaternion rotation, float size)
+        {
+            cacheParent = parent;
+            cachPose = new Pose(location, rotation);
+            cacheSize = size;
+            PlayEffect();
+        }
+        public void Play(Transform parent, Pose newPose)
+        {
+            cacheParent = parent;
+            cachPose = newPose;
+            cacheSize = 1;
+            PlayEffect();
+        }
         public void Play(Transform parent, Vector3 Offcet)
         {
-            MyParent = parent;
-            effectPose.position = Offcet;
-            hasPose = true;
-            Play();
+            cacheParent = parent;
+            cachPose = new Pose(Offcet, Quaternion.identity);
+            cacheSize = 1;
+            PlayEffect();
         }
-        public void Player(Transform parent)
+        public void Play(Transform parent, float size)
         {
-            MyParent = parent;
-            Play();
+            cacheParent = parent;
+            cachPose = new Pose();
+            cacheSize = size;
+            PlayEffect();
+        }
+        public void Play(Transform parent)
+        {
+            cacheParent = parent;
+            cachPose = new Pose();
+            cacheSize = 1;
+            PlayEffect();
         }
         public void Play(Pose newPose)
         {
-            effectPose = newPose;
-            hasPose = true;
-            Play();
+            cacheParent = null;
+            cachPose = newPose;
+            cacheSize = 1;
+            PlayEffect();
+        }
+        public void Play(Vector3 location, Quaternion rotation, float size)
+        {
+            cacheParent = null;
+            cachPose = new Pose(location, rotation);
+            cacheSize = size;
+            PlayEffect();
         }
         public void Play(Vector3 location, Quaternion rotation)
         {
-            effectPose.position = location;
-            effectPose.rotation = rotation;
-            hasPose = true;
-            Play();
+            cacheParent = null;
+            cachPose = new Pose(location, rotation);
+            cacheSize = 1;
+            PlayEffect();
+        }
+        public void Play(Vector3 location, float size)
+        {
+            cacheParent = null;
+            cachPose = new Pose(location, Quaternion.identity);
+            cacheSize = size;
+            PlayEffect();
         }
         public void Play(Vector3 location)
         {
-            effectPose.position = location;
-            hasPose = true;
-            Play();
+            cacheParent = null;
+            cachPose = new Pose(location, Quaternion.identity);
+            cacheSize = 1;
+            PlayEffect();
         }
         public void Puse()
         {
@@ -58,7 +94,6 @@ namespace RealMethod
         {
             EndEffect();
             isRunning = false;
-            hasPose = false;
         }
         public void Restart()
         {
@@ -66,7 +101,7 @@ namespace RealMethod
             {
                 EndEffect();
             }
-            Play();
+            PlayEffect();
         }
         public void Reset()
         {
@@ -79,16 +114,18 @@ namespace RealMethod
 
 
         // Private Functions
-        private void Play()
+        private void PlayEffect()
         {
             if (!isStarted)
             {
                 StartEffect();
             }
-
-            if (!isRunning)
+            else
             {
-                OnHold(false);
+                if (!isRunning)
+                {
+                    OnHold(false);
+                }
             }
 
             isRunning = true;
@@ -96,7 +133,7 @@ namespace RealMethod
         private void StartEffect()
         {
             isStarted = true;
-            OnProduce();
+            OnProduce(cachPose, cacheParent, cacheSize);
         }
         private void EndEffect()
         {
@@ -106,7 +143,7 @@ namespace RealMethod
 
 
         // Abstract Methods
-        protected abstract void OnProduce();
+        protected abstract void OnProduce(Pose pose, Transform parent, float size);
         protected abstract void OnHold(bool enable);
         protected abstract void OnClear();
         protected abstract void OnReset();

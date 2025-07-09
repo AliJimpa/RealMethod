@@ -5,21 +5,25 @@ namespace RealMethod
 {
     public abstract class HapticConfig : ConfigAsset
     {
-        public abstract void Play();
+        public abstract void Play(object author);
     }
 
-    public abstract class HapticConfig<T, J> : HapticConfig where T : Enum where J : struct
+    public abstract class HapticConfig<T, J> : HapticConfig where T : Enum where J : UnityEngine.Object
     {
         [Header("Type")]
         [SerializeField, Tooltip("The Haptic Config Use Witch Method for Apply Effect")]
         private T Method;
 
-        public override void Play()
+        public sealed override void Play(object author)
         {
-            OnProduce(Method);
+            OnProduce(Method, GetInitiator(author));
         }
-        protected abstract J OnProduce(T method);
+
+        protected abstract J GetInitiator(object author);
+        protected abstract bool OnProduce(T method, J initiator);
     }
+
+
 
 
 

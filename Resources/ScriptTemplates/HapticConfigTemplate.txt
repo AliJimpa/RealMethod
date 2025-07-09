@@ -2,7 +2,7 @@ using UnityEngine;
 using RealMethod;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : HapticConfig<HapticMethod, bool>
+public class #SCRIPTNAME# : HapticConfig<HapticMethod, YUORINITIATOR>
 {
     enum HapticMethod
     {
@@ -21,9 +21,11 @@ public class #SCRIPTNAME# : HapticConfig<HapticMethod, bool>
     }
 
     // HapticConfig Method
-    protected abstract bool OnProduce(HapticMethod method)
+    protected override YUORINITIATOR GetInitiator(object author)
     {
-        
+    }
+    protected override bool OnProduce(HapticMethod method, YUORINITIATOR initiator)
+    {
     }
 
 }

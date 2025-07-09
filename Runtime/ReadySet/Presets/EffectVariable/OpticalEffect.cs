@@ -1,18 +1,24 @@
+using System;
+using Codice.Client.BaseCommands.WkStatus.Printers;
 using UnityEngine;
 using UnityEngine.Audio;
 
 namespace RealMethod
 {
-    public class OpticalEffect : Effect
+    [Serializable]
+    public sealed class OpticalEffect : Effect
     {
         [Header("Resource")]
         [SerializeField]
-        private ParticleSystem Particle;
+        private ParticleSystem particle;
         [SerializeField]
-        private AudioClip Clip;
+        private HapticConfig haptic;
         [SerializeField]
-        private AudioMixerGroup Group;
-        [Header("Setting")]
+        private AudioClip audioClip;
+        
+        [Header("AudioSetting")]
+        [SerializeField]
+        private AudioMixerGroup group;
         [SerializeField, Range(0, 1)]
         private float spatialBlend = 1;
         [SerializeField]
@@ -28,20 +34,34 @@ namespace RealMethod
 
 
         // Effect Methods   
-        protected override void OnProduce()
+        protected override void OnProduce(Pose pose, Transform parent, float size)
         {
-            part = Object.Instantiate(Particle, pose.position, pose.rotation);
+            if (haptic != null)
+                haptic.Play(this);
+
+            if (parent != null)
+            {
+                part = UnityEngine.Object.Instantiate(particle, pose.position, pose.rotation, parent);
+            }
+            else
+            {
+                part = UnityEngine.Object.Instantiate(particle, pose.position, pose.rotation);
+            }
+            part.transform.localScale = Vector3.one * size;
             EffectObject = part.gameObject;
+
             audi = EffectObject.AddComponent<AudioSource>();
-            audi.clip = Clip;
-            audi.outputAudioMixerGroup = Group;
+            audi.clip = audioClip;
+
+            if (group != null)
+                audi.outputAudioMixerGroup = group;
+
             audi.spatialBlend = spatialBlend;
             audi.minDistance = rolloffDistanceMin;
             audi.maxDistance = rolloffDistanceMax;
-            if (hasParent)
-            {
-                EffectObject.transform.SetParent(parent);
-            }
+
+            audi.Play();            
+
         }
         protected override void OnHold(bool enable)
         {
@@ -62,11 +82,10 @@ namespace RealMethod
         }
         protected override void OnClear()
         {
-            Object.Destroy(EffectObject);
+            UnityEngine.Object.Destroy(EffectObject);
         }
         protected override void OnReset()
         {
-
         }
 
 
