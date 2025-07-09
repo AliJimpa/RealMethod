@@ -4,9 +4,9 @@ public class #SCRIPTNAME# : GameService
 {
 
     // Base Service Methods
-    public override void Start(object Author) { }
-    public override void WorldUpdated() { }
-    protected override void NewAdditiveWorld(World target) { }
-    public override void End(object Author) { }
+    protected override void OnStart(object Author) { }
+    protected override void OnNewWorld() { }
+    protected override void OnNewAdditiveWorld(World target) { }
+    protected override void OnEnd(object Author) { }
 
 }

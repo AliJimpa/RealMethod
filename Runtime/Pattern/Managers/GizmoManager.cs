@@ -19,11 +19,11 @@ namespace RealMethod
 		private GUIRenderer[] RenderBox;
 
 		//IGameManager Interface
-		public MonoBehaviour GetManagerClass()
+		MonoBehaviour IGameManager.GetManagerClass()
 		{
 			return this;
 		}
-		public void InitiateManager(bool AlwaysLoaded)
+		void IGameManager.InitiateManager(bool AlwaysLoaded)
 		{
 			if (!AlwaysLoaded)
 			{

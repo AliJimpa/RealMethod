@@ -12,7 +12,6 @@ namespace RealMethod
         [SerializeField]
         private StringFloatDictionary Parameter;
 
-
         // Operators
         public float this[string name]
         {
@@ -21,11 +20,20 @@ namespace RealMethod
         }
 
         // IGameManager Interface Implementation
-        public MonoBehaviour GetManagerClass()
+        MonoBehaviour IGameManager.GetManagerClass()
         {
             return this;
         }
-        // Basic Methods
+        void IGameManager.InitiateManager(bool AlwaysLoaded)
+        {
+            InitiateManager(AlwaysLoaded);
+        }
+        void IGameManager.InitiateService(Service service)
+        {
+            InitiateService(service);
+        }
+
+        // Unity Methods
         private void OnValidate()
         {
             if (Mixer != null)
@@ -41,7 +49,8 @@ namespace RealMethod
                 }
             }
         }
-        // Public Methods
+
+        // Public Functions
         public void Sync()
         {
             if (Mixer != null)
@@ -59,8 +68,8 @@ namespace RealMethod
         }
 
         // Abstract Method
-        public abstract void InitiateManager(bool AlwaysLoaded);
-        public abstract void InitiateService(Service service);
+        protected abstract void InitiateManager(bool AlwaysLoaded);
+        protected abstract void InitiateService(Service service);
     }
 
 

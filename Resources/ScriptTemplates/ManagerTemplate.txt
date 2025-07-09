@@ -5,15 +5,15 @@ public class #SCRIPTNAME# : MonoBehaviour, IGameManager
 {
 
     // Implement IGameManage Methods
-    public MonoBehaviour GetManagerClass()
+    MonoBehaviour IGameManager.GetManagerClass()
     {
         return this;
     }
-    public void InitiateManager(bool AlwaysLoaded)
+    void IGameManager.InitiateManager(bool AlwaysLoaded)
     {
         throw new System.NotImplementedException();
     }
-    public void InitiateService(Service service)
+    void IGameManager.InitiateService(Service service)
     {
         throw new System.NotImplementedException();
     }

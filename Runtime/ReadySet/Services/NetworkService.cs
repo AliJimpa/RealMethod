@@ -14,11 +14,17 @@ namespace RealMethod
         private const string jsonApi = "http://api.openweathermap.org/data/2.5/weather?q=Chicago,us&APPID=<your api key>";
         private const string xmlApi = "http://api.openweathermap.org/data/2.5/weather?q=Chicago,us&mode=xml&APPID=<your api key>";
 
-        public override void Start(object Author)
+
+
+        protected override void OnStart(object Author)
         {
             throw new NotImplementedException();
         }
-        public override void WorldUpdated()
+        protected override void OnNewWorld()
+        {
+            throw new NotImplementedException();
+        }
+         protected override void OnEnd(object Author)
         {
             throw new NotImplementedException();
         }
@@ -75,10 +81,7 @@ namespace RealMethod
             callback(DownloadHandlerTexture.GetContent(request));
         }
 
-        public override void End(object Author)
-        {
-            throw new NotImplementedException();
-        }
+       
 
     }
 

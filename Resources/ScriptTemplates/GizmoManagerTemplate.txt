@@ -2,15 +2,12 @@ using RealMethod;
 
 public class #SCRIPTNAME# : GizmoManager
 {
-
-    // Implement IGameManage Methods
-    public override void InitiateService(Service service)
+    // Base DataManager Methods
+    protected override GUIRenderer[] GetRenderSlots()
     {
         throw new System.NotImplementedException();
     }
-
-    // Base DataManager Methods
-    protected override GUIRenderer[] GetRenderSlots()
+    protected override void InitiateService(Service service)
     {
         throw new System.NotImplementedException();
     }

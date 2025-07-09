@@ -13,7 +13,7 @@ namespace RealMethod
             Rules = new Hictionary<Observer<bool>>(5);
         }
 
-        public override void WorldUpdated()
+        protected override void OnNewWorld()
         {
             foreach (var item in Rules.GetValues())
             {

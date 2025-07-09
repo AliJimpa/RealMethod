@@ -25,7 +25,7 @@ namespace RealMethod
 
         private DebugManager Debugger;
 
-        public override void Start(object Author)
+        protected override void OnStart(object Author)
         {
             if (instance == null)
             {
@@ -41,14 +41,15 @@ namespace RealMethod
             if (Debugger == null)
             {
                 Debugger = Game.Instance.gameObject.AddComponent<DebugManager>();
-                Debugger.InitiateManager(true);
+                IGameManager manager = Debugger;
+                manager.InitiateManager(true);
             }
         }
-        public override void WorldUpdated()
+        protected override void OnNewWorld()
         {
             Debugger.Clear();
         }
-        public override void End(object Author)
+        protected override void OnEnd(object Author)
         {
             Object.Destroy(Debugger);
         }

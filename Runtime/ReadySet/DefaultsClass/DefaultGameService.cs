@@ -4,18 +4,18 @@ namespace RealMethod
 {
     public sealed class DefaultGameService : GameService
     {
-        public override void Start(object Author)
+        protected override void OnStart(object Author)
         {
             Debug.Log("DefaultGameService Started");
         }
-        public override void WorldUpdated()
+        protected override void OnNewWorld()
         {
         }
-        protected override void NewAdditiveWorld(World target)
+        protected override void OnNewAdditiveWorld(World target)
         {
             
         }
-        public override void End(object Author)
+        protected override void OnEnd(object Author)
         {
             Debug.LogError("DefaultGameService Ended [This should not happent]");
         }

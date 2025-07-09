@@ -95,7 +95,8 @@ namespace RealMethod
             World = NewWorld;
             foreach (var service in GameServices)
             {
-                service.WorldUpdated();
+                IService Intface = service;
+                Intface.WorldUpdated();
             }
             WorldSynced(World);
         }
@@ -144,7 +145,8 @@ namespace RealMethod
                     manager.InitiateService(newService);
                 }
             }
-            newService.Start(author);
+            IService Intface = newService;
+            Intface.Created(author);
 
             return newService;
         }
@@ -153,7 +155,8 @@ namespace RealMethod
             var service = Instance.GameServices.FirstOrDefault(s => s.GetType() == typeof(T));
             if (service != null)
             {
-                service.End(author);
+                IService Intface = service;
+                Intface.Deleted(author);
                 Instance.GameServices.Remove(service);
                 return true;
             }
@@ -302,7 +305,8 @@ namespace RealMethod
                 }
                 AlternativeInstance.GameServices = new List<Service>(3);
                 Service.OnWorldUpdate += AlternativeInstance.ReplaceWorld;
-                Service.Start(AlternativeInstance);
+                IService Intface = Service;
+                Intface.Created(AlternativeInstance);
                 // CreateStartService Abstract
                 AlternativeInstance.GameServiceCreated();
                 // Set Game Setting Asset 

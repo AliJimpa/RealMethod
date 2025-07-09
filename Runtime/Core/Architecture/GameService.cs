@@ -27,7 +27,7 @@ namespace RealMethod
             }
             else
             {
-                NewAdditiveWorld(world);
+                OnNewAdditiveWorld(world);
                 OnAdditiveWorld?.Invoke(world);
                 return false;
             }
@@ -44,7 +44,7 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        protected abstract void NewAdditiveWorld(World target);
+        protected abstract void OnNewAdditiveWorld(World target);
 
         // Corotine
         private IEnumerator LoadSceneAsync(SceneReference scene)

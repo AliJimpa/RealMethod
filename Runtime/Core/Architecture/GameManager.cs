@@ -4,16 +4,38 @@ namespace RealMethod
 {
     public interface IGameManager
     {
-        void InitiateManager(bool AlwaysLoaded);
         MonoBehaviour GetManagerClass();
+        void InitiateManager(bool AlwaysLoaded);
         void InitiateService(Service service);
     }
 
-    public abstract class Service
+    public interface IService
     {
-        public abstract void Start(object Author);
-        public abstract void WorldUpdated();
-        public abstract void End(object Author);
+        void Created(object author);
+        void WorldUpdated();
+        void Deleted(object author);
+    }
+
+    public abstract class Service : IService
+    {
+        // Implement IService Interface
+        void IService.Created(object author)
+        {
+            OnStart(author);
+        }
+        void IService.WorldUpdated()
+        {
+            OnNewWorld();
+        }
+        void IService.Deleted(object author)
+        {
+            OnEnd(author);
+        }
+
+        // Abstract Method
+        protected abstract void OnStart(object Author);
+        protected abstract void OnNewWorld();
+        protected abstract void OnEnd(object Author);
     }
 
 }

@@ -12,7 +12,7 @@ namespace RealMethod
 
         private Transform SoundsPacket;
 
-        public override void InitiateManager(bool AlwaysLoaded)
+        protected override void InitiateManager(bool AlwaysLoaded)
         {
             if (AlwaysLoaded)
             {
@@ -27,7 +27,7 @@ namespace RealMethod
 
             SoundsPacket = transform;
         }
-        public override void InitiateService(Service service)
+        protected override void InitiateService(Service service)
         {
             if (service is Spawn SpawnServ)
             {

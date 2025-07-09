@@ -3,18 +3,15 @@ using RealMethod;
 public class #SCRIPTNAME# : Service
 {
 
-    // Base Service Methods
-    public override void Start(object Author)
+    // Service Methods
+    protected override void OnStart(object Author)
     {
-        throw new System.NotImplementedException();
     }
-    public override void WorldUpdated()
+    protected override void OnNewWorld()
     {
-        throw new System.NotImplementedException();
     }
-    public override void End(object Author)
+    protected override void OnEnd(object Author)
     {
-        throw new System.NotImplementedException();
     }
 
 }

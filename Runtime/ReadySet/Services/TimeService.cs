@@ -8,16 +8,16 @@ namespace RealMethod
         private float CreateTime;
         private Dictionary<string, float> RecordTime = new Dictionary<string, float>();
 
-        public override void Start(object Author)
+        protected override void OnStart(object Author)
         {
             CreateTime = Time.time;
         }
 
-        public override void WorldUpdated()
+        protected override void OnNewWorld()
         {
         }
 
-        public override void End(object Author)
+        protected override void OnEnd(object Author)
         {
         }
 

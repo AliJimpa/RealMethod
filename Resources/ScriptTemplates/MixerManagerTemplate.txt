@@ -4,11 +4,11 @@ public class #SCRIPTNAME# : MixerManager
 {
 
     // Implement IGameManage Methods
-    public override void InitiateManager(bool AlwaysLoaded)
+    protected override void InitiateManager(bool AlwaysLoaded)
     {
         throw new System.NotImplementedException();
     }
-    public override void InitiateService(Service service)
+    protected override void InitiateService(Service service)
     {
         throw new System.NotImplementedException();
     }

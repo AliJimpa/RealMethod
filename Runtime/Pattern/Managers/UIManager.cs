@@ -31,11 +31,11 @@ namespace RealMethod
 
 
         // Implement IGameManager Interface
-        public MonoBehaviour GetManagerClass()
+        MonoBehaviour IGameManager.GetManagerClass()
         {
             return this;
         }
-        public void InitiateManager(bool alwaysLoaded)
+        void IGameManager.InitiateManager(bool alwaysLoaded)
         {
             foreach (Transform child in transform)
             {

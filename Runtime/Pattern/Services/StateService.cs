@@ -23,7 +23,7 @@ namespace RealMethod
             State = Default;
         }
 
-        public override void WorldUpdated()
+        protected override void OnNewWorld()
         {
             if (ResetOnNewWorld())
             {

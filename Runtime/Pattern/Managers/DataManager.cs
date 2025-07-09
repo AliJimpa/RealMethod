@@ -39,11 +39,11 @@ namespace RealMethod
 
 
         // Implement IGameManager Interface
-        public MonoBehaviour GetManagerClass()
+        MonoBehaviour IGameManager.GetManagerClass()
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        void IGameManager.InitiateManager(bool AlwaysLoaded)
         {
             Logindex = 0;
             DataLog = new string[5];
@@ -59,7 +59,11 @@ namespace RealMethod
                 }
             }
         }
-        public abstract void InitiateService(Service service);
+        void IGameManager.InitiateService(Service service)
+        {
+            InitiateService(service);
+        }
+
 
 
         // Public Functions
@@ -176,6 +180,7 @@ namespace RealMethod
 
 
         // Abstract Mehtod
+        protected abstract void InitiateService(Service service);
         protected abstract bool IsExist(SaveFile targetfile);
         protected abstract void OnDelete(SaveFile targetfile);
         protected abstract void OnSaveFile(SaveFile targetfile);

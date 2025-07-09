@@ -45,7 +45,7 @@ namespace RealMethod
         }
 
         // IGameManager Interface Implementation
-        public override void InitiateManager(bool AlwaysLoaded)
+        protected override void InitiateManager(bool AlwaysLoaded)
         {
             if (!AlwaysLoaded)
             {
@@ -66,7 +66,7 @@ namespace RealMethod
                 }
             }
         }
-        public override void InitiateService(Service service)
+        protected override void InitiateService(Service service)
         {
             if (!IsServiceRegistered)
             {

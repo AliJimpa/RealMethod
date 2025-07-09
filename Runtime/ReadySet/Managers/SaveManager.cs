@@ -38,12 +38,11 @@ namespace RealMethod
         private bool SerializeField = false;
 
 
-        public override void InitiateService(Service service)
+        // DataManager Methods
+        protected override void InitiateService(Service service)
         {
 
         }
-
-
         protected override bool IsExist(SaveFile file)
         {
             switch (Format)
@@ -232,7 +231,7 @@ namespace RealMethod
             WriteLog($"Delete ({Format})", file);
         }
 
-
+        // Private Functions
         private string GetPath(SaveFile file)
         {
             string filename = file.name;

@@ -28,7 +28,7 @@ namespace RealMethod
         private AudioManager audioBox;
         private UIManager uIBox;
 
-        public override void Start(object Author)
+        protected override void OnStart(object Author)
         {
             if (instance == null)
             {
@@ -41,10 +41,10 @@ namespace RealMethod
                 return;
             }
         }
-        public override void WorldUpdated()
+        protected override void OnNewWorld()
         {
         }
-        public override void End(object Author)
+        protected override void OnEnd(object Author)
         {
             AntiSpawn = null;
             instance = null;
