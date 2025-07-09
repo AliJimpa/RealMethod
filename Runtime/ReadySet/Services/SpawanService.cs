@@ -17,8 +17,12 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogError("For Spawning You need Add SpawnService in Game. [GameClass > GameServiceCreated Method]");
-                    return null;
+                    if (Game.TryFindService(out Spawn CacheInstance))
+                    {
+                        return CacheInstance;
+                    }
+                    CacheInstance = Game.AddService<Spawn>(null);
+                    return CacheInstance;
                 }
             }
             private set { }
@@ -31,16 +35,7 @@ namespace RealMethod
         // Base Service
         protected override void OnStart(object Author)
         {
-            if (CacheInstance == null)
-            {
-                CacheInstance = this;
-                AntiSpawn = new Despawn(uIBox, audioBox);
-            }
-            else
-            {
-                Debug.LogError($"SpawnService Is Created befor, You Can't Create Twice! [Author:{Author}]");
-                return;
-            }
+            AntiSpawn = new Despawn(uIBox, audioBox);
         }
         protected override void OnNewWorld()
         {
@@ -410,7 +405,7 @@ namespace RealMethod
                 return false;
             if (Instance.uIBox == null)
                 return false;
-                
+
             return Instance.uIBox.RemoveLayer(Comp);
         }
     }
