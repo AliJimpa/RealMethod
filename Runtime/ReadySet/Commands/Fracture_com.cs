@@ -23,12 +23,15 @@ namespace RealMethod
         private float VelocityForceMultiplier = 1;
         [Space]
         [SerializeField]
+        private bool dissolve = false;
+        [SerializeField, ConditionalHide("dissolve", true, false)]
         private float dissolvetime = 8;
         [Header("َAdvance")]
         [SerializeField, ReadOnly]
         private Rigidbody[] choppedBodies;
         [SerializeField, ReadOnly]
         private Pose[] FractionPoses;
+        public bool IsReseting { get; private set; } = false;
 
 
         // ExecutCommand Methods
@@ -58,9 +61,7 @@ namespace RealMethod
             }
         }
 
-
-
-
+        // Unity Methods
         private void OnValidate()
         {
             // Find HealthyObject and DamagedObject in children
@@ -89,6 +90,29 @@ namespace RealMethod
         }
 
 
+        // Public Functions
+        public void ResetFracture()
+        {
+            IsReseting = true;
+            PreResetFracture();
+            for (int i = 0; i < choppedBodies.Length; i++)
+            {
+                Pose Target = GetWorldLocarion(FractionPoses[i]);
+                choppedBodies[0].transform.SetPositionAndRotation(Target.position, Target.rotation);
+            }
+            HealthyObject.SetActive(true);
+            DamagedObject.SetActive(false);
+            IsReseting = false;
+        }
+        public void ResetFracture(float duration)
+        {
+            IsReseting = true;
+            PreResetFracture();
+            for (int i = 0; i < choppedBodies.Length; i++)
+            {
+                StartCoroutine(LerpReset(choppedBodies[i], FractionPoses[i], duration));
+            }
+        }
         public GameObject Fracture(Transform tranfome)
         {
             PreFracture();
@@ -96,7 +120,8 @@ namespace RealMethod
             {
                 AddCustomForce(rb, explosionForce, tranfome.position);
             }
-            StartCoroutine(Dissolve());
+            if (dissolve)
+                StartCoroutine(Dissolve(dissolvetime));
             return GetDamagedObject();
         }
         public GameObject Fracture(Collider other)
@@ -116,7 +141,8 @@ namespace RealMethod
                 float finalExplosionForce = Mathf.Lerp(explosionForce, OtherSpeed * VelocityForceMultiplier, VelocityAffection);
                 AddCustomForce(rb, finalExplosionForce, explosionPosition);
             }
-            StartCoroutine(Dissolve());
+            if (dissolve)
+                StartCoroutine(Dissolve(dissolvetime));
             return GetDamagedObject();
         }
         public GameObject GetHealthyObject()
@@ -128,40 +154,84 @@ namespace RealMethod
             return DamagedObject;
         }
 
-
+        // Private Function
         private void AddCustomForce(Rigidbody rb, float Force, Vector3 Position)
         {
             rb.AddExplosionForce(Force / resistanceFactor, Position, 20.0f);
         }
         private void PreFracture()
         {
+            foreach (var body in choppedBodies)
+            {
+                body.isKinematic = false;
+                body.GetComponent<Collider>().enabled = true;
+            }
+
             HealthyObject.SetActive(false);
             DamagedObject.SetActive(true);
         }
-
-        private IEnumerator Dissolve()
+        private void PreResetFracture()
         {
-            yield return new WaitForSeconds(dissolvetime);
-            foreach (Collider collider in GetComponentsInChildren<Collider>())
+            foreach (var body in choppedBodies)
             {
-                collider.enabled = false;
+                body.isKinematic = true;
+                body.GetComponent<Collider>().enabled = false;
             }
-            float elapsedTime = 0f;
-
-            while (elapsedTime < 2.0f)
-            {
-                elapsedTime += Time.deltaTime;
-                transform.position -= new Vector3(0, 2 * Time.deltaTime, 0);
-                yield return null; // Wait for the next frame
-            }
-
-            for (int i = 0; i < choppedBodies.Length; i++)
-            {
-                choppedBodies[i].isKinematic = true;
-            }
-            DamagedObject.SetActive(false);
+        }
+        private Pose GetWorldLocarion(Pose pose)
+        {
+            return new Pose(pose.position + GetDamagedObject().transform.position, pose.rotation);
         }
 
+        private IEnumerator Dissolve(float time)
+        {
+            yield return new WaitForSeconds(time);
+            if (!IsReseting)
+            {
+                foreach (Collider collider in GetComponentsInChildren<Collider>())
+                {
+                    collider.enabled = false;
+                }
+                float elapsedTime = 0f;
+
+                while (elapsedTime < 2.0f)
+                {
+                    elapsedTime += Time.deltaTime;
+                    transform.position -= new Vector3(0, 2 * Time.deltaTime, 0);
+                    yield return null; // Wait for the next frame
+                }
+
+                for (int i = 0; i < choppedBodies.Length; i++)
+                {
+                    choppedBodies[i].isKinematic = true;
+                }
+                DamagedObject.SetActive(false);
+            }
+        }
+        private IEnumerator LerpReset(Rigidbody body, Pose pose, float resetDuration)
+        {
+            float elapsed = 0f;
+            Pose EndPose = GetWorldLocarion(pose);
+            Pose StartPose = new Pose(body.transform.position, body.transform.rotation);
+
+            
+            while (elapsed < resetDuration)
+            {
+                float t = elapsed / resetDuration;
+
+                // Lerp position and rotation
+                body.transform.position = Vector3.Lerp(StartPose.position, EndPose.position, t);
+                body.transform.rotation = Quaternion.Slerp(StartPose.rotation, EndPose.rotation, t);
+
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            body.transform.SetPositionAndRotation(pose.position, pose.rotation);
+            HealthyObject.SetActive(true);
+            DamagedObject.SetActive(false);
+            IsReseting = false;
+        }
 
 
 
