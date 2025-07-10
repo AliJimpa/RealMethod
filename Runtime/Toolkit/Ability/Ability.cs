@@ -453,7 +453,7 @@ namespace RealMethod
         public string Label => label;
         [SerializeField]
         protected bool Tick = true;
-        [SerializeField, Tooltip("Ziro means infinit"), ConditionalHide("Tick", true, false)]
+        [SerializeField, Tooltip("Zero means infinit"), ConditionalHide("Tick", true, false)]
         private float LifeTime;
         public bool IsActive => !IsFinished;
 
