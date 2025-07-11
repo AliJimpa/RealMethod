@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,13 +11,14 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Widgets/SettingWidget")]
     public sealed class SettingWidget : MonoBehaviour, IWidget
     {
-        [Header("Save")]
+        [Header("File")]
         [SerializeField]
         private SaveFile settingfile;
+        public FieldContainer ScanSetting;
         [Header("UI")]
         [SerializeField]
         private SelectableElement elements;
-        public FieldContainer ScanSetting;
+
 
 
 
