@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.Build;
 
 namespace RealMethod
 {
@@ -6,44 +7,48 @@ namespace RealMethod
     {
         public Action<StateService> OnStateChanged;
 
-        public abstract int GetIndex();
+        public abstract int GetStateIndex();
     }
 
     public abstract class StateService<T> : StateService where T : Enum
     {
-        public T State { get; private set; }
-        public bool ResetStateInNewWorld = false;
-        public T DefaultState { get; private set; }
+        public T currentState { get; private set; }
+        public T firstState { get; private set; }
         public Action<T> OnNewState;
-
 
         public StateService(T Default)
         {
-            DefaultState = Default;
-            State = Default;
+            firstState = Default;
+            currentState = firstState;
         }
 
-        protected override void OnNewWorld()
+        // StateService Methods
+        protected sealed override void OnStart(object Author)
         {
-            if (ResetOnNewWorld())
+            currentState = DefaultState();
+            OnStart(Author, currentState);
+        }
+        protected sealed override void OnNewWorld()
+        {
+            if (CanResetforNewWorld(Game.World))
             {
-                State = DefaultState;
-                OnStateChanged?.Invoke(this);
-                OnNewState?.Invoke(State);
+                ResetToDefault();
             }
         }
-        public override int GetIndex()
+        public sealed override int GetStateIndex()
         {
-            return Convert.ToInt32(State);
+            return Convert.ToInt32(currentState);
         }
 
-        public bool SwitchState(T Target)
+
+        // Public Functions
+        public bool SetState(T Target)
         {
-            if (CanSwitch(State, Target))
+            if (CanSwitch(currentState, Target))
             {
-                State = Target;
+                currentState = Target;
                 OnStateChanged?.Invoke(this);
-                OnNewState?.Invoke(State);
+                OnNewState?.Invoke(currentState);
                 return true;
             }
             else
@@ -52,17 +57,22 @@ namespace RealMethod
             }
 
         }
-        public void SetDefaultState(T state)
+        public void ResetToDefault()
         {
-            DefaultState = state;
-            OnStateChanged?.Invoke(this);
-            OnNewState?.Invoke(State);
+            SetState(DefaultState());
         }
 
-        // Can Switch State
+        // Protected Functions
+        protected virtual T DefaultState()
+        {
+            return firstState;
+        }
+
+        // Abstract Methods
+        protected abstract void OnStart(object Author, T State);
         public abstract bool CanSwitch(T A, T B);
-        // The state Set Back to Defaul State when Changing Your Scene
-        public abstract bool ResetOnNewWorld();
+        protected abstract bool CanResetforNewWorld(World NewWorld);
+
 
     }
 }

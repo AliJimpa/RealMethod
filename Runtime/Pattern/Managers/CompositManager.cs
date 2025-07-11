@@ -1,11 +1,15 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
 namespace RealMethod
 {
-    public abstract class CompositManager : MixerManager
+    public abstract class CompositManager<T, J> : MixerManager where T : StateService where J : Enum
     {
+        [Serializable]
+        public class LayerAudioDictionary : SerializableDictionary<J, AudioSource> { }
+
         public struct MusicLerp
         {
             private AudioSource LayerA;
@@ -26,7 +30,7 @@ namespace RealMethod
 
         [Header("Composit")]
         [SerializeField]
-        private AudioSource[] Layers;
+        private LayerAudioDictionary Layers;
         [SerializeField]
         private AudioMixerSnapshot[] Snapshots;
         [SerializeField]
@@ -34,11 +38,10 @@ namespace RealMethod
 
 
 
-        protected StateService stateServ;
-        public bool IsServiceRegistered => stateServ != null;
+        protected T service;
 
         // Operators
-        public AudioSource this[int index]
+        public AudioSource this[J index]
         {
             get => Layers[index];
             private set => Layers[index] = value;
@@ -53,42 +56,36 @@ namespace RealMethod
                 Destroy(this);
             }
 
-            if (!IsServiceRegistered)
+            if (Game.TryFindService(out service))
             {
-                if (Game.TryFindService(out stateServ))
-                {
-                    stateServ.OnStateChanged += OnStateChanged;
-                    OnStateConnect();
-                }
-                else
-                {
-                    Debug.LogError($"Cant find any StateService!");
-                }
+                service.OnStateChanged += OnStateChanged;
+                ServiceAssigned();
             }
         }
         protected override void InitiateService(Service service)
         {
-            if (!IsServiceRegistered)
+            if (service is T stateserv)
             {
-                stateServ.OnStateChanged += OnStateChanged;
-                OnStateConnect();
+                this.service = stateserv;
+                this.service.OnStateChanged += OnStateChanged;
+                ServiceAssigned();
             }
         }
 
         // Public Methods
-        public void CrossfadeLayer(int LayerA, int LayerB, float Duration)
+        public void CrossfadeLayer(J LayerA, J LayerB, float Duration)
         {
             StartCoroutine(CrossfadeTracks(Layers[LayerA], Layers[LayerB], Duration));
         }
-        public void FadeInLayer(int Layer, float Duration)
+        public void FadeInLayer(J Layer, float Duration)
         {
             StartCoroutine(fadeTrack(Layers[Layer], true, Duration));
         }
-        public void FadeOutLayer(int Layer, float Duration)
+        public void FadeOutLayer(J Layer, float Duration)
         {
             StartCoroutine(fadeTrack(Layers[Layer], false, Duration));
         }
-        public MusicLerp Interp(int LayerA, int LayerB)
+        public MusicLerp Interp(J LayerA, J LayerB)
         {
             return new MusicLerp(Layers[LayerA], Layers[LayerB]);
         }
@@ -100,9 +97,9 @@ namespace RealMethod
         // Private Methods
         private void OnStateChanged(StateService service)
         {
-            if (Snapshots[service.GetIndex()] != null)
+            if (Snapshots[service.GetStateIndex()] != null)
             {
-                TransitionToSnapshot(Snapshots[service.GetIndex()], SnapshotTime);
+                TransitionToSnapshot(Snapshots[service.GetStateIndex()], SnapshotTime);
             }
         }
 
@@ -141,23 +138,23 @@ namespace RealMethod
         }
 
         //Abstract Method
-        public abstract void OnStateConnect();
+        public abstract void ServiceAssigned();
 
 
 #if UNITY_EDITOR
         [ContextMenu("CreateLayer")]
         private void CreateLayer()
         {
-            if (Layers != null && Layers.Length > 0)
+            if (Layers != null && Layers.Count > 0)
             {
-                for (int i = 0; i < Layers.Length; i++)
+                foreach (var layer in Layers)
                 {
-                    if (Layers[i] == null)
+                    if (layer.Value == null)
                     {
-                        GameObject layerobject = new GameObject($"Layer {i}");
-                        Layers[i] = layerobject.AddComponent<AudioSource>();
-                        Layers[i].loop = true;
-                        Layers[i].playOnAwake = false;
+                        GameObject layerobject = new GameObject($"Layer {layer.Key}");
+                        Layers[layer.Key] = layerobject.AddComponent<AudioSource>();
+                        Layers[layer.Key].loop = true;
+                        Layers[layer.Key].playOnAwake = false;
                         layerobject.transform.SetParent(transform);
                     }
                 }

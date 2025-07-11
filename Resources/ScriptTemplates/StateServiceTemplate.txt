@@ -1,33 +1,31 @@
 using RealMethod;
 
-public enum StateList
+public enum GameState
 {
 	Default,
 	State_1,
 	State_2,
 }
 
-public class #SCRIPTNAME# : StateService<StateList>
+public class #SCRIPTNAME# : StateService<GameState>
 {
-    public #SCRIPTNAME#() : base(StateList.Default) // Replace default(StateList) with an actual enum value if needed
+    public #SCRIPTNAME#() : base(GameState.Default) // Replace default(StateList) with an actual enum value if needed
 	{
 		
     }
 
-    public override void Start(object Author)
+    // Service Methods
+    protected override void OnEnd(object Author)
     {
         throw new System.NotImplementedException();
     }
-	public override bool ResetOnNewWorld()
-    {
-        throw new System.NotImplementedException();
-    }
-    public override bool CanSwitch(StateList A, StateList B)
-	{
-		throw new System.NotImplementedException();
-	}
-    public override void End(object Author)
-    {
-        throw new System.NotImplementedException();
-    }
+
+    // StateService Methods
+    protected override void OnStart(object Author, GameState State){}
+    public override bool CanSwitch(GameState A, GameState B){}
+    protected override bool CanResetforNewWorld(World NewWorld){}
+    // protected override GameState DefaultState()
+    // {
+        // retrun base.DefaultState();
+    // }
 }

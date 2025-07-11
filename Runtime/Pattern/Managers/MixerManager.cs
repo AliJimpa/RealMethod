@@ -7,8 +7,8 @@ namespace RealMethod
     public abstract class MixerManager : MonoBehaviour, IGameManager
     {
         [Header("Setting")]
-        [SerializeField] private AudioMixer mixer;
-        public AudioMixer Mixer => mixer;
+        [SerializeField] private AudioMixer Mixer;
+        public AudioMixer mixer => Mixer;
         [SerializeField]
         private StringFloatDictionary Parameter;
 
@@ -34,6 +34,7 @@ namespace RealMethod
         }
 
         // Unity Methods
+#if UNITY_EDITOR
         private void OnValidate()
         {
             if (Mixer != null)
@@ -49,6 +50,7 @@ namespace RealMethod
                 }
             }
         }
+#endif
 
         // Public Functions
         public void Sync()
