@@ -132,24 +132,23 @@ namespace RealMethod
             }
             return Configs[index];
         }
-        public UpgradeItem[] GetLineAssets(int index)
+        public UpgradeItem[] GetLineAssets(int line)
         {
             List<UpgradeItem> Result = new List<UpgradeItem>();
-            UpgradeConfig TargetCongfig = GetConfig(index);
+            UpgradeConfig TargetCongfig = GetConfig(line);
             foreach (var item in TargetCongfig.line)
             {
                 Result.Add(FindAsset(item.Title));
             }
             return Result.ToArray();
         }
-        public UpgradeItem GetFirstAssetLine(int index)
+        public UpgradeItem GetActiveAssetinLine(int line)
         {
-            UpgradeConfig TargetCongfig = GetConfig(index);
-            foreach (var item in TargetCongfig.line)
+            foreach (var asset in GetLineAssets(line))
             {
-                if (IsUnlocked(item.Title))
+                if (!IsUnlocked(asset.Title))
                 {
-                    return FindAsset(item.Title);
+                    return asset;
                 }
             }
             return null;
