@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,29 +8,23 @@ namespace RealMethod
 {
     [Serializable]
     public class SelectableElement : SerializableDictionary<string, Selectable> { }
-    public interface ISettingStorage
-    {
-        void Initiate(SettingWidget owner);
-        void Sync(string label, Selectable element);
-        void ChangeValue(string label, Selectable element);
-        bool IsDirty();
-    }
-
 
     [AddComponentMenu("RealMethod/Widgets/SettingWidget")]
     public sealed class SettingWidget : MonoBehaviour, IWidget
     {
         [Header("Save")]
-        [SerializeField,]
+        [SerializeField]
         private SaveFile settingfile;
         [Header("UI")]
         [SerializeField]
         private SelectableElement elements;
+        public FieldContainer ScanSetting;
 
 
-        private ISettingStorage storage;
+
         private DataManager saveManager;
-        public UIManager HUD { get; private set; }
+        public bool IsSettingDirty { get; private set; } = false;
+
 
         // Implement IWidget Interface
         MonoBehaviour IWidget.GetWidgetClass()
@@ -37,17 +33,6 @@ namespace RealMethod
         }
         void IWidget.InitiateWidget(UnityEngine.Object Owner)
         {
-            if (Owner is UIManager hudmanager)
-            {
-                HUD = hudmanager;
-            }
-            else
-            {
-                Debug.LogError($"{this} should initiate by HUD");
-                enabled = false;
-                return;
-            }
-
             if (settingfile == null)
             {
                 Debug.LogError($"{this} savefile is not valid ");
@@ -55,23 +40,20 @@ namespace RealMethod
                 return;
             }
 
-            if (settingfile is ISettingStorage newstorage)
-            {
-                storage = newstorage;
-                storage.Initiate(this);
-            }
-            else
-            {
-                Debug.LogError("ISettingStorage Interface not implemented in CustomSavefile.");
-                enabled = false;
-                return;
-            }
+            ScanSetting.Scan(settingfile);
         }
 
 
         // Unity Method
         private void Awake()
         {
+            if (!ScanSetting.isStore)
+            {
+                Debug.LogError($"{this} should initiat by UIManager");
+                enabled = false;
+                return;
+            }
+
             saveManager = Game.FindManager<DataManager>();
             if (saveManager == null)
             {
@@ -82,7 +64,7 @@ namespace RealMethod
 
             if (saveManager.IsExistFile(settingfile))
             {
-                LoadSetting();
+                saveManager.LoadFile(settingfile);
             }
             else
             {
@@ -91,7 +73,7 @@ namespace RealMethod
         }
         private void OnEnable()
         {
-            SyncElements();
+            SyncUI();
         }
 
 
@@ -114,115 +96,125 @@ namespace RealMethod
         public void SaveSetting()
         {
             saveManager.SaveFile(settingfile);
+            IsSettingDirty = false;
         }
-        public void LoadSetting()
+        public void SyncElement(Selectable element)
         {
-            saveManager.LoadFile(settingfile);
-        }
-        public void ChangeelementValue(Selectable element)
-        {
-            string name = FindLabel(element);
-            if (elements.ContainsKey(name))
+            string label = FindLabel(element);
+            if (label == string.Empty)
             {
-                storage.ChangeValue(name, element);
+                Debug.LogError("Can't Find this element!");
+                return;
             }
-        }
-        public bool IsSettingDirty()
-        {
-            return storage.IsDirty();
-        }
-
-        // Private Functions
-        private void SyncElements()
-        {
-            foreach (var elem in elements)
+            foreach (FieldInfo field in ScanSetting.GetFields())
             {
-                storage.Sync(elem.Key, elem.Value);
+                object value = field.GetValue(settingfile);
+                switch (value)
+                {
+                    case float f:
+                        if (element is Slider slide)
+                        {
+                            if (field.Name == label)
+                                field.SetValue(settingfile, slide.value);
+                        }
+                        break;
+                    case int i:
+                        if (element is Dropdown dropdown)
+                        {
+                            if (field.Name == label)
+                                field.SetValue(settingfile, dropdown.value);
+                        }
+                        break;
+                    case bool b:
+                        if (element is Toggle toggle)
+                        {
+                            if (field.Name == label)
+                                field.SetValue(settingfile, toggle.isOn);
+                        }
+                        break;
+                    default:
+                        Debug.Log($"Unkown field: {field.Name}, Type: {field.FieldType}, Value: {value}");
+                        break;
+                }
+            }
+            IsSettingDirty = true;
+        }
+        public void SyncFile()
+        {
+            foreach (var element in elements)
+            {
+                foreach (FieldInfo field in ScanSetting.GetFields())
+                {
+                    object value = field.GetValue(settingfile);
+                    switch (value)
+                    {
+                        case float f:
+                            if (element.Value is Slider slide)
+                            {
+                                if (field.Name == element.Key)
+                                    field.SetValue(settingfile, slide.value);
+                            }
+                            break;
+                        case int i:
+                            if (element.Value is Dropdown dropdown)
+                            {
+                                if (field.Name == element.Key)
+                                    field.SetValue(settingfile, dropdown.value);
+                            }
+                            break;
+                        case bool b:
+                            if (element.Value is Toggle toggle)
+                            {
+                                if (field.Name == element.Key)
+                                    field.SetValue(settingfile, toggle.isOn);
+                            }
+                            break;
+                        default:
+                            Debug.Log($"Unkown field: {field.Name}, Type: {field.FieldType}, Value: {value}");
+                            break;
+                    }
+                }
+            }
+            IsSettingDirty = true;
+        }
+        public void SyncUI()
+        {
+            foreach (var element in elements)
+            {
+                foreach (FieldInfo field in ScanSetting.GetFields())
+                {
+                    object value = field.GetValue(settingfile);
+                    switch (value)
+                    {
+                        case float f:
+                            if (element.Value is Slider slide)
+                            {
+                                if (field.Name == element.Key)
+                                    slide.value = f;
+                            }
+                            break;
+                        case int i:
+                            if (element.Value is Dropdown dropdown)
+                            {
+                                if (field.Name == element.Key)
+                                    dropdown.value = i;
+                            }
+                            break;
+                        case bool b:
+                            if (element.Value is Toggle toggle)
+                            {
+                                if (field.Name == element.Key)
+                                    toggle.isOn = b;
+                            }
+                            break;
+                        default:
+                            Debug.Log($"Unkown field: {field.Name}, Type: {field.FieldType}, Value: {value}");
+                            break;
+                    }
+                }
             }
         }
 
     }
-
-    public abstract class GameSetting : SaveFile, ISettingStorage
-    {
-        [Header("Audio")]
-        [SerializeField, Range(0, 1)]
-        protected float musicVolume = 0.7f;
-        [SerializeField, Range(0, 1)]
-        protected float sfxVolume = 0.7f;
-        [Header("Haptic")]
-        [SerializeField, Range(0, 1)]
-        protected bool hasVibration;
-        [SerializeField, Range(0, 1), ConditionalHide("hasVibration", true, false)]
-        protected float vibrationPower = 0.7f;
-
-
-
-        protected SettingWidget setting { get; private set; }
-        protected bool isDirty { get; private set; } = false;
-
-
-        // Implement ISettingStorage Interface
-        void ISettingStorage.Initiate(SettingWidget owner)
-        {
-            setting = owner;
-        }
-        void ISettingStorage.Sync(string label, Selectable element)
-        {
-            switch (element)
-            {
-                case Slider slid:
-                    OnSyncSlider(label, slid, false);
-                    break;
-                case Toggle tog:
-                    OnSyncToggle(label, tog, false);
-                    break;
-                case Dropdown dro:
-                    OnSyncDropdown(label, dro, false);
-                    break;
-                default:
-                    OnSyncOther(label, element, false);
-                    break;
-            }
-            isDirty = false;
-        }
-        void ISettingStorage.ChangeValue(string label, Selectable element)
-        {
-            switch (element)
-            {
-                case Slider slid:
-                    OnSyncSlider(label, slid, true);
-                    break;
-                case Toggle tog:
-                    OnSyncToggle(label, tog, true);
-                    break;
-                case Dropdown dro:
-                    OnSyncDropdown(label, dro, true);
-                    break;
-                default:
-                    OnSyncOther(label, element, true);
-                    break;
-            }
-            isDirty = true;
-        }
-        bool ISettingStorage.IsDirty()
-        {
-            return isDirty;
-        }
-
-
-        //Abstract Methods
-        protected abstract void OnSyncSlider(string label, Slider slider, bool isValueChange);
-        protected abstract void OnSyncToggle(string label, Toggle toggle, bool isValueChange);
-        protected abstract void OnSyncDropdown(string label, Dropdown dropdown, bool isValueChange);
-        protected abstract void OnSyncOther(string label, Selectable selectable, bool isValueChange);
-
-    }
-
-
-
-
-
-
 
 }
