@@ -55,15 +55,17 @@ namespace RealMethod
                 return;
             }
 
-            storage = settingfile as ISettingStorage;
-            if (storage == null)
+            if (settingfile is ISettingStorage newstorage)
+            {
+                storage = newstorage;
+                storage.Initiate(this);
+            }
+            else
             {
                 Debug.LogError("ISettingStorage Interface not implemented in CustomSavefile.");
                 enabled = false;
                 return;
             }
-
-            storage.Initiate(this);
         }
 
 
