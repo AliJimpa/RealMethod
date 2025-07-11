@@ -212,10 +212,10 @@ namespace RealMethod
 
 
         //Abstract Methods
-        protected abstract void OnSyncSlider(string label, Slider element, bool isValueChange);
-        protected abstract void OnSyncToggle(string label, Toggle element, bool isValueChange);
-        protected abstract void OnSyncDropdown(string label, Dropdown element, bool isValueChange);
-        protected abstract void OnSyncOther(string label, Selectable element, bool isValueChange);
+        protected abstract void OnSyncSlider(string label, Slider slider, bool isValueChange);
+        protected abstract void OnSyncToggle(string label, Toggle toggle, bool isValueChange);
+        protected abstract void OnSyncDropdown(string label, Dropdown dropdown, bool isValueChange);
+        protected abstract void OnSyncOther(string label, Selectable selectable, bool isValueChange);
 
     }
 

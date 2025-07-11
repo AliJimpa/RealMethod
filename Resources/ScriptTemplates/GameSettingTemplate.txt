@@ -19,10 +19,10 @@ public class #SCRIPTNAME# : GameSetting
     }
 
     // GameSetting Method
-    protected override void OnSyncSlider(string label, Slider element, bool isValueChange){}
-    protected override void OnSyncToggle(string label, Toggle element, bool isValueChange){}
-    protected override void OnSyncDropdown(string label, Dropdown element, bool isValueChange){}
-    protected override void OnSyncOther(string label, Selectable element, bool isValueChange){}
+    protected override void OnSyncSlider(string label, Slider slider, bool isValueChange){}
+    protected override void OnSyncToggle(string label, Toggle toggle, bool isValueChange){}
+    protected override void OnSyncDropdown(string label, Dropdown dropdown, bool isValueChange){}
+    protected override void OnSyncOther(string label, Selectable selectable, bool isValueChange){}
 
 //#if UNITY_EDITOR
         //public override void OnEditorPlay()
