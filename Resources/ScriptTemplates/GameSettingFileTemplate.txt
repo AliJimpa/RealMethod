@@ -1,0 +1,39 @@
+using RealMethod;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : SaveFile
+{
+    [Header("Audio")]
+    [SerializeField,Range(0f, 1f)]
+    protected float musicVolume = 0.7f;
+    [SerializeField,Range(0f, 1f)]
+    protected float sfxVolume = 0.7f;
+    [Header("Haptic")]
+    [SerializeField]
+    protected bool hasVibration;
+    [SerializeField,Range(0f, 1f),ConditionalHide("hasVibration", true, false)]
+    protected float vibrationPower = 0.7f;
+
+
+    // SaveFile Method
+    protected override void OnStable(DataManager manager)
+    {
+    }
+    protected override void OnSaved()
+    {
+    }
+    protected override void OnLoaded()
+    {
+    }
+    protected override void OnDeleted()
+    {
+    }
+
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+            // SetDefault Paramter
+        }
+#endif
+}
