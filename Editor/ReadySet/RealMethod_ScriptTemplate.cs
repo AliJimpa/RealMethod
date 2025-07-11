@@ -110,6 +110,11 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("SaveFileTemplate.txt", "MySaveFile.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/GameSetting", false, 80)]
+        public static void CreateGameSettingFile()
+        {
+            string Path = ScriptCreator.Create("GameSettingTemplate.txt", "MyGameSetting.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Asset/TableAsset", false, 80)]
         public static void CreateTableAsset()
         {

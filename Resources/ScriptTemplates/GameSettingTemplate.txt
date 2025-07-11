@@ -1,0 +1,26 @@
+using RealMethod;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : GameSetting
+{
+    // SaveFile Method
+    protected override void OnActiveted(DataManager manager)
+    {
+    }
+    protected override void OnSaved()
+    {
+    }
+    protected override void OnLoaded()
+    {
+    }
+    protected override void OnDeleted()
+    {
+    }
+
+    //GameSetting Method
+    protected  void OnSyncSlider(string label, Slider element, bool isValueChange){}
+    protected  void OnSyncToggle(string label, Toggle element, bool isValueChange){}
+    protected  void OnSyncDropdown(string label, Dropdown element, bool isValueChange){}
+    protected  void OnSyncOther(string label, Selectable element, bool isValueChange){}
+}
