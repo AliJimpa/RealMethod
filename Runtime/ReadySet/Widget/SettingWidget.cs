@@ -150,7 +150,7 @@ namespace RealMethod
         protected float sfxVolume = 0.7f;
         [Header("Haptic")]
         [SerializeField, Range(0, 1)]
-        protected int hasVibration;
+        protected bool hasVibration;
         [SerializeField, ConditionalHide("hasVibration", true, false), Range(0, 1)]
         protected float vibrationPower = 0.7f;
 
