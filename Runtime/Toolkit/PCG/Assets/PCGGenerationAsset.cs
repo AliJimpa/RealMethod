@@ -324,11 +324,13 @@ namespace RealMethod
                 Guide += MyLine + Environment.NewLine;
             }
         }
-
+#if UNITY_EDITOR
         public override void OnEditorPlay()
         {
             PrintGuide();
         }
+#endif
+
     }
 
 

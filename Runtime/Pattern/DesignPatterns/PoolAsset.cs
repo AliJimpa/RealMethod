@@ -10,13 +10,14 @@ namespace RealMethod
         protected Stack<T> Available = new Stack<T>();
         private bool Prewarmed = false;
 
-
+#if UNITY_EDITOR
         // Base DataAsset Methods
         public override void OnEditorPlay()
         {
             //base.OnEditorPlay();
             Prewarmed = false;
         }
+#endif
 
         // Public Functions
         public void Prewarm(int amount = 1)
