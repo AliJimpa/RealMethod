@@ -6,12 +6,21 @@ namespace RealMethod
 {
     [Serializable]
     public class SelectableElement : SerializableDictionary<string, Selectable> { }
+    public interface ISettingStorage
+    {
+        void Initiate(SettingWidget owner);
+        void Sync(string label, Selectable element);
+        void ChangeValue(string label, Selectable element);
+        bool IsDirty();
+    }
 
+
+    [AddComponentMenu("RealMethod/Widgets/SettingWidget")]
     public sealed class SettingWidget : MonoBehaviour, IWidget
     {
         [Header("Save")]
         [SerializeField,]
-        private SaveFile savefile;
+        private SaveFile settingfile;
         [Header("UI")]
         [SerializeField]
         private SelectableElement elements;
@@ -39,14 +48,14 @@ namespace RealMethod
                 return;
             }
 
-            if (savefile == null)
+            if (settingfile == null)
             {
                 Debug.LogError($"{this} savefile is not valid ");
                 enabled = false;
                 return;
             }
 
-            storage = savefile as ISettingStorage;
+            storage = settingfile as ISettingStorage;
             if (storage == null)
             {
                 Debug.LogError("ISettingStorage Interface not implemented in CustomSavefile.");
@@ -69,7 +78,7 @@ namespace RealMethod
                 return;
             }
 
-            if (saveManager.IsExistFile(savefile))
+            if (saveManager.IsExistFile(settingfile))
             {
                 LoadSetting();
             }
@@ -102,11 +111,11 @@ namespace RealMethod
         }
         public void SaveSetting()
         {
-            saveManager.SaveFile(savefile);
+            saveManager.SaveFile(settingfile);
         }
         public void LoadSetting()
         {
-            saveManager.LoadFile(savefile);
+            saveManager.LoadFile(settingfile);
         }
         public void ChangeelementValue(Selectable element)
         {
@@ -131,16 +140,6 @@ namespace RealMethod
         }
 
     }
-
-
-    public interface ISettingStorage
-    {
-        void Initiate(SettingWidget owner);
-        void Sync(string label, Selectable element);
-        void ChangeValue(string label, Selectable element);
-        bool IsDirty();
-    }
-
 
     public abstract class GameSetting : SaveFile, ISettingStorage
     {

@@ -5,7 +5,7 @@ using UnityEngine;
 public class #SCRIPTNAME# : GameSetting
 {
     // SaveFile Method
-    protected override void OnActiveted(DataManager manager)
+    protected override void OnStable(DataManager manager)
     {
     }
     protected override void OnSaved()
@@ -18,9 +18,9 @@ public class #SCRIPTNAME# : GameSetting
     {
     }
 
-    //GameSetting Method
-    protected  void OnSyncSlider(string label, Slider element, bool isValueChange){}
-    protected  void OnSyncToggle(string label, Toggle element, bool isValueChange){}
-    protected  void OnSyncDropdown(string label, Dropdown element, bool isValueChange){}
-    protected  void OnSyncOther(string label, Selectable element, bool isValueChange){}
+    // GameSetting Method
+    protected override void OnSyncSlider(string label, Slider element, bool isValueChange){}
+    protected override void OnSyncToggle(string label, Toggle element, bool isValueChange){}
+    protected override void OnSyncDropdown(string label, Dropdown element, bool isValueChange){}
+    protected override void OnSyncOther(string label, Selectable element, bool isValueChange){}
 }
