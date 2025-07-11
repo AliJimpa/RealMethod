@@ -153,7 +153,7 @@ namespace RealMethod
         [Header("Haptic")]
         [SerializeField, Range(0, 1)]
         protected bool hasVibration;
-        [SerializeField, ConditionalHide("hasVibration", true, false), Range(0, 1)]
+        [SerializeField, Range(0, 1), ConditionalHide("hasVibration", true, false)]
         protected float vibrationPower = 0.7f;
 
 
