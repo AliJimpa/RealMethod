@@ -497,7 +497,7 @@ namespace RealMethod
 
     public interface IWidget
     {
-        public MonoBehaviour GetWidgetClass();
-        public void InitiateWidget(UnityEngine.Object Owner);
+        MonoBehaviour GetWidgetClass();
+        void InitiateWidget(UnityEngine.Object Owner);
     }
 }

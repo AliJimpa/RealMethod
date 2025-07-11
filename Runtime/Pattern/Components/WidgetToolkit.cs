@@ -21,11 +21,11 @@ namespace RealMethod
         }
 
         //Widget Interface
-        public MonoBehaviour GetWidgetClass()
+        MonoBehaviour IWidget.GetWidgetClass()
         {
             return this;
         }
-        public void InitiateWidget(Object Owner)
+        void IWidget.InitiateWidget(Object Owner)
         {
             if (!enabled)
                 return;
