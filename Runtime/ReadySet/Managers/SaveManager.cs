@@ -22,19 +22,19 @@ namespace RealMethod
     public sealed class SaveManager : DataManager
     {
         [Header("Behavior")]
-        [SerializeField] private SaveMethod format;
-        public SaveMethod Format => format;
-        [SerializeField, HideInInspectorByEnum("format", 0)]
+        [SerializeField] private SaveMethod Format;
+        public SaveMethod format => Format;
+        [SerializeField, HideInInspectorByEnum("Format", 0)]
         private bool CustomPath = false;
         [SerializeField, ConditionalHide("CustomPath", true, false)]
         private string FilePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        [SerializeField, ShowInInspectorByEnum("format", 0, 1)]
+        [SerializeField, ShowInInspectorByEnum("Format", 0, 1)]
         private bool PublicField = true;
-        [SerializeField, ShowInInspectorByEnum("format", 0, 1)]
+        [SerializeField, ShowInInspectorByEnum("Format", 0, 1)]
         private bool ProtectedField = false;
-        [SerializeField, ShowInInspectorByEnum("format", 0, 1)]
+        [SerializeField, ShowInInspectorByEnum("Format", 0, 1)]
         private bool PrivateField = false;
-        [SerializeField, ShowInInspectorByEnum("format", 0, 1)]
+        [SerializeField, ShowInInspectorByEnum("Format", 0, 1)]
         private bool SerializeField = false;
 
 
