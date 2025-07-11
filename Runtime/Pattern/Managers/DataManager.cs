@@ -17,7 +17,7 @@ namespace RealMethod
 
         [Header("Basic")]
         [SerializeField]
-        private bool LoadOnAwake = true;
+        private bool BeginLoad = true;
         [SerializeField]
         private SaveFile[] StableFiles;
 
@@ -52,7 +52,7 @@ namespace RealMethod
             {
                 IDataPersistence DataFile = file;
                 DataFile.Initiate(this);
-                if (LoadOnAwake)
+                if (BeginLoad)
                 {
                     if (IsExistFile(file))
                         LoadFile(file);
