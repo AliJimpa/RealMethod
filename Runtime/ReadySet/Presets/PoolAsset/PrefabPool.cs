@@ -149,6 +149,7 @@ namespace RealMethod
             return autoDespawn ? PoolBack(Comp) : null;
         }
 
+#if UNITY_EDITOR
         // Base DataAsset Methods
         public override void OnEditorPlay()
         {
@@ -156,7 +157,7 @@ namespace RealMethod
             UseCacheData = 0;
             CacheDuration = 0;
         }
-
+#endif
         // IEnumerator
         private IEnumerator PoolBack(Transform Transf)
         {

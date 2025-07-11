@@ -93,14 +93,14 @@ namespace RealMethod
             return PoolBack(Comp);
         }
 
-
+#if UNITY_EDITOR
         // Base DataAsset Methods
         public override void OnEditorPlay()
         {
             base.OnEditorPlay();
             UseCacheData = 0;
         }
-
+#endif
 
 
         // IEnumerator
