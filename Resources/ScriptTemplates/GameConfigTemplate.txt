@@ -2,7 +2,7 @@ using UnityEngine;
 using RealMethod;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : GameSettingAsset
+public class #SCRIPTNAME# : GameConfig
 {
     // Base GameSettingAsset Methods
     public override void GameStarted(Game Author)

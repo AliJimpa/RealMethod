@@ -21,10 +21,10 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("ServiceTemplate.txt", "MyServicec.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Essential/GameSetting", false, 80)]
-        public static void CreateGameSettingAsset()
+        [MenuItem("Assets/Create/Scripting/RealMethod/Essential/GameConfig", false, 80)]
+        public static void CreateGameConfig()
         {
-            string Path = ScriptCreator.Create("GameSettingAssetTemplate.txt", "MyGameSetting.cs");
+            string Path = ScriptCreator.Create("GameConfigTemplate.txt", "MyGameConfig.cs");
         }
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Manager", false, 80)]
         public static void CreateManager()
