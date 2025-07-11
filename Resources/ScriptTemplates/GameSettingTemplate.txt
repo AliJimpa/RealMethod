@@ -23,4 +23,11 @@ public class #SCRIPTNAME# : GameSetting
     protected override void OnSyncToggle(string label, Toggle element, bool isValueChange){}
     protected override void OnSyncDropdown(string label, Dropdown element, bool isValueChange){}
     protected override void OnSyncOther(string label, Selectable element, bool isValueChange){}
+
+//#if UNITY_EDITOR
+        //public override void OnEditorPlay()
+        //{
+            //base.OnEditorPlay();
+        //}
+//#endif
 }

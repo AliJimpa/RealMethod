@@ -160,6 +160,7 @@ namespace RealMethod
         protected bool isDirty { get; private set; } = false;
 
 
+        // Implement ISettingStorage Interface
         void ISettingStorage.Initiate(SettingWidget owner)
         {
             setting = owner;
@@ -206,6 +207,7 @@ namespace RealMethod
         {
             return isDirty;
         }
+
 
         //Abstract Methods
         protected abstract void OnSyncSlider(string label, Slider element, bool isValueChange);
