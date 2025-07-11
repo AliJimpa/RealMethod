@@ -31,11 +31,11 @@ namespace RealMethod
         public UIManager HUD { get; private set; }
 
         // Implement IWidget Interface
-        public MonoBehaviour GetWidgetClass()
+        MonoBehaviour IWidget.GetWidgetClass()
         {
             return this;
         }
-        public void InitiateWidget(UnityEngine.Object Owner)
+        void IWidget.InitiateWidget(UnityEngine.Object Owner)
         {
             if (Owner is UIManager hudmanager)
             {
