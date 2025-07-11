@@ -23,7 +23,7 @@ namespace RealMethod
                 {
                     foreach (UpgradeItem item in BaseComponent.CopyItemsByClass<UpgradeItem>())
                     {
-                        EditorGUILayout.LabelField($"Name: {item.Title} - Status: {item.IsUnlocked} ");
+                        EditorGUILayout.LabelField($"Name: {item.Title} - Status: {checkunlock(item)} ");
                     }
                 }
                 EditorGUILayout.Space();
@@ -31,6 +31,15 @@ namespace RealMethod
             }
 
 
+        }
+
+
+
+
+
+        private string checkunlock(UpgradeItem item)
+        {
+            return item.IsUnlocked ? "Unlock" : "Lock";
         }
     }
 }

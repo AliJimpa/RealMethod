@@ -5,19 +5,23 @@ namespace RealMethod
 {
     public sealed class Rebug : Service
     {
-        private static Rebug instance;
-        public static Rebug Service
+        private static Rebug CacheInstance = null;
+        public static Rebug instance
         {
             get
             {
-                if (instance != null)
+                if (CacheInstance != null)
                 {
-                    return instance;
+                    return CacheInstance;
                 }
                 else
                 {
-                    Debug.LogError("For Debugging You need Add DebugService in Game. [Game Class > InstanceCreated Method]");
-                    return null;
+                    if (Game.TryFindService(out Rebug CacheInstance))
+                    {
+                        return CacheInstance;
+                    }
+                    CacheInstance = Game.AddService<Rebug>(null);
+                    return CacheInstance;
                 }
             }
             private set { }
@@ -27,16 +31,6 @@ namespace RealMethod
 
         protected override void OnStart(object Author)
         {
-            if (instance == null)
-            {
-                instance = this;
-            }
-            else
-            {
-                Debug.LogError($"DebugService Is Created befor, You Can't Create Twice! [Author:{Author}]");
-                return;
-            }
-
             Debugger = Game.Instance.GetManager<DebugManager>();
             if (Debugger == null)
             {
@@ -56,19 +50,19 @@ namespace RealMethod
 
         public static void Log(string Message)
         {
-            Service.Debugger.Add(new LogData(Message));
+            instance.Debugger.Add(new LogData(Message));
         }
         public static void LogWarning(string Message)
         {
-            Service.Debugger.Add(new LogData(Message, LogType.Warning));
+            instance.Debugger.Add(new LogData(Message, LogType.Warning));
         }
         public static void LogError(string Message)
         {
-            Service.Debugger.Add(new LogData(Message, LogType.Error));
+            instance.Debugger.Add(new LogData(Message, LogType.Error));
         }
         public static void LogAssertion(string Message)
         {
-            Service.Debugger.Add(new LogData(Message, LogType.Assert));
+            instance.Debugger.Add(new LogData(Message, LogType.Assert));
         }
 
 
