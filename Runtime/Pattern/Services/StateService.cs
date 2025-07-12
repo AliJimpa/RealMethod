@@ -4,27 +4,29 @@ namespace RealMethod
 {
     public abstract class StateService : Service
     {
-        public Action<StateService> OnStateChanged;
+        public Action<StateService> OnStateUpdate;
 
-        public abstract int GetStateIndex();
+
+        public abstract Tenum GetCurrentState<Tenum>() where Tenum : Enum;
+        public abstract Tenum GetPreviousState<Tenum>() where Tenum : Enum;
+
     }
 
     public abstract class StateService<T> : StateService where T : Enum
     {
         public T currentState { get; private set; }
-        public T firstState { get; private set; }
-        public Action<T> OnNewState;
+        public T previousState { get; private set; }
+        public Action<T, T> OnStateChanged;
 
-        public StateService(T Default)
+        public StateService(T firstState)
         {
-            firstState = Default;
+            previousState = firstState;
             currentState = firstState;
         }
 
         // StateService Methods
         protected sealed override void OnStart(object Author)
         {
-            currentState = DefaultState();
             OnStart(Author, currentState);
         }
         protected sealed override void OnNewWorld()
@@ -34,20 +36,30 @@ namespace RealMethod
                 ResetToDefault();
             }
         }
-        public sealed override int GetStateIndex()
+        public sealed override Tenum GetCurrentState<Tenum>()
         {
-            return Convert.ToInt32(currentState);
-        }
+            if (typeof(Tenum) != typeof(T))
+                throw new InvalidOperationException($"State type mismatch. Expected {typeof(T)}, but got {typeof(Tenum)}");
 
+            return (Tenum)(object)currentState;
+        }
+        public sealed override Tenum GetPreviousState<Tenum>()
+        {
+            if (typeof(Tenum) != typeof(T))
+                throw new InvalidOperationException($"State type mismatch. Expected {typeof(T)}, but got {typeof(Tenum)}");
+
+            return (Tenum)(object)previousState;
+        }
 
         // Public Functions
         public bool SetState(T Target)
         {
             if (CanSwitch(currentState, Target))
             {
+                previousState = currentState;
                 currentState = Target;
-                OnStateChanged?.Invoke(this);
-                OnNewState?.Invoke(currentState);
+                OnStateUpdate?.Invoke(this);
+                OnStateChanged?.Invoke(previousState, currentState);
                 return true;
             }
             else
@@ -61,13 +73,8 @@ namespace RealMethod
             SetState(DefaultState());
         }
 
-        // Protected Functions
-        protected virtual T DefaultState()
-        {
-            return firstState;
-        }
-
         // Abstract Methods
+        protected abstract T DefaultState();
         protected abstract void OnStart(object Author, T State);
         public abstract bool CanSwitch(T A, T B);
         protected abstract bool CanResetforNewWorld(World NewWorld);

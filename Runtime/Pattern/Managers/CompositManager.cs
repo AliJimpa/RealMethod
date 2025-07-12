@@ -9,8 +9,36 @@ namespace RealMethod
     public abstract class CompositManager<T, J> : MixerManager where T : StateService where J : Enum
     {
         [Serializable]
-        public class LayerAudioDictionary : SerializableDictionary<J, AudioSource> { }
+        protected struct MusicLayer
+        {
+            [SerializeField]
+            private J Layer;
+            public J layer => Layer;
+            [SerializeField]
+            private AudioSource Source;
+            public AudioSource source => Source;
+            [SerializeField]
+            private AudioMixerSnapshot SnapShot;
+            public AudioMixerSnapshot snapShot => SnapShot;
+            [SerializeField]
+            private float LerpDuration;
+            public float lerpDuration => LerpDuration;
 
+            public bool Compair(J targetLayer)
+            {
+                return EqualityComparer<J>.Default.Equals(targetLayer, Layer);
+            }
+            public void SetSource(AudioSource newSource)
+            {
+                Source = newSource;
+                Source.loop = true;
+                Source.playOnAwake = false;
+            }
+            public void SetSnapShot(AudioMixerSnapshot newSnapshot)
+            {
+                SnapShot = newSnapshot;
+            }
+        }
         public struct MusicLerp
         {
             private AudioSource LayerA;
@@ -29,24 +57,36 @@ namespace RealMethod
             }
         }
 
+
         [Header("Composit")]
         [SerializeField]
-        private LayerAudioDictionary Layers;
-        [SerializeField]
-        private AudioMixerSnapshot[] Snapshots;
-        [SerializeField]
-        private float SnapshotTime = 2;
+        protected MusicLayer[] Layers;
 
 
 
-        protected T service;
+        protected T stateService;
+        public J currentState => stateService.GetCurrentState<J>();
 
         // Operators
-        public AudioSource this[J index]
+        public AudioSource this[int index]
         {
-            get => Layers[index];
-            private set => Layers[index] = value;
+            get => Layers[index].source;
         }
+        public AudioSource this[J layer]
+        {
+            get
+            {
+                foreach (var lay in Layers)
+                {
+                    if (lay.Compair(layer))
+                    {
+                        return lay.source;
+                    }
+                }
+                return null;
+            }
+        }
+
 
         // IGameManager Interface Implementation
         protected override void InitiateManager(bool AlwaysLoaded)
@@ -57,9 +97,9 @@ namespace RealMethod
                 Destroy(this);
             }
 
-            if (Game.TryFindService(out service))
+            if (Game.TryFindService(out stateService))
             {
-                service.OnStateChanged += OnStateChanged;
+                stateService.OnStateUpdate += OnStateChanged;
                 ServiceAssigned();
             }
         }
@@ -67,46 +107,65 @@ namespace RealMethod
         {
             if (service is T stateserv)
             {
-                this.service = stateserv;
-                this.service.OnStateChanged += OnStateChanged;
+                this.stateService = stateserv;
+                this.stateService.OnStateUpdate += OnStateChanged;
                 ServiceAssigned();
             }
+
+            
         }
 
         // Public Methods
         public void CrossfadeLayer(J LayerA, J LayerB, float Duration)
         {
-            StartCoroutine(CrossfadeTracks(Layers[LayerA], Layers[LayerB], Duration));
+            StartCoroutine(CrossfadeTracks(this[LayerA], this[LayerB], Duration));
         }
         public void FadeInLayer(J Layer, float Duration)
         {
-            StartCoroutine(fadeTrack(Layers[Layer], true, Duration));
+            StartCoroutine(fadeTrack(this[Layer], true, Duration));
         }
         public void FadeOutLayer(J Layer, float Duration)
         {
-            StartCoroutine(fadeTrack(Layers[Layer], false, Duration));
+            StartCoroutine(fadeTrack(this[Layer], false, Duration));
         }
-        public MusicLerp Interp(J LayerA, J LayerB)
+        public MusicLerp CreateInterp(J LayerA, J LayerB)
         {
-            return new MusicLerp(Layers[LayerA], Layers[LayerB]);
+            return new MusicLerp(this[LayerA], this[LayerB]);
         }
         private void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1f)
         {
             snapshot?.TransitionTo(transitionTime);
         }
 
-        // Private Methods
-        private void OnStateChanged(StateService service)
+        // Protected Methods
+        protected MusicLayer GetLayer(J targetlayer)
         {
-            if (Snapshots[service.GetStateIndex()] != null)
+            foreach (var layer in Layers)
             {
-                TransitionToSnapshot(Snapshots[service.GetStateIndex()], SnapshotTime);
+                if (layer.Compair(targetlayer))
+                {
+                    return layer;
+                }
             }
+            Debug.LogWarning("Can't Find Layer!");
+            return new MusicLayer();
+        }
+        protected virtual void OnStateChanged(StateService service)
+        {
+            J OldState = stateService.GetPreviousState<J>();
+            J NewState = stateService.GetCurrentState<J>();
+            MusicLayer TargetLayer = GetLayer(NewState);
+            CrossfadeLayer(OldState, NewState, TargetLayer.lerpDuration);
+            if (TargetLayer.snapShot != null)
+                TransitionToSnapshot(TargetLayer.snapShot, TargetLayer.lerpDuration);
         }
 
         //IEnumerator Corotine
         private IEnumerator CrossfadeTracks(AudioSource sourceA, AudioSource sourceB, float duration)
         {
+            sourceA.Play();
+            sourceB.Play();
+
             float timer = 0f;
             while (timer < duration)
             {
@@ -116,11 +175,16 @@ namespace RealMethod
                 timer += Time.deltaTime;
                 yield return null;
             }
+
             sourceA.Stop();
         }
         private IEnumerator fadeTrack(AudioSource source, bool fadeIn, float duration)
         {
+            if (!fadeIn)
+                source.Play();
+
             float timer = 0f;
+
             while (timer < duration)
             {
                 float t = timer / duration;
@@ -135,48 +199,14 @@ namespace RealMethod
                 timer += Time.deltaTime;
                 yield return null;
             }
-            source.Stop();
+
+            if (fadeIn)
+                source.Stop();
         }
 
         //Abstract Method
         public abstract void ServiceAssigned();
 
-
-#if UNITY_EDITOR
-        protected void CreateLayers_Editor()
-        {
-            if (Layers != null && Layers.Count > 0)
-            {
-                Dictionary<J, GameObject> mydic = new Dictionary<J, GameObject>(Layers.Count);
-                foreach (var layer in Layers)
-                {
-                    if (layer.Value == null)
-                    {
-                        GameObject layerobject = new GameObject($"Layer_{layer.Key}");
-                        mydic.Add(layer.Key, layerobject);
-                        layerobject.transform.SetParent(transform);
-                    }
-                }
-
-                foreach (var item in mydic)
-                {
-                    Layers[item.Key] = item.Value.AddComponent<AudioSource>();
-                    Layers[item.Key].loop = true;
-                    Layers[item.Key].playOnAwake = false;
-                }
-            }
-        }
-        protected void ClearLayers_Editor()
-        {
-            if (Layers != null && Layers.Count > 0)
-            {
-                foreach (var layer in Layers)
-                {
-                    DestroyImmediate(layer.Value.gameObject);
-                }
-            }
-        }
-#endif
 
     }
 

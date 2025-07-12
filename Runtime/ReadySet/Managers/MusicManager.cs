@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace RealMethod
 {
@@ -12,16 +13,34 @@ namespace RealMethod
 
 #if UNITY_EDITOR
         [ContextMenu("CreateLayer")]
-        private void CreateLayer()
+        private void CreateLayers_Editor()
         {
-            CreateLayers_Editor();
+            if (Layers != null && Layers.Length > 0)
+            {
+                foreach (var item in Layers)
+                {
+                    if (item.source == null)
+                    {
+                        GameObject layerobject = new GameObject($"Layer_{item.layer}");
+                        item.SetSource(layerobject.AddComponent<AudioSource>());
+                        layerobject.transform.SetParent(transform);
+                    }
+                }
+            }
         }
         [ContextMenu("ClearLayer")]
-        private void ClearLayer()
+        private void ClearLayers_Editor()
         {
-            ClearLayers_Editor();
+            if (Layers != null && Layers.Length > 0)
+            {
+                foreach (var layer in Layers)
+                {
+                    DestroyImmediate(layer.source.gameObject);
+                }
+            }
         }
 #endif
+
 
     }
 
@@ -63,6 +82,10 @@ namespace RealMethod
         {
 
         }
+        protected override DefaulMusicLayer DefaultState()
+        {
+            return DefaulMusicLayer.Default;
+        }
         public override bool CanSwitch(DefaulMusicLayer A, DefaulMusicLayer B)
         {
             return true;
@@ -71,6 +94,8 @@ namespace RealMethod
         {
             return false;
         }
+
+
     }
 
 

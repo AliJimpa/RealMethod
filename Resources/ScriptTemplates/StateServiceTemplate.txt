@@ -9,7 +9,7 @@ public enum GameState
 
 public class #SCRIPTNAME# : StateService<GameState>
 {
-    public #SCRIPTNAME#() : base(GameState.Default) // Replace default(StateList) with an actual enum value if needed
+    public #SCRIPTNAME#() : base(GameState.Default) // Replace base( ... ) with an actual enum value for first State
 	{
 		
     }
@@ -22,10 +22,7 @@ public class #SCRIPTNAME# : StateService<GameState>
 
     // StateService Methods
     protected override void OnStart(object Author, GameState State){}
+    protected override GameState DefaultState() {}
     public override bool CanSwitch(GameState A, GameState B){}
     protected override bool CanResetforNewWorld(World NewWorld){}
-    // protected override GameState DefaultState()
-    // {
-        // retrun base.DefaultState();
-    // }
 }
