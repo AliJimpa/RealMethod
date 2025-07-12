@@ -166,7 +166,7 @@ namespace RealMethod
                         Layers[layer.Key] = layerobject.AddComponent<AudioSource>();
                         Layers[layer.Key].loop = true;
                         Layers[layer.Key].playOnAwake = false;
-                        layerobject.transform.SetParent(transform);
+                        layerobject.transform.SetParent(targetlayer.transform);
                     }
                 }
             }
