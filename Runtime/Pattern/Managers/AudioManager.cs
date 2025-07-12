@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -8,9 +9,16 @@ namespace RealMethod
     public abstract class AudioManager : MixerManager
     {
         [Header("Audio")]
-        public AudioMixerGroup DefaultGroup;
+        [SerializeField]
+        private AudioMixerGroup DefaultGroup;
+        [SerializeField]
+        private AudioClip[] DefaultStamp;
 
-        private Transform SoundsPacket;
+
+
+        private Transform SoundStorage;
+        private Dictionary<string, AudioSource> Stamps;
+
 
         protected override void InitiateManager(bool AlwaysLoaded)
         {
@@ -25,7 +33,21 @@ namespace RealMethod
                 SpawnServ.BringManager(this);
             }
 
-            SoundsPacket = transform;
+            SoundStorage = transform;
+
+
+            if (DefaultStamp != null && DefaultStamp.Length > 0)
+            {
+                Stamps = new Dictionary<string, AudioSource>(DefaultStamp.Length);
+                foreach (var clip in DefaultStamp)
+                {
+                    CreateStamp(clip.name, clip, DefaultGroup);
+                }
+            }
+            else
+            {
+                Stamps = new Dictionary<string, AudioSource>();
+            }
         }
         protected override void InitiateService(Service service)
         {
@@ -38,9 +60,8 @@ namespace RealMethod
         // Public Methods
         public AudioSource PlaySound2D(AudioClip clip, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject();
-            SoundObject.transform.SetParent(SoundsPacket);
-            SoundObject.name = "Audio_" + clip.name;
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
+            SoundObject.transform.SetParent(SoundStorage);
             AudioSource source = SoundObject.AddComponent<AudioSource>();
             source.clip = clip;
             source.spatialBlend = 0;
@@ -54,9 +75,8 @@ namespace RealMethod
         }
         public AudioSource PlaySound2D(AudioClip clip, AudioMixerGroup group, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject();
-            SoundObject.transform.SetParent(SoundsPacket);
-            SoundObject.name = "Audio_" + clip.name;
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
+            SoundObject.transform.SetParent(SoundStorage);
             AudioSource source = SoundObject.AddComponent<AudioSource>();
             source.clip = clip;
             source.spatialBlend = 0;
@@ -70,9 +90,8 @@ namespace RealMethod
         }
         public AudioSource PlaySound2D(AudioClip clip, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject();
-            SoundObject.transform.SetParent(SoundsPacket);
-            SoundObject.name = "Audio_" + clip.name;
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
+            SoundObject.transform.SetParent(SoundStorage);
             AudioSource source = SoundObject.AddComponent<AudioSource>();
             source.clip = clip;
             source.spatialBlend = 0;
@@ -95,9 +114,8 @@ namespace RealMethod
         }
         public AudioSource PlaySound2D(AudioClip clip, AudioMixerGroup group, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject();
-            SoundObject.transform.SetParent(SoundsPacket);
-            SoundObject.name = "Audio_" + clip.name;
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
+            SoundObject.transform.SetParent(SoundStorage);
             AudioSource source = SoundObject.AddComponent<AudioSource>();
             source.clip = clip;
             source.spatialBlend = 0;
@@ -120,14 +138,13 @@ namespace RealMethod
         }
         public AudioSource PlaySound(AudioClip clip, Vector3 location, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject();
-            SoundObject.name = "Audio_" + clip.name;
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
             SoundObject.transform.position = location;
             AudioSource source = SoundObject.AddComponent<AudioSource>();
             source.clip = clip;
             source.spatialBlend = 1;
             source.outputAudioMixerGroup = DefaultGroup;
-            SoundObject.transform.SetParent(SoundsPacket);
+            SoundObject.transform.SetParent(SoundStorage);
             source.Play();
             if (autoDestroy)
             {
@@ -137,14 +154,13 @@ namespace RealMethod
         }
         public AudioSource PlaySound(AudioClip clip, AudioMixerGroup group, Vector3 location, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject();
-            SoundObject.name = "Audio_" + clip.name;
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
             SoundObject.transform.position = location;
             AudioSource source = SoundObject.AddComponent<AudioSource>();
             source.clip = clip;
             source.spatialBlend = 1;
             source.outputAudioMixerGroup = group;
-            SoundObject.transform.SetParent(SoundsPacket);
+            SoundObject.transform.SetParent(SoundStorage);
             source.Play();
             if (autoDestroy)
             {
@@ -154,8 +170,7 @@ namespace RealMethod
         }
         public AudioSource PlaySound(AudioClip clip, AudioMixerGroup group, Vector3 location, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject();
-            SoundObject.name = "Audio_" + clip.name;
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
             SoundObject.transform.position = location;
             AudioSource source = SoundObject.AddComponent<AudioSource>();
             source.clip = clip;
@@ -163,7 +178,7 @@ namespace RealMethod
             source.minDistance = rolloffDistanceMin;
             source.outputAudioMixerGroup = group;
             source.loop = loop;
-            SoundObject.transform.SetParent(SoundsPacket);
+            SoundObject.transform.SetParent(SoundStorage);
             source.Play();
             if (autoDestroy)
             {
@@ -180,8 +195,7 @@ namespace RealMethod
         }
         public AudioSource PlaySound(AudioClip clip, Vector3 location, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject();
-            SoundObject.name = "Audio_" + clip.name;
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
             SoundObject.transform.position = location;
             AudioSource source = SoundObject.AddComponent<AudioSource>();
             source.clip = clip;
@@ -189,7 +203,7 @@ namespace RealMethod
             source.minDistance = rolloffDistanceMin;
             source.outputAudioMixerGroup = DefaultGroup;
             source.loop = loop;
-            SoundObject.transform.SetParent(SoundsPacket);
+            SoundObject.transform.SetParent(SoundStorage);
             source.Play();
             if (autoDestroy)
             {
@@ -208,7 +222,7 @@ namespace RealMethod
         {
             if (source != null)
             {
-                source.transform.SetParent(SoundsPacket);
+                source.transform.SetParent(SoundStorage);
                 return true;
             }
             else
@@ -228,6 +242,55 @@ namespace RealMethod
                 return false;
             }
         }
+        public void CreateStamp(string stampName, AudioClip clip, AudioMixerGroup group)
+        {
+            GameObject SoundObject = new GameObject("Audio_" + clip.name);
+            SoundObject.transform.SetParent(SoundStorage);
+            AudioSource source = SoundObject.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.spatialBlend = 0;
+            source.outputAudioMixerGroup = group;
+            Stamps.Add(stampName, source);
+        }
+        public void PlayStamp(string stampName, bool PlayForce = false)
+        {
+            if (Stamps.ContainsKey(stampName))
+            {
+                if (Stamps[stampName].isPlaying)
+                {
+                    if (!PlayForce)
+                        return;
+                }
+                Stamps[stampName].Play();
+            }
+            else
+            {
+                Debug.LogWarning($"Cant find Stamp with this name {stampName}");
+            }
+        }
+        public void PauseStamp(string stampName)
+        {
+            if (Stamps.ContainsKey(stampName))
+            {
+                Stamps[stampName].Pause();
+            }
+            else
+            {
+                Debug.LogWarning($"Cant find Stamp with this name {stampName}");
+            }
+        }
+        public void StopStamp(string stampName)
+        {
+            if (Stamps.ContainsKey(stampName))
+            {
+                Stamps[stampName].Stop();
+            }
+            else
+            {
+                Debug.LogWarning($"Cant find Stamp with this name {stampName}");
+            }
+        }
+
 
         // Enumerator Methods
         private IEnumerator PauseAfterSecond(AudioSource source, float time)
