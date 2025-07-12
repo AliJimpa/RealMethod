@@ -11,8 +11,8 @@ public class #SCRIPTNAME# : SaveFile
     protected float sfxVolume = 0.7f;
     [Header("Haptic")]
     [SerializeField]
-    protected bool hasVibration;
-    [SerializeField,Range(0f, 1f),ConditionalHide("hasVibration", true, false)]
+    protected bool hasVibration = true;
+    [SerializeField, ConditionalHide("hasVibration", true, false), Range(0f, 1f)]
     protected float vibrationPower = 0.7f;
 
 
