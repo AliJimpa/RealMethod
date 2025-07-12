@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -32,6 +33,7 @@ namespace RealMethod
             {
                 Source = newSource;
                 Source.loop = true;
+                Source.spatialBlend = 0;
                 Source.playOnAwake = false;
             }
             public void SetSnapShot(AudioMixerSnapshot newSnapshot)
@@ -61,7 +63,6 @@ namespace RealMethod
         [Header("Composit")]
         [SerializeField]
         protected MusicLayer[] Layers;
-
 
 
         protected T stateService;
@@ -102,17 +103,17 @@ namespace RealMethod
                 stateService.OnStateUpdate += OnStateChanged;
                 ServiceAssigned();
             }
+
+            CheckDuplicateLayers();
         }
         protected override void InitiateService(Service service)
         {
             if (service is T stateserv)
             {
-                this.stateService = stateserv;
-                this.stateService.OnStateUpdate += OnStateChanged;
+                stateService = stateserv;
+                stateService.OnStateUpdate += OnStateChanged;
                 ServiceAssigned();
             }
-
-            
         }
 
         // Public Methods
@@ -158,6 +159,24 @@ namespace RealMethod
             CrossfadeLayer(OldState, NewState, TargetLayer.lerpDuration);
             if (TargetLayer.snapShot != null)
                 TransitionToSnapshot(TargetLayer.snapShot, TargetLayer.lerpDuration);
+        }
+
+        // Private Methods
+        private void CheckDuplicateLayers()
+        {
+            List<J> seen = new List<J>();
+
+            for (int i = 0; i < Layers.Length; i++)
+            {
+                if (seen.Contains(Layers[i].layer))
+                {
+                    Debug.LogWarning($"Duplicate layer '{Layers[i].layer}' found at index {i} (already added at index {seen.IndexOf(Layers[i].layer)})");
+                }
+                else
+                {
+                    seen.Add(Layers[i].layer);
+                }
+            }
         }
 
         //IEnumerator Corotine

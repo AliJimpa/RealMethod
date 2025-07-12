@@ -17,12 +17,12 @@ namespace RealMethod
         {
             if (Layers != null && Layers.Length > 0)
             {
-                foreach (var item in Layers)
+                for (int i = 0; i < Layers.Length; i++)
                 {
-                    if (item.source == null)
+                    if (Layers[i].source == null)
                     {
-                        GameObject layerobject = new GameObject($"Layer_{item.layer}");
-                        item.SetSource(layerobject.AddComponent<AudioSource>());
+                        GameObject layerobject = new GameObject($"Layer_{Layers[i].layer}");
+                        Layers[i].SetSource(layerobject.AddComponent<AudioSource>());
                         layerobject.transform.SetParent(transform);
                     }
                 }
@@ -35,7 +35,8 @@ namespace RealMethod
             {
                 foreach (var layer in Layers)
                 {
-                    DestroyImmediate(layer.source.gameObject);
+                    if (layer.source.gameObject != null)
+                        DestroyImmediate(layer.source.gameObject);
                 }
             }
         }
