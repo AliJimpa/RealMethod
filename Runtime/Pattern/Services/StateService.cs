@@ -1,5 +1,4 @@
 using System;
-using UnityEditor.Build;
 
 namespace RealMethod
 {
@@ -72,7 +71,6 @@ namespace RealMethod
         protected abstract void OnStart(object Author, T State);
         public abstract bool CanSwitch(T A, T B);
         protected abstract bool CanResetforNewWorld(World NewWorld);
-
-
     }
+
 }

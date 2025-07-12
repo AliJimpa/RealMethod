@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -142,32 +143,36 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR
-        private void OnValidate()
+        protected void CreateLayers_Editor()
         {
-
-            foreach (Transform item in transform)
-            {
-                if (item.gameObject.name == "MusicLayers")
-                {
-                    return;
-                }
-            }
-
-            GameObject targetlayer = new GameObject("MusicLayers");
-            targetlayer.transform.SetParent(transform);
-
             if (Layers != null && Layers.Count > 0)
             {
+                Dictionary<J, GameObject> mydic = new Dictionary<J, GameObject>(Layers.Count);
                 foreach (var layer in Layers)
                 {
                     if (layer.Value == null)
                     {
-                        GameObject layerobject = new GameObject($"Layer {layer.Key}");
-                        Layers[layer.Key] = layerobject.AddComponent<AudioSource>();
-                        Layers[layer.Key].loop = true;
-                        Layers[layer.Key].playOnAwake = false;
-                        layerobject.transform.SetParent(targetlayer.transform);
+                        GameObject layerobject = new GameObject($"Layer_{layer.Key}");
+                        mydic.Add(layer.Key, layerobject);
+                        layerobject.transform.SetParent(transform);
                     }
+                }
+
+                foreach (var item in mydic)
+                {
+                    Layers[item.Key] = item.Value.AddComponent<AudioSource>();
+                    Layers[item.Key].loop = true;
+                    Layers[item.Key].playOnAwake = false;
+                }
+            }
+        }
+        protected void ClearLayers_Editor()
+        {
+            if (Layers != null && Layers.Count > 0)
+            {
+                foreach (var layer in Layers)
+                {
+                    DestroyImmediate(layer.Value.gameObject);
                 }
             }
         }

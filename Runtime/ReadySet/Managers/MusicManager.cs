@@ -9,6 +9,20 @@ namespace RealMethod
         {
 
         }
+
+#if UNITY_EDITOR
+        [ContextMenu("CreateLayer")]
+        private void CreateLayer()
+        {
+            CreateLayers_Editor();
+        }
+        [ContextMenu("ClearLayer")]
+        private void ClearLayer()
+        {
+            ClearLayers_Editor();
+        }
+#endif
+
     }
 
     public enum DefaulMusicLayer
@@ -58,6 +72,8 @@ namespace RealMethod
             return false;
         }
     }
+
+
 
 
 }
