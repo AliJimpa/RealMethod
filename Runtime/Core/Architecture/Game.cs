@@ -50,6 +50,7 @@ namespace RealMethod
         private List<Service> GameServices;
 
 
+
         // Public Functions
         public T GetManager<T>() where T : class
         {
@@ -72,10 +73,6 @@ namespace RealMethod
                 }
             }
             return null;
-        }
-        public string[] GetAllServiceNames()
-        {
-            return GameServices.Select(service => service.GetType().Name).ToArray();
         }
         // Protected Functions
         protected T NeedManager<T>() where T : MonoBehaviour
@@ -182,6 +179,10 @@ namespace RealMethod
         {
             service = Instance.GameServices.OfType<T>().FirstOrDefault();
             return service != null;
+        }
+        public string[] GetAllServiceNames()
+        {
+            return GameServices.Select(service => service.GetType().Name).ToArray();
         }
         public static Coroutine OpenScene(SceneReference TargetScene)
         {
