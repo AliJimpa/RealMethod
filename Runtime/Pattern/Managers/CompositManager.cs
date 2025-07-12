@@ -142,9 +142,20 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR
-        [ContextMenu("CreateLayer")]
-        private void Editor_CreateLayer()
+        private void OnValidate()
         {
+
+            foreach (Transform item in transform)
+            {
+                if (item.gameObject.name == "MusicLayers")
+                {
+                    return;
+                }
+            }
+
+            GameObject targetlayer = new GameObject("MusicLayers");
+            targetlayer.transform.SetParent(transform);
+
             if (Layers != null && Layers.Count > 0)
             {
                 foreach (var layer in Layers)
