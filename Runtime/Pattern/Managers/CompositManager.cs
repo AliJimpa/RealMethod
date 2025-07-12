@@ -143,7 +143,7 @@ namespace RealMethod
 
 #if UNITY_EDITOR
         [ContextMenu("CreateLayer")]
-        private void CreateLayer()
+        private void Editor_CreateLayer()
         {
             if (Layers != null && Layers.Count > 0)
             {
