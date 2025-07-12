@@ -304,7 +304,7 @@ namespace RealMethod
                 Transform MyLayer = Layers[Name].GetComponent<Transform>();
                 if (MyLayer)
                 {
-                    MyLayer.SetSiblingIndex(0);
+                    MyLayer.SetSiblingIndex(Order);
                 }
                 else
                 {
