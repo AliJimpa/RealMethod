@@ -8,13 +8,10 @@ namespace RealMethod
     public class UpgradeSaveFile : SaveFile, IUpgradeStorage
     {
         [Header("Setting")]
-        [SerializeField]
-        private bool UsePlayerPrefs = true;
+        public bool UsePlayerPrefs = true;
         [Header("Storage")]
-        [SerializeField]
-        private List<string> Avalable;
-        [SerializeField]
-        private List<string> UnAvalibal;
+        public List<string> Avalable;
+        public List<string> UnAvalibal;
 
         // Base SaveFile Method
         protected override void OnStable(DataManager manager)
