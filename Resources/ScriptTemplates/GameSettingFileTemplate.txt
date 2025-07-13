@@ -2,7 +2,7 @@ using RealMethod;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : SaveFile
+public class #SCRIPTNAME# : SettingFile
 {
     [Header("Audio")]
     [SerializeField,Range(0f, 1f)]
@@ -16,7 +16,7 @@ public class #SCRIPTNAME# : SaveFile
     protected float vibrationPower = 0.7f;
 
 
-    // SaveFile Method
+    // SaveFile Methods
     protected override void OnStable(DataManager manager)
     {
     }
@@ -29,6 +29,10 @@ public class #SCRIPTNAME# : SaveFile
     protected override void OnDeleted()
     {
     }
+
+    // SettingFile Methods
+    protected abstract void OnSettingCreate() {}
+    protected abstract void OnSettingStart() {}
 
 #if UNITY_EDITOR
         public override void OnEditorPlay()

@@ -13,7 +13,7 @@ namespace RealMethod
     {
         [Header("File")]
         [SerializeField]
-        private SaveFile settingfile;
+        private SettingFile settingfile;
         public FieldContainer ScanSetting;
         [Header("UI")]
         [SerializeField]
@@ -24,6 +24,7 @@ namespace RealMethod
 
         private DataManager saveManager;
         public bool IsSettingDirty { get; private set; } = false;
+        private ISettingStorage storage;
 
 
         // Implement IWidget Interface
@@ -40,6 +41,13 @@ namespace RealMethod
                 return;
             }
 
+            storage = settingfile as ISettingStorage;
+            if (storage == null)
+            {
+                Debug.LogError($"{this} ISettingStorage not implement in this savefile ");
+                enabled = false;
+                return;
+            }
             ScanSetting.Scan(settingfile);
         }
 
@@ -64,10 +72,12 @@ namespace RealMethod
 
             if (saveManager.IsExistFile(settingfile))
             {
+                storage.OnSettingStarted();
                 saveManager.LoadFile(settingfile);
             }
             else
             {
+                storage.OnSettingCreated();
                 SaveSetting();
             }
         }
@@ -215,6 +225,29 @@ namespace RealMethod
             }
         }
 
+    }
+
+    public interface ISettingStorage
+    {
+        void OnSettingCreated();
+        void OnSettingStarted();
+
+    }
+
+    public abstract class SettingFile : SaveFile, ISettingStorage
+    {
+        // Implement ISettingStorage Interface
+        void ISettingStorage.OnSettingCreated()
+        {
+            OnSettingCreate();
+        }
+        void ISettingStorage.OnSettingStarted()
+        {
+            OnSettingStart();
+        }
+
+        protected abstract void OnSettingCreate();
+        protected abstract void OnSettingStart();
     }
 
 }
