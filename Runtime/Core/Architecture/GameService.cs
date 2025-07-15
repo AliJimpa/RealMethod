@@ -5,7 +5,12 @@ using UnityEngine.SceneManagement;
 
 namespace RealMethod
 {
-    public abstract class GameService : Service
+    public interface IWorldSync
+    {
+        bool IntroduceWorld(World world);
+    }
+
+    public abstract class GameService : Service, IWorldSync
     {
         // Game Structure
         public Action<World> OnWorldUpdate;
@@ -17,8 +22,11 @@ namespace RealMethod
         public bool IsLoading { get; protected set; }
         public float FadeTime = 0;
 
+        
+
+        // Implement IWorldSync Interface
         // Any World in Awake time call this method
-        public bool IntroduceWorld(World world)
+        bool IWorldSync.IntroduceWorld(World world)
         {
             if (Game.World == null)
             {
@@ -33,6 +41,7 @@ namespace RealMethod
             }
         }
 
+
         // Virtual Methods
         public virtual IEnumerator GetLoadScneCorotine(SceneReference TargetScene)
         {
@@ -42,6 +51,7 @@ namespace RealMethod
         {
             return LoadWorldAsync(WorldScene);
         }
+
 
         // Abstract Methods
         protected abstract void OnNewAdditiveWorld(World target);

@@ -33,7 +33,8 @@ namespace RealMethod
             Game.IsValid(true);
 
             //Connect to Game Service
-            if (Game.Service.IntroduceWorld(this))
+            IWorldSync InterService = Game.Service;
+            if (InterService.IntroduceWorld(this))
             {
                 Game.Service.OnAdditiveWorld += AdditiveWorld;
                 Game.Service.OnServiceCreate += NewServiceCreated;
