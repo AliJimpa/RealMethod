@@ -15,7 +15,8 @@ namespace RealMethod
       [SerializeField]
       private SceneReference Persistent;
       [SerializeField]
-      private List<SceneReference> Additive;
+      private SceneReference[] Additive;
+      public int AdditiveCount => Additive.Length;
 
       public SceneReference GetPersistent()
       {
@@ -25,16 +26,12 @@ namespace RealMethod
       {
          return Additive[index];
       }
-      public int GetAdditiveCount()
-      {
-         return Additive.Count;
-      }
 
       public SceneReference[] GetAllScene()
       {
-         SceneReference[] Result = new SceneReference[Additive.Count + 1];
+         SceneReference[] Result = new SceneReference[Additive.Length + 1];
          Result[0] = Persistent;
-         for (int i = 0; i < Additive.Count; i++)
+         for (int i = 0; i < Additive.Length; i++)
          {
             Result[i + 1] = Additive[i];
          }

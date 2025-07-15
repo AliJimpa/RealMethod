@@ -192,7 +192,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("The scene is already loaded.");
+                Debug.LogWarning("GameService is already in loading or The scene is already loaded.");
                 return null;
             }
         }
@@ -204,7 +204,19 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("The scene is already loaded.");
+                Debug.LogWarning("GameService is already in loading or The scene is already loaded.");
+                return null;
+            }
+        }
+        public static Coroutine ReOpenScene()
+        {
+            if (!Service.IsLoading)
+            {
+                return Instance.StartCoroutine(Service.GetReloadSWCorotine());
+            }
+            else
+            {
+                Debug.LogWarning("GameService is already in loading.");
                 return null;
             }
         }
