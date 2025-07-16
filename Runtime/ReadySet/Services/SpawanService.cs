@@ -408,7 +408,24 @@ namespace RealMethod
             emptyobject.AddComponent<MeshFilter>().mesh = geometry;
             return emptyobject.AddComponent<MeshRenderer>();
         }
-
+        public static MeshRenderer Mesh(Mesh geometry, Vector3 location)
+        {
+            MeshRenderer result = Mesh(geometry);
+            result.transform.position = location;
+            return result;
+        }
+        public static AudioSource Audio(AudioClip clip)
+        {
+            GameObject emptyobject = new GameObject(clip.name);
+            AudioSource source = emptyobject.AddComponent<AudioSource>();
+            source.clip = clip;
+            if (instance.audioBox != null)
+            {
+                source.outputAudioMixerGroup = instance.audioBox.defaultGroup;
+                emptyobject.transform.SetParent(instance.audioBox.transform);
+            }
+            return source;
+        }
 
     }
 

@@ -10,6 +10,7 @@ namespace RealMethod
         [Header("Audio")]
         [SerializeField]
         private AudioMixerGroup DefaultGroup;
+        public AudioMixerGroup defaultGroup => DefaultGroup;
 
         protected override void InitiateManager(bool AlwaysLoaded)
         {
@@ -96,15 +97,15 @@ namespace RealMethod
         }
         public AudioSource PlaySound2D(AudioClip clip, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            return PlaySound2D(clip,DefaultGroup,rolloffDistanceMin,loop,pauseTime,autoDestroy);
+            return PlaySound2D(clip, DefaultGroup, rolloffDistanceMin, loop, pauseTime, autoDestroy);
         }
         public AudioSource PlaySound2D(AudioClip clip, AudioMixerGroup group, bool autoDestroy = true)
         {
-            return PlaySound2D(clip,group,autoDestroy);
+            return PlaySound2D(clip, group, autoDestroy);
         }
         public AudioSource PlaySound2D(AudioClip clip, bool autoDestroy = true)
         {
-            return PlaySound2D(clip,DefaultGroup,autoDestroy);
+            return PlaySound2D(clip, DefaultGroup, autoDestroy);
         }
 
         // Enumerator Methods
