@@ -298,12 +298,7 @@ namespace RealMethod
             }
         }
 
-        // Memory
-        public static GameObject Empty(string name)
-        {
-            return new GameObject(name);
-        }
-
+        // Prefab
         public static GameObject Prefab(GameObject prefab)
         {
             return Object.Instantiate(prefab, Game.World.transform);
@@ -337,6 +332,7 @@ namespace RealMethod
             return Object.Instantiate(prefab, scene) as GameObject;
         }
 
+        // Generic 
         public static T Obj<T>(T original) where T : Object
         {
             return Object.Instantiate(original);
@@ -354,7 +350,7 @@ namespace RealMethod
             return Object.Instantiate(original, parent, worldPositionStays);
         }
 
-
+        // Code
         public static T Component<T>(GameObject target) where T : MonoBehaviour
         {
             if (target)
@@ -372,12 +368,8 @@ namespace RealMethod
         {
             return new T();
         }
-        public static MeshRenderer Mesh(Mesh geometry)
-        {
-            GameObject emptyobject = new GameObject(geometry.name);
-            emptyobject.AddComponent<MeshFilter>().mesh = geometry;
-            return emptyobject.AddComponent<MeshRenderer>();
-        }
+
+        // Realmethod
         public static T Command<T>(GameObject prefab, MonoBehaviour owner, Object author) where T : Command
         {
             T command = prefab.GetComponent<T>();
@@ -404,6 +396,20 @@ namespace RealMethod
         {
             return ScriptableObject.CreateInstance<T>();
         }
+
+        // Other
+        public static GameObject Empty(string name)
+        {
+            return new GameObject(name);
+        }
+        public static MeshRenderer Mesh(Mesh geometry)
+        {
+            GameObject emptyobject = new GameObject(geometry.name);
+            emptyobject.AddComponent<MeshFilter>().mesh = geometry;
+            return emptyobject.AddComponent<MeshRenderer>();
+        }
+
+
     }
 
 
@@ -454,6 +460,21 @@ namespace RealMethod
             }
 
             return Instance.uIBox.RemoveLayer(Comp);
+        }
+
+        // Prefab
+        public static bool GameObject(GameObject target)
+        {
+            if (target != null)
+            {
+                Object.Destroy(target);
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning("target GameObject is not valid");
+                return false;
+            }
         }
     }
 
