@@ -43,6 +43,8 @@ namespace RealMethod
         protected override void OnEnd(object Author)
         {
             AntiSpawn = null;
+            audioBox = null;
+            uIBox = null;
             CacheInstance = null;
         }
 
@@ -88,7 +90,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -100,7 +102,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -112,7 +114,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -124,7 +126,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -136,7 +138,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -148,7 +150,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -160,7 +162,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -172,7 +174,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -184,7 +186,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Mater UI");
+                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
                 return null;
             }
         }
@@ -297,13 +299,14 @@ namespace RealMethod
         }
 
         // Memory
-        public static GameObject GameObject(string name)
+        public static GameObject Empty(string name)
         {
             return new GameObject(name);
         }
+
         public static GameObject Prefab(GameObject prefab)
         {
-            return Game.World.AddObject(prefab);
+            return Object.Instantiate(prefab, Game.World.transform);
         }
         public static GameObject Prefab(GameObject prefab, Transform parent)
         {
@@ -317,6 +320,10 @@ namespace RealMethod
         {
             return Object.Instantiate(prefab, location, Quaternion.Euler(rotation));
         }
+        public static GameObject Prefab(GameObject prefab, Vector3 location, Quaternion rotation)
+        {
+            return Object.Instantiate(prefab, location, rotation);
+        }
         public static GameObject Prefab(GameObject prefab, Vector3 location)
         {
             return Object.Instantiate(prefab, location, Quaternion.identity);
@@ -329,10 +336,37 @@ namespace RealMethod
         {
             return Object.Instantiate(prefab, scene) as GameObject;
         }
-        public static T Component<T>(string name)
+
+        public static T Obj<T>(T original) where T : Object
         {
-            GameObject emptyobjec = new GameObject(name);
-            return emptyobjec.GetComponent<T>();
+            return Object.Instantiate(original);
+        }
+        public static T Obj<T>(T original, Transform parent) where T : Object
+        {
+            return Object.Instantiate(original, parent);
+        }
+        public static T Obj<T>(T original, Vector3 position, Quaternion rotation) where T : Object
+        {
+            return Object.Instantiate(original, position, rotation);
+        }
+        public static T Obj<T>(T original, Transform parent, bool worldPositionStays) where T : Object
+        {
+            return Object.Instantiate(original, parent, worldPositionStays);
+        }
+
+
+        public static T Component<T>(GameObject target) where T : MonoBehaviour
+        {
+            if (target)
+            {
+                return target.AddComponent<T>();
+            }
+            else
+            {
+                Debug.LogWarning("Target GameObject is Not Valid");
+                return null;
+            }
+
         }
         public static T Class<T>() where T : Object, new()
         {
@@ -366,7 +400,7 @@ namespace RealMethod
             }
             return TargetCommand;
         }
-        public static T DataAsset<T>(T asset) where T : DataAsset
+        public static T DataAsset<T>() where T : DataAsset
         {
             return ScriptableObject.CreateInstance<T>();
         }
@@ -390,21 +424,34 @@ namespace RealMethod
         }
 
 
+        // UI
         public static bool Widget(string Name)
         {
             if (Instance == null)
+            {
+                Debug.LogWarning("Despawn Service: UIManager is not available. Cannot Remove widget. You Need Master UI");
                 return false;
+            }
             if (Instance.uIBox == null)
+            {
+                Debug.LogWarning("Despawn Service: UIManager is not available. Cannot Remove widget. You Need Master UI");
                 return false;
+            }
 
             return Instance.uIBox.RemoveLayer(Name);
         }
         public static bool Widget(MonoBehaviour Comp)
         {
             if (Instance == null)
+            {
+                Debug.LogWarning("Despawn Service: UIManager is not available. Cannot Remove widget. You Need Master UI");
                 return false;
+            }
             if (Instance.uIBox == null)
+            {
+                Debug.LogWarning("Despawn Service: UIManager is not available. Cannot Remove widget. You Need Master UI");
                 return false;
+            }
 
             return Instance.uIBox.RemoveLayer(Comp);
         }

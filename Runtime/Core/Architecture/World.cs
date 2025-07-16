@@ -119,10 +119,6 @@ namespace RealMethod
         {
             return PlayerObject.GetComponentInChildren<T>();
         }
-        public GameObject AddObject(GameObject Prefab)
-        {
-            return Instantiate(Prefab, transform);
-        }
         public GameObject FindExteraObject(string ObjectName)
         {
             GameObject Result = null;
