@@ -5,7 +5,13 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Manager/HUDManager")]
     public sealed class HUDManager : UIManager
     {
-        public override void InitiateService(Service newService)
+
+        // UIManager Methods
+        protected override void InitiateManager(bool alwaysLoaded)
+        {
+
+        }
+        protected override void InitiateService(Service newService)
         {
             if (newService is Spawn spawnservice)
             {
@@ -16,5 +22,6 @@ namespace RealMethod
         {
             return true;
         }
+
     }
 }

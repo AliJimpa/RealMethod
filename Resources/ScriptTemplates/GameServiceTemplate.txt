@@ -3,6 +3,20 @@ using RealMethod;
 public class #SCRIPTNAME# : GameService
 {
 
+    // GameService Methods
+    // public override IEnumerator GetLoadScneCorotine(SceneReference TargetScene)
+        // {
+        //     return base.GetLoadScneCorotine();
+        // }
+        // public override IEnumerator GetLoadWorldCorotine(WorldSceneConfig WorldScene)
+        // {
+        //     return base.GetLoadWorldCorotine();
+        // }
+        // public override IEnumerator GetReloadSWCorotine()
+        // {
+        //     return base.GetReloadSWCorotine();
+        // }
+
     // Base Service Methods
     protected override void OnStart(object Author) { }
     protected override void OnNewWorld() { }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace RealMethod
 {
@@ -20,11 +21,12 @@ namespace RealMethod
         public Action<bool> OnSceneLoading;
         public Action<float> OnSceneLoadingProcess;
         public bool IsLoading { get; protected set; }
-        public float FadeTime = 0;
+        public float FadeTime { get; protected set; } = 0;
 
 
         private SceneReference CurrentScne;
         private WorldSceneConfig CurrentWorld;
+
 
 
         // Implement IWorldSync Interface
@@ -45,7 +47,18 @@ namespace RealMethod
         }
 
 
-        // Virtual Methods
+        // public Methods
+        public void SetFadeTime(float value)
+        {
+            if (!IsLoading)
+            {
+                FadeTime = value;
+            }
+            else
+            {
+                Debug.LogWarning("Can't change fade time during loading");
+            }
+        }
         public virtual IEnumerator GetLoadScneCorotine(SceneReference TargetScene)
         {
             if (IsLoading == true)

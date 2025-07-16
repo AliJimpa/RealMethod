@@ -3,10 +3,14 @@ using RealMethod;
 public class #SCRIPTNAME# : UIManager
 {
 
-    // Implement IGameManage Methods
-    public override void InitiateService(Service newService)
+    // UIManager Methods
+    protected override void InitiateManager(bool alwaysLoaded)
     {
-        throw new System.NotImplementedException();
+
+    }
+    protected override void InitiateService(Service newService)
+    {
+        
     }
     public override bool IsMaster()
     {

@@ -51,8 +51,13 @@ namespace RealMethod
             {
                 SpawnServ.BringManager(this);
             }
-        }
 
+            InitiateManager(alwaysLoaded);
+        }
+        void IGameManager.InitiateService(Service service)
+        {
+            InitiateService(service);
+        }
         // Unity Methods
 #if UNITY_EDITOR
         private void OnValidate()
@@ -461,7 +466,8 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        public abstract void InitiateService(Service newService);
+        protected abstract void InitiateManager(bool alwaysLoaded);
+        protected abstract void InitiateService(Service newService);
         public abstract bool IsMaster();
 
         //Enumerators

@@ -14,23 +14,14 @@ namespace RealMethod
         [SerializeField]
         private UnityEvent<float> OnLoading;
 
-
-        private void Awake()
+        // UIManager Methods
+        protected override void InitiateManager(bool alwaysLoaded)
         {
-            GameService GS = Game.Service;
-            if (GS != null)
-            {
-                GS.FadeTime = FadeDuraction;
-                GS.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
-                GS.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);
-            }
-            else
-            {
-                Debug.LogError("The Game Doesn't have Service");
-            }
+            Game.Service.SetFadeTime(FadeDuraction);
+            Game.Service.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
+            Game.Service.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);
         }
-
-        public override void InitiateService(Service newService)
+        protected override void InitiateService(Service newService)
         {
 
         }
@@ -38,5 +29,6 @@ namespace RealMethod
         {
             return false;
         }
+
     }
 }
