@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -108,11 +107,14 @@ namespace RealMethod
         }
         protected override void InitiateService(Service service)
         {
-            if (service is T stateserv)
+            if (stateService == null)
             {
-                stateService = stateserv;
-                stateService.OnStateUpdate += OnStateChanged;
-                ServiceAssigned();
+                if (service is T stateserv)
+                {
+                    stateService = stateserv;
+                    stateService.OnStateUpdate += OnStateChanged;
+                    ServiceAssigned();
+                }
             }
         }
 
@@ -129,15 +131,11 @@ namespace RealMethod
         {
             StartCoroutine(fadeTrack(this[Layer], false, Duration));
         }
-        public MusicLerp CreateInterp(J LayerA, J LayerB)
+        public MusicLerp CreateLerp(J LayerA, J LayerB)
         {
             return new MusicLerp(this[LayerA], this[LayerB]);
         }
-        private void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1f)
-        {
-            snapshot?.TransitionTo(transitionTime);
-        }
-
+        
         // Protected Methods
         protected MusicLayer GetLayer(J targetlayer)
         {
@@ -177,6 +175,10 @@ namespace RealMethod
                     seen.Add(Layers[i].layer);
                 }
             }
+        }
+        private void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1f)
+        {
+            snapshot?.TransitionTo(transitionTime);
         }
 
         //IEnumerator Corotine
@@ -225,7 +227,6 @@ namespace RealMethod
 
         //Abstract Method
         public abstract void ServiceAssigned();
-
 
     }
 

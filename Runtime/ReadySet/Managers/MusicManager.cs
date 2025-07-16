@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace RealMethod
 {
@@ -8,7 +7,7 @@ namespace RealMethod
     {
         public override void ServiceAssigned()
         {
-
+           
         }
 
 #if UNITY_EDITOR

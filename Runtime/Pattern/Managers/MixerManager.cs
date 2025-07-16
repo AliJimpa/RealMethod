@@ -6,8 +6,9 @@ namespace RealMethod
 {
     public abstract class MixerManager : MonoBehaviour, IGameManager
     {
-        [Header("Setting")]
-        [SerializeField] private AudioMixer Mixer;
+        [Header("Mixer")]
+        [SerializeField]
+        private AudioMixer Mixer;
         public AudioMixer mixer => Mixer;
         [SerializeField]
         private StringFloatDictionary Parameter;
