@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using UnityEngine;
+using UnityEditor;
 
 namespace RealMethod
 {
@@ -71,5 +72,24 @@ namespace RealMethod
                 return false;
             }
         }
+
+
     }
+
+
+#if UNITY_EDITOR
+#endif
+
+    public static class ObjectUtils
+    {
+        public static bool IsPrefab(GameObject obj)
+        {
+#if UNITY_EDITOR
+            return PrefabUtility.GetPrefabAssetType(obj) != PrefabAssetType.NotAPrefab;
+#else
+        return false;
+#endif
+        }
+    }
+
 }

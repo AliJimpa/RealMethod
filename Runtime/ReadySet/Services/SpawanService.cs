@@ -90,7 +90,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -102,7 +102,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -114,7 +114,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -126,7 +126,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -138,7 +138,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -150,7 +150,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -162,7 +162,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -174,7 +174,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -186,7 +186,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Spawn Service: UIManager is not available. Cannot create widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
             }
         }
@@ -359,7 +359,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("Target GameObject is Not Valid");
+                Debug.LogWarning($" {instance}: target is not valid.");
                 return null;
             }
 
@@ -381,7 +381,7 @@ namespace RealMethod
 
             if (owner == null || author == null)
             {
-                Debug.LogError($"Spawn Command Failed: Owner or Author Not valid.");
+                Debug.LogWarning($" {instance}: Owner or Author is not available.");
                 return null;
             }
             GameObject SpawnedObject = Object.Instantiate(prefab, owner.transform);
@@ -429,54 +429,52 @@ namespace RealMethod
 
     }
 
-
     public sealed class Despawn
     {
-        private static Despawn Instance;
+        private static Despawn instance;
         private UIManager uIBox;
         private AudioManager audioBox;
 
         public Despawn(UIManager ui, AudioManager audio)
         {
-            if (Instance == null)
+            if (instance == null)
             {
-                Instance = this;
+                instance = this;
                 uIBox = ui;
                 audioBox = audio;
             }
         }
 
-
         // UI
         public static bool Widget(string Name)
         {
-            if (Instance == null)
+            if (instance == null)
             {
-                Debug.LogWarning("Despawn Service: UIManager is not available. Cannot Remove widget. You Need Master UI");
+                Debug.LogWarning("Something Wrong!");
                 return false;
             }
-            if (Instance.uIBox == null)
+            if (instance.uIBox == null)
             {
-                Debug.LogWarning("Despawn Service: UIManager is not available. Cannot Remove widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return false;
             }
 
-            return Instance.uIBox.RemoveLayer(Name);
+            return instance.uIBox.RemoveLayer(Name);
         }
         public static bool Widget(MonoBehaviour Comp)
         {
-            if (Instance == null)
+            if (instance == null)
             {
-                Debug.LogWarning("Despawn Service: UIManager is not available. Cannot Remove widget. You Need Master UI");
+                Debug.LogWarning("Something Wrong!");
                 return false;
             }
-            if (Instance.uIBox == null)
+            if (instance.uIBox == null)
             {
-                Debug.LogWarning("Despawn Service: UIManager is not available. Cannot Remove widget. You Need Master UI");
+                Debug.LogWarning($" {instance}: UIManager is not available.");
                 return false;
             }
 
-            return Instance.uIBox.RemoveLayer(Comp);
+            return instance.uIBox.RemoveLayer(Comp);
         }
 
         // Prefab
@@ -489,11 +487,12 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("target GameObject is not valid");
+                Debug.LogWarning($" {instance}: target is not available.");
                 return false;
             }
         }
-    }
 
+
+    }
 
 }
