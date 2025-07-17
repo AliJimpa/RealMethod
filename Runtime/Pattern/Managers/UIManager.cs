@@ -70,7 +70,7 @@ namespace RealMethod
                 case UIMethod.uGUI:
                     if (GetComponent<Canvas>() == null)
                     {
-                        Debug.LogError("The HUD Should be placed in a canvas");
+                        Debug.LogError("The UIManager Should be placed in a canvas");
                         return;
                     }
                     break;
