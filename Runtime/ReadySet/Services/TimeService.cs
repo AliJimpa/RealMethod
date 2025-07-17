@@ -25,9 +25,17 @@ namespace RealMethod
         }
 
         // Public Functions
+        public bool CheckRecord(string tag, float targettime)
+        {
+            return Time.time - RecordTime[tag] >= targettime;
+        }
         public void StartRecord(string tag)
         {
             RecordTime.Add(tag, Time.time);
+        }
+        public void ResetRecord(string tag)
+        {
+            RecordTime[tag] = Time.time;
         }
         public bool RemoveRecord(string Tag)
         {

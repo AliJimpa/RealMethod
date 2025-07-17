@@ -247,4 +247,65 @@ namespace RealMethod
     {
 
     }
+
+
+
+
+    // [System.Serializable]
+    // public class AddressablePrefab<T> where T : Component
+    // {
+    //     [SerializeField] private AssetReferenceGameObject prefabRef;
+
+    //     private GameObject loadedPrefab;
+
+    //     public bool IsValid => prefabRef != null;
+
+    //     public AsyncOperationHandle<GameObject> LoadAsync()
+    //     {
+    //         if (!IsValid)
+    //         {
+    //             Debug.LogError("Invalid prefab reference.");
+    //             return default;
+    //         }
+
+    //         return prefabRef.LoadAssetAsync<GameObject>();
+    //     }
+
+    //     public async System.Threading.Tasks.Task<T> InstantiateAsync(Vector3 position, Quaternion rotation, Transform parent = null)
+    //     {
+    //         if (!IsValid)
+    //         {
+    //             Debug.LogError("Invalid prefab reference.");
+    //             return null;
+    //         }
+
+    //         var handle = Addressables.InstantiateAsync(prefabRef, position, rotation, parent);
+    //         await handle.Task;
+
+    //         if (handle.Status != AsyncOperationStatus.Succeeded)
+    //         {
+    //             Debug.LogError("Failed to instantiate addressable prefab.");
+    //             return null;
+    //         }
+
+    //         return handle.Result.GetComponent<T>();
+    //     }
+
+    //     public void Release()
+    //     {
+    //         if (loadedPrefab != null)
+    //         {
+    //             Addressables.ReleaseInstance(loadedPrefab);
+    //             loadedPrefab = null;
+    //         }
+    //     }
+
+    //     public AssetReferenceGameObject Reference => prefabRef;
+    // }
+
+
+
+
+
+
 }
