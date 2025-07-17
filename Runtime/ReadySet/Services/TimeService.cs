@@ -1,57 +1,65 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace RealMethod
 {
     public sealed class TimeService : Service
     {
-        private float CreateTime;
-        private Dictionary<string, float> RecordTime = new Dictionary<string, float>();
+        private float serviceTime;
+        private float worldTime;
+        private Hictionary<float> RecordTime;
 
+        // Service Methods
         protected override void OnStart(object Author)
         {
-            CreateTime = Time.time;
+            serviceTime = Time.time;
+            worldTime = Time.time;
+            RecordTime = new Hictionary<float>(10);
         }
-
         protected override void OnNewWorld()
         {
+            worldTime = Time.time;
         }
-
         protected override void OnEnd(object Author)
         {
+
         }
 
-
-        public void Record(string Tag)
+        // Public Functions
+        public void StartRecord(string tag)
         {
-            if (RecordTime.ContainsKey(Tag))
-                StopRecord(Tag);
-
-            RecordTime.Add(Tag, Time.time);
+            RecordTime.Add(tag, Time.time);
         }
-        public bool StopRecord(string Tag)
+        public bool RemoveRecord(string Tag)
         {
             return RecordTime.Remove(Tag);
         }
-
-
         public float GetServiceTime()
         {
-            return Time.time - CreateTime;
+            return Time.time - serviceTime;
         }
-        public float GetTime(string Tag)
+        public float GetWorldTime()
         {
-            if (RecordTime.ContainsKey(Tag))
-            {
-                return Time.time - RecordTime[Tag];
-            }
-            else
-            {
-                Debug.LogError($"Can't find any record for this: {Tag}");
-                return 0;
-            }
+            return Time.time - worldTime;
         }
+        public bool TryGetTime(string tag, out float time)
+        {
+            if (RecordTime.TryGetValue(tag, out float startTime))
+            {
+                time = Time.time - startTime;
+                return true;
+            }
 
+            time = -1f;
+            return false;
+        }
+        public float GetTime(string tag)
+        {
+            return Time.time - RecordTime[tag];
+        }
+        public bool IsValidTime(string tag)
+        {
+            return RecordTime.ContainsKey(tag);
+        }
     }
 
 }
