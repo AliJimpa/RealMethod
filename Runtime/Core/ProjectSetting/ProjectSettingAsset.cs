@@ -60,7 +60,7 @@ namespace RealMethod
         new FolderAddress { Identity = (IdentityAsset)2, Path = "Assets/3_Prefabs"},
         new FolderAddress { Identity = (IdentityAsset)3, Path = "Assets/4_Data"  },
         new FolderAddress { Identity = (IdentityAsset)4, Path = "Assets/5_Meshes"},
-        new FolderAddress { Identity = (IdentityAsset)5, Path = "Assets/Sprites"},
+        new FolderAddress { Identity = (IdentityAsset)5, Path = "Assets/7_Misc/Sprites"},
         new FolderAddress { Identity = (IdentityAsset)6, Path = "Assets/7_Misc/Textures"},
         new FolderAddress { Identity = (IdentityAsset)7, Path = "Assets/7_Misc/Videos"},
         new FolderAddress { Identity = (IdentityAsset)8, Path = "Assets/7_Misc/Materials"},
