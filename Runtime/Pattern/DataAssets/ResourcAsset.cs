@@ -1,190 +1,159 @@
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RealMethod
 {
     public abstract class ResourcAsset : DataAsset
     {
-        [SerializeField]
-        protected string resourcePath;
-        public string path => resourcePath;
+        public System.Action<ResourcAsset> OnloadAsset;
 
-        private GameObject loadedAsset;
-        public bool isLoaded => loadedAsset != null;
-        private int pointer = 0;
+        // Abstract Methods
+        public abstract bool IsValid();
+        public abstract bool IsLoaded();
+        public abstract T GetAsset<T>() where T : Object;
+        public abstract bool Load();
+        public abstract Task LoadAsync();
+        public abstract void LoadAsync<T>(MonoBehaviour Owner, System.Action<T> loaded) where T : Object;
+        public abstract bool Unload();
+    }
+    public abstract class ResourcAsset<T> : ResourcAsset where T : Object
+    {
+        [ReadOnly]
+        public string ResourcePath;
+        private string AssetPath => ResourcePath.StartsWith("Resources/") ? ResourcePath.Substring("Resources/".Length) : ResourcePath;
+        private T Asset;
 
-        //public System.Action<PrefabCore> Onloaded;
 
-        // public override bool IsValid()
-        // {
-        //     return !string.IsNullOrEmpty(resourcePath);
-        // }
-        // public override GameObject GetPrefab()
-        // {
-        //     if (!isLoaded)
-        //     {
-        //         if (!Load())
-        //         {
-        //             return null;
-        //         }
-        //     }
-        //     pointer++;
-        //     return loadedAsset;
-        // }
+        // ResourcAsset Methods
+        public override bool IsValid()
+        {
+            return !string.IsNullOrEmpty(ResourcePath);
+        }
+        public override bool IsLoaded()
+        {
+            return Asset != null;
+        }
+        public override U GetAsset<U>()
+        {
+            if (!IsLoaded())
+            {
+                if (!Load())
+                {
+                    return null;
+                }
+            }
+            return Asset as U;
+        }
+        public override bool Load()
+        {
+            if (IsLoaded())
+            {
+                Debug.LogError("That Asset is already loaded");
+                return false;
+            }
 
-        // // Public Functions
-        // public bool Load()
-        // {
-        //     if (isLoaded)
-        //     {
-        //         Debug.LogError("That prefab is already loaded");
-        //         return false;
-        //     }
+            if (!IsValid())
+            {
+                Debug.LogError("Asset path is not valid!");
+                return false;
+            }
 
-        //     if (!IsValid())
-        //     {
-        //         Debug.LogError("Prefab path is not set.");
-        //         return false;
-        //     }
+            if (Asset == null)
+            {
+                Asset = Resources.Load<T>(AssetPath);
+                if (Asset == null)
+                {
+                    Debug.LogError($"Asset not found at Resources/{AssetPath}");
+                    return false;
+                }
+            }
+            OnloadAsset?.Invoke(this);
+            return true;
+        }
+        public override async Task LoadAsync()
+        {
+            if (IsLoaded())
+            {
+                Debug.LogError("That Asset is already loaded");
+                return;
+            }
 
-        //     if (loadedAsset == null)
-        //     {
-        //         loadedAsset = Resources.Load<GameObject>(resourcePath);
-        //     }
+            if (!IsValid())
+            {
+                Debug.LogError("Asset path is not valid!");
+                return;
+            }
 
-        //     if (loadedAsset == null)
-        //     {
-        //         Debug.LogError($"Prefab not found at Resources/{resourcePath}");
-        //         return false;
-        //     }
+            var request = Resources.LoadAsync<T>(AssetPath);
+            while (!request.isDone)
+                await Task.Yield(); // Wait until finished
 
-        //     Onloaded?.Invoke(this);
-        //     return true;
-        // }
-        // public async Task LoadAsync()
-        // {
-        //     if (isLoaded)
-        //     {
-        //         Debug.LogError("That prefab is already loaded");
-        //         return;
-        //     }
+            Asset = request.asset as T;
+            if (Asset == null)
+            {
+                Debug.LogError($"Asset not found at Resources/{AssetPath}");
+                return;
+            }
 
-        //     if (!IsValid())
-        //     {
-        //         Debug.LogError("Invalid resource path.");
-        //         return;
-        //     }
+            OnloadAsset?.Invoke(this);
+        }
+        public override void LoadAsync<U>(MonoBehaviour Owner, System.Action<U> loaded)
+        {
+            if (Owner != null)
+            {
+                Owner.StartCoroutine(LoadRoutine(obj => loaded?.Invoke(obj as U)));
+            }
+            else
+            {
+                Debug.LogError("Owner is not valid!");
+            }
+        }
+        public override bool Unload()
+        {
+            if (IsLoaded())
+            {
+                Resources.UnloadAsset(Asset);
+                Asset = null;
+                return true;
+            }
+            return false;
+        }
 
-        //     var request = Resources.LoadAsync<GameObject>(resourcePath);
-        //     while (!request.isDone)
-        //         await Task.Yield(); // Wait until finished
+        // IEnumerator Methods
+        private IEnumerator LoadRoutine(System.Action<T> result)
+        {
+            if (IsLoaded())
+            {
+                Debug.LogError("That Asset is already loaded");
+                yield break;
+            }
 
-        //     loadedAsset = request.asset as GameObject;
-        //     if (loadedAsset == null)
-        //     {
-        //         Debug.LogError($"Failed to load prefab at path: {resourcePath}");
-        //         return;
-        //     }
+            ResourceRequest request = Resources.LoadAsync<T>(AssetPath);
+            yield return request;
 
-        //     Onloaded?.Invoke(this);
-        // }
-        // public void LoadAsync(MonoBehaviour Owner, System.Action<PrefabCore> loaded)
-        // {
-        //     if (Owner != null)
-        //     {
-        //         Owner.StartCoroutine(LoadRoutine(loaded));
-        //     }
-        //     else
-        //     {
-        //         Debug.LogError("Owner is not valid!");
-        //     }
-        // }
-        // public bool Unload(bool Force = false)
-        // {
-        //     if (isLoaded)
-        //     {
-        //         if (pointer == 0 || Force)
-        //         {
-        //             Resources.UnloadAsset(loadedAsset);
-        //             loadedAsset = null;
-        //             return true;
-        //         }
-        //         else
-        //         {
-        //             Debug.LogWarning($"{this} For this prefab [{loadedAsset}] you use ({pointer}) Instance");
-        //             return false;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         Debug.LogWarning("First Load Prefab!");
-        //         return false;
-        //     }
-        // }
-        // public bool Destroy(GameObject instance)
-        // {
-        //     if (instance != null)
-        //     {
-        //         Destroy(instance);
-        //         pointer--;
-        //         return true;
-        //     }
-        //     else
-        //     {
-        //         return false;
-        //     }
-        // }
+            Asset = request.asset as T;
+            if (Asset == null)
+            {
+                Debug.LogError($"Asset not found at Resources/{AssetPath}");
+                yield break;
+            }
 
-        // public J GetSoftClass<J>() where J : Component
-        // {
-        //     if (loadedAsset != null)
-        //     {
-        //         return loadedAsset.GetComponent<J>();
-        //     }
-        //     else
-        //     {
-        //         Debug.LogWarning("First Load Prefab!");
-        //         return null;
-        //     }
-        // }
-        // public J[] GetAllSoftClass<J>() where J : Component
-        // {
-        //     if (loadedAsset != null)
-        //     {
-        //         return loadedAsset.GetComponentsInChildren<J>();
-        //     }
-        //     else
-        //     {
-        //         Debug.LogWarning("First Load Prefab!");
-        //         return null;
-        //     }
-        // }
+            OnloadAsset?.Invoke(this);
+            result?.Invoke(Asset);
+        }
 
-        // private IEnumerator LoadRoutine(System.Action<PrefabCore> result)
-        // {
-        //     if (isLoaded)
-        //     {
-        //         Debug.LogError("That prefab is already loaded");
-        //         yield break;
-        //     }
 
-        //     ResourceRequest request = Resources.LoadAsync<GameObject>(resourcePath);
-        //     yield return request;
-
-        //     loadedAsset = request.asset as GameObject;
-        //     if (loadedAsset == null)
-        //     {
-        //         Debug.LogError($"Failed to load prefab at path: {resourcePath}");
-        //         yield break;
-        //     }
-
-        //     Onloaded?.Invoke(this);
-        //     result?.Invoke(this);
-        // }
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+            Asset = null;
+        }
+#endif
 
     }
 
 
-    
     // [System.Serializable]
     // public class AddressablePrefab<T> where T : Component
     // {
