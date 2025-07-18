@@ -1,16 +1,18 @@
+using UnityEngine;
+
 namespace RealMethod
 {
     public abstract class ResourcAsset : DataAsset
     {
-        // [SerializeField]
-        // protected string resourcePath;
-        // public string path => resourcePath;
+        [SerializeField]
+        protected string resourcePath;
+        public string path => resourcePath;
 
-        // private GameObject loadedAsset;
-        // public bool isLoaded => loadedAsset != null;
-        // private int pointer = 0;
+        private GameObject loadedAsset;
+        public bool isLoaded => loadedAsset != null;
+        private int pointer = 0;
 
-        // public System.Action<PrefabCore> Onloaded;
+        //public System.Action<PrefabCore> Onloaded;
 
         // public override bool IsValid()
         // {

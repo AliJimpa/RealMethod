@@ -6,7 +6,7 @@ using System.IO;
 namespace RealMethod.Editor
 {
     [CustomEditor(typeof(TerrainCollider), true)]
-    public class TerrainCompWindow : UnityEditor.Editor
+    public class TerrainEditor : UnityEditor.Editor
     {
         private TerrainCollider BaseComponent;
         private TreeInstance[] trees;

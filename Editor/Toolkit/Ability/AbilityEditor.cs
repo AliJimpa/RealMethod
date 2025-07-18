@@ -3,7 +3,7 @@ using UnityEditor;
 namespace RealMethod
 {
     [CustomEditor(typeof(Ability), true)]
-    public class AbilityCompWindow : UnityEditor.Editor
+    public class AbilityEditor : UnityEditor.Editor
     {
         private Ability BaseComponent;
 

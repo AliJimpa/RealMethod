@@ -3,7 +3,7 @@ using UnityEditor;
 namespace RealMethod
 {
     [CustomEditor(typeof(Upgrade), true)]
-    public class UpgradeCompWindow : UnityEditor.Editor
+    public class UpgradeEditor : UnityEditor.Editor
     {
         private Upgrade BaseComponent;
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class PCGWindow : EditorWindow
+    public class PCGEditorWindow : EditorWindow
     {
         //Basic Structre Data
         private class GD_Class : EditorProperty
@@ -92,7 +92,7 @@ namespace RealMethod.Editor
         [MenuItem("Tools/RealMethod/Kit/PCG")]
         public static void ShowWindow()
         {
-            GetWindow<PCGWindow>("PCG Window");
+            GetWindow<PCGEditorWindow>("PCG Window");
         }
         private void OnEnable()
         {

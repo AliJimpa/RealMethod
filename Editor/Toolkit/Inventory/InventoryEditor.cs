@@ -3,7 +3,7 @@ using UnityEditor;
 namespace RealMethod
 {
     [CustomEditor(typeof(Inventory), true)]
-    public class InventoryCompWindow : UnityEditor.Editor
+    public class InventoryEditor : UnityEditor.Editor
     {
         private Inventory BaseComponent;
 

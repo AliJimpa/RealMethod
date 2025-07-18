@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace RealMethod.Editor
 {
-    public class CurveWindow : EditorWindow
+    public class CurveEditorWindow : EditorWindow
     {
         private CurveAsset animationCurve;
         private float inputTime = 0f;
@@ -14,7 +14,7 @@ namespace RealMethod.Editor
         [MenuItem("Tools/RealMethod/Kit/CurveViewer")]
         public static void ShowWindow()
         {
-            GetWindow<CurveWindow>("CurveViewer");
+            GetWindow<CurveEditorWindow>("CurveViewer");
         }
 
         private void OnGUI()
