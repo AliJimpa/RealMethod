@@ -13,7 +13,7 @@ namespace RealMethod
         private Transform SpawnPoint;
         [Header("Assets")]
         [SerializeField]
-        private GameObject PrefabAsset;
+        private UPrefab PrefabAsset;
         // ExecutCommand Methods
         protected override bool OnInitiate(Object author, Object owner)
         {

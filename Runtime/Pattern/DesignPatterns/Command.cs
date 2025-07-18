@@ -23,6 +23,13 @@ namespace RealMethod
         // Abstract Methods
         protected abstract bool OnInitiate(Object author, Object owner);
     }
+    [System.Serializable]
+    public class CPrefab : Prefab<Command>
+    {
+
+    }
+
+
 
 
 
@@ -46,6 +53,7 @@ namespace RealMethod
         protected abstract void Execute(object Owner);
         protected abstract bool CanExecute(object Owner);
     }
+
     // A command targeted at a specific type (e.g., a component).
     public abstract class TargetedCommand<T> : ExecutCommand where T : MonoBehaviour
     {
@@ -68,8 +76,6 @@ namespace RealMethod
         // Abstract Methods
         protected abstract bool OnInitiate(Object author);
     }
-
-
 
     //A longer-living command with start, update, end — like an ability/effect.
     public interface ICommandLife
@@ -236,6 +242,7 @@ namespace RealMethod
         protected abstract void OnUpdate();
         protected abstract void OnEnd();
     }
+
     // A longer-living command that controled
     public interface ICommandBehaviour
     {
@@ -299,6 +306,10 @@ namespace RealMethod
         protected abstract void OnResume();
         protected abstract void OnReset();
     }
+
+
+
+
 
 
 }

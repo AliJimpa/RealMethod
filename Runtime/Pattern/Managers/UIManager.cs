@@ -199,9 +199,9 @@ namespace RealMethod
         {
             return CreateLayer<T>(Name, UIAsset, this);
         }
-        public GameObject AddLayer(string Name, GameObject Prefab, MonoBehaviour Owner)
+        public GameObject AddLayer(string Name, WPrefab Prefab, MonoBehaviour Owner)
         {
-            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
+            GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
             Layers.Add(Name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
             if (widget != null)
@@ -218,20 +218,20 @@ namespace RealMethod
             }
             return SpawnedObject;
         }
-        public GameObject AddLayer(string Name, GameObject Prefab)
+        public GameObject AddLayer(string Name, WPrefab Prefab)
         {
             return AddLayer(Name, Prefab, this);
         }
-        public T AddLayer<T>(string Name, GameObject Prefab, MonoBehaviour Owner) where T : MonoBehaviour
+        public T AddLayer<T>(string Name, WPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            if (Prefab.GetComponent<IWidget>() == null)
+            if (!Prefab.HasInterface<IWidget>())
             {
                 Debug.LogError($"Prefab should has Widget Class Component");
                 return null;
             }
 
 
-            GameObject SpawnedObject = Instantiate(Prefab, transform.position, Quaternion.identity, transform);
+            GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
             Layers.Add(Name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
             if (widget != null)
@@ -253,7 +253,7 @@ namespace RealMethod
             }
 
         }
-        public T AddLayer<T>(string Name, GameObject Prefab) where T : MonoBehaviour
+        public T AddLayer<T>(string Name, WPrefab Prefab) where T : MonoBehaviour
         {
             return AddLayer<T>(Name, Prefab, this);
         }

@@ -81,6 +81,9 @@ namespace RealMethod
             }
         }
 
+
+
+
         // UI
         public static T Widget<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
         {
@@ -142,7 +145,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static GameObject Widget(string Name, GameObject Prefab, MonoBehaviour Owner)
+        public static GameObject Widget(string Name, WPrefab Prefab, MonoBehaviour Owner)
         {
             if (instance.uIBox != null)
             {
@@ -154,7 +157,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static GameObject Widget(string Name, GameObject Prefab)
+        public static GameObject Widget(string Name, WPrefab Prefab)
         {
             if (instance.uIBox != null)
             {
@@ -166,7 +169,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T Widget<T>(string Name, GameObject Prefab, MonoBehaviour Owner) where T : MonoBehaviour
+        public static T Widget<T>(string Name, WPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
         {
             if (instance.uIBox != null)
             {
@@ -178,7 +181,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T Widget<T>(string Name, GameObject Prefab) where T : MonoBehaviour
+        public static T Widget<T>(string Name, WPrefab Prefab) where T : MonoBehaviour
         {
             if (instance.uIBox != null)
             {
@@ -209,7 +212,7 @@ namespace RealMethod
                 source.Play();
                 if (autoDestroy)
                 {
-                    DestroyAfterDelay timedSelfDestroyer = AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                    AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
                 }
                 return source;
             }
@@ -232,7 +235,7 @@ namespace RealMethod
                 source.Play();
                 if (autoDestroy)
                 {
-                    DestroyAfterDelay timedSelfDestroyer = AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                    AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
                 }
                 return source;
             }
@@ -254,7 +257,7 @@ namespace RealMethod
                 source.Play();
                 if (autoDestroy)
                 {
-                    DestroyAfterDelay timedSelfDestroyer = AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                    AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
                 }
                 return source;
             }
@@ -277,59 +280,10 @@ namespace RealMethod
                 source.Play();
                 if (autoDestroy)
                 {
-                    DestroyAfterDelay timedSelfDestroyer = AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                    AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
                 }
                 return source;
             }
-        }
-
-        // Particle
-        public static ParticleSystem Particle(GameObject prefab, Vector3 location)
-        {
-            ParticleSystem ParticleSmple = prefab.GetComponent<ParticleSystem>();
-            if (ParticleSmple != null)
-            {
-                return Spawn.Prefab(prefab, location).GetComponent<ParticleSystem>();
-            }
-            else
-            {
-                Debug.LogError("Spawn Service: The provided prefab does not have a ParticleSystem component.");
-                return null;
-            }
-        }
-
-        // Prefab
-        public static GameObject Prefab(GameObject prefab)
-        {
-            return Object.Instantiate(prefab, Game.World.transform);
-        }
-        public static GameObject Prefab(GameObject prefab, Transform parent)
-        {
-            return Object.Instantiate(prefab, parent);
-        }
-        public static GameObject Prefab(GameObject prefab, Transform parent, bool instantiateInWorldSpace)
-        {
-            return Object.Instantiate(prefab, parent, instantiateInWorldSpace);
-        }
-        public static GameObject Prefab(GameObject prefab, Vector3 location, Vector3 rotation)
-        {
-            return Object.Instantiate(prefab, location, Quaternion.Euler(rotation));
-        }
-        public static GameObject Prefab(GameObject prefab, Vector3 location, Quaternion rotation)
-        {
-            return Object.Instantiate(prefab, location, rotation);
-        }
-        public static GameObject Prefab(GameObject prefab, Vector3 location)
-        {
-            return Object.Instantiate(prefab, location, Quaternion.identity);
-        }
-        public static GameObject Prefab(GameObject prefab, Vector3 location, Vector3 rotation, Transform parent)
-        {
-            return Object.Instantiate(prefab, location, Quaternion.Euler(rotation), parent);
-        }
-        public static GameObject Prefab(GameObject prefab, UnityEngine.SceneManagement.Scene scene)
-        {
-            return Object.Instantiate(prefab, scene) as GameObject;
         }
 
         // Generic 
@@ -348,6 +302,66 @@ namespace RealMethod
         public static T Obj<T>(T original, Transform parent, bool worldPositionStays) where T : Object
         {
             return Object.Instantiate(original, parent, worldPositionStays);
+        }
+
+        // Prefab
+        public static GameObject Prefab(Prefab prefab)
+        {
+            return Object.Instantiate(prefab.asset, Game.World.transform);
+        }
+        public static GameObject Prefab(Prefab prefab, Transform parent)
+        {
+            return Object.Instantiate(prefab.asset, parent);
+        }
+        public static GameObject Prefab(Prefab prefab, Transform parent, bool instantiateInWorldSpace)
+        {
+            return Object.Instantiate(prefab.asset, parent, instantiateInWorldSpace);
+        }
+        public static GameObject Prefab(Prefab prefab, Vector3 location, Vector3 rotation)
+        {
+            return Object.Instantiate(prefab.asset, location, Quaternion.Euler(rotation));
+        }
+        public static GameObject Prefab(Prefab prefab, Vector3 location, Quaternion rotation)
+        {
+            return Object.Instantiate(prefab.asset, location, rotation);
+        }
+        public static GameObject Prefab(Prefab prefab, Vector3 location)
+        {
+            return Object.Instantiate(prefab.asset, location, Quaternion.identity);
+        }
+        public static GameObject Prefab(Prefab prefab, Vector3 location, Vector3 rotation, Transform parent)
+        {
+            return Object.Instantiate(prefab.asset, location, Quaternion.Euler(rotation), parent);
+        }
+        public static GameObject Prefab(Prefab prefab, UnityEngine.SceneManagement.Scene scene)
+        {
+            return Object.Instantiate(prefab.asset, scene) as GameObject;
+        }
+        public static T Prefab<T>(Prefab<T> original) where T : Component
+        {
+            return Object.Instantiate(original.GetSoftClassTarget());
+        }
+        public static T Prefab<T>(Prefab<T> original, Transform parent) where T : Component
+        {
+            return Object.Instantiate(original.GetSoftClassTarget(), parent);
+        }
+        public static T Prefab<T>(Prefab<T> original, Vector3 position, Quaternion rotation) where T : Component
+        {
+            return Object.Instantiate(original.GetSoftClassTarget(), position, rotation);
+        }
+        public static T Prefab<T>(Prefab<T> original, Transform parent, bool worldPositionStays) where T : Component
+        {
+            return Object.Instantiate(original.GetSoftClassTarget(), parent, worldPositionStays);
+        }
+
+        // Particle
+        public static ParticleSystem Particle(PPrefab prefab, Vector3 location, Vector3 rotation)
+        {
+            return Prefab(prefab, location, Quaternion.Euler(rotation));
+        }
+        public static ParticleSystem Particle(PPrefab prefab, Transform parent)
+        {
+            return Prefab(prefab, parent);
         }
 
         // Code
@@ -370,25 +384,18 @@ namespace RealMethod
         }
 
         // Realmethod
-        public static T Command<T>(GameObject prefab, MonoBehaviour owner, Object author) where T : Command
+        public static T Command<T>(CPrefab prefab, MonoBehaviour owner, Object author) where T : Command
         {
-            T command = prefab.GetComponent<T>();
-            if (command == null)
-            {
-                Debug.LogError($"Spawn Command Failed: The GameObject '{prefab.name}' does not have a command of type '{typeof(T).Name}'.");
-                return null;
-            }
-
             if (owner == null || author == null)
             {
                 Debug.LogWarning($" {instance}: Owner or Author is not available.");
                 return null;
             }
-            GameObject SpawnedObject = Object.Instantiate(prefab, owner.transform);
+            GameObject SpawnedObject = Object.Instantiate(prefab.asset, owner.transform);
             T TargetCommand = SpawnedObject.GetComponent<T>();
             if (!TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, owner))
             {
-                Debug.LogWarning($"Spawn Command Breack: Initiation failed for command '{typeof(T).Name}' on '{prefab.name}'.");
+                Debug.LogWarning($"Spawn Command Breack: Initiation failed for command '{typeof(T).Name}' on '{prefab.Name}'.");
             }
             return TargetCommand;
         }
@@ -398,7 +405,7 @@ namespace RealMethod
         }
 
         // Other
-        public static GameObject Empty(string name)
+        public static GameObject New(string name)
         {
             return new GameObject(name);
         }
