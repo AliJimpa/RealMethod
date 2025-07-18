@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    static class Draw
+    static class RM_Draw
     {
         static void DrawCurve(AnimationCurve curve)
         {

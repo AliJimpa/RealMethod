@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace RealMethod
 {
-    static class Input
+    static class RM_Input
     {
         public static bool IsTouchOverUI(GraphicRaycaster HUD_graphicRaycaster, Vector2 touchPosition)
         {

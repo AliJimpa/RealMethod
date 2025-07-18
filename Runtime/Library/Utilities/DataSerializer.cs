@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    static class FileSystem
+    static class RM_FileSystem
     {
         public static bool WriteToFile(string contents, string fullPath)
         {

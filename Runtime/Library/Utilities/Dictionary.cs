@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-    static class Dictionary
+    static class RM_Dictionary
     {
         public static void MergeDictionaries<TKey, TValue>(Dictionary<TKey, TValue> dict1, Dictionary<TKey, TValue> dict2)
         {

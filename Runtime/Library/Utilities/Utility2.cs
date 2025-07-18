@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace RealMethod
 {
-    static class Utility2
+    static class RM_Utility
     {
         public static string GetVariableName<T>(Expression<Func<T>> expression)
         {
@@ -80,7 +80,7 @@ namespace RealMethod
 #if UNITY_EDITOR
 #endif
 
-    public static class ObjectUtils
+    public static class RM_ObjectUtils
     {
         public static bool IsPrefab(GameObject obj)
         {

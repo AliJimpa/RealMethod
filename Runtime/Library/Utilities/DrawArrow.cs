@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    static class DrawArrow
+    static class RM_DrawArrow
     {
         public static void ForGizmo(Vector3 pos, Vector3 direction, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f)
         {

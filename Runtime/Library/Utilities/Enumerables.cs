@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-    static class Enumerables
+    static class RM_Enumerables
     {
         public static T GetGameObject<T>(IEnumerable<T> items, int index)
         {

@@ -82,8 +82,6 @@ namespace RealMethod
         }
 
 
-
-
         // UI
         public static T Widget<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
         {

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    static class Trace
+    static class RM_Trace
     {
         public static bool Line(Vector3 Start, Vector3 Direction, float Length, LayerMask Layer, QueryTriggerInteraction TriggerInteraction, Color RayColor, Color HitColor, out RaycastHit HitResult)
         {
