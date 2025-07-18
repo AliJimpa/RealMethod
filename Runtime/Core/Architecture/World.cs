@@ -45,7 +45,7 @@ namespace RealMethod
             }
 
             //Find Player or Create newone
-            if (!InitiatePlayer())
+            if (!InitiatePlayer(ref PlayerObject))
             {
                 return;
             }
@@ -152,12 +152,12 @@ namespace RealMethod
             }
         }
         // Virtual Methods
-        protected virtual bool InitiatePlayer()
+        protected virtual bool InitiatePlayer(ref GameObject player)
         {
             if (IsPlayerInScene)
             {
-                PlayerObject = GameObject.FindGameObjectWithTag(PlayerTag);
-                if (!PlayerObject)
+                player = GameObject.FindGameObjectWithTag(PlayerTag);
+                if (!player)
                 {
                     Debug.LogError("PlayerGameObject Cant Find in Scne");
                     return false;
@@ -170,18 +170,18 @@ namespace RealMethod
                 {
                     if (SpawnPoint)
                     {
-                        PlayerObject = Instantiate(DefualtPlayer, SpawnPoint.position, SpawnPoint.rotation);
+                        player = Instantiate(DefualtPlayer, SpawnPoint.position, SpawnPoint.rotation);
                     }
                     else
                     {
-                        PlayerObject = Instantiate(DefualtPlayer, transform.position, Quaternion.identity);
+                        player = Instantiate(DefualtPlayer, transform.position, Quaternion.identity);
                     }
                     return true;
                 }
                 else
                 {
-                    PlayerObject = new GameObject("Player");
-                    PlayerObject.tag = "Player";
+                    player = new GameObject("Player");
+                    player.tag = "Player";
                     return true;
                 }
 
