@@ -385,6 +385,36 @@ namespace RealMethod
                 return false;
             }
         }
+        public bool FadeIn(string Name, float Duration, Action<GameObject> callback)
+        {
+            if (Method == UIMethod.uGUI)
+            {
+                GameObject TargetLayer = Layers[Name];
+                if (TargetLayer)
+                {
+                    CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
+                    if (CG)
+                    {
+                        StartCoroutine(FadeIn(CG, Duration, callback));
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Your Layer doesn't have CanvasGroup");
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                Debug.LogError("Just use for 'uGUI' Method");
+                return false;
+            }
+        }
         public bool FadeOut(string Name, float Duration)
         {
             if (Method == UIMethod.uGUI)
@@ -396,6 +426,36 @@ namespace RealMethod
                     if (CG)
                     {
                         StartCoroutine(FadeOut(CG, Duration));
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Your Layer doesn't have CanvasGroup");
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                Debug.LogError("Just use for 'uGUI' Method");
+                return false;
+            }
+        }
+        public bool FadeOut(string Name, float Duration, Action<GameObject> callback)
+        {
+            if (Method == UIMethod.uGUI)
+            {
+                GameObject TargetLayer = Layers[Name];
+                if (TargetLayer)
+                {
+                    CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
+                    if (CG)
+                    {
+                        StartCoroutine(FadeOut(CG, Duration, callback));
                         return true;
                     }
                     else
@@ -487,6 +547,22 @@ namespace RealMethod
             canvas.interactable = true;
             OnFadeIn?.Invoke(canvas, false);
         }
+        private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration, Action<GameObject> callback)
+        {
+            float elapsedTime = 0f;
+            OnFadeIn?.Invoke(canvas, true);
+            while (elapsedTime < fadeDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                canvas.alpha = Mathf.Clamp01(elapsedTime / fadeDuration);  // Increase alpha over time
+
+                yield return null; // Wait for the next frame
+            }
+            canvas.alpha = 1;
+            canvas.interactable = true;
+            OnFadeIn?.Invoke(canvas, false);
+            callback?.Invoke(canvas.gameObject);
+        }
         private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration)
         {
             float elapsedTime = 0f;
@@ -501,6 +577,22 @@ namespace RealMethod
             canvas.alpha = 0;
             canvas.interactable = false;
             OnFadeOut?.Invoke(canvas, false);
+        }
+        private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration, Action<GameObject> callback)
+        {
+            float elapsedTime = 0f;
+            OnFadeOut?.Invoke(canvas, true);
+            while (elapsedTime < fadeDuration)
+            {
+                elapsedTime += Time.deltaTime;
+                canvas.alpha = Mathf.Clamp01(1 - elapsedTime / fadeDuration);  // Increase alpha over time
+
+                yield return null; // Wait for the next frame
+            }
+            canvas.alpha = 0;
+            canvas.interactable = false;
+            OnFadeOut?.Invoke(canvas, false);
+            callback?.Invoke(canvas.gameObject);
         }
 
     }
