@@ -3,10 +3,10 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Execut/Event")]
-    public class Event_com : ExecutCommand
+    [AddComponentMenu("RealMethod/Commands/Trigger/OnCollide")]
+    public class EventCollider_com : ExecutCommand
     {
-        public UnityEvent<MonoBehaviour> OnTrigger;
+        public UnityEvent<Collider> OnTrigger;
 
         // ExecutCommand Methods
         protected override bool OnInitiate(Object author, Object owner)
@@ -19,13 +19,13 @@ namespace RealMethod
         }
         protected override void Execute(object Owner)
         {
-            if (Owner is MonoBehaviour MyOwner)
+            if (Owner is Collider col)
             {
-                OnTrigger?.Invoke(MyOwner);
+                OnTrigger?.Invoke(col);
             }
             else
             {
-                Debug.LogError("Event_com.Execute: Owner is not a MonoBehaviour. Event not invoked.");
+                Debug.LogError("EventCollider_com.Execute: Owner is not a Collider. Event not invoked.");
             }
         }
     }
