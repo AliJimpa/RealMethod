@@ -1,6 +1,6 @@
 using RealMethod;
 
-public class #SCRIPTNAME# : CompositManager
+public class #SCRIPTNAME# : CompositManager<MUSCIENUM, STATESETVICE>
 {
 
     // Base CompositManager Methods
@@ -9,4 +9,69 @@ public class #SCRIPTNAME# : CompositManager
 
     }
 
+#if UNITY_EDITOR
+        [ContextMenu("CreateLayer")]
+        private void CreateLayers_Editor()
+        {
+            if (Layers != null && Layers.Length > 0)
+            {
+                for (int i = 0; i < Layers.Length; i++)
+                {
+                    if (Layers[i].source == null)
+                    {
+                        GameObject layerobject = new GameObject($"Layer_{Layers[i].layer}");
+                        Layers[i].SetSource(layerobject.AddComponent<AudioSource>());
+                        layerobject.transform.SetParent(transform);
+                    }
+                }
+            }
+        }
+        [ContextMenu("ClearLayer")]
+        private void ClearLayers_Editor()
+        {
+            if (Layers != null && Layers.Length > 0)
+            {
+                foreach (var layer in Layers)
+                {
+                    if (layer.source.gameObject != null)
+                        DestroyImmediate(layer.source.gameObject);
+                }
+            }
+        }
+#endif
+
+}
+
+public enum MUSCIENUM
+{
+    Default,
+    STATE_1,
+    STATE_2,
+}
+
+public sealed class STATESETVICE : StateService<MUSCIENUM>
+{
+    public DefaulMusicState() : base(MUSCIENUM.Default) // Replace default(StateList) with an actual enum value if needed
+    {
+    }
+    // Service Methods
+    protected override void OnEnd(object Author)
+    {
+    }
+    // StateService Methods
+    protected override void OnStart(object Author, MUSCIENUM State)
+    {
+    }
+    protected override MUSCIENUM DefaultState()
+    {
+        return MUSCIENUM.Default;
+    }
+    public override bool CanSwitch(MUSCIENUM A, MUSCIENUM B)
+    {
+        return true;
+    }
+    protected override bool CanResetforNewWorld(World NewWorld)
+    {
+        return false;
+    }
 }
