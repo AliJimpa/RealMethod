@@ -1,6 +1,6 @@
 using RealMethod;
 
-public class #SCRIPTNAME# : CompositManager<MUSCIENUM, STATESETVICE>
+public class #SCRIPTNAME# : CompositManager<STATESETVICE, MUSCIENUM>
 {
 
     // Base CompositManager Methods
