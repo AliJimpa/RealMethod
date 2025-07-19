@@ -274,7 +274,7 @@ namespace RealMethod
                 // Initiate Game Class in Game
                 if (CreateInstance)
                 {
-                    var emptyObject = new GameObject("GameManager");
+                    var emptyObject = new GameObject("RealGame");
                     Type TargetClass = ProjectSettings.GetGameInstanceClass();
                     if (TargetClass != null)
                     {
