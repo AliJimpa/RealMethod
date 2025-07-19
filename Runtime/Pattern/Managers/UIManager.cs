@@ -483,6 +483,7 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
+            canvas.alpha = 1;
             canvas.interactable = true;
             OnFadeIn?.Invoke(canvas, false);
         }
@@ -497,6 +498,7 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
+            canvas.alpha = 0;
             canvas.interactable = false;
             OnFadeOut?.Invoke(canvas, false);
         }
