@@ -29,7 +29,6 @@ namespace RealMethod
 
 
 
-
         // Implement IGameManager Interface
         MonoBehaviour IGameManager.GetManagerClass()
         {
@@ -58,6 +57,8 @@ namespace RealMethod
         {
             InitiateService(service);
         }
+
+
         // Unity Methods
 #if UNITY_EDITOR
         private void OnValidate()
@@ -418,8 +419,8 @@ namespace RealMethod
         {
             if (Method == UIMethod.uGUI)
             {
-                FadeIn(LayerA, Duration);
-                FadeOut(LayerB, Duration);
+                FadeOut(LayerA, Duration);
+                FadeIn(LayerB, Duration);
             }
             else
             {
@@ -482,6 +483,7 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
+            canvas.interactable = true;
             OnFadeIn?.Invoke(canvas, false);
         }
         private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration)
@@ -495,6 +497,7 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
+            canvas.interactable = false;
             OnFadeOut?.Invoke(canvas, false);
         }
 
