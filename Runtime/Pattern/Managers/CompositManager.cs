@@ -62,6 +62,10 @@ namespace RealMethod
         [Header("Composit")]
         [SerializeField]
         protected MusicLayer[] Layers;
+        [SerializeField]
+        private bool PlayOnInitiate = false;
+        [SerializeField, ConditionalHide("PlayOnAwake", true, false)]
+        private int InitiateLayer = 0;
 
 
         protected T stateService;
@@ -94,14 +98,19 @@ namespace RealMethod
             if (!AlwaysLoaded)
             {
                 Debug.LogError("You can't use MusicManager in [World] Scope");
-                Destroy(this);
+                return;
+            }
+
+            if (PlayOnInitiate)
+            {
+                this[InitiateLayer].Play();
             }
 
             if (Game.TryFindService(out stateService))
-            {
-                stateService.OnStateUpdate += OnStateChanged;
-                ServiceAssigned();
-            }
+                {
+                    stateService.OnStateUpdate += OnStateChanged;
+                    ServiceAssigned();
+                }
 
             CheckDuplicateLayers();
         }
@@ -135,7 +144,7 @@ namespace RealMethod
         {
             return new MusicLerp(this[LayerA], this[LayerB]);
         }
-        
+
         // Protected Methods
         protected MusicLayer GetLayer(J targetlayer)
         {
