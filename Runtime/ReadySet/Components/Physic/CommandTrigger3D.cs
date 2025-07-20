@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/General/CommandTrigger3D")]
+    [AddComponentMenu("RealMethod/Physic/CommandTrigger3D")]
     public sealed class CommandTrigger3D : Trigger3D
     {
         // Unity Methods

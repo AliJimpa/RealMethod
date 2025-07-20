@@ -4,8 +4,8 @@ using UnityEngine.SceneManagement;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Trigger/Scene")]
-    public sealed class Scene_com : ExecutCommand
+    [AddComponentMenu("RealMethod/Commands/Execut/ScneLoader")]
+    public sealed class C_ScneLoader : ExecutCommand
     {
         private enum LoadMethod
         {

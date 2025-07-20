@@ -303,35 +303,35 @@ namespace RealMethod
         }
 
         // Prefab
-        public static GameObject Prefab(Prefab prefab)
+        public static GameObject Prefab(UPrefab prefab)
         {
             return Object.Instantiate(prefab.asset, Game.World.transform);
         }
-        public static GameObject Prefab(Prefab prefab, Transform parent)
+        public static GameObject Prefab(UPrefab prefab, Transform parent)
         {
             return Object.Instantiate(prefab.asset, parent);
         }
-        public static GameObject Prefab(Prefab prefab, Transform parent, bool instantiateInWorldSpace)
+        public static GameObject Prefab(UPrefab prefab, Transform parent, bool instantiateInWorldSpace)
         {
             return Object.Instantiate(prefab.asset, parent, instantiateInWorldSpace);
         }
-        public static GameObject Prefab(Prefab prefab, Vector3 location, Vector3 rotation)
+        public static GameObject Prefab(UPrefab prefab, Vector3 location, Vector3 rotation)
         {
             return Object.Instantiate(prefab.asset, location, Quaternion.Euler(rotation));
         }
-        public static GameObject Prefab(Prefab prefab, Vector3 location, Quaternion rotation)
+        public static GameObject Prefab(UPrefab prefab, Vector3 location, Quaternion rotation)
         {
             return Object.Instantiate(prefab.asset, location, rotation);
         }
-        public static GameObject Prefab(Prefab prefab, Vector3 location)
+        public static GameObject Prefab(UPrefab prefab, Vector3 location)
         {
             return Object.Instantiate(prefab.asset, location, Quaternion.identity);
         }
-        public static GameObject Prefab(Prefab prefab, Vector3 location, Vector3 rotation, Transform parent)
+        public static GameObject Prefab(UPrefab prefab, Vector3 location, Vector3 rotation, Transform parent)
         {
             return Object.Instantiate(prefab.asset, location, Quaternion.Euler(rotation), parent);
         }
-        public static GameObject Prefab(Prefab prefab, UnityEngine.SceneManagement.Scene scene)
+        public static GameObject Prefab(UPrefab prefab, UnityEngine.SceneManagement.Scene scene)
         {
             return Object.Instantiate(prefab.asset, scene) as GameObject;
         }

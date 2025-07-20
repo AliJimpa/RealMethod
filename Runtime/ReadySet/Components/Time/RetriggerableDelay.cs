@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/General/RetriggerableDelay")]
+    [AddComponentMenu("RealMethod/Time/RetriggerableDelay")]
     public sealed class RetriggerableDelay : MonoBehaviour
     {
         public Action DelayPerfrom;

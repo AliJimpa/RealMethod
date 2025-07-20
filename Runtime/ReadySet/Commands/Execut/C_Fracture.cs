@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Trigger/Fracture")]
-    public sealed class Fracture_com : ExecutCommand
+    [AddComponentMenu("RealMethod/Commands/Execut/Fracture")]
+    public sealed class C_Fracture : ExecutCommand
     {
         [Header("Fracture")]
         [SerializeField]
