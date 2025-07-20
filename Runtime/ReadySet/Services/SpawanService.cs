@@ -352,6 +352,62 @@ namespace RealMethod
             return Object.Instantiate(original.GetSoftClassTarget(), parent, worldPositionStays);
         }
 
+        // Pool
+        public static void PoolWarm<T>(PoolAsset<T> asset, int amount = 1) where T : Component
+        {
+            IPool<T> Pooller = asset;
+            Pooller.Prewarm(amount);
+        }
+        public static T Pool<T>(PoolAsset<T> asset) where T : Component
+        {
+            if (asset is IPoolSpawner<T> pooler)
+            {
+                return pooler.Spawn();
+            }
+            else
+            {
+                Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                return null;
+            }
+        }
+        public static T Pool<T>(PoolAsset<T> asset, Vector3 location) where T : Component
+        {
+            if (asset is IPoolSpawner<T> pooler)
+            {
+                return pooler.Spawn(location);
+            }
+            else
+            {
+                Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                return null;
+            }
+        }
+        public static T Pool<T>(PoolAsset<T> asset, Vector3 location, Quaternion rotation) where T : Component
+        {
+            if (asset is IPoolSpawner<T> pooler)
+            {
+                return pooler.Spawn(location, rotation);
+            }
+            else
+            {
+                Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                return null;
+            }
+        }
+        public static T Pool<T>(PoolAsset<T> asset, Vector3 location, Quaternion rotation, Vector3 scale) where T : Component
+        {
+            if (asset is IPoolSpawner<T> pooler)
+            {
+                return pooler.Spawn(location, rotation, scale);
+            }
+            else
+            {
+                Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                return null;
+            }
+        }
+
+
         // Particle
         public static ParticleSystem Particle(PPrefab prefab, Vector3 location, Vector3 rotation)
         {
@@ -451,31 +507,35 @@ namespace RealMethod
         }
 
         // UI
-        public static bool Widget(string Name)
+        public static bool Widget(string Name, bool debug = true)
         {
             if (instance == null)
             {
-                Debug.LogWarning("Something Wrong!");
+                if (debug)
+                    Debug.LogWarning("Something Wrong!");
                 return false;
             }
             if (instance.uIBox == null)
             {
-                Debug.LogWarning($" {instance}: UIManager is not available.");
+                if (debug)
+                    Debug.LogWarning($" {instance}: UIManager is not available.");
                 return false;
             }
 
             return instance.uIBox.RemoveLayer(Name);
         }
-        public static bool Widget(MonoBehaviour Comp)
+        public static bool Widget(MonoBehaviour Comp, bool debug = true)
         {
             if (instance == null)
             {
-                Debug.LogWarning("Something Wrong!");
+                if (debug)
+                    Debug.LogWarning("Something Wrong!");
                 return false;
             }
             if (instance.uIBox == null)
             {
-                Debug.LogWarning($" {instance}: UIManager is not available.");
+                if (debug)
+                    Debug.LogWarning($" {instance}: UIManager is not available.");
                 return false;
             }
 
@@ -483,7 +543,7 @@ namespace RealMethod
         }
 
         // Prefab
-        public static bool GameObject(GameObject target)
+        public static bool GameObject(GameObject target, bool debug = true)
         {
             if (target != null)
             {
@@ -492,11 +552,41 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($" {instance}: target is not available.");
+                if (debug)
+                    Debug.LogWarning($" {instance}: target is not available.");
                 return false;
             }
         }
 
+        // Pool
+        public static bool Pool<T>(PoolAsset<T> asset, bool debug = true) where T : Component
+        {
+            if (asset is IPoolDespawner<T> pooler)
+            {
+                pooler.Despawn();
+                return true;
+            }
+            else
+            {
+                if (debug)
+                    Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                return false;
+            }
+        }
+        public static bool Pool<T>(PoolAsset<T> asset, T target, bool debug = true) where T : Component
+        {
+            if (asset is IPoolDespawner<T> pooler)
+            {
+                pooler.Despawn(target);
+                return true;
+            }
+            else
+            {
+                if (debug)
+                    Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                return false;
+            }
+        }
 
     }
 

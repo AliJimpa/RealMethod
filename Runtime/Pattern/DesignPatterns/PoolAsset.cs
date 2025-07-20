@@ -4,11 +4,14 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class PoolAsset<T> : SharedRootAsset where T : Component
+    public abstract class PoolAsset<T> : SharedRootAsset, IPool<T> where T : Component
     {
         public int Count => Available.Count;
+        public IPool<T> Provider => this;
         protected Stack<T> Available = new Stack<T>();
         private bool Prewarmed = false;
+
+
 
 #if UNITY_EDITOR
         // Base DataAsset Methods
@@ -19,8 +22,8 @@ namespace RealMethod
         }
 #endif
 
-        // Public Functions
-        public void Prewarm(int amount = 1)
+        // IPool Interface Implement
+        void IPool<T>.Prewarm(int amount)
         {
             if (Prewarmed)
             {
@@ -37,7 +40,7 @@ namespace RealMethod
             }
             Prewarmed = true;
         }
-        public IEnumerable<T> Request(int amount = 1)
+        IEnumerable<T> IPool<T>.Request(int amount)
         {
             T[] members = new T[amount];
             for (int i = 0; i < amount; i++)
@@ -46,7 +49,7 @@ namespace RealMethod
             }
             return members;
         }
-        public void Return(int amount = 1)
+        void IPool<T>.Return(int amount)
         {
             T[] Chield = GetRoot().GetComponentsInChildren<T>();
             for (int i = 0; i < amount; i++)
@@ -57,7 +60,7 @@ namespace RealMethod
                 }
             }
         }
-        public void Remove(int amount = 1, bool Force = false)
+        void IPool<T>.Remove(int amount, bool Force)
         {
             for (int i = 0; i < amount; i++)
             {
@@ -80,7 +83,7 @@ namespace RealMethod
             }
 
         }
-        public void Clean()
+        void IPool<T>.Clean()
         {
             if (IsInitiateRoot())
             {
@@ -147,6 +150,7 @@ namespace RealMethod
             }
         }
 
+
         // Abstract Methods
         protected abstract void PreProcess(T Comp);
         protected abstract T CreateObject();
@@ -154,10 +158,30 @@ namespace RealMethod
 
     }
 
-
     public class PoolHandeler : MonoBehaviour
     {
 
+    }
+
+    public interface IPool<T>
+    {
+        void Prewarm(int amount = 1);
+        IEnumerable<T> Request(int amount = 1);
+        void Return(int amount = 1);
+        void Remove(int amount = 1, bool Force = false);
+        void Clean();
+    }
+    public interface IPoolSpawner<J> where J : Component
+    {
+        J Spawn(Vector3 location, Quaternion rotation, Vector3 scale);
+        J Spawn(Vector3 location, Quaternion rotation);
+        J Spawn(Vector3 location);
+        J Spawn();
+    }
+    public interface IPoolDespawner<J> where J : Component
+    {
+        void Despawn();
+        void Despawn(J target);
     }
 
 }

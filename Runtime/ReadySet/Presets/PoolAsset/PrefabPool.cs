@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "PrefabPool", menuName = "RealMethod/Pool/PrefabPool", order = 1)]
-    public sealed class PrefabPool : PoolAsset<Transform>
+    public sealed class PrefabPool : PoolAsset<Transform>, IPoolSpawner<Transform>, IPoolDespawner<Transform>
     {
         [Header("Setting")]
         [SerializeField]
@@ -28,7 +28,7 @@ namespace RealMethod
 
 
         // Functions
-        public Transform Spawn(Vector3 location, Quaternion rotation, Vector3 scale , float overrideDuration)
+        public Transform Spawn(Vector3 location, Quaternion rotation, Vector3 scale, float overrideDuration)
         {
             UseCacheData = 3;
             CachePosition = location;
@@ -88,7 +88,7 @@ namespace RealMethod
         {
             if (!autoDespawn)
             {
-                Return();
+                Provider.Return();
             }
             else
             {

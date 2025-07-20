@@ -6,7 +6,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "ParticlePool", menuName = "RealMethod/Pool/ParticlePool", order = 1)]
-    public sealed class ParticlePool : PoolAsset<ParticleSystem>
+    public sealed class ParticlePool : PoolAsset<ParticleSystem> , IPoolSpawner<ParticleSystem>
     {
         [Header("Setting")]
         [SerializeField]
