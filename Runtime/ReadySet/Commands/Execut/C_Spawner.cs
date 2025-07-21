@@ -2,17 +2,16 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Execut/Spawn")]
-    public class C_Spawn : ExecutCommand
+    [AddComponentMenu("RealMethod/Commands/Execut/Spawner")]
+    public sealed class C_Spawner : ExecutCommand
     {
         [Header("Setting")]
         private bool AutoAttach = false;
         [SerializeField]
         private bool SelfPose = true;
-        [Header("Dependency")]
-        [SerializeField, ConditionalHide("SelfPose", true, false)]
+        [SerializeField, ConditionalHide("SelfPose", true, true)]
         private Transform SpawnPoint;
-        [Header("Assets")]
+        [Header("Resource")]
         [SerializeField]
         private UPrefab PrefabAsset;
         // ExecutCommand Methods
@@ -42,7 +41,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogError($"This command ({nameof(C_Spawn)}) should Execute by Monobehavior for AutoAttach");
+                    Debug.LogError($"This command ({nameof(C_Spawner)}) should Execute by Monobehavior for AutoAttach");
                 }
             }
             else
