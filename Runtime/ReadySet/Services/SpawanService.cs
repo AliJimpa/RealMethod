@@ -407,6 +407,19 @@ namespace RealMethod
             }
         }
 
+        // Effect
+        public static Effect Effect(EPrefab prefab)
+        {
+            return Prefab(prefab);
+        }
+        public static Effect Effect(EPrefab prefab, Vector3 location, Vector3 rotation)
+        {
+            return Prefab(prefab, location, Quaternion.Euler(rotation));
+        }
+        public static Effect Effect(EPrefab prefab, Transform parent)
+        {
+            return Prefab(prefab, parent);
+        }
 
         // Particle
         public static ParticleSystem Particle(PPrefab prefab, Vector3 location, Vector3 rotation)
