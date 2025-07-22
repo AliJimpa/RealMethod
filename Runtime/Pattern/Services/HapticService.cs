@@ -1,18 +1,46 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RealMethod
 {
-    public class HapticController
-    {
-        public void Initiate(Haptic service)
-        {
 
-        }
+    public interface IHapticProvider
+    {
+        void Play();
+        void Pause();
+        void Stop();
+        HapticConfig GetConfig();
     }
 
     public abstract class Haptic : Service
     {
+        private class HapticController : IHapticProvider
+        {
+            public HapticConfig hapticConfig { get; private set; }
+
+            public HapticController(HapticConfig config)
+            {
+                hapticConfig = config;
+            }
+            void IHapticProvider.Play()
+            {
+                instance.OnPlay(hapticConfig);
+            }
+            void IHapticProvider.Pause()
+            {
+                instance.OnPause(hapticConfig);
+            }
+            void IHapticProvider.Stop()
+            {
+                instance.OnStop(hapticConfig);
+            }
+            HapticConfig IHapticProvider.GetConfig()
+            {
+                return hapticConfig;
+            }
+        }
+
         private static Haptic CacheInstance = null;
         private static Haptic instance
         {
@@ -28,72 +56,81 @@ namespace RealMethod
                     {
                         return CacheInstance;
                     }
-                    Debug.LogError("HapticService should add in Game");
+                    Debug.LogError("Your HapticService should added [Warning:Use Just One HapticService]");
                     return CacheInstance;
                 }
             }
         }
+        private List<HapticController> List = new List<HapticController>(5);
 
-        public static void Play(HapticConfig config)
-        {
-            if (instance != null)
-                instance.OnPlay(config);
-        }
-        public static HapticController Produce(HapticConfig confi)
+
+        // Public Methods
+        public static IHapticProvider Produce(HapticConfig config)
         {
             if (instance == null)
             {
                 return null;
             }
 
-
-            HapticController controller = new HapticController();
-            controller.Initiate(instance);
+            HapticController controller = new HapticController(config);
+            instance.List.Add(controller);
             return controller;
         }
+        public static bool Demolish(IHapticProvider target)
+        {
+            if (instance == null)
+            {
+                return false;
+            }
+            foreach (var item in instance.List)
+            {
+                if (item.hapticConfig == target.GetConfig())
+                {
+                    return instance.List.Remove(item);
+                }
+            }
+            return false;
+        }
+        public static void Play(HapticConfig config)
+        {
+            if (instance == null)
+            {
+                return;
+            }
 
+            instance.OnPlay(config);
+        }
+        public static bool TryFindProvider(string hapticName , out IHapticProvider provider)
+        {
+            if (instance == null)
+            {
+                provider = null;
+                return false;
+            }
+
+            foreach (var item in instance.List)
+            {
+                if (item.hapticConfig.name == hapticName)
+                {
+                    provider = item;
+                    return true;
+                }
+            }
+
+            provider = null;
+            return false;
+        }
+
+
+        // Abstract Methods
         protected abstract void OnPlay(HapticConfig config);
-        protected abstract void OnProduce(HapticController controller);
+        protected abstract void OnPause(HapticConfig config);
+        protected abstract void OnStop(HapticConfig config);
     }
-
-    // public abstract class Haptic<T> : Haptic where T : HapticConfig
-    // {
-    //     protected sealed override void OnPlay<U>(U config)
-    //     {
-    //         if (config is T result)
-    //         {
-    //             OnPlay(result);
-    //         }
-    //         else
-    //         {
-    //             Debug.LogWarning($"Cast config faield target confi {config} should be {typeof(T)}");
-    //         }
-    //     }
-
-    //     protected abstract void OnPlay(T config);
-    // }
-
 
     public abstract class HapticConfig : ConfigAsset
     {
-        //public abstract void Play(object author);
+
     }
-
-    // public abstract class HapticConfig<T, J> : HapticConfig where T : Enum where J : UnityEngine.Object
-    // {
-    //     [Header("Type")]
-    //     [SerializeField, Tooltip("The Haptic Config Use Witch Method for Apply Effect")]
-    //     private T Method;
-
-    //     public sealed override void Play(object author)
-    //     {
-    //         OnProduce(Method, GetInitiator(author));
-    //     }
-
-    //     protected abstract J GetInitiator(object author);
-    //     protected abstract bool OnProduce(T method, J initiator);
-    // }
-
-
 
 }

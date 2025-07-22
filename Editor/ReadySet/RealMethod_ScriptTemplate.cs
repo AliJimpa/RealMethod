@@ -82,6 +82,11 @@ namespace RealMethod.Editor
         {
             string Path = ScriptCreator.Create("RuleServiceTemplate.txt", "MyRuleService.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Service/HapticService", false, 80)]
+        public static void CreateHapticService()
+        {
+            string Path = ScriptCreator.Create("HapticServiceTemplate.txt", "MyHapticService.cs");
+        }
 
 
         // Assets
