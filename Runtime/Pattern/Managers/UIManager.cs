@@ -11,8 +11,11 @@ namespace RealMethod
     {
         public enum UIMethod
         {
+            [EnumDescription("IMGUI (Legacy - Editor Only)")]
             IMGUI,
+            [EnumDescription("uGUI - Canvas-based UI for runtime")]
             uGUI,
+            [EnumDescription("UI Toolkit - Modern retained UI system")]
             UI_Toolkit
         }
 
@@ -38,11 +41,28 @@ namespace RealMethod
         {
             foreach (Transform child in transform)
             {
+                if (Layers.ContainsKey(child.gameObject.name))
+                {
+                    Debug.LogError("InitiateManager Failed : Same name Detected in Child");
+                    return;
+                }
                 Layers.Add(child.gameObject.name, child.gameObject);
                 IWidget LayerWidget = child.GetComponent<IWidget>();
                 if (LayerWidget != null)
                 {
                     LayerWidget.InitiateWidget(this);
+                }
+
+                switch (method)
+                {
+                    case UIMethod.uGUI:
+                        if (child.GetComponent<Canvas>() == null)
+                            Debug.LogWarning($"{child.gameObject.name} should have Canvas in Method {method}");
+                        break;
+                    case UIMethod.UI_Toolkit:
+                        if (child.GetComponent<UIDocument>() == null)
+                            Debug.LogWarning($"{child.gameObject.name} should have UIDocument in Method {method}");
+                        break;
                 }
             }
 
@@ -63,43 +83,32 @@ namespace RealMethod
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            switch (Method)
+            UnityEditor.EditorApplication.delayCall += () =>
             {
-                case UIMethod.IMGUI:
+                if (gameObject.layer != 5)
                     gameObject.layer = 5;
-                    break;
-                case UIMethod.uGUI:
-                    if (GetComponent<Canvas>() == null)
-                    {
-                        Debug.LogError("The UIManager Should be placed in a canvas");
-                        return;
-                    }
-                    break;
-                case UIMethod.UI_Toolkit:
-                    gameObject.layer = 5;
-                    break;
-            }
+            };
         }
 #endif
 
         //Public Functions
-        public bool IsValid(string Name)
+        public bool IsValid(string name)
         {
-            return Layers.ContainsKey(Name);
+            return Layers.ContainsKey(name);
         }
-        public GameObject CreateLayer(string Name)
+        public GameObject CreateLayer(string name)
         {
             GameObject Result;
             switch (Method)
             {
                 case UIMethod.IMGUI:
-                    Result = new GameObject(Name);
+                    Result = new GameObject(name);
                     break;
                 case UIMethod.uGUI:
-                    Result = new GameObject(Name, new Type[3] { typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster) });
+                    Result = new GameObject(name, new Type[4] { typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster), typeof(CanvasGroup) });
                     break;
                 case UIMethod.UI_Toolkit:
-                    Result = new GameObject(Name, new Type[1] { typeof(UIDocument) });
+                    Result = new GameObject(name, new Type[1] { typeof(UIDocument) });
                     break;
                 default:
                     Debug.LogError("Unkown Method!");
@@ -107,12 +116,12 @@ namespace RealMethod
             }
             Result.transform.SetParent(transform);
             Result.layer = 5;
-            Layers.Add(Name, Result);
+            Layers.Add(name, Result);
             return Result;
         }
-        public T CreateLayer<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
+        public T CreateLayer<T>(string name, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            GameObject layer = CreateLayer(Name);
+            GameObject layer = CreateLayer(name);
             if (layer)
             {
                 T TargetClass = layer.AddComponent<T>();
@@ -136,15 +145,15 @@ namespace RealMethod
                 return null;
             }
         }
-        public T CreateLayer<T>(string Name) where T : MonoBehaviour
+        public T CreateLayer<T>(string name) where T : MonoBehaviour
         {
-            return CreateLayer<T>(Name, this);
+            return CreateLayer<T>(name, this);
         }
-        public UIDocument CreateLayer(string Name, VisualTreeAsset UIAsset)
+        public UIDocument CreateLayer(string name, VisualTreeAsset UIAsset)
         {
             if (Method == UIMethod.UI_Toolkit)
             {
-                GameObject layer = CreateLayer(Name);
+                GameObject layer = CreateLayer(name);
                 if (layer)
                 {
                     UIDocument doc = layer.GetComponent<UIDocument>();
@@ -170,9 +179,9 @@ namespace RealMethod
                 return null;
             }
         }
-        public T CreateLayer<T>(string Name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
+        public T CreateLayer<T>(string name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            GameObject layer = CreateLayer(Name, UIAsset).gameObject;
+            GameObject layer = CreateLayer(name, UIAsset).gameObject;
             if (layer)
             {
                 T TargetClass = layer.AddComponent<T>();
@@ -196,14 +205,14 @@ namespace RealMethod
                 return null;
             }
         }
-        public T CreateLayer<T>(string Name, VisualTreeAsset UIAsset) where T : MonoBehaviour
+        public T CreateLayer<T>(string name, VisualTreeAsset UIAsset) where T : MonoBehaviour
         {
-            return CreateLayer<T>(Name, UIAsset, this);
+            return CreateLayer<T>(name, UIAsset, this);
         }
-        public GameObject AddLayer(string Name, WPrefab Prefab, MonoBehaviour Owner)
+        public GameObject AddLayer(string name, WPrefab Prefab, MonoBehaviour Owner)
         {
             GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
-            Layers.Add(Name, SpawnedObject);
+            Layers.Add(name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
             if (widget != null)
             {
@@ -219,11 +228,11 @@ namespace RealMethod
             }
             return SpawnedObject;
         }
-        public GameObject AddLayer(string Name, WPrefab Prefab)
+        public GameObject AddLayer(string name, WPrefab Prefab)
         {
-            return AddLayer(Name, Prefab, this);
+            return AddLayer(name, Prefab, this);
         }
-        public T AddLayer<T>(string Name, WPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
+        public T AddLayer<T>(string name, WPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
         {
             if (!Prefab.HasInterface<IWidget>())
             {
@@ -233,7 +242,7 @@ namespace RealMethod
 
 
             GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
-            Layers.Add(Name, SpawnedObject);
+            Layers.Add(name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
             if (widget != null)
             {
@@ -254,9 +263,9 @@ namespace RealMethod
             }
 
         }
-        public T AddLayer<T>(string Name, WPrefab Prefab) where T : MonoBehaviour
+        public T AddLayer<T>(string name, WPrefab Prefab) where T : MonoBehaviour
         {
-            return AddLayer<T>(Name, Prefab, this);
+            return AddLayer<T>(name, Prefab, this);
         }
         public bool RemoveLayer<T>(T Comp) where T : MonoBehaviour
         {
@@ -271,31 +280,31 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool RemoveLayer(string Name)
+        public bool RemoveLayer(string name)
         {
-            if (IsValid(Name))
+            if (IsValid(name))
             {
-                GameObject Target = Layers[Name];
+                GameObject Target = Layers[name];
 
                 if (Target != null)
                     Destroy(Target);
 
-                Layers.Remove(Name);
+                Layers.Remove(name);
 
                 return true;
             }
 
             return false;
         }
-        public GameObject FindLayer(string Name)
+        public GameObject FindLayer(string name)
         {
-            return Layers[Name];
+            return Layers[name];
         }
-        public void SortLayer(string Name, int Order)
+        public void SortLayer(string name, int Order)
         {
             if (Method == UIMethod.UI_Toolkit)
             {
-                UIDocument Target = Layers[Name].GetComponent<UIDocument>();
+                UIDocument Target = Layers[name].GetComponent<UIDocument>();
                 if (Target)
                 {
                     Target.sortingOrder = Order;
@@ -307,7 +316,7 @@ namespace RealMethod
             }
             else
             {
-                Transform MyLayer = Layers[Name].GetComponent<Transform>();
+                Transform MyLayer = Layers[name].GetComponent<Transform>();
                 if (MyLayer)
                 {
                     MyLayer.SetSiblingIndex(Order);
@@ -318,23 +327,33 @@ namespace RealMethod
                 }
             }
         }
-        public void SortLayer(string Name, bool First = true)
+        public void SortLayer(string name, bool First = true)
         {
             if (First)
             {
-                SortLayer(Name, 0);
+                SortLayer(name, 0);
             }
             else
             {
-                SortLayer(Name, GetComponent<Transform>().childCount - 1);
+                SortLayer(name, GetComponent<Transform>().childCount - 1);
             }
         }
-        public bool ActiveLayer(string Name)
+        public bool EnableLayer(string name)
         {
-            GameObject TargetLayer = Layers[Name];
-            if (TargetLayer)
+            if (IsValid(name))
             {
-                TargetLayer.SetActive(true);
+                switch (method)
+                {
+                    case UIMethod.IMGUI:
+                        Layers[name].GetComponent<IWidget>().GetWidgetClass().enabled = true;
+                        break;
+                    case UIMethod.uGUI:
+                        Layers[name].GetComponent<CanvasGroup>().interactable = true;
+                        break;
+                    case UIMethod.UI_Toolkit:
+                        Layers[name].GetComponent<UIDocument>().enabled = true;
+                        break;
+                }
                 return true;
             }
             else
@@ -342,12 +361,22 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool DeactivateLayer(string Name)
+        public bool DisableLayer(string name)
         {
-            GameObject TargetLayer = Layers[Name];
-            if (TargetLayer)
+            if (IsValid(name))
             {
-                TargetLayer.SetActive(false);
+                switch (method)
+                {
+                    case UIMethod.IMGUI:
+                        Layers[name].GetComponent<IWidget>().GetWidgetClass().enabled = false;
+                        break;
+                    case UIMethod.uGUI:
+                        Layers[name].GetComponent<CanvasGroup>().interactable = false;
+                        break;
+                    case UIMethod.UI_Toolkit:
+                        Layers[name].GetComponent<UIDocument>().enabled = false;
+                        break;
+                }
                 return true;
             }
             else
@@ -355,11 +384,11 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool FadeIn(string Name, float Duration)
+        public bool FadeIn(string name, float Duration)
         {
             if (Method == UIMethod.uGUI)
             {
-                GameObject TargetLayer = Layers[Name];
+                GameObject TargetLayer = Layers[name];
                 if (TargetLayer)
                 {
                     CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
@@ -385,11 +414,11 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool FadeIn(string Name, float Duration, Action<GameObject> callback)
+        public bool FadeIn(string name, float Duration, Action<GameObject> callback)
         {
             if (Method == UIMethod.uGUI)
             {
-                GameObject TargetLayer = Layers[Name];
+                GameObject TargetLayer = Layers[name];
                 if (TargetLayer)
                 {
                     CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
@@ -415,11 +444,11 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool FadeOut(string Name, float Duration)
+        public bool FadeOut(string name, float Duration)
         {
             if (Method == UIMethod.uGUI)
             {
-                GameObject TargetLayer = Layers[Name];
+                GameObject TargetLayer = Layers[name];
                 if (TargetLayer)
                 {
                     CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
@@ -445,11 +474,11 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool FadeOut(string Name, float Duration, Action<GameObject> callback)
+        public bool FadeOut(string name, float Duration, Action<GameObject> callback)
         {
             if (Method == UIMethod.uGUI)
             {
-                GameObject TargetLayer = Layers[Name];
+                GameObject TargetLayer = Layers[name];
                 if (TargetLayer)
                 {
                     CanvasGroup CG = TargetLayer.GetComponent<CanvasGroup>();
@@ -487,9 +516,9 @@ namespace RealMethod
                 Debug.LogError("Just use for 'uGUI' Method");
             }
         }
-        public bool FindWidgetByName(string Name, out IWidget TargetWidget)
+        public bool TryFindWidget(string name, out IWidget TargetWidget)
         {
-            IWidget Target = Layers[Name].GetComponent<IWidget>();
+            IWidget Target = Layers[name].GetComponent<IWidget>();
             if (Target != null)
             {
                 TargetWidget = Target;
@@ -566,6 +595,7 @@ namespace RealMethod
         private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration)
         {
             float elapsedTime = 0f;
+            canvas.interactable = false;
             OnFadeOut?.Invoke(canvas, true);
             while (elapsedTime < fadeDuration)
             {
@@ -575,12 +605,13 @@ namespace RealMethod
                 yield return null; // Wait for the next frame
             }
             canvas.alpha = 0;
-            canvas.interactable = false;
+
             OnFadeOut?.Invoke(canvas, false);
         }
         private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration, Action<GameObject> callback)
         {
             float elapsedTime = 0f;
+            canvas.interactable = false;
             OnFadeOut?.Invoke(canvas, true);
             while (elapsedTime < fadeDuration)
             {
@@ -590,7 +621,6 @@ namespace RealMethod
                 yield return null; // Wait for the next frame
             }
             canvas.alpha = 0;
-            canvas.interactable = false;
             OnFadeOut?.Invoke(canvas, false);
             callback?.Invoke(canvas.gameObject);
         }
