@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RealMethod
 {
@@ -11,10 +12,14 @@ namespace RealMethod
         [SerializeField]
         private bool LoadOnAwake = false;
         [SerializeField]
+        private bool AutoSave = false;
+        [SerializeField]
         private bool UseCustomFile = false;
         [SerializeField, ConditionalHide("UseCustomFile", true, false)]
-        private SaveFile _SaveFile;
-        public SaveFile file => _SaveFile;
+        private SaveFile saveFile;
+        public SaveFile file => saveFile;
+        [Header("Events")]
+        public UnityEvent OnTutorialShow;
 
         public System.Action<TutorialMessage> OnShowTutorial;
 
@@ -51,9 +56,9 @@ namespace RealMethod
                 DataManager savesystem = Game.FindManager<DataManager>();
                 if (savesystem != null)
                 {
-                    if (savesystem.IsExistFile(_SaveFile))
+                    if (savesystem.IsExistFile(saveFile))
                     {
-                        savesystem.LoadFile(_SaveFile);
+                        savesystem.LoadFile(saveFile);
                     }
                 }
             }
@@ -209,7 +214,6 @@ namespace RealMethod
             OnShowUp(resutl, newlabel);
             return resutl;
         }
-
         public bool Remove(TutorialMessage target)
         {
             if (target != null)
@@ -219,13 +223,25 @@ namespace RealMethod
             }
             return false;
         }
+        public void Save()
+        {
+            DataManager savesystem = Game.FindManager<DataManager>();
+            if (savesystem != null)
+            {
+                savesystem.SaveFile(saveFile);
+            }
+            else
+            {
+                Debug.LogWarning("File can't save! didn't find DataManager");
+            }
+        }
 
         // Private Functions
         private ITutorialStorage GetStorage()
         {
             if (UseCustomFile)
             {
-                if (_SaveFile is ITutorialStorage newstorage)
+                if (saveFile is ITutorialStorage newstorage)
                 {
                     return newstorage;
                 }
@@ -237,18 +253,21 @@ namespace RealMethod
 
             }
 
-            _SaveFile = ScriptableObject.CreateInstance<TutorialFile>();
-            _SaveFile.name = "RMTutorialFile";
-            return _SaveFile as ITutorialStorage;
+            saveFile = ScriptableObject.CreateInstance<TutorialFile>();
+            saveFile.name = "RMTutorialFile";
+            return saveFile as ITutorialStorage;
         }
         private bool CheckLabel(string label)
         {
-            return !storage.IsValidLabel(label); ;
+            return !storage.IsValidLabel(label);
         }
         private void OnShowUp(TutorialMessage tutorial, string label)
         {
             OnShowTutorial?.Invoke(tutorial);
+            OnTutorialShow?.Invoke();
             storage.NewTutorialShowUP(label);
+            if (AutoSave)
+                Save();
         }
 
 
@@ -349,7 +368,7 @@ namespace RealMethod
     public class TutorialFile : SaveFile, ITutorialStorage
     {
         [Header("Storage")]
-        public List<string> TutorialMessage;
+        public List<string> TutorialMessage = new List<string>(5);
 
         // SaveFile Method
         protected override void OnStable(DataManager manager)
