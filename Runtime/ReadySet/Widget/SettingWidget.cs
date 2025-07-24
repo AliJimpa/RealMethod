@@ -41,7 +41,7 @@ namespace RealMethod
                 return;
             }
 
-            storage = settingfile as ISettingStorage;
+            storage = settingfile;
             if (storage == null)
             {
                 Debug.LogError($"{this} ISettingStorage not implement in this savefile ");
@@ -246,6 +246,19 @@ namespace RealMethod
             OnSettingStart();
         }
 
+
+        // Protected Method
+        protected float NormalMixerVolume(float param)
+        {
+            return Mathf.InverseLerp(-80f, 0f, param);
+        }
+        protected float ConvertToMixerVolume(float value)
+        {
+            return -80 + (value * 80);
+        }
+
+
+        // Abstract Methods
         protected abstract void OnSettingCreate();
         protected abstract void OnSettingStart();
     }

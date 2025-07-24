@@ -1,0 +1,25 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : TutorialMessage
+{
+
+    // TutorialMessage Method
+    protected override void OnInitiate(Object author)
+    {
+    }
+    protected override void OnMessage(string title, string message)
+    {
+    }
+    protected override void OnScreenPosition(Vector3 position, TutorialPlacement placement, float Offset)
+    {
+    }
+    protected override void OnWorldPosition(Vector3 position, TutorialPlacement placement, float Offset)
+    {
+    }
+    protected override void OnDesign(Sprite image, Color tint)
+    {
+    }
+
+
+
+}

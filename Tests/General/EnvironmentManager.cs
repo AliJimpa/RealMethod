@@ -20,7 +20,7 @@ namespace RealMethod
         // [SerializeField] private float PredictionTime = 1f;
         // [SerializeField] private float RandomRadius = 0f;
 
-        [SerializeField] private Volume PostProcessingVolume;
+        //[SerializeField] private Volume PostProcessingVolume;
 
         private float StormTimeElapsed;
 
@@ -86,13 +86,13 @@ namespace RealMethod
             float delayBetweenPillars = calculatedStormDuration / calculatedPillarCount;
 
             // Blend PostExposure to the storm value
-            float stormPostExposureValue = -1.5f; // Example value for storm intensity
-            float initialPostExposureValue = 0.2f; // Default value
-            if (PostProcessingVolume != null)
-            {
-                BlendPostExposure(initialPostExposureValue, stormPostExposureValue, 1.5f);
-                yield return new WaitForSeconds(2f);
-            }
+            //float stormPostExposureValue = -1.5f; // Example value for storm intensity
+            //float initialPostExposureValue = 0.2f; // Default value
+            // if (PostProcessingVolume != null)
+            // {
+            //     BlendPostExposure(initialPostExposureValue, stormPostExposureValue, 1.5f);
+            //     yield return new WaitForSeconds(2f);
+            // }
 
             while (StormTimeElapsed <= calculatedStormDuration)
             {
@@ -102,36 +102,36 @@ namespace RealMethod
             }
 
             // Blend PostExposure back to the initial value
-            if (PostProcessingVolume != null)
-            {
-                BlendPostExposure(stormPostExposureValue, initialPostExposureValue, 1.5f);
-            }
+            // if (PostProcessingVolume != null)
+            // {
+            //     BlendPostExposure(stormPostExposureValue, initialPostExposureValue, 1.5f);
+            // }
 
             QueueStorm();
         }
 
-        private void BlendPostExposure(float fromValue, float toValue, float duration)
-        {
-            if (PostProcessingVolume.profile.TryGet(out UnityEngine.Rendering.Universal.ColorAdjustments colorAdjustments))
-            {
-                StartCoroutine(BlendPostExposureCoroutine(colorAdjustments, fromValue, toValue, duration));
-            }
-        }
+        // private void BlendPostExposure(float fromValue, float toValue, float duration)
+        // {
+        //     if (PostProcessingVolume.profile.TryGet(out UnityEngine.Rendering.Universal.ColorAdjustments colorAdjustments))
+        //     {
+        //         StartCoroutine(BlendPostExposureCoroutine(colorAdjustments, fromValue, toValue, duration));
+        //     }
+        // }
 
-        private IEnumerator BlendPostExposureCoroutine(UnityEngine.Rendering.Universal.ColorAdjustments colorAdjustments, float fromValue, float toValue, float duration)
-        {
-            float elapsedTime = 0f;
+        // private IEnumerator BlendPostExposureCoroutine(UnityEngine.Rendering.Universal.ColorAdjustments colorAdjustments, float fromValue, float toValue, float duration)
+        // {
+        //     float elapsedTime = 0f;
 
-            while (elapsedTime < duration)
-            {
-                elapsedTime += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsedTime / duration);
-                colorAdjustments.postExposure.value = Mathf.Lerp(fromValue, toValue, t);
-                yield return null;
-            }
+        //     while (elapsedTime < duration)
+        //     {
+        //         elapsedTime += Time.deltaTime;
+        //         float t = Mathf.Clamp01(elapsedTime / duration);
+        //         colorAdjustments.postExposure.value = Mathf.Lerp(fromValue, toValue, t);
+        //         yield return null;
+        //     }
 
-            colorAdjustments.postExposure.value = toValue;
-        }
+        //     colorAdjustments.postExposure.value = toValue;
+        // }
 
         // Predicts the location where the next pillar should spawn
         private Vector3 FindPredictedLocation()
