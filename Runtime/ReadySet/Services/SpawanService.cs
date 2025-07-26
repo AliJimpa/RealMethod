@@ -69,10 +69,7 @@ namespace RealMethod
             {
                 if (uIBox == null)
                 {
-                    if (uIManager.IsMaster())
-                    {
-                        uIBox = uIManager;
-                    }
+                    uIBox = uIManager;
                 }
                 else
                 {

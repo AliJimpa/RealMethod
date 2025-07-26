@@ -9,7 +9,10 @@ namespace RealMethod
         // UIManager Methods
         protected override void InitiateManager(bool alwaysLoaded)
         {
-
+            if (Game.TryFindService(out Spawn SpawnServ))
+            {
+                SpawnServ.BringManager(this);
+            }
         }
         protected override void InitiateService(Service newService)
         {
@@ -17,10 +20,6 @@ namespace RealMethod
             {
                 spawnservice.BringManager(this);
             }
-        }
-        public override bool IsMaster()
-        {
-            return true;
         }
 
     }

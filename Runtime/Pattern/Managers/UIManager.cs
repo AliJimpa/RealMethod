@@ -66,11 +66,6 @@ namespace RealMethod
                 }
             }
 
-            if (Game.TryFindService(out Spawn SpawnServ))
-            {
-                SpawnServ.BringManager(this);
-            }
-
             InitiateManager(alwaysLoaded);
         }
         void IGameManager.InitiateService(Service service)
@@ -558,7 +553,6 @@ namespace RealMethod
         // Abstract Methods
         protected abstract void InitiateManager(bool alwaysLoaded);
         protected abstract void InitiateService(Service newService);
-        public abstract bool IsMaster();
 
         //Enumerators
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration)

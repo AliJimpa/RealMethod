@@ -20,14 +20,14 @@ namespace RealMethod
                 return;
             }
 
-            if (Game.TryFindService(out Spawn SpawnServ))
+            if (CanBringtoSpawn() && Game.TryFindService(out Spawn SpawnServ))
             {
                 SpawnServ.BringManager(this);
             }
         }
         protected override void InitiateService(Service service)
         {
-            if (service is Spawn SpawnServ)
+            if (CanBringtoSpawn() && service is Spawn SpawnServ)
             {
                 SpawnServ.BringManager(this);
             }
@@ -107,6 +107,9 @@ namespace RealMethod
         {
             return PlaySound2D(clip, DefaultGroup, autoDestroy);
         }
+
+        // Abstract Methods
+        protected abstract bool CanBringtoSpawn();
 
         // Enumerator Methods
         private IEnumerator PauseAfterSecond(AudioSource source, float time)
