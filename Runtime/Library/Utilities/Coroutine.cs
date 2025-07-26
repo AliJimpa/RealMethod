@@ -3,6 +3,17 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public class CoroutineHandeler
+    {
+        public bool IsDone { get; private set; }
+
+        public IEnumerator Run(IEnumerator coroutine)
+        {
+            yield return coroutine;
+            IsDone = true;
+        }
+    }
+
     public static class RM_Coroutine
     {
         public static IEnumerator Delay(float duration, System.Action callback)
@@ -12,7 +23,7 @@ namespace RealMethod
         }
         public static IEnumerator WaitForCoroutine(MonoBehaviour Owner, IEnumerator coroutine)
         {
-            CoroutineSequencer handle = new CoroutineSequencer();
+            CoroutineHandeler handle = new CoroutineHandeler();
             yield return Owner.StartCoroutine(handle.Run(coroutine));
         }
     }
