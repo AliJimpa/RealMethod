@@ -5,10 +5,10 @@ namespace RealMethod
 {
     class RealMethodPrefab
     {
-        [MenuItem("GameObject/Mustard/GamePlay/Player", false, 10)]
-        public static void AddPlayer()
+        [MenuItem("RealMethod/Tutorial", false, 10)]
+        public static void AddTutorial()
         {
-            RM_Create.Prefab("TutorialMessage.prefab" , true);
+            RM_Create.Prefab("TutorialMessage.prefab", false);
         }
     }
 }
