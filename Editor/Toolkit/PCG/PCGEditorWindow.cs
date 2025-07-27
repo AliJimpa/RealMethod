@@ -391,7 +391,7 @@ namespace RealMethod.Editor
                 Cash.Render();
                 if (GUILayout.Button("CreateCash"))
                 {
-                    Cash.SetValue(ScriptableObj.CreateAndSaveAsset<PCGCashAsset>(CashAddress.GetValue()));
+                    Cash.SetValue(RM_ScriptableObj.CreateAndSaveAsset<PCGCashAsset>(CashAddress.GetValue()));
                 }
                 EditorGUILayout.EndHorizontal();
             }

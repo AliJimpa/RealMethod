@@ -7,7 +7,7 @@ namespace RealMethod.Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/PCG/Request", false, 80)]
         public static void CreatePCGRequest()
         {
-            string Path = ScriptCreator.Create("PCGRequestTamplate.txt", "MyRequest.cs");
+            string Path = RM_ScriptTemplate.Create("PCGRequestTamplate.txt", "MyRequest.cs");
         }
     }
 }

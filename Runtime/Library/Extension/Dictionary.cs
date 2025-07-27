@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public static class RM_Dictionary
+    public static class Dictionary_Extension
     {
         public static T Wheel<T>(this Dictionary<T, float> DataBase)
         {
             float[] weightlist = DataBase.Values.ToArray();
-            float Rnd = Random.Range(0, RM_Math.SumFloatArray(weightlist));
+            float Rnd = Random.Range(0, weightlist.Sum());
             T Result = default;
             foreach (var item in DataBase)
             {
@@ -25,7 +25,7 @@ namespace RealMethod
         public static T Wheel<T>(this SerializableDictionary<T, float> DataBase)
         {
             float[] weightlist = DataBase.Values.ToArray();
-            float Rnd = Random.Range(0, RM_Math.SumFloatArray(weightlist));
+            float Rnd = Random.Range(0, weightlist.Sum());
             T Result = default;
             foreach (var item in DataBase)
             {

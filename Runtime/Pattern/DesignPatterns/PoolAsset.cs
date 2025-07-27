@@ -4,13 +4,17 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public class PoolComponent : MonoBehaviour
+    {
+
+    }
+
     public abstract class PoolAsset<T> : SharedRootAsset, IPool<T> where T : Component
     {
         public int Count => Available.Count;
         public IPool<T> Provider => this;
         protected Stack<T> Available = new Stack<T>();
         private bool Prewarmed = false;
-
 
 
 #if UNITY_EDITOR
@@ -146,20 +150,14 @@ namespace RealMethod
             }
             else
             {
-                Target.gameObject.AddComponent<PoolHandeler>().StartCoroutine(Corotine);
+                Target.gameObject.AddComponent<PoolComponent>().StartCoroutine(Corotine);
             }
         }
-
 
         // Abstract Methods
         protected abstract void PreProcess(T Comp);
         protected abstract T CreateObject();
         protected abstract IEnumerator PostProcess(T Comp);
-
-    }
-
-    public class PoolHandeler : MonoBehaviour
-    {
 
     }
 

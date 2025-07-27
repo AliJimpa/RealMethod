@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public static class ScriptableObj
+    public static class RM_ScriptableObj
     {
         /// <summary>
         /// Creates a new ScriptableObject instance, saves it as an asset in the project, and returns the created asset.

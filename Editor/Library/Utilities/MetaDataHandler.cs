@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    static class MetaDataHandler
+    public static class RM_MetaData
     {
         private static string GetMetaFilePath(string assetPath) => assetPath + ".meta";
 

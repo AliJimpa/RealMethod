@@ -181,7 +181,7 @@ namespace RealMethod.Editor
         private List<string[]> GetCSVTable()
         {
             TextAsset textAsset = (TextAsset)target;
-            return CSV.ParseCSV(textAsset.text);
+            return RM_CSV.ParseCSV(textAsset.text);
         }
         private int GetColumnCount()
         {

@@ -165,7 +165,7 @@ namespace RealMethod
             }
             while (!Load_opertation.isDone)
             {
-                OnSceneLoadingProcess?.Invoke(RM_Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.AdditiveCount + 1)));
+                OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, (1 / WS.AdditiveCount + 1)));
                 OnSceneLoading?.Invoke(false);
                 IsLoading = false;
                 yield return null;
@@ -184,7 +184,7 @@ namespace RealMethod
                 }
                 while (!Additive_Load_opertation.isDone)
                 {
-                    OnSceneLoadingProcess?.Invoke(RM_Math.MapRangedClamp(Load_opertation.progress, 0, 1, 0, (1 / WS.AdditiveCount + 1 - (i + 1))));
+                    OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, (1 / WS.AdditiveCount + 1 - (i + 1))));
                     yield return null;
                 }
             }

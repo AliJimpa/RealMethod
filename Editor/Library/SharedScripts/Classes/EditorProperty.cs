@@ -506,7 +506,7 @@ namespace RealMethod.Editor
 
         public bool IsValid()
         {
-            return MetaDataHandler.HasMetadata(GetAssetPath(), PropertyName);
+            return RM_MetaData.HasMetadata(GetAssetPath(), PropertyName);
         }
 
         protected string GetAssetPath()
@@ -629,14 +629,14 @@ namespace RealMethod.Editor
             string Path = GetAssetPath();
 
             int MaxCount = 0;
-            int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out MaxCount);
+            int.TryParse(RM_MetaData.LoadCustomMetadata(Path, PropertyName), out MaxCount);
             string targetpath;
             for (int i = 0; i < MaxCount; i++)
             {
-                if (MetaDataHandler.HasMetadata(Path, i + "_" + PropertyName))
+                if (RM_MetaData.HasMetadata(Path, i + "_" + PropertyName))
                 {
                     MyList.Add(null);
-                    targetpath = MetaDataHandler.LoadCustomMetadata(Path, i + "_" + PropertyName);
+                    targetpath = RM_MetaData.LoadCustomMetadata(Path, i + "_" + PropertyName);
                     if (targetpath != null)
                     {
                         MyList[i] = AssetDatabase.LoadAssetAtPath<T>(targetpath);
@@ -648,26 +648,26 @@ namespace RealMethod.Editor
         protected override void OnSave()
         {
             string Path = GetAssetPath();
-            MetaDataHandler.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
+            RM_MetaData.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
             for (int i = 0; i < GetCount(); i++)
             {
-                MetaDataHandler.SaveCustomMetadata(Path, i + "_" + PropertyName, GetTargetPath(MyList[i]));
+                RM_MetaData.SaveCustomMetadata(Path, i + "_" + PropertyName, GetTargetPath(MyList[i]));
             }
             DebugPrint("Saved");
         }
         protected override void OnDelete(int Index)
         {
             string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, Index + "_" + PropertyName))
+            if (RM_MetaData.HasMetadata(Path, Index + "_" + PropertyName))
             {
-                MetaDataHandler.DeleteMetadata(Path, Index + "_" + PropertyName);
+                RM_MetaData.DeleteMetadata(Path, Index + "_" + PropertyName);
                 DebugPrint("Deleted");
             }
             else
             {
                 Debug.LogError($"No metadata found for {Index} in {PropertyName}");
             }
-            MetaDataHandler.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
+            RM_MetaData.SaveCustomMetadata(Path, PropertyName, GetCount().ToString());
         }
         protected override void FixError(int Id)
         {
@@ -713,23 +713,23 @@ namespace RealMethod.Editor
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.GetHashCode().ToString());
+            RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.GetHashCode().ToString());
             DebugPrint("Saved");
         }
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
             int Result = 0;
-            if (MetaDataHandler.HasMetadata(Path, PropertyName))
+            if (RM_MetaData.HasMetadata(Path, PropertyName))
             {
-                int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
+                int.TryParse(RM_MetaData.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = (T)(object)Result;
                 DebugPrint(Result + "");
             }
             else
             {
                 CurrentValue = (T)(object)Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
+                RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
@@ -765,9 +765,9 @@ namespace RealMethod.Editor
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, PropertyName))
+            if (RM_MetaData.HasMetadata(Path, PropertyName))
             {
-                string targetpath = MetaDataHandler.LoadCustomMetadata(Path, PropertyName);
+                string targetpath = RM_MetaData.LoadCustomMetadata(Path, PropertyName);
                 CurrentValue = AssetDatabase.LoadAssetAtPath<T>(targetpath);
                 DebugPrint(targetpath);
             }
@@ -780,7 +780,7 @@ namespace RealMethod.Editor
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, GetTargetPath().ToString());
+            RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, GetTargetPath().ToString());
             DebugPrint("Saved");
         }
         protected override void FixError(int Id)
@@ -822,23 +822,23 @@ namespace RealMethod.Editor
         {
             string Path = GetAssetPath();
             int Result = 0;
-            if (MetaDataHandler.HasMetadata(Path, PropertyName))
+            if (RM_MetaData.HasMetadata(Path, PropertyName))
             {
-                int.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
+                int.TryParse(RM_MetaData.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = Result;
                 DebugPrint(Result.ToString());
             }
             else
             {
                 CurrentValue = Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
+                RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
+            RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
             DebugPrint("Saved");
         }
 
@@ -873,22 +873,22 @@ namespace RealMethod.Editor
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, PropertyName))
+            if (RM_MetaData.HasMetadata(Path, PropertyName))
             {
-                CurrentValue = MetaDataHandler.LoadCustomMetadata(Path, PropertyName);
+                CurrentValue = RM_MetaData.LoadCustomMetadata(Path, PropertyName);
                 DebugPrint(CurrentValue);
             }
             else
             {
                 CurrentValue = "Empty";
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue);
+                RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue);
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue);
+            RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue);
             DebugPrint("Saved");
         }
         protected override void FixError(int Id)
@@ -926,23 +926,23 @@ namespace RealMethod.Editor
         {
             string Path = GetAssetPath();
             float Result = 0;
-            if (MetaDataHandler.HasMetadata(Path, PropertyName))
+            if (RM_MetaData.HasMetadata(Path, PropertyName))
             {
-                float.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
+                float.TryParse(RM_MetaData.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = Result;
                 DebugPrint(Result.ToString());
             }
             else
             {
                 CurrentValue = Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
+                RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
+            RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
             DebugPrint("Saved");
         }
         protected override void FixError(int Id)
@@ -978,22 +978,22 @@ namespace RealMethod.Editor
         protected override void OnLoad()
         {
             string Path = GetAssetPath();
-            if (MetaDataHandler.HasMetadata(Path, PropertyName))
+            if (RM_MetaData.HasMetadata(Path, PropertyName))
             {
-                CurrentValue = MetaDataHandler.LoadCustomMetadata(Path, PropertyName) == "True" ? true : false;
+                CurrentValue = RM_MetaData.LoadCustomMetadata(Path, PropertyName) == "True" ? true : false;
                 DebugPrint(CurrentValue.ToString());
             }
             else
             {
                 CurrentValue = false;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, "False");
+                RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, "False");
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue ? "True" : "False");
+            RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue ? "True" : "False");
             DebugPrint("Saved");
         }
         protected override void FixError(int Id)
@@ -1031,23 +1031,23 @@ namespace RealMethod.Editor
 
             string Path = GetAssetPath();
             Color Result = Color.black;
-            if (MetaDataHandler.HasMetadata(Path, PropertyName))
+            if (RM_MetaData.HasMetadata(Path, PropertyName))
             {
-                UnityEngine.ColorUtility.TryParseHtmlString(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
+                UnityEngine.ColorUtility.TryParseHtmlString(RM_MetaData.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = Result;
                 DebugPrint(Result.ToString());
             }
             else
             {
                 CurrentValue = Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
+                RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
+            RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
             DebugPrint("Saved");
         }
         protected override void FixError(int Id)
@@ -1075,23 +1075,23 @@ namespace RealMethod.Editor
         {
             string Path = GetAssetPath();
             System.DateTime Result = System.DateTime.Now;
-            if (MetaDataHandler.HasMetadata(Path, PropertyName))
+            if (RM_MetaData.HasMetadata(Path, PropertyName))
             {
-                System.DateTime.TryParse(MetaDataHandler.LoadCustomMetadata(Path, PropertyName), out Result);
+                System.DateTime.TryParse(RM_MetaData.LoadCustomMetadata(Path, PropertyName), out Result);
                 CurrentValue = Result;
                 DebugPrint(Result.ToString());
             }
             else
             {
                 CurrentValue = Result;
-                MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
+                RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, Result.ToString());
                 DebugPrint("null");
             }
             DebugPrint("Loaded");
         }
         protected override void OnSave()
         {
-            MetaDataHandler.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
+            RM_MetaData.SaveCustomMetadata(GetAssetPath(), PropertyName, CurrentValue.ToString());
             DebugPrint("Saved");
         }
         protected override void FixError(int Id)

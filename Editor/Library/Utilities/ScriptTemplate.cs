@@ -4,7 +4,7 @@ using System.IO;
 
 namespace RealMethod.Editor
 {
-    public static class ScriptCreator
+    public static class RM_ScriptTemplate
     {
         private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         private static string TemplateFolder => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
@@ -67,7 +67,6 @@ namespace RealMethod.Editor
             if (Directory.Exists(path)) return path;
             return Path.GetDirectoryName(path);
         }
-
         private static string GetPackagePath(string packageName)
         {
             string[] guids = AssetDatabase.FindAssets("package", new[] { "Packages/" + packageName });

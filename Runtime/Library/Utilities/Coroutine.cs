@@ -3,19 +3,19 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public class CoroutineHandeler
-    {
-        public bool IsDone { get; private set; }
-
-        public IEnumerator Run(IEnumerator coroutine)
-        {
-            yield return coroutine;
-            IsDone = true;
-        }
-    }
-
     public static class RM_Coroutine
     {
+        class CoroutineHandeler
+        {
+            public bool IsDone { get; private set; }
+
+            public IEnumerator Run(IEnumerator coroutine)
+            {
+                yield return coroutine;
+                IsDone = true;
+            }
+        }
+        
         public static IEnumerator Delay(float duration, System.Action callback)
         {
             yield return new WaitForSeconds(duration);

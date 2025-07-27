@@ -180,7 +180,5 @@ namespace RealMethod
             string joined = PlayerPrefs.GetString(key);
             return joined.Split('|').Select(s => (T)System.Convert.ChangeType(s, typeof(T))).ToArray(); // Convert each string to T
         }
-
-
     }
 }

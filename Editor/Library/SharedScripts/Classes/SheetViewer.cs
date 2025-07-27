@@ -25,7 +25,7 @@ namespace RealMethod.Editor
         public SheetViewer(TextAsset CSVAsset)
         {
             CurrentTable.Clear();
-            CurrentTable = CSV.ParseCSV(CSVAsset.text);
+            CurrentTable = RM_CSV.ParseCSV(CSVAsset.text);
             ColumnSize = GetMaxColumnSize();
             RefreshColumnDetails();
         }

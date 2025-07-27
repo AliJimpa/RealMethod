@@ -7,7 +7,7 @@ namespace RealMethod.Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Actor/Act", false, 80)]
         public static void CreateActCommand()
         {
-            string Path = ScriptCreator.Create("ActTemplate.txt", "MyAct.cs");
+            string Path = RM_ScriptTemplate.Create("ActTemplate.txt", "MyAct.cs");
         }
     }
 }

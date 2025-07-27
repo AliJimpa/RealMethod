@@ -2,7 +2,7 @@ using System;
 
 namespace RealMethod
 {
-    public static class RM_Array
+    public static class Array_Extension
     {
         // Extention 
         public static bool IsValidIndex(this Array array, int index)
@@ -29,5 +29,24 @@ namespace RealMethod
             int randomIndex = UnityEngine.Random.Range(minInclusive, maxExclusive);
             return array[randomIndex];
         }
+        public static float Sum(this float[] array)
+        {
+            float sum = 0f;
+            foreach (float value in array)
+            {
+                sum += value;
+            }
+            return sum;
+        }
+        public static int Sum(this int[] array)
+        {
+            int sum = 0;
+            foreach (int value in array)
+            {
+                sum += value;
+            }
+            return sum;
+        }
+
     }
 }

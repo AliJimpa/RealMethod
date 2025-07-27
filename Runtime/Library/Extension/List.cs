@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-    public static class RM_List
+    public static class List_Extension
     {
         public static bool IsValidIndex<T>(this List<T> list, int index)
         {
@@ -27,6 +27,24 @@ namespace RealMethod
         {
             int randomIndex = UnityEngine.Random.Range(minInclusive, maxExclusive);
             return list[randomIndex];
+        }
+        public static float Sum(this List<float> array)
+        {
+            float sum = 0f;
+            foreach (float value in array)
+            {
+                sum += value;
+            }
+            return sum;
+        }
+        public static int Sum(this List<int> array)
+        {
+            int sum = 0;
+            foreach (int value in array)
+            {
+                sum += value;
+            }
+            return sum;
         }
     }
 }

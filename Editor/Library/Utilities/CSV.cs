@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace RealMethod.Editor
 {
-    static class CSV
+    public static class RM_CSV
     {
         public static string[] ParseCSVRow(string csvLine)
         {
