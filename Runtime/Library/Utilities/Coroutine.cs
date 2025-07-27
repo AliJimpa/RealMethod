@@ -26,13 +26,10 @@ namespace RealMethod
             CoroutineHandeler handle = new CoroutineHandeler();
             yield return Owner.StartCoroutine(handle.Run(coroutine));
         }
-        private static IEnumerator MyEndOfFrameCoroutine()
+        private static IEnumerator DelayOneFrame(System.Action callback)
         {
-            Debug.Log("Before WaitForEndOfFrame");
-
             yield return new WaitForEndOfFrame();
-
-            Debug.Log("After WaitForEndOfFrame (at the end of the current frame)");
+            callback?.Invoke();
         }
     }
 

@@ -113,7 +113,7 @@ namespace RealMethod
                 particle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
             yield return new WaitUntil(() => particle.particleCount == 0);
-            this.Return(particle);
+            Return(particle);
             yield return null;
         }
 
