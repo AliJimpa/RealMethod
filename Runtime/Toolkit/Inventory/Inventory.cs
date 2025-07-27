@@ -63,7 +63,6 @@ namespace RealMethod
         }
     }
 
-
     public abstract class Inventory : MonoBehaviour
     {
         private enum ItemState
@@ -505,5 +504,39 @@ namespace RealMethod
         }
 
     }
+
+
+    // #if UNITY_EDITOR
+    //      using UnityEditor;
+    //     [CustomEditor(typeof(Inventory))]
+    //     internal class UIvsGameInputHandlerEditor : Editor
+    //     {
+    //         public override void OnInspectorGUI()
+    //         {
+    //             base.OnInspectorGUI();
+
+    //             using (new EditorGUI.DisabledScope(true))
+    //             {
+    //                 EditorGUILayout.Space();
+    //                 EditorGUILayout.LabelField("Debug");
+    //                 EditorGUILayout.Space();
+
+    //                 using (new EditorGUI.IndentLevelScope())
+    //                 {
+    //                     var state = ((Inventory)target).m_State;
+    //                     EditorGUILayout.LabelField("State", state.ToString());
+    //                     var style = ((Inventory)target).m_ControlStyle;
+    //                     EditorGUILayout.LabelField("Controls", style.ToString());
+    //                     if (style == Inventory.ControlStyle.GamepadJoystick)
+    //                     {
+    //                         var uiEngaged = ((Inventory)target).m_UIEngaged;
+    //                         EditorGUILayout.LabelField("UI Engaged?", uiEngaged ? "Yes" : "No");
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // #endif
+
 
 }
