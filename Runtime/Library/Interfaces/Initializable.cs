@@ -1,22 +1,20 @@
-using UnityEngine;
 
 namespace RealMethod
 {
+    public interface IInitializable
+    {
+        void Initialize();
+    }
     public interface IInitializableWithArgument<TArgument>
     {
         void Initialize(TArgument argument);
     }
-
-    static class Initializable
+    public interface IInitializableWithTwoArgument<TArgumentA, TArgumentB>
     {
-        public static TComponent AddComponent<TComponent, TArgument>(this GameObject gameObject, TArgument argument)
-        where TComponent : MonoBehaviour, IInitializableWithArgument<TArgument>
-        {
-            var component = gameObject.AddComponent<TComponent>();
-            component.Initialize(argument);
-            return component;
-        }
+        void Initialize(TArgumentA argumentA, TArgumentB argumentB);
     }
+
+
 
 
 

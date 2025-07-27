@@ -6,6 +6,27 @@ namespace RealMethod
 {
     public static class GameObject_Extension
     {
+        public static TComponent AddComponent<TComponent, TArgument>(this GameObject gameObject)
+        where TComponent : MonoBehaviour, IInitializable
+        {
+            var component = gameObject.AddComponent<TComponent>();
+            component.Initialize();
+            return component;
+        }
+        public static TComponent AddComponent<TComponent, TArgument>(this GameObject gameObject, TArgument argument)
+        where TComponent : MonoBehaviour, IInitializableWithArgument<TArgument>
+        {
+            var component = gameObject.AddComponent<TComponent>();
+            component.Initialize(argument);
+            return component;
+        }
+        public static TComponent AddComponent<TComponent, TArgumentA, TArgumentB>(this GameObject gameObject, TArgumentA argumentA, TArgumentB argumentB)
+        where TComponent : MonoBehaviour, IInitializableWithTwoArgument<TArgumentA, TArgumentB>
+        {
+            var component = gameObject.AddComponent<TComponent>();
+            component.Initialize(argumentA, argumentB);
+            return component;
+        }
         public static TComponent CopyComponent<TComponent>(this GameObject desitation, TComponent originalComponent) where TComponent : Component
         {
             Type componentType = originalComponent.GetType();
