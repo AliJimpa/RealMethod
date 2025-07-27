@@ -159,7 +159,7 @@ namespace RealMethod
                 player = GameObject.FindGameObjectWithTag(PlayerTag);
                 if (!player)
                 {
-                    Debug.LogError("PlayerGameObject Cant Find in Scne");
+                    Debug.LogError("PlayerGameObject Cant Find in Scene");
                     return false;
                 }
                 return true;

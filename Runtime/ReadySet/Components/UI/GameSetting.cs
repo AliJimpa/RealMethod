@@ -8,32 +8,27 @@ namespace RealMethod
     [Serializable]
     public class SelectableElement : SerializableDictionary<string, Selectable> { }
 
-    [AddComponentMenu("RealMethod/Widgets/SettingWidget")]
-    public sealed class SettingWidget : MonoBehaviour, IWidget
+    [AddComponentMenu("RealMethod/UI/GameSetting")]
+    public sealed class GameSetting : MonoBehaviour
     {
         [Header("File")]
         [SerializeField]
         private SettingFile settingfile;
-        public FieldContainer ScanSetting;
-        [Header("UI")]
         [SerializeField]
-        private SelectableElement elements;
-
-
-
+        private FieldContainer ScanSetting;
+        [Header("Resource")]
+        [SerializeField]
+        private SelectableElement UIElements;
 
         private DataManager saveManager;
         public bool IsSettingDirty { get; private set; } = false;
         private ISettingStorage storage;
 
 
-        // Implement IWidget Interface
-        MonoBehaviour IWidget.GetWidgetClass()
+        // Unity Method
+        private void Awake()
         {
-            return this;
-        }
-        void IWidget.InitiateWidget(UnityEngine.Object Owner)
-        {
+            // Check 'SettingFile' for saving data
             if (settingfile == null)
             {
                 Debug.LogError($"{this} savefile is not valid ");
@@ -41,6 +36,7 @@ namespace RealMethod
                 return;
             }
 
+            // Get interface provider from save file & check
             storage = settingfile;
             if (storage == null)
             {
@@ -48,13 +44,9 @@ namespace RealMethod
                 enabled = false;
                 return;
             }
+
+            // Sacan all variable in save file & check
             ScanSetting.Scan(settingfile);
-        }
-
-
-        // Unity Method
-        private void Awake()
-        {
             if (!ScanSetting.isStore)
             {
                 Debug.LogError($"{this} should initiat by UIManager");
@@ -62,6 +54,7 @@ namespace RealMethod
                 return;
             }
 
+            // Find save manger & check
             saveManager = Game.FindManager<DataManager>();
             if (saveManager == null)
             {
@@ -70,6 +63,7 @@ namespace RealMethod
                 return;
             }
 
+            // If file saved befor first load data else FirstSave
             if (saveManager.IsExistFile(settingfile))
             {
                 storage.OnSettingStarted();
@@ -78,7 +72,6 @@ namespace RealMethod
             else
             {
                 storage.OnSettingCreated();
-                SaveSetting();
             }
         }
         private void OnEnable()
@@ -90,11 +83,11 @@ namespace RealMethod
         // Public Functions
         public Selectable FindElement(string label)
         {
-            return elements[label];
+            return UIElements[label];
         }
         public string FindLabel(Selectable element)
         {
-            foreach (var elem in elements)
+            foreach (var elem in UIElements)
             {
                 if (elem.Value == element)
                 {
@@ -108,7 +101,7 @@ namespace RealMethod
             saveManager.SaveFile(settingfile);
             IsSettingDirty = false;
         }
-        public void SyncElement(Selectable element)
+        public void SyncDataBySelectable(Selectable element)
         {
             string label = FindLabel(element);
             if (label == string.Empty)
@@ -151,7 +144,7 @@ namespace RealMethod
         }
         public void SyncFile()
         {
-            foreach (var element in elements)
+            foreach (var element in UIElements)
             {
                 foreach (FieldInfo field in ScanSetting.GetFields())
                 {
@@ -189,7 +182,7 @@ namespace RealMethod
         }
         public void SyncUI()
         {
-            foreach (var element in elements)
+            foreach (var element in UIElements)
             {
                 foreach (FieldInfo field in ScanSetting.GetFields())
                 {

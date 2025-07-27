@@ -31,8 +31,8 @@ public class #SCRIPTNAME# : SettingFile
     }
 
     // SettingFile Methods
-    protected abstract void OnSettingCreate() {}
-    protected abstract void OnSettingStart() {}
+    protected override void OnSettingCreate() {}
+    protected override void OnSettingStart() {}
 
 #if UNITY_EDITOR
         public override void OnEditorPlay()
