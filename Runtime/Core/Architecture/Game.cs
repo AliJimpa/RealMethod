@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using UnityEngine.InputSystem;
 
 namespace RealMethod
 {
@@ -44,10 +45,12 @@ namespace RealMethod
         public static GameConfig Config { get; private set; }
         public static World World { get; private set; }
         public static GameService Service { get; private set; }
+        public static InputActionAsset Input => Instance.GetInputAsset(ref Instance.StoredInputAsset);
 
         // Private Variable
         private IGameManager[] Managers;
         private List<Service> GameServices;
+        private InputActionAsset StoredInputAsset = null;
 
 
 
@@ -361,6 +364,31 @@ namespace RealMethod
             {
                 Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
             }
+        }
+        // Virtual Methods
+        protected virtual InputActionAsset GetInputAsset(ref InputActionAsset storedinput)
+        {
+            if (storedinput == null)
+            {
+                if (World)
+                {
+                    PlayerInput playerinput = World.GetComponentInPlayer<PlayerInput>();
+                    if (playerinput != null)
+                    {
+                        storedinput = playerinput.actions;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Can't find [PlayerInput] in playerGameObject");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("World is not valid");
+                }
+            }
+
+            return storedinput;
         }
         // Abstract Methods
         protected abstract void GameServiceCreated();
