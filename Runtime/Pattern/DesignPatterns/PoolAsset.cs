@@ -27,7 +27,7 @@ namespace RealMethod
 #endif
 
         // IPool Interface Implement
-        void IPool<T>.Prewarm(int amount)
+        void IPool.Prewarm(int amount)
         {
             if (Prewarmed)
             {
@@ -44,6 +44,25 @@ namespace RealMethod
             }
             Prewarmed = true;
         }
+        IEnumerator IPool.PrewarmEachFrame(int amount)
+        {
+            if (Prewarmed)
+            {
+                Debug.LogWarning($"Pool {name} has already been prewarmed.");
+                yield break;
+            }
+
+            for (int i = 0; i < amount; i++)
+            {
+                var NewObject = CreateObject();
+                NewObject.transform.SetParent(GetRoot());
+                NewObject.gameObject.SetActive(false);
+                Available.Push(NewObject);
+                yield return new WaitForEndOfFrame();
+            }
+
+            Prewarmed = true;
+        }
         IEnumerable<T> IPool<T>.Request(int amount)
         {
             T[] members = new T[amount];
@@ -53,7 +72,11 @@ namespace RealMethod
             }
             return members;
         }
-        void IPool<T>.Return(int amount)
+        void IPool.Request()
+        {
+            Request();
+        }
+        void IPool.Return(int amount)
         {
             T[] Chield = GetRoot().GetComponentsInChildren<T>();
             for (int i = 0; i < amount; i++)
@@ -64,7 +87,7 @@ namespace RealMethod
                 }
             }
         }
-        void IPool<T>.Remove(int amount, bool Force)
+        void IPool.Remove(int amount, bool Force)
         {
             for (int i = 0; i < amount; i++)
             {
@@ -87,7 +110,7 @@ namespace RealMethod
             }
 
         }
-        void IPool<T>.Clean()
+        void IPool.Clean()
         {
             if (IsInitiateRoot())
             {
@@ -134,7 +157,7 @@ namespace RealMethod
             Value.gameObject.SetActive(false);
             Available.Push(Value);
         }
-        protected virtual void Clear()
+        protected void Clear()
         {
             Available.Clear();
             Prewarmed = false;
@@ -161,13 +184,18 @@ namespace RealMethod
 
     }
 
-    public interface IPool<T>
+    public interface IPool
     {
         void Prewarm(int amount = 1);
-        IEnumerable<T> Request(int amount = 1);
+        IEnumerator PrewarmEachFrame(int amount = 1);
+        void Request();
         void Return(int amount = 1);
         void Remove(int amount = 1, bool Force = false);
         void Clean();
+    }
+    public interface IPool<T> : IPool
+    {
+        IEnumerable<T> Request(int amount = 1);
     }
     public interface IPoolSpawner<J> where J : Component
     {

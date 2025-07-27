@@ -350,11 +350,6 @@ namespace RealMethod
         }
 
         // Pool
-        public static void PoolWarm<T>(PoolAsset<T> asset, int amount = 1) where T : Component
-        {
-            IPool<T> Pooller = asset;
-            Pooller.Prewarm(amount);
-        }
         public static T Pool<T>(PoolAsset<T> asset) where T : Component
         {
             if (asset is IPoolSpawner<T> pooler)
@@ -363,7 +358,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                Debug.LogWarning("PoolAsset does not implement IPoolSpawner.");
                 return null;
             }
         }
@@ -375,7 +370,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                Debug.LogWarning("PoolAsset does not implement IPoolSpawner.");
                 return null;
             }
         }
@@ -387,7 +382,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                Debug.LogWarning("PoolAsset does not implement IPoolSpawner.");
                 return null;
             }
         }
@@ -399,7 +394,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                Debug.LogWarning("PoolAsset does not implement IPoolSpawner.");
                 return null;
             }
         }
@@ -514,6 +509,10 @@ namespace RealMethod
                 uIBox = ui;
                 audioBox = audio;
             }
+            else
+            {
+                Debug.LogWarning("Despawn already instantiated");
+            }
         }
 
         // UI
@@ -579,7 +578,7 @@ namespace RealMethod
             else
             {
                 if (debug)
-                    Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                    Debug.LogWarning("PoolAsset does not implement IPoolDespawner.");
                 return false;
             }
         }
@@ -593,7 +592,7 @@ namespace RealMethod
             else
             {
                 if (debug)
-                    Debug.LogWarning("ScriptableObject does not implement IMyInterface.");
+                    Debug.LogWarning("PoolAsset does not implement IPoolDespawner.");
                 return false;
             }
         }
