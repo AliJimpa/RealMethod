@@ -7,12 +7,14 @@ namespace RealMethod
     {
         public float Delay = 5;
 
+        // Implement IInitializableWithArgument Interface
         public void Initialize(float argument)
         {
             Delay = argument;
         }
 
-        void Start()
+        // Unity Methods
+        private void Start()
         {
             Destroy(gameObject, Delay);
         }
