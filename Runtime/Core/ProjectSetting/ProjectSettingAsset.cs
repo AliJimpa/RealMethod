@@ -35,7 +35,8 @@ namespace RealMethod
             Resources = 15,
             ThirdpartyPack = 16,
             PCG = 17,
-            ScriptTemplate,
+            ScriptTemplate = 18,
+            PrefabTemplate,
         }
 
 
@@ -53,7 +54,7 @@ namespace RealMethod
         [SerializeField]
         private GameObject GamePrefab_3;
         [Header("FolderStructure")]
-        public FolderAddress[] ProjectStructure = new FolderAddress[19]
+        public FolderAddress[] ProjectStructure = new FolderAddress[20]
         {
         new FolderAddress { Identity = 0, Path = "Assets/1_Scenes"},
         new FolderAddress { Identity = (IdentityAsset)1, Path = "Assets/2_Scripts" },
@@ -73,7 +74,8 @@ namespace RealMethod
         new FolderAddress { Identity = (IdentityAsset)15, Path = "Assets/Resources"},
         new FolderAddress { Identity = (IdentityAsset)16, Path = "Assets/~Thirdparty"},
         new FolderAddress { Identity = (IdentityAsset)17, Path = "Assets/4_Data/PCG"},
-        new FolderAddress { Identity = (IdentityAsset)18, Path = "Assets/7_Misc/Templates/Scripts"}
+        new FolderAddress { Identity = (IdentityAsset)18, Path = "Assets/7_Misc/Templates/Scripts"},
+        new FolderAddress { Identity = (IdentityAsset)19, Path = "Assets/7_Misc/Templates/Prefabs"}
         };
 
 

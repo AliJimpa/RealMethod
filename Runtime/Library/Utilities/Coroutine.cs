@@ -15,7 +15,7 @@ namespace RealMethod
                 IsDone = true;
             }
         }
-        
+
         public static IEnumerator Delay(float duration, System.Action callback)
         {
             yield return new WaitForSeconds(duration);
@@ -25,6 +25,14 @@ namespace RealMethod
         {
             CoroutineHandeler handle = new CoroutineHandeler();
             yield return Owner.StartCoroutine(handle.Run(coroutine));
+        }
+        private static IEnumerator MyEndOfFrameCoroutine()
+        {
+            Debug.Log("Before WaitForEndOfFrame");
+
+            yield return new WaitForEndOfFrame();
+
+            Debug.Log("After WaitForEndOfFrame (at the end of the current frame)");
         }
     }
 

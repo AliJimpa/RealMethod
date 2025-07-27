@@ -138,8 +138,8 @@ namespace RealMethod.Editor
                 if (GUILayout.Button("CreateCash"))
                 {
                     string directoryfile = Path.GetDirectoryName(CashAddress.GetValue());
-                    PCGResourceConfig ResurcePack = RM_ScriptableObj.CreateAndSaveAsset<PCGResourceConfig>(directoryfile+"/TerrainResource.asset");
-                    PCGCashAsset Temporery = RM_ScriptableObj.CreateAndSaveAsset<PCGCashAsset>(CashAddress.GetValue());
+                    PCGResourceConfig ResurcePack = RM_Create.ScriptableObj<PCGResourceConfig>(directoryfile + "/TerrainResource.asset");
+                    PCGCashAsset Temporery = RM_Create.ScriptableObj<PCGCashAsset>(CashAddress.GetValue());
                     TerrainData Data = OwnerTerrain.terrainData;
                     PCGSource[] TerrainSource = new PCGSource[Data.treePrototypes.Length];
                     TreeInstance[] trees = OwnerTerrain.terrainData.treeInstances;

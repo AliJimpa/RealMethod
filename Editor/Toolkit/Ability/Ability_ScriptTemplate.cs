@@ -7,12 +7,12 @@ namespace RealMethod.Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Ability/Ability", false, 80)]
         public static void CreateAbilityCommand()
         {
-            string Path = RM_ScriptTemplate.Create("AbilityComponentTemplater.txt", "MyAbility.cs");
+            string Path = RM_Create.Script("AbilityComponentTemplater.txt", "MyAbility.cs");
         }
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Ability/Power", false, 80)]
         public static void CreatePowerCommand()
         {
-            string Path = RM_ScriptTemplate.Create("PowerCommandTemplate.txt", "MyPower.cs");
+            string Path = RM_Create.Script("PowerCommandTemplate.txt", "MyPower.cs");
         }
     }
 }
