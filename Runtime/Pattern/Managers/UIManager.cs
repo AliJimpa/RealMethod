@@ -343,7 +343,9 @@ namespace RealMethod
                         Layers[name].GetComponent<IWidget>().GetWidgetClass().enabled = true;
                         break;
                     case UIMethod.uGUI:
-                        Layers[name].GetComponent<CanvasGroup>().interactable = true;
+                        CanvasGroup CG = Layers[name].GetComponent<CanvasGroup>();
+                        CG.interactable = true;
+                        CG.alpha = 1;
                         break;
                     case UIMethod.UI_Toolkit:
                         Layers[name].GetComponent<UIDocument>().enabled = true;
@@ -366,7 +368,9 @@ namespace RealMethod
                         Layers[name].GetComponent<IWidget>().GetWidgetClass().enabled = false;
                         break;
                     case UIMethod.uGUI:
-                        Layers[name].GetComponent<CanvasGroup>().interactable = false;
+                        CanvasGroup CG = Layers[name].GetComponent<CanvasGroup>();
+                        CG.interactable = false;
+                        CG.alpha = 0;
                         break;
                     case UIMethod.UI_Toolkit:
                         Layers[name].GetComponent<UIDocument>().enabled = false;
