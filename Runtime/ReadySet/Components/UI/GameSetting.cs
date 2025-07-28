@@ -25,8 +25,7 @@ namespace RealMethod
         public bool isFileDirty => storage.IsSettingDirty;
 
 
-        // Unity Method
-        private void Awake()
+        private void Start()
         {
             // Check 'SettingFile' for saving data
             if (settingFile == null)
@@ -64,12 +63,8 @@ namespace RealMethod
             {
                 storage.OnSettingCreated();
             }
-        }
-        private void Start()
-        {
             SyncUI();
         }
-
 
         // Public Functions
         public Selectable FindElement(string label)
