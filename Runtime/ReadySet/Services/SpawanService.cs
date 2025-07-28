@@ -25,26 +25,25 @@ namespace RealMethod
                     return CacheInstance;
                 }
             }
-            private set { }
         }
 
-        private Despawn AntiSpawn;
-        private AudioManager audioBox;
-        private UIManager uIBox;
+        public Despawn GameDespawn;
+        public AudioManager GameAudio;
+        public UIManager GameUI;
 
         // Base Service
         protected override void OnStart(object Author)
         {
-            AntiSpawn = new Despawn(uIBox, audioBox);
+            GameDespawn = new Despawn();
         }
         protected override void OnNewWorld()
         {
         }
         protected override void OnEnd(object Author)
         {
-            AntiSpawn = null;
-            audioBox = null;
-            uIBox = null;
+            GameDespawn = null;
+            GameAudio = null;
+            GameUI = null;
             CacheInstance = null;
         }
 
@@ -54,9 +53,9 @@ namespace RealMethod
             // Brind AudioManager
             if (manager.GetManagerClass() is AudioManager audiomanager)
             {
-                if (audioBox == null)
+                if (GameAudio == null)
                 {
-                    audioBox = audiomanager;
+                    GameAudio = audiomanager;
                 }
                 else
                 {
@@ -67,9 +66,9 @@ namespace RealMethod
             // Brind UIManagerF
             if (manager.GetManagerClass() is UIManager uIManager)
             {
-                if (uIBox == null)
+                if (GameUI == null)
                 {
-                    uIBox = uIManager;
+                    GameUI = uIManager;
                 }
                 else
                 {
@@ -82,9 +81,9 @@ namespace RealMethod
         // UI
         public static T Widget<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.CreateLayer<T>(Name, Owner);
+                return instance.GameUI.CreateLayer<T>(Name, Owner);
             }
             else
             {
@@ -94,9 +93,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name) where T : MonoBehaviour
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.CreateLayer<T>(Name);
+                return instance.GameUI.CreateLayer<T>(Name);
             }
             else
             {
@@ -106,9 +105,9 @@ namespace RealMethod
         }
         public static UIDocument Widget(string Name, VisualTreeAsset UIAsset)
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.CreateLayer(Name, UIAsset);
+                return instance.GameUI.CreateLayer(Name, UIAsset);
             }
             else
             {
@@ -118,9 +117,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.CreateLayer<T>(Name, UIAsset, Owner);
+                return instance.GameUI.CreateLayer<T>(Name, UIAsset, Owner);
             }
             else
             {
@@ -130,9 +129,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name, VisualTreeAsset UIAsset) where T : MonoBehaviour
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.CreateLayer<T>(Name, UIAsset);
+                return instance.GameUI.CreateLayer<T>(Name, UIAsset);
             }
             else
             {
@@ -142,9 +141,9 @@ namespace RealMethod
         }
         public static GameObject Widget(string Name, WPrefab Prefab, MonoBehaviour Owner)
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.AddLayer(Name, Prefab, Owner);
+                return instance.GameUI.AddLayer(Name, Prefab, Owner);
             }
             else
             {
@@ -154,9 +153,9 @@ namespace RealMethod
         }
         public static GameObject Widget(string Name, WPrefab Prefab)
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.AddLayer(Name, Prefab);
+                return instance.GameUI.AddLayer(Name, Prefab);
             }
             else
             {
@@ -166,9 +165,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name, WPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.AddLayer<T>(Name, Prefab, Owner);
+                return instance.GameUI.AddLayer<T>(Name, Prefab, Owner);
             }
             else
             {
@@ -178,9 +177,9 @@ namespace RealMethod
         }
         public static T Widget<T>(string Name, WPrefab Prefab) where T : MonoBehaviour
         {
-            if (instance.uIBox != null)
+            if (instance.GameUI != null)
             {
-                return instance.uIBox.AddLayer<T>(Name, Prefab);
+                return instance.GameUI.AddLayer<T>(Name, Prefab);
             }
             else
             {
@@ -192,9 +191,9 @@ namespace RealMethod
         // Sound
         public static AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
         {
-            if (instance.audioBox != null)
+            if (instance.GameAudio != null)
             {
-                return instance.audioBox.PlaySound2D(clip, autoDestroy);
+                return instance.GameAudio.PlaySound2D(clip, autoDestroy);
             }
             else
             {
@@ -214,9 +213,9 @@ namespace RealMethod
         }
         public static AudioSource Sound2D(AudioClip clip, AudioMixerGroup group, bool autoDestroy = true)
         {
-            if (instance.audioBox != null)
+            if (instance.GameAudio != null)
             {
-                return instance.audioBox.PlaySound2D(clip, group, autoDestroy);
+                return instance.GameAudio.PlaySound2D(clip, group, autoDestroy);
             }
             else
             {
@@ -237,9 +236,9 @@ namespace RealMethod
         }
         public static AudioSource Sound3D(AudioClip clip, Vector3 location, bool autoDestroy = true)
         {
-            if (instance.audioBox != null)
+            if (instance.GameAudio != null)
             {
-                return instance.audioBox.PlaySound(clip, location, autoDestroy);
+                return instance.GameAudio.PlaySound(clip, location, autoDestroy);
             }
             else
             {
@@ -259,9 +258,9 @@ namespace RealMethod
         }
         public static AudioSource Sound3D(AudioClip clip, AudioMixerGroup group, Vector3 location, bool autoDestroy = true)
         {
-            if (instance.audioBox != null)
+            if (instance.GameAudio != null)
             {
-                return instance.audioBox.PlaySound(clip, group, location, autoDestroy);
+                return instance.GameAudio.PlaySound(clip, group, location, autoDestroy);
             }
             else
             {
@@ -485,10 +484,10 @@ namespace RealMethod
             GameObject emptyobject = new GameObject(clip.name);
             AudioSource source = emptyobject.AddComponent<AudioSource>();
             source.clip = clip;
-            if (instance.audioBox != null)
+            if (instance.GameAudio != null)
             {
-                source.outputAudioMixerGroup = instance.audioBox.defaultGroup;
-                emptyobject.transform.SetParent(instance.audioBox.transform);
+                source.outputAudioMixerGroup = instance.GameAudio.defaultGroup;
+                emptyobject.transform.SetParent(instance.GameAudio.transform);
             }
             return source;
         }
@@ -497,58 +496,28 @@ namespace RealMethod
 
     public sealed class Despawn
     {
-        private static Despawn instance = null;
-        private UIManager uIBox;
-        private AudioManager audioBox;
-
-        public Despawn(UIManager ui, AudioManager audio)
-        {
-            if (instance == null)
-            {
-                instance = this;
-                uIBox = ui;
-                audioBox = audio;
-            }
-            else
-            {
-                Debug.LogWarning("Despawn already instantiated");
-            }
-        }
-
         // UI
         public static bool Widget(string Name, bool debug = true)
         {
-            if (instance == null)
+            if (Spawn.instance.GameUI == null)
             {
                 if (debug)
-                    Debug.LogWarning("Something Wrong!");
-                return false;
-            }
-            if (instance.uIBox == null)
-            {
-                if (debug)
-                    Debug.LogWarning($" {instance}: UIManager is not available.");
+                    Debug.LogWarning("Despawn UIManager is not available.");
                 return false;
             }
 
-            return instance.uIBox.RemoveLayer(Name);
+            return Spawn.instance.GameUI.RemoveLayer(Name);
         }
         public static bool Widget(MonoBehaviour Comp, bool debug = true)
         {
-            if (instance == null)
+            if (Spawn.instance.GameUI == null)
             {
                 if (debug)
-                    Debug.LogWarning("Something Wrong!");
-                return false;
-            }
-            if (instance.uIBox == null)
-            {
-                if (debug)
-                    Debug.LogWarning($" {instance}: UIManager is not available.");
+                    Debug.LogWarning("Despawn UIManager is not available.");
                 return false;
             }
 
-            return instance.uIBox.RemoveLayer(Comp);
+            return Spawn.instance.GameUI.RemoveLayer(Comp);
         }
 
         // Prefab
@@ -562,7 +531,7 @@ namespace RealMethod
             else
             {
                 if (debug)
-                    Debug.LogWarning($" {instance}: target is not available.");
+                    Debug.LogWarning("Despawn target is not available.");
                 return false;
             }
         }
@@ -596,7 +565,6 @@ namespace RealMethod
                 return false;
             }
         }
-
     }
 
 }

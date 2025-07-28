@@ -21,7 +21,7 @@ namespace RealMethod
         }
         protected override void OnEnd(object Author)
         {
-
+            RecordTime.Clear();
         }
 
         // Public Functions

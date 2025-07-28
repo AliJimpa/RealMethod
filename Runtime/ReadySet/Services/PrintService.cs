@@ -23,7 +23,6 @@ namespace RealMethod
                     return CacheInstance;
                 }
             }
-            private set { }
         }
         public static PrintManager Manager => Instance.Printer;
 
@@ -46,6 +45,7 @@ namespace RealMethod
         protected override void OnEnd(object Author)
         {
             Object.Destroy(Printer);
+            CacheInstance = null;
         }
 
 
