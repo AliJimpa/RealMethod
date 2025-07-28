@@ -497,7 +497,7 @@ namespace RealMethod
 
     public sealed class Despawn
     {
-        private static Despawn instance;
+        private static Despawn instance = null;
         private UIManager uIBox;
         private AudioManager audioBox;
 
