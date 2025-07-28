@@ -12,6 +12,7 @@ namespace RealMethod
 
     public abstract class GameService : Service, IWorldSync
     {
+        public IWorldSync Worldprovider => this;
         // Game Structure
         public Action<World> OnWorldUpdate;
         public Action<World> OnAdditiveWorld;
