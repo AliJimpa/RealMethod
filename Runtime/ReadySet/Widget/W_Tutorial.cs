@@ -70,6 +70,10 @@ namespace RealMethod
             TutorialMessage Messanger = prefabs.GetSoftClassTarget();
             return !storage.IsValidLabel(Messanger.Label);
         }
+        public bool CanShow(string customlabel)
+        {
+            return !storage.IsValidLabel(customlabel);
+        }
         public TutorialMessage Show(TPrefab prefab, Object author)
         {
             return Show(prefab, transform, author);
