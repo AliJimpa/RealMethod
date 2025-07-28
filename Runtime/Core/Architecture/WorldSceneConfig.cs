@@ -1,6 +1,5 @@
 
 using UnityEngine;
-using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
 #endif
@@ -11,41 +10,24 @@ namespace RealMethod
    [CreateAssetMenu(fileName = "WorldScene", menuName = "Scene/WorldScene", order = 1)]
    public class WorldSceneConfig : ConfigAsset
    {
-      [Header("Config")]
+      [Header("Scenes")]
       [SerializeField]
-      private SceneReference Persistent;
+      private SceneReference persistent;
+      public SceneReference Persistent => persistent;
       [SerializeField]
-      private SceneReference[] Additive;
-      public int AdditiveCount => Additive.Length;
+      private SceneReference[] Layers;
+      public int Count => Layers.Length;
 
-      public SceneReference GetPersistent()
+      public SceneReference this[int index]
       {
-         return Persistent;
+         get => Layers[index];
       }
-      public SceneReference GetAdditive(int index)
-      {
-         return Additive[index];
-      }
-
-      public SceneReference[] GetAllScene()
-      {
-         SceneReference[] Result = new SceneReference[Additive.Length + 1];
-         Result[0] = Persistent;
-         for (int i = 0; i < Additive.Length; i++)
-         {
-            Result[i + 1] = Additive[i];
-         }
-         return Result;
-      }
-
-
-
 
 #if UNITY_EDITOR
       public void OnAssetClick()
       {
          EditorSceneManager.OpenScene(Persistent, OpenSceneMode.Single);
-         foreach (var item in Additive)
+         foreach (var item in Layers)
          {
             EditorSceneManager.OpenScene(item, OpenSceneMode.Additive);
          }

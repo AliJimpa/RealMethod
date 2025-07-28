@@ -21,12 +21,6 @@ namespace RealMethod
         public Action<bool> OnSceneLoading;
         public Action<float> OnSceneLoadingProcess;
         public bool IsLoading { get; protected set; }
-        public float FadeTime { get; protected set; } = 0;
-
-
-        private SceneReference CurrentScne;
-        private WorldSceneConfig CurrentWorld;
-
 
 
         // Implement IWorldSync Interface
@@ -46,78 +40,62 @@ namespace RealMethod
             }
         }
 
-
         // public Methods
-        public void SetFadeTime(float value)
-        {
-            if (!IsLoading)
-            {
-                FadeTime = value;
-            }
-            else
-            {
-                Debug.LogWarning("Can't change fade time during loading");
-            }
-        }
-        public virtual IEnumerator GetLoadScneCorotine(SceneReference TargetScene)
+        public virtual IEnumerator GetLoadScneCorotine(string sceneName)
         {
             if (IsLoading == true)
             {
-                Debug.LogWarning($"Can't load {TargetScene} The Service is in Loading");
+                Debug.LogWarning($"Can't load Scene:{sceneName} The Service is in Loading");
                 return null;
             }
-            CurrentScne = TargetScene;
-            CurrentWorld = null;
-            return LoadSceneAsync(TargetScene);
+            return LoadSceneAsync(sceneName);
+        }
+        public virtual IEnumerator GetLoadScneCorotine(int sceneIndex)
+        {
+            if (IsLoading == true)
+            {
+                Debug.LogWarning($"Can't load Index:{sceneIndex} The Service is in Loading");
+                return null;
+            }
+            return LoadSceneAsync(string.Empty, sceneIndex);
         }
         public virtual IEnumerator GetLoadWorldCorotine(WorldSceneConfig WorldScene)
         {
             if (IsLoading == true)
             {
-                Debug.LogWarning($"Can't load {WorldScene} The Service is in Loading");
+                Debug.LogWarning($"Can't load World:{WorldScene} The Service is in Loading");
                 return null;
             }
-            CurrentScne = null;
-            CurrentWorld = WorldScene;
             return LoadWorldAsync(WorldScene);
         }
-        public virtual IEnumerator GetReloadSWCorotine()
-        {
-            if (IsLoading == true)
-            {
-                Debug.LogWarning($"Can't load CurrentScne/World The Service is in Loading");
-                return null;
-            }
-            if (CurrentScne != null)
-            {
-                return LoadSceneAsync(CurrentScne);
-            }
-            if (CurrentWorld != null)
-            {
-                return LoadWorldAsync(CurrentWorld);
-            }
-            return null;
-        }
-
 
         // Abstract Methods
         protected abstract void OnNewAdditiveWorld(World target);
 
         // Corotine
-        private IEnumerator LoadSceneAsync(SceneReference scene)
+        private IEnumerator LoadSceneAsync(string scene, int scneIndex = -1)
         {
             //StartLoading
             IsLoading = true;
             OnSceneLoading?.Invoke(true);
+            float fadingtime = Game.Config.FadeTime;
 
             //Fading Screen
-            if (FadeTime != 0)
+            if (fadingtime != 0)
             {
-                yield return new WaitForSeconds(FadeTime);
+                yield return new WaitForSeconds(fadingtime);
             }
 
             //Loading Scene
-            AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            AsyncOperation Load_opertation;
+            if (scneIndex > -1)
+            {
+                Load_opertation = SceneManager.LoadSceneAsync(scneIndex, LoadSceneMode.Single);
+            }
+            else
+            {
+                Load_opertation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Single);
+            }
             if (Load_opertation == null)
             {
                 Debug.LogError("Failed to load scene. AsyncOperation is null.");
@@ -133,9 +111,9 @@ namespace RealMethod
             OnSceneLoadingProcess?.Invoke(1);
 
             //Fading Screen
-            if (FadeTime != 0)
+            if (fadingtime != 0)
             {
-                yield return new WaitForSeconds(FadeTime);
+                yield return new WaitForSeconds(fadingtime);
             }
 
             //FinishLoading
@@ -147,16 +125,17 @@ namespace RealMethod
             //StartLoading
             IsLoading = true;
             OnSceneLoading?.Invoke(true);
+            float fadingtime = Game.Config.FadeTime;
 
             //Fading Screen
-            if (FadeTime != 0)
+            if (fadingtime != 0)
             {
-                yield return new WaitForSeconds(FadeTime);
+                yield return new WaitForSeconds(fadingtime);
             }
 
 
             //load Persistance Levels
-            AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(WS.GetPersistent(), LoadSceneMode.Single);
+            AsyncOperation Load_opertation = SceneManager.LoadSceneAsync(WS.Persistent, LoadSceneMode.Single);
             if (Load_opertation == null)
             {
                 Debug.LogError("Failed to load scene. AsyncOperation is null.");
@@ -166,16 +145,16 @@ namespace RealMethod
             }
             while (!Load_opertation.isDone)
             {
-                OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, (1 / WS.AdditiveCount + 1)));
+                OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1));
                 OnSceneLoading?.Invoke(false);
                 IsLoading = false;
                 yield return null;
             }
 
             // Load Additive Levels
-            for (int i = 0; i < WS.AdditiveCount; i++)
+            for (int i = 0; i < WS.Count; i++)
             {
-                AsyncOperation Additive_Load_opertation = SceneManager.LoadSceneAsync(WS.GetAdditive(i), LoadSceneMode.Additive);
+                AsyncOperation Additive_Load_opertation = SceneManager.LoadSceneAsync(WS[i], LoadSceneMode.Additive);
                 if (Additive_Load_opertation == null)
                 {
                     Debug.LogError("Failed to load scene. AsyncOperation is null.");
@@ -185,16 +164,16 @@ namespace RealMethod
                 }
                 while (!Additive_Load_opertation.isDone)
                 {
-                    OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, (1 / WS.AdditiveCount + 1 - (i + 1))));
+                    OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1 - (i + 1)));
                     yield return null;
                 }
             }
             OnSceneLoadingProcess?.Invoke(1);
 
             //Fading Screen
-            if (FadeTime != 0)
+            if (fadingtime != 0)
             {
-                yield return new WaitForSeconds(FadeTime);
+                yield return new WaitForSeconds(fadingtime);
             }
 
             //FinishLoading

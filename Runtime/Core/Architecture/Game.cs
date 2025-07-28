@@ -190,41 +190,50 @@ namespace RealMethod
         {
             return GameServices.Select(service => service.GetType().Name).ToArray();
         }
-        public static Coroutine OpenScene(SceneReference TargetScene)
+
+        public static Coroutine OpenScene(int sceneIndex)
         {
-            if (!Service.IsLoading && SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(TargetScene).buildIndex)
+            if (SceneManager.GetActiveScene().buildIndex != sceneIndex)
             {
-                return Instance.StartCoroutine(Service.GetLoadScneCorotine(TargetScene));
+                return Instance.StartCoroutine(Service.GetLoadScneCorotine(sceneIndex));
             }
             else
             {
-                Debug.LogWarning("GameService is already in loading or The scene is already loaded.");
+                Debug.LogWarning("The scene is already loaded.");
+                return null;
+            }
+        }
+        public static Coroutine OpenScene(SceneReference scene)
+        {
+            return OpenScene(scene.ScneName);
+        }
+        public static Coroutine OpenScene(string sceneName)
+        {
+            if (SceneManager.GetActiveScene().name != sceneName)
+            {
+                return Instance.StartCoroutine(Service.GetLoadScneCorotine(sceneName));
+            }
+            else
+            {
+                Debug.LogWarning("The scene is already loaded.");
                 return null;
             }
         }
         public static Coroutine OpenWorld(WorldSceneConfig WorldScene)
         {
-            if (!Service.IsLoading && SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.GetPersistent()).buildIndex)
+            if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.Persistent).buildIndex)
             {
                 return Instance.StartCoroutine(Service.GetLoadWorldCorotine(WorldScene));
             }
             else
             {
-                Debug.LogWarning("GameService is already in loading or The scene is already loaded.");
+                Debug.LogWarning("The Persistent Scene is already loaded.");
                 return null;
             }
         }
         public static Coroutine ReOpenScene()
         {
-            if (!Service.IsLoading)
-            {
-                return Instance.StartCoroutine(Service.GetReloadSWCorotine());
-            }
-            else
-            {
-                Debug.LogWarning("GameService is already in loading.");
-                return null;
-            }
+            return Instance.StartCoroutine(Service.GetLoadScneCorotine(SceneManager.GetActiveScene().name)); ;
         }
         public static T FindManager<T>() where T : MonoBehaviour
         {
