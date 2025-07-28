@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
-using UnityEngine.InputSystem;
 
 namespace RealMethod
 {
