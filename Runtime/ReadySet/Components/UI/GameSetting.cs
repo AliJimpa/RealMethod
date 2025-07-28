@@ -46,7 +46,7 @@ namespace RealMethod
 
             // Find save manger & check
             saveManager = Game.FindManager<DataManager>();
-            if (saveManager != null)
+            if (saveManager == null)
             {
                 Debug.LogError($"{this} Can't find DataManager");
                 enabled = false;
