@@ -52,9 +52,10 @@ namespace RealMethod
         // Unity Method
         private void OnDestroy()
         {
-            foreach (var serv in GameServices)
+            for (int i = 0; i < GameServices.Count; i++)
             {
-                serv.provider.Deleted(this);
+                GameServices[i].provider.Deleted(this);
+                GameServices.RemoveAt(i);
             }
             GameClosed();
         }

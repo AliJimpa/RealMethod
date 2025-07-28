@@ -15,7 +15,7 @@ namespace RealMethod
         }
         protected override void WorldSynced(World NewWorld)
         {
-            Debug.Log("New World Synced to Game");
+            Debug.Log($"{NewWorld} Synced to Game");
         }
         protected override void GameClosed()
         {
