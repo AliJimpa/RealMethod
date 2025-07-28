@@ -6,7 +6,7 @@ using UnityEngine.Events;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Widgets/TutorialWidget")]
-    public sealed class TutorialWidget : MonoBehaviour, IWidget
+    public sealed class W_Tutorial : MonoBehaviour, IWidget
     {
         [Header("Save")]
         [SerializeField]
@@ -63,7 +63,6 @@ namespace RealMethod
                 }
             }
         }
-
 
         // Public Functions
         public bool CanShow(TPrefab prefabs)
@@ -270,7 +269,6 @@ namespace RealMethod
                 Save();
         }
 
-
     }
 
 
@@ -284,7 +282,7 @@ namespace RealMethod
     }
     public interface ITutorialInitiator
     {
-        void Initiate(Object author, TutorialWidget owner);
+        void Initiate(Object author, W_Tutorial owner);
         void InitiateLabel(string newLabel);
         void InitiateMessage(string title, string message);
         void InitiatePosition(Vector3 position, bool isWorld, TutorialPlacement direction, float bufferOffset);
@@ -300,7 +298,7 @@ namespace RealMethod
         protected GameObject Owner;
 
         // Implement ITutorialInitiator Interface
-        void ITutorialInitiator.Initiate(Object author, TutorialWidget owner)
+        void ITutorialInitiator.Initiate(Object author, W_Tutorial owner)
         {
             if (owner == null)
             {
@@ -397,8 +395,5 @@ namespace RealMethod
             return TutorialMessage.Contains(label);
         }
     }
-
-
-
 
 }
