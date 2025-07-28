@@ -1,46 +1,46 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace RealMethod
 {
-    public interface IInteractable
+    public interface IInteraction
     {
-        public bool CanHover();
-        public bool CanInteract();
-        public void OnHover(Interactor Owner);
-        public void OnUnhover(Interactor Owner);
-        public void OnInteract(Interactor Owner);
-
-    }
-
-    public enum InteractionMethod
-    {
-        Component,
-        Interface
-    }
-    public enum Direction
-    {
-        Forward = 0,
-        Right = 1,
-        Back = 3,
-        Left = 4
-    };
-    public enum Raycasttype
-    {
-        Line = 0,
-        Sphere = 1,
+        bool IsHover { get; }
+        bool CanHover(Interactor Owner);
+        bool CanInteract(Interactor Owner);
+        void OnHover(Interactor Owner);
+        void OnUnhover(Interactor Owner);
+        void OnInteract(Interactor Owner);
     }
 
     [AddComponentMenu("RealMethod/Toolkit/Interaction/Interactor")]
     public class Interactor : MonoBehaviour
     {
-        [Header("Interaction")]
+        private enum Direction
+        {
+            Forward = 0,
+            Right = 1,
+            Back = 3,
+            Left = 4
+        };
+        private enum Raycasttype
+        {
+            Line = 0,
+            Sphere = 1,
+        }
+        private enum InteractBehavior
+        {
+            Nothing,
+            SendMessage,
+            Action,
+            Both
+        }
+        [Header("Setting")]
         [SerializeField]
         private UpdateMethod PerformMethod = UpdateMethod.Update;
         [SerializeField]
-        private InteractionMethod DetectionMethod = InteractionMethod.Component;
-
-
+        private InteractBehavior Behavior;
         [Header("Raycast")]
         [SerializeField]
         private Raycasttype RayType = Raycasttype.Line;
@@ -62,32 +62,32 @@ namespace RealMethod
         [ConditionalHide("CustomDirection", true, false)]
         [SerializeField]
         private Vector3 direction;
-
         [Header("Input")]
         [SerializeField]
         private bool UseInputAction = false;
         [ConditionalHide("UseInputAction", true, false)]
         [SerializeField]
         private InputActionReference interactAction;
-
-
-        [Header("Debug")]
+        [Header("DrawGizmos")]
         [SerializeField]
-        private bool Visible = false;
+        private bool Debug = false;
         [SerializeField]
         private Color RayColor = Color.blue;
         [SerializeField]
         private Color HitColor = Color.red;
+        [Header("Events")]
+        [SerializeField]
+        private Action<bool> OnHover;
+        [SerializeField]
+        private Action<GameObject> Interact;
 
 
-        /// Private Variables
-        private GameObject CurrentObject;
-        private Interactable CurrentComp;
         private RaycastHit Hitresult = new RaycastHit();
+        public RaycastHit hitResult => Hitresult;
+        private IInteraction providers;
 
 
-
-        // Internal Method
+        // Unity Method
         private void OnEnable()
         {
             // Enable the input action
@@ -97,7 +97,27 @@ namespace RealMethod
                 interactAction.action.performed += InteractInput;
             }
         }
-
+        private void LateUpdate()
+        {
+            if (PerformMethod == UpdateMethod.LateUpdate)
+            {
+                PerformHover();
+            }
+        }
+        private void Update()
+        {
+            if (PerformMethod == UpdateMethod.Update)
+            {
+                PerformHover();
+            }
+        }
+        private void FixedUpdate()
+        {
+            if (PerformMethod == UpdateMethod.FixedUpdate)
+            {
+                PerformHover();
+            }
+        }
         private void OnDisable()
         {
             // Disable the input action when the object is disabled
@@ -107,187 +127,86 @@ namespace RealMethod
                 interactAction.action.Disable();
             }
         }
-
-
-        // Update Method
-        private void LateUpdate()
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
         {
-            if (PerformMethod == UpdateMethod.LateUpdate)
+            if (Debug && RayType == Raycasttype.Sphere && Hitresult.collider)
             {
-                PerformHover();
+                Gizmos.color = HitColor;
+                Gizmos.DrawWireSphere(Hitresult.point, SphereRadius);
             }
         }
+#endif
 
-        private void Update()
-        {
-            if (PerformMethod == UpdateMethod.Update)
-            {
-                PerformHover();
-            }
-
-        }
-
-        private void FixedUpdate()
-        {
-            if (PerformMethod == UpdateMethod.FixedUpdate)
-            {
-                PerformHover();
-            }
-
-        }
-
-
-
-        // Public Method
-        public bool PerformInteract()
-        {
-            bool Result = false;
-            switch (DetectionMethod)
-            {
-                case InteractionMethod.Component:
-                    if (CurrentComp && CurrentComp.CanInteract(this))
-                    {
-                        CurrentComp.Interacted(this);
-                        Result = true;
-                    }
-                    else
-                    {
-                        Result = false;
-                    }
-                    break;
-                case InteractionMethod.Interface:
-                    if (CurrentObject)
-                    {
-                        IInteractable[] CurrentInterfaces = CurrentObject.GetComponents<IInteractable>();
-                        foreach (var IFace in CurrentInterfaces)
-                        {
-                            if (IFace.CanInteract())
-                            {
-                                IFace.OnInteract(this);
-                                Result = true;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Result = false;
-                    }
-                    break;
-            }
-            return Result;
-        }
-
+        // Public Fundions
         public void PerformHover()
         {
-
-            bool CastingRay = false;
-
             switch (RayType)
             {
                 case Raycasttype.Line:
-                    CastingRay = CastLineRay(out Hitresult);
+                    CastLineRay(out Hitresult);
                     break;
                 case Raycasttype.Sphere:
-                    CastingRay = CastSphereRay(out Hitresult);
+                    CastSphereRay(out Hitresult);
                     break;
             }
 
-            if (CastingRay)
+            if (Hitresult.collider != null)
             {
-                if (DetectionMethod == InteractionMethod.Component)
+                IInteraction NewProvider = Hitresult.collider.gameObject.GetComponent<IInteraction>();
+                if (NewProvider != null)
                 {
-                    Interactable NewComp = Hitresult.collider.GetComponent<Interactable>();
-                    if (NewComp != null)
+                    if (NewProvider != providers)
                     {
-                        if (NewComp != CurrentComp)
+                        if (providers != null)
                         {
-                            if (CurrentComp)
-                            {
-                                CurrentComp.UnHoverd(this);
-                            }
+                            providers.OnUnhover(this);
+                            ExecuteBehavior(2);
+                        }
 
-                            if (NewComp.CanHover(this))
-                            {
-                                NewComp.Hoverd(this);
-                                CurrentComp = NewComp;
-                            }
-                            else
-                            {
-                                CurrentComp = null;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (CurrentComp)
+                        if (NewProvider.CanHover(this))
                         {
-                            CurrentComp.UnHoverd(this);
-                            CurrentComp = null;
+                            NewProvider.OnHover(this);
+                            ExecuteBehavior(1);
                         }
+
+                        providers = NewProvider;
                     }
                 }
-
-                if (DetectionMethod == InteractionMethod.Interface)
+                else
                 {
-                    GameObject NewObject = Hitresult.collider.gameObject;
-                    if (NewObject != null)
+                    if (providers != null)
                     {
-                        if (NewObject != CurrentObject)
-                        {
-                            if (CurrentObject)
-                            {
-                                IInteractable[] CurrentInterfaces = CurrentObject.GetComponents<IInteractable>();
-                                foreach (var IFace in CurrentInterfaces)
-                                {
-                                    IFace.OnUnhover(this);
-                                }
-                            }
-
-                            IInteractable[] NewInterfaces = NewObject.GetComponents<IInteractable>();
-                            foreach (var IFace in NewInterfaces)
-                            {
-                                if (IFace.CanHover())
-                                    IFace.OnHover(this);
-                            }
-
-                            CurrentObject = NewObject;
-                        }
-                    }
-                    else
-                    {
-                        if (CurrentObject)
-                        {
-                            IInteractable[] CurrentInterfaces = CurrentObject.GetComponents<IInteractable>();
-                            foreach (var IFace in CurrentInterfaces)
-                            {
-                                IFace.OnUnhover(this);
-                            }
-                            CurrentObject = null;
-                        }
+                        providers.OnUnhover(this);
+                        ExecuteBehavior(2);
+                        providers = null;
                     }
                 }
             }
             else
             {
-                if (CurrentComp)
+                if (providers != null)
                 {
-                    CurrentComp.UnHoverd(this);
-                    CurrentComp = null;
-                }
-
-                if (CurrentObject)
-                {
-                    IInteractable[] CurrentInterfaces = CurrentObject.GetComponents<IInteractable>();
-                    foreach (var IFace in CurrentInterfaces)
-                    {
-                        IFace.OnUnhover(this);
-                    }
-                    CurrentObject = null;
+                    providers.OnUnhover(this);
+                    ExecuteBehavior(2);
+                    providers = null;
                 }
             }
         }
-
-
+        public bool PerformInteract()
+        {
+            bool Result = false;
+            if (providers != null)
+            {
+                if (providers.CanInteract(this))
+                {
+                    providers.OnInteract(this);
+                    ExecuteBehavior(3);
+                    Result = true;
+                }
+            }
+            return Result;
+        }
         public Vector3 GetDirection()
         {
             if (CustomDirection)
@@ -311,62 +230,92 @@ namespace RealMethod
                 }
             }
         }
-
-        public void UpdateDirection(Vector3 NewDirection)
+        public void SetDirection(Vector3 NewDirection)
         {
             direction = NewDirection;
         }
 
-        public RaycastHit GetHitResult()
-        {
-            return Hitresult;
-        }
 
-
-
-        // Private Method
+        // Private Fundions
         private void InteractInput(InputAction.CallbackContext context)
         {
             PerformInteract();
         }
-
         private bool CastLineRay(out RaycastHit HitResult)
         {
             bool Result;
             Result = Physics.Raycast(transform.position, GetDirection(), out HitResult, RaycastLength, Layer, QueryTriggerInteraction);
-            if (Visible)
+            if (Debug)
             {
                 float debuglength = HitResult.collider ? HitResult.distance : RaycastLength;
                 Color debugcolor = HitResult.collider ? HitColor : RayColor;
-                Debug.DrawRay(transform.position, GetDirection() * debuglength, debugcolor);
+                UnityEngine.Debug.DrawRay(transform.position, GetDirection() * debuglength, debugcolor);
             }
             return Result;
         }
-
         private bool CastSphereRay(out RaycastHit HitResult)
         {
             bool Result;
             Result = Physics.SphereCast(transform.position, SphereRadius, GetDirection(), out HitResult, RaycastLength, Layer, QueryTriggerInteraction);
-            if (Visible)
+            if (Debug)
             {
                 float debuglength = HitResult.collider ? HitResult.distance : RaycastLength;
                 Color debugcolor = HitResult.collider ? HitColor : RayColor;
-                Debug.DrawRay(transform.position, GetDirection() * debuglength, Color.white);
+                UnityEngine.Debug.DrawRay(transform.position, GetDirection() * debuglength, Color.white);
             }
             return Result;
         }
-
-        private void OnDrawGizmos()
+        private void ExecuteBehavior(int stage)
         {
-            if (Visible && RayType == Raycasttype.Sphere && Hitresult.collider)
+            if (stage == 1)
             {
-                Gizmos.color = HitColor;
-                Gizmos.DrawWireSphere(Hitresult.point, SphereRadius);
+                switch (Behavior)
+                {
+                    case InteractBehavior.Action:
+                        OnHover?.Invoke(true);
+                        break;
+                    case InteractBehavior.SendMessage:
+                        gameObject.SendMessage("OnHover", this, SendMessageOptions.RequireReceiver);
+                        break;
+                    case InteractBehavior.Both:
+                        OnHover?.Invoke(true);
+                        gameObject.SendMessage("OnHover", this, SendMessageOptions.RequireReceiver);
+                        break;
+                }
             }
-
+            if (stage == 2)
+            {
+                switch (Behavior)
+                {
+                    case InteractBehavior.Action:
+                        OnHover?.Invoke(false);
+                        break;
+                    case InteractBehavior.SendMessage:
+                        gameObject.SendMessage("OnUnhover", this, SendMessageOptions.RequireReceiver);
+                        break;
+                    case InteractBehavior.Both:
+                        OnHover?.Invoke(false);
+                        gameObject.SendMessage("OnUnhover", this, SendMessageOptions.RequireReceiver);
+                        break;
+                }
+            }
+            if (stage == 3)
+            {
+                switch (Behavior)
+                {
+                    case InteractBehavior.Action:
+                        Interact?.Invoke(gameObject);
+                        break;
+                    case InteractBehavior.SendMessage:
+                        gameObject.SendMessage("OnInteract", this, SendMessageOptions.RequireReceiver);
+                        break;
+                    case InteractBehavior.Both:
+                        OnHover?.Invoke(true);
+                        gameObject.SendMessage("OnInteract", this, SendMessageOptions.RequireReceiver);
+                        break;
+                }
+            }
         }
     }
-
-
 
 }
