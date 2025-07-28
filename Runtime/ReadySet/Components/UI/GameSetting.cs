@@ -13,7 +13,7 @@ namespace RealMethod
     {
         [Header("File")]
         [SerializeField]
-        private SettingFile settingfile;
+        private SettingFile settingFile;
         [SerializeField]
         private FieldContainer ScanSetting;
         [Header("Resource")]
@@ -21,32 +21,23 @@ namespace RealMethod
         private SelectableElement UIElements;
 
         private DataManager saveManager;
-        public bool IsSettingDirty { get; private set; } = false;
-        private ISettingStorage storage;
+        private ISettingStorage storage => settingFile.provider;
+        public bool isFileDirty => storage.IsSettingDirty;
 
 
         // Unity Method
         private void Awake()
         {
             // Check 'SettingFile' for saving data
-            if (settingfile == null)
+            if (settingFile == null)
             {
                 Debug.LogError($"{this} savefile is not valid ");
                 enabled = false;
                 return;
             }
 
-            // Get interface provider from save file & check
-            storage = settingfile;
-            if (storage == null)
-            {
-                Debug.LogError($"{this} ISettingStorage not implement in this savefile ");
-                enabled = false;
-                return;
-            }
-
             // Sacan all variable in save file & check
-            ScanSetting.Scan(settingfile);
+            ScanSetting.Scan(settingFile);
             if (!ScanSetting.isStore)
             {
                 Debug.LogError($"{this} should initiat by UIManager");
@@ -56,7 +47,7 @@ namespace RealMethod
 
             // Find save manger & check
             saveManager = Game.FindManager<DataManager>();
-            if (saveManager == null)
+            if (saveManager != null)
             {
                 Debug.LogError($"{this} Can't find DataManager");
                 enabled = false;
@@ -64,9 +55,9 @@ namespace RealMethod
             }
 
             // If file saved befor first load data else FirstSave
-            if (saveManager.IsExistFile(settingfile))
+            if (saveManager.IsExistFile(settingFile))
             {
-                saveManager.LoadFile(settingfile);
+                saveManager.LoadFile(settingFile);
                 storage.OnSettingStarted();
             }
             else
@@ -98,10 +89,9 @@ namespace RealMethod
         }
         public void SaveSetting()
         {
-            saveManager.SaveFile(settingfile);
-            IsSettingDirty = false;
+            saveManager.SaveFile(settingFile);
         }
-        public void SyncDataBySelectable(Selectable element)
+        public void SyncFile(Selectable element)
         {
             string label = FindLabel(element);
             if (label == string.Empty)
@@ -111,28 +101,28 @@ namespace RealMethod
             }
             foreach (FieldInfo field in ScanSetting.GetFields())
             {
-                object value = field.GetValue(settingfile);
+                object value = field.GetValue(settingFile);
                 switch (value)
                 {
                     case float f:
                         if (element is Slider slide)
                         {
                             if (field.Name == label)
-                                field.SetValue(settingfile, slide.value);
+                                field.SetValue(settingFile, slide.value);
                         }
                         break;
                     case int i:
                         if (element is Dropdown dropdown)
                         {
                             if (field.Name == label)
-                                field.SetValue(settingfile, dropdown.value);
+                                field.SetValue(settingFile, dropdown.value);
                         }
                         break;
                     case bool b:
                         if (element is Toggle toggle)
                         {
                             if (field.Name == label)
-                                field.SetValue(settingfile, toggle.isOn);
+                                field.SetValue(settingFile, toggle.isOn);
                         }
                         break;
                     default:
@@ -140,7 +130,7 @@ namespace RealMethod
                         break;
                 }
             }
-            IsSettingDirty = true;
+            storage.OnFileSynced();
         }
         public void SyncFile()
         {
@@ -148,28 +138,28 @@ namespace RealMethod
             {
                 foreach (FieldInfo field in ScanSetting.GetFields())
                 {
-                    object value = field.GetValue(settingfile);
+                    object value = field.GetValue(settingFile);
                     switch (value)
                     {
                         case float f:
                             if (element.Value is Slider slide)
                             {
                                 if (field.Name == element.Key)
-                                    field.SetValue(settingfile, slide.value);
+                                    field.SetValue(settingFile, slide.value);
                             }
                             break;
                         case int i:
                             if (element.Value is Dropdown dropdown)
                             {
                                 if (field.Name == element.Key)
-                                    field.SetValue(settingfile, dropdown.value);
+                                    field.SetValue(settingFile, dropdown.value);
                             }
                             break;
                         case bool b:
                             if (element.Value is Toggle toggle)
                             {
                                 if (field.Name == element.Key)
-                                    field.SetValue(settingfile, toggle.isOn);
+                                    field.SetValue(settingFile, toggle.isOn);
                             }
                             break;
                         default:
@@ -178,7 +168,7 @@ namespace RealMethod
                     }
                 }
             }
-            IsSettingDirty = true;
+            storage.OnFileSynced();
         }
         public void SyncUI()
         {
@@ -186,7 +176,7 @@ namespace RealMethod
             {
                 foreach (FieldInfo field in ScanSetting.GetFields())
                 {
-                    object value = field.GetValue(settingfile);
+                    object value = field.GetValue(settingFile);
                     switch (value)
                     {
                         case float f:
@@ -217,19 +207,24 @@ namespace RealMethod
                 }
             }
         }
-
     }
 
     public interface ISettingStorage
     {
+        bool IsSettingDirty { get; }
         void OnSettingCreated();
         void OnSettingStarted();
-
+        void OnFileSynced();
     }
 
     public abstract class SettingFile : SaveFile, ISettingStorage
     {
+        public ISettingStorage provider => this;
+        protected bool IsDirty { get; private set; }
+
+
         // Implement ISettingStorage Interface
+        public bool IsSettingDirty => IsDirty;
         void ISettingStorage.OnSettingCreated()
         {
             OnSettingCreate();
@@ -238,9 +233,18 @@ namespace RealMethod
         {
             OnSettingStart();
         }
-
+        void ISettingStorage.OnFileSynced()
+        {
+            IsDirty = true;
+            OnSettingDataUpdated();
+        }
 
         // Protected Method
+        protected sealed override void OnSaved()
+        {
+            IsDirty = false;
+            OnSettingSaved();
+        }
         protected float NormalMixerVolume(float param)
         {
             return Mathf.InverseLerp(-80f, 0f, param);
@@ -250,10 +254,11 @@ namespace RealMethod
             return -80 + (value * 80);
         }
 
-
         // Abstract Methods
         protected abstract void OnSettingCreate();
         protected abstract void OnSettingStart();
+        protected abstract void OnSettingDataUpdated();
+        protected abstract void OnSettingSaved();
     }
 
 }

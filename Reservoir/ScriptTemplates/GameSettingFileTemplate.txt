@@ -4,35 +4,18 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
 public class #SCRIPTNAME# : SettingFile
 {
-    [Header("Audio")]
-    [SerializeField,Range(0f, 1f)]
-    protected float musicVolume = 0.7f;
-    [SerializeField,Range(0f, 1f)]
-    protected float sfxVolume = 0.7f;
-    [Header("Haptic")]
-    [SerializeField]
-    protected bool hasVibration = true;
-    [SerializeField, ConditionalHide("hasVibration", true, false), Range(0f, 1f)]
-    protected float vibrationPower = 0.7f;
-
-
     // SaveFile Methods
-    protected override void OnStable(DataManager manager)
-    {
-    }
-    protected override void OnSaved()
-    {
-    }
-    protected override void OnLoaded()
-    {
-    }
-    protected override void OnDeleted()
-    {
-    }
+    protected override void OnStable(DataManager manager){}
+    protected override void OnLoaded(){}
+    protected override void OnDeleted(){}
+    
 
     // SettingFile Methods
     protected override void OnSettingCreate() {}
     protected override void OnSettingStart() {}
+    protected override void OnSettingDataUpdated() {}
+    protected override void OnSettingSaved(){}
+
 
 #if UNITY_EDITOR
         public override void OnEditorPlay()
@@ -40,4 +23,5 @@ public class #SCRIPTNAME# : SettingFile
             // SetDefault Paramter
         }
 #endif
+
 }
