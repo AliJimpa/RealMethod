@@ -230,7 +230,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning("Method " + MethodName + " not found on " + TargetObject);
+                    Print.LogWarning("Method " + MethodName + " not found on " + TargetObject);
                     Result = false;
                 }
             }
@@ -250,7 +250,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning("Method " + MethodName + " not found on " + TargetObject);
+                    Print.LogWarning("Method " + MethodName + " not found on " + TargetObject);
                     Result = false;
                 }
             }
@@ -269,14 +269,14 @@ namespace RealMethod
     }
 
 
-    public sealed class DebugManager : GizmoManager
+    public sealed class PrintManager : GizmoManager
     {
         private class LogRender : GUIRenderer
         {
-            private DebugManager MyOWner;
+            private PrintManager MyOWner;
             public override void Start(GizmoManager Manager)
             {
-                MyOWner = Manager as DebugManager;
+                MyOWner = Manager as PrintManager;
             }
             public override bool CanRender()
             {
@@ -304,16 +304,14 @@ namespace RealMethod
                 style.normal.textColor = log.TextColor;
                 GUI.Label(rect, log.message, style);
             }
-
-
         }
         private class ButtonRender : GUIRenderer
         {
-            private DebugManager MyOWner;
+            private PrintManager MyOWner;
 
             public override void Start(GizmoManager Manager)
             {
-                MyOWner = Manager as DebugManager;
+                MyOWner = Manager as PrintManager;
             }
             public override bool CanRender()
             {
@@ -372,9 +370,6 @@ namespace RealMethod
         {
             return new GUIRenderer[2] { new LogRender(), new ButtonRender() };
         }
-
-
-
 
         public void Add(LogData Log)
         {
