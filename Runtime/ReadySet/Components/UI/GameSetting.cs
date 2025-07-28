@@ -66,15 +66,15 @@ namespace RealMethod
             // If file saved befor first load data else FirstSave
             if (saveManager.IsExistFile(settingfile))
             {
-                storage.OnSettingStarted();
                 saveManager.LoadFile(settingfile);
+                storage.OnSettingStarted();
             }
             else
             {
                 storage.OnSettingCreated();
             }
         }
-        private void OnEnable()
+        private void Start()
         {
             SyncUI();
         }
