@@ -345,6 +345,7 @@ namespace RealMethod
                     case UIMethod.uGUI:
                         CanvasGroup CG = Layers[name].GetComponent<CanvasGroup>();
                         CG.interactable = true;
+                        CG.blocksRaycasts = true;
                         CG.alpha = 1;
                         break;
                     case UIMethod.UI_Toolkit:
@@ -370,6 +371,7 @@ namespace RealMethod
                     case UIMethod.uGUI:
                         CanvasGroup CG = Layers[name].GetComponent<CanvasGroup>();
                         CG.interactable = false;
+                        CG.blocksRaycasts = false;
                         CG.alpha = 0;
                         break;
                     case UIMethod.UI_Toolkit:
