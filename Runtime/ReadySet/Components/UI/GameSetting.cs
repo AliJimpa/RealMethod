@@ -24,7 +24,7 @@ namespace RealMethod
         private ISettingStorage storage => settingFile.provider;
         public bool isFileDirty => storage.IsSettingDirty;
 
-
+        // Unity Methods
         private void Start()
         {
             // Check 'SettingFile' for saving data
@@ -64,6 +64,11 @@ namespace RealMethod
                 storage.OnSettingCreated();
             }
             SyncUI();
+        }
+        private void OnEnable()
+        {
+            if (ScanSetting.isStore)
+                SyncUI();
         }
 
         // Public Functions
