@@ -49,6 +49,16 @@ namespace RealMethod
         private IGameManager[] Managers;
         private List<Service> GameServices;
 
+        // Unity Method
+        private void OnDestroy()
+        {
+            foreach (var serv in GameServices)
+            {
+                serv.provider.Deleted(this);
+            }
+            GameClosed();
+        }
+
         // Public Functions
         public T GetManager<T>() where T : class
         {
@@ -90,8 +100,7 @@ namespace RealMethod
             World = NewWorld;
             foreach (var service in GameServices)
             {
-                IService Intface = service;
-                Intface.WorldUpdated();
+                service.provider.WorldUpdated();
             }
             WorldSynced(World);
         }
@@ -140,8 +149,7 @@ namespace RealMethod
                     manager.InitiateService(newService);
                 }
             }
-            IService Intface = newService;
-            Intface.Created(author);
+            newService.provider.Created(author);
 
             return newService;
         }
@@ -150,8 +158,7 @@ namespace RealMethod
             var service = Instance.GameServices.FirstOrDefault(s => s.GetType() == typeof(T));
             if (service != null)
             {
-                IService Intface = service;
-                Intface.Deleted(author);
+                service.provider.Deleted(author);
                 Instance.GameServices.Remove(service);
                 return true;
             }
@@ -316,8 +323,7 @@ namespace RealMethod
                 }
                 AlternativeInstance.GameServices = new List<Service>(3);
                 Service.OnWorldUpdate += AlternativeInstance.ReplaceWorld;
-                IService Intface = Service;
-                Intface.Created(AlternativeInstance);
+                Service.provider.Created(AlternativeInstance);
                 // CreateStartService Abstract
                 AlternativeInstance.GameServiceCreated();
                 // Set Game Setting Asset 
@@ -364,6 +370,7 @@ namespace RealMethod
         protected abstract void GameServiceCreated();
         protected abstract void GameInitialized();
         protected abstract void WorldSynced(World NewWorld);
+        protected abstract void GameClosed();
 
     }
 }

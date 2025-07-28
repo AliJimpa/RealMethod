@@ -17,5 +17,9 @@ namespace RealMethod
         {
             Debug.Log("New World Synced to Game");
         }
+        protected override void GameClosed()
+        {
+            Debug.Log("Game Closed");
+        }
     }
 }
