@@ -13,7 +13,6 @@ namespace RealMethod
     {
         void StorageCreated(Object author);
         void StorageLoaded(Object author);
-        void StorageStarted(Object author);
     }
     [System.Serializable]
     public struct StorageFile<T, J> where T : IStorage where J : SaveFile
@@ -22,15 +21,45 @@ namespace RealMethod
         private bool UseCustomFile;
         [SerializeField, ConditionalHide("UseCustomFile", true, false)]
         private SaveFile _SaveFile;
-        public SaveFile file => _SaveFile;
-        public T provider;
+        public SaveFile file
+        {
+            get
+            {
+                if (_SaveFile == null)
+                {
+                    if (!TryGetStorage(out cacheProvider))
+                    {
+                        Debug.LogWarning($"{this}: Can't get Storage Interface Something is wrong in your 'CustomSavefile' or 'SaveFileClass'");
+                        return default;
+                    }
+                }
+                return _SaveFile;
+            }
+        }
+        private T cacheProvider;
+        public T provider
+        {
+            get
+            {
+                if (cacheProvider == null)
+                {
+                    if (!TryGetStorage(out cacheProvider))
+                    {
+                        Debug.LogWarning($"{this}: Can't get Storage Interface Something is wrong in your 'CustomSavefile' or 'SaveFileClass'");
+                        return default;
+                    }
+                }
+                return cacheProvider;
+            }
+        }
+
 
         // Public Functions
-        public bool IsFileLoaded(Object author)
+        public bool Load(Object author)
         {
-            return IsFileLoaded(author, Game.FindManager<DataManager>());
+            return Load(author, Game.FindManager<DataManager>());
         }
-        public bool IsFileLoaded(Object author, DataManager saveManager)
+        public bool Load(Object author, DataManager saveManager)
         {
             if (saveManager == null)
             {
@@ -38,25 +67,15 @@ namespace RealMethod
                 return false;
             }
 
-            if (TryGetStorage(out provider))
+            if (saveManager.IsExistFile(_SaveFile))
             {
-                if (saveManager.IsExistFile(_SaveFile))
-                {
-                    saveManager.LoadFile(_SaveFile);
-                    provider.StorageLoaded(author);
-                    provider.StorageStarted(author);
-                    return true;
-                }
-                else
-                {
-                    provider.StorageCreated(author);
-                    provider.StorageStarted(author);
-                    return false;
-                }
+                saveManager.LoadFile(_SaveFile);
+                provider.StorageLoaded(author);
+                return true;
             }
             else
             {
-                Debug.LogWarning($"{this}: Can't get Storage Interface Something is wrong in your savefile or savefile class");
+                provider.StorageCreated(author);
                 return false;
             }
         }
