@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [Serializable ]
+    [Serializable]
     public struct FieldContainer
     {
         [SerializeField]
@@ -30,7 +30,14 @@ namespace RealMethod
         {
             if (isStore)
             {
-                Debug.LogError($"{this} First Clean Storage");
+                Debug.LogError($"{this} FieldContainer is Full First Clean Container");
+                return;
+            }
+
+            if (target == null)
+            {
+                Debug.LogError($"{this} target object for scan is not valid");
+                return;
             }
 
             List<FieldInfo> Result = new List<FieldInfo>();
