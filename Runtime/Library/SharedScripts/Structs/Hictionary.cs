@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Codice.CM.Common.Tree.Partial;
 
 
 namespace RealMethod
@@ -18,6 +19,11 @@ namespace RealMethod
         {
             get => List[Hash128.Compute(Name)];
             set => List[Hash128.Compute(Name)] = value;
+        }
+
+        public bool IsValid()
+        {
+            return List != null;
         }
         public bool ContainsKey(string Name)
         {
@@ -68,7 +74,5 @@ namespace RealMethod
         {
             return List.TryAdd(Hash128.Compute(Name), Value);
         }
-        
-
     }
 }
