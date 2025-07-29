@@ -1,6 +1,6 @@
 namespace RealMethod
 {
-    public interface IInventoryStorage
+    public interface IInventoryStorage : IStorage
     {
         InventoryItemProperty[] GetItems();
         void CreateItem(InventoryItemProperty item);

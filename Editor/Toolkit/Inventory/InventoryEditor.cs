@@ -28,11 +28,6 @@ namespace RealMethod
                         int ItemQuantity = BaseComponent.GetQuantity(item);
                         EditorGUILayout.LabelField($"Name: {item.Title}({item.name}) - Quantity: {ItemQuantity} ");
                         total += ItemQuantity;
-                        // if (GUILayout.Button("Find"))
-                        // {
-                        //     Selection.activeObject = item;
-                        //     EditorGUIUtility.PingObject(item);
-                        // }
                         //EditorGUILayout.EndHorizontal();
                     }
                 }

@@ -7,7 +7,9 @@ namespace RealMethod
     [CreateAssetMenu(fileName = "InventorySaveFile", menuName = "RealMethod/Inventory/SaveFile", order = 1)]
     public class InventorySaveFile : SaveFile, IInventoryStorage
     {
-        [Header("Setting")]
+        [Header("Inventory")]
+        [SerializeField, ReadOnly, TextArea]
+        protected string Description = "This Save file include IInventoryStorage for store data by Inventory for saving inventory items";
         [SerializeField]
         private bool UsePlayerPrefs = true;
         [Header("Storage")]
@@ -40,7 +42,7 @@ namespace RealMethod
             {
                 ItemsName = RM_PlayerPrefs.GetArray<string>("ItemsName").ToList();
                 ItemsQuantity = RM_PlayerPrefs.GetArray<int>("ItemsQuantity").ToList();
-                ItemsCapacity = RM_PlayerPrefs.GetArray<int>("ItemsQuantity").ToList();
+                ItemsCapacity = RM_PlayerPrefs.GetArray<int>("ItemsCapacity").ToList();
             }
         }
         protected override void OnDeleted()
@@ -56,6 +58,12 @@ namespace RealMethod
 
 
         // Implement IInventorySave Interface
+        void IStorage.StorageCreated(Object author)
+        {
+        }
+        void IStorage.StorageLoaded(Object author)
+        {
+        }
         void IInventoryStorage.CreateItem(InventoryItemProperty item)
         {
             ItemsName.Add(item.Name);
@@ -90,9 +98,8 @@ namespace RealMethod
         InventoryItemProperty[] IInventoryStorage.GetItems()
         {
             // Load All Assets
-            var allItems = Resources.LoadAll<ItemAsset>("");
-            var itemDict = allItems.ToDictionary(item => item.name, item => item);
-
+            var allItems = Resources.LoadAll<ItemAsset>("Inventory");
+            var itemDict = allItems.ToDictionary(item => item.Title, item => item);
             List<InventoryItemProperty> Result = new List<InventoryItemProperty>();
             for (int i = 0; i < ItemsName.Count; i++)
             {
@@ -119,6 +126,7 @@ namespace RealMethod
         {
             return ItemsName.IndexOf(name);
         }
+
 
     }
 }
