@@ -201,7 +201,7 @@ namespace RealMethod
             }
             WriteLog($"Load ({Format})", file);
         }
-        protected override void OnDelete(SaveFile file)
+        protected override void OnDeleteFile(SaveFile file)
         {
             switch (Format)
             {

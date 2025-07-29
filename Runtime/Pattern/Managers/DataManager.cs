@@ -1,30 +1,112 @@
 using UnityEngine;
-using System;
 
 namespace RealMethod
 {
-    public interface IDataPersistence
+    public interface IDataFile
     {
-        void Initiate(DataManager manager);
-        void Load();
-        void Save();
-        void Remove();
+        void InitiateFile(DataManager manager);
+        void FileLoaded();
+        void FileSaved();
+        void FileRemoved();
+    }
+    public interface IStorage
+    {
+        void StorageCreated(Object author);
+        void StorageLoaded(Object author);
+        void StorageStarted(Object author);
+    }
+    [System.Serializable]
+    public struct StorageFile<T, J> where T : IStorage where J : SaveFile
+    {
+        [SerializeField]
+        private bool UseCustomFile;
+        [SerializeField, ConditionalHide("UseCustomFile", true, false)]
+        private SaveFile _SaveFile;
+        public SaveFile file => _SaveFile;
+        public T provider;
+
+        // Public Functions
+        public bool IsFileLoaded(Object author)
+        {
+            return IsFileLoaded(author, Game.FindManager<DataManager>());
+        }
+        public bool IsFileLoaded(Object author, DataManager saveManager)
+        {
+            if (saveManager == null)
+            {
+                Debug.LogWarning($"{this}: Initiate faield we need DataManager");
+                return false;
+            }
+
+            if (TryGetStorage(out provider))
+            {
+                if (saveManager.IsExistFile(_SaveFile))
+                {
+                    saveManager.LoadFile(_SaveFile);
+                    provider.StorageLoaded(author);
+                    provider.StorageStarted(author);
+                    return true;
+                }
+                else
+                {
+                    provider.StorageCreated(author);
+                    provider.StorageStarted(author);
+                    return false;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"{this}: Can't get Storage Interface Something is wrong in your savefile or savefile class");
+                return false;
+            }
+        }
+
+        // Private Functions
+        private bool TryGetStorage(out T provider)
+        {
+            if (UseCustomFile)
+            {
+                if (_SaveFile is T customProvider)
+                {
+                    provider = customProvider;
+                    return true;
+                }
+                else
+                {
+                    Debug.LogWarning("Storage Interface not implemented in Customfile.");
+                    UseCustomFile = false;
+                }
+            }
+            _SaveFile = ScriptableObject.CreateInstance<J>();
+            if (_SaveFile is T autoProvider)
+            {
+                _SaveFile.name = $"RM{typeof(J)}";
+                provider = autoProvider;
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"Storage Interface not implemented in SaveFileType {typeof(J)}");
+                provider = default;
+                return false;
+            }
+        }
     }
 
 
+    // DataMaanger Class 
     public abstract class DataManager : MonoBehaviour, IGameManager
     {
 
         [Header("Basic")]
         [SerializeField]
-        private bool BeginLoad = true;
+        private bool LoadOnInitiate = true;
         [SerializeField]
         private SaveFile[] StableFiles;
 
         // Actions
-        public Action<SaveFile> OnFileChanged;
-        public Action<SaveFile> OnFileLoaded;
-        public Action<SaveFile> OnFileSaved;
+        public System.Action<SaveFile> OnFileLoaded;
+        public System.Action<SaveFile> OnFileSaved;
 
         public byte Logindex { get; private set; }
         public string[] DataLog { get; private set; }
@@ -50,9 +132,8 @@ namespace RealMethod
 
             foreach (var file in StableFiles)
             {
-                IDataPersistence DataFile = file;
-                DataFile.Initiate(this);
-                if (BeginLoad)
+                file.provider.InitiateFile(this);
+                if (LoadOnInitiate)
                 {
                     if (IsExistFile(file))
                         LoadFile(file);
@@ -65,8 +146,26 @@ namespace RealMethod
         }
 
 
-
         // Public Functions
+        public void Save()
+        {
+            if (StableFiles == null)
+            {
+                Debug.LogError("StableFiles is not valid");
+                return;
+            }
+            foreach (var file in StableFiles)
+            {
+                if (file == null)
+                {
+                    Debug.LogError("File is not valid");
+                    continue;
+                }
+                OnSaveFile(file);
+                file.provider.FileSaved();
+                OnFileSaved?.Invoke(file);
+            }
+        }
         public void SaveFile(int Index)
         {
             if (StableFiles.IsValidIndex(Index))
@@ -86,9 +185,27 @@ namespace RealMethod
                 return;
             }
             OnSaveFile(file);
-            IDataPersistence DataFile = file;
-            DataFile.Save();
+            file.provider.FileSaved();
             OnFileSaved?.Invoke(file);
+        }
+        public void Load()
+        {
+            if (StableFiles == null)
+            {
+                Debug.LogError("StableFiles is not valid");
+                return;
+            }
+            foreach (var file in StableFiles)
+            {
+                if (file == null)
+                {
+                    Debug.LogError("File Does not valid");
+                    continue;
+                }
+                OnLoadFile(file);
+                file.provider.FileLoaded();
+                OnFileLoaded?.Invoke(file);
+            }
         }
         public void LoadFile(int Index)
         {
@@ -110,8 +227,7 @@ namespace RealMethod
             }
 
             OnLoadFile(file);
-            IDataPersistence DataFile = file;
-            DataFile.Load();
+            file.provider.FileLoaded();
             OnFileLoaded?.Invoke(file);
         }
         public void DeleteFile(int Index)
@@ -133,9 +249,8 @@ namespace RealMethod
                 return;
             }
 
-            OnDelete(file);
-            IDataPersistence DataFile = file;
-            DataFile.Remove();
+            OnDeleteFile(file);
+            file.provider.FileRemoved();
         }
         public bool IsExistFile(int Index)
         {
@@ -167,12 +282,12 @@ namespace RealMethod
             {
                 if (Logindex == 0)
                 {
-                    DataLog[0] = $"{DateTime.Now} -- {file.name} -- {message}";
+                    DataLog[0] = $"{System.DateTime.Now} -- {file.name} -- {message}";
                     Logindex++;
                 }
                 else
                 {
-                    DataLog[Logindex % DataLog.Length] = $"{DateTime.Now} -- {file.name} -- {message}";
+                    DataLog[Logindex % DataLog.Length] = $"{System.DateTime.Now} -- {file.name} -- {message}";
                     Logindex++;
                 }
             }
@@ -182,29 +297,30 @@ namespace RealMethod
         // Abstract Mehtod
         protected abstract void InitiateService(Service service);
         protected abstract bool IsExist(SaveFile targetfile);
-        protected abstract void OnDelete(SaveFile targetfile);
+        protected abstract void OnDeleteFile(SaveFile targetfile);
         protected abstract void OnSaveFile(SaveFile targetfile);
         protected abstract void OnLoadFile(SaveFile targetfile);
-
     }
 
-    public abstract class SaveFile : DataAsset, IDataPersistence
+    // Save File Class
+    public abstract class SaveFile : DataAsset, IDataFile
     {
+        public IDataFile provider => this;
 
         // Implement IDataPersistence Interface
-        void IDataPersistence.Initiate(DataManager manager)
+        void IDataFile.InitiateFile(DataManager manager)
         {
             OnStable(manager);
         }
-        void IDataPersistence.Save()
+        void IDataFile.FileSaved()
         {
             OnSaved();
         }
-        void IDataPersistence.Load()
+        void IDataFile.FileLoaded()
         {
             OnLoaded();
         }
-        void IDataPersistence.Remove()
+        void IDataFile.FileRemoved()
         {
             OnDeleted();
         }
@@ -262,6 +378,8 @@ namespace RealMethod
             }
         }
 #endif
+
+
 
     }
 
