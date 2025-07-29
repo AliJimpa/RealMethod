@@ -11,10 +11,9 @@ public class #SCRIPTNAME# : SettingFile
     
 
     // SettingFile Methods
-    protected override void OnSettingCreate() {}
-    protected override void OnSettingStart() {}
-    protected override void OnSettingDataUpdated() {}
-    protected override void OnSettingSaved(){}
+    protected override void SetupSettingData(){}
+    protected override void ApplySettingData(){}
+    protected override void OnSettingFileSaved(){}
 
 
 #if UNITY_EDITOR

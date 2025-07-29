@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/UI/SimpleTutorial")]
-    public sealed class SimpleTutorial : TutorialMessage
+    public sealed class UI_SimpleTutorial : TutorialMessage
     {
         [Header("Settings")] // to control how the background image size is slightly larger than the text component
         [SerializeField, Tooltip("A fixed amount of height that will be added to the background image in all cases.")]

@@ -7,90 +7,68 @@ namespace RealMethod
 {
     [Serializable]
     public class SelectableElement : SerializableDictionary<string, Selectable> { }
+    public interface ISettingStorage : IStorage
+    {
+        bool IsSettingDirty { get; }
+        void OnFileSynced();
+    }
 
     [AddComponentMenu("RealMethod/UI/GameSetting")]
-    public sealed class GameSetting : MonoBehaviour
+    public sealed class UI_GameSetting : MonoBehaviour
     {
-        [Header("File")]
+        [Header("Setting")]
         [SerializeField]
-        private SettingFile settingFile;
+        private FieldContainer Scaning;
         [SerializeField]
-        private FieldContainer ScanSetting;
-        [Header("Resource")]
+        private bool AutoSync = true;
         [SerializeField]
         private SelectableElement UIElements;
+        [Header("Save")]
+        [SerializeField]
+        private StorageFile<ISettingStorage, SettingFile> Storage;
 
-        private DataManager saveManager;
-        private ISettingStorage storage => settingFile.provider;
-        public bool isFileDirty => storage.IsSettingDirty;
+        public bool isFileDirty => Storage.provider.IsSettingDirty;
+        public SaveFile file => Storage.file;
 
         // Unity Methods
         private void Start()
         {
-            // Check 'SettingFile' for saving data
-            if (settingFile == null)
-            {
-                Debug.LogError($"{this} savefile is not valid ");
-                enabled = false;
-                return;
-            }
-
             // Sacan all variable in save file & check
-            ScanSetting.Scan(settingFile);
-            if (!ScanSetting.isStore)
+            Scaning.Scan(Storage.file);
+
+            // Binding all Element
+            if (AutoSync)
             {
-                Debug.LogError($"{this} should initiat by UIManager");
-                enabled = false;
-                return;
+                foreach (var element in UIElements)
+                {
+                    switch (element.Value)
+                    {
+                        case Slider slide:
+                            slide.onValueChanged.AddListener(OnSlideChanged);
+                            break;
+                        case Dropdown dropdown:
+                            dropdown.onValueChanged.AddListener(OnDropdownChanged);
+                            break;
+                        case Toggle toggle:
+                            toggle.onValueChanged.AddListener(OnToggleChanged);
+                            break;
+                        default:
+                            Debug.LogWarning($"Undefined Selector {element.Value}");
+                            break;
+                    }
+                }
             }
 
-            // Find save manger & check
-            saveManager = Game.FindManager<DataManager>();
-            if (saveManager == null)
-            {
-                Debug.LogError($"{this} Can't find DataManager");
-                enabled = false;
-                return;
-            }
-
-            // If file saved befor first load data else FirstSave
-            if (saveManager.IsExistFile(settingFile))
-            {
-                saveManager.LoadFile(settingFile);
-                storage.OnSettingStarted();
-            }
-            else
-            {
-                storage.OnSettingCreated();
-            }
+            Storage.Load(this);
             SyncUI();
         }
         private void OnEnable()
         {
-            if (ScanSetting.isStore)
+            if (Scaning.isStore)
                 SyncUI();
         }
 
         // Public Functions
-        public Selectable FindElement(string label)
-        {
-            return UIElements[label];
-        }
-        public string FindLabel(Selectable element)
-        {
-            foreach (var elem in UIElements)
-            {
-                if (elem.Value == element)
-                {
-                    return elem.Key;
-                }
-            }
-            return string.Empty;
-        }
-        public void SaveSetting()
-        {
-            saveManager.SaveFile(settingFile);
-        }
         public void SyncFile(Selectable element)
         {
             string label = FindLabel(element);
@@ -99,30 +77,30 @@ namespace RealMethod
                 Debug.LogError("Can't Find this element!");
                 return;
             }
-            foreach (FieldInfo field in ScanSetting.GetFields())
+            foreach (FieldInfo field in Scaning.GetFields())
             {
-                object value = field.GetValue(settingFile);
+                object value = field.GetValue(Storage.file);
                 switch (value)
                 {
                     case float f:
                         if (element is Slider slide)
                         {
                             if (field.Name == label)
-                                field.SetValue(settingFile, slide.value);
+                                field.SetValue(Storage.file, slide.value);
                         }
                         break;
                     case int i:
                         if (element is Dropdown dropdown)
                         {
                             if (field.Name == label)
-                                field.SetValue(settingFile, dropdown.value);
+                                field.SetValue(Storage.file, dropdown.value);
                         }
                         break;
                     case bool b:
                         if (element is Toggle toggle)
                         {
                             if (field.Name == label)
-                                field.SetValue(settingFile, toggle.isOn);
+                                field.SetValue(Storage.file, toggle.isOn);
                         }
                         break;
                     default:
@@ -130,36 +108,36 @@ namespace RealMethod
                         break;
                 }
             }
-            storage.OnFileSynced();
+            Storage.provider.OnFileSynced();
         }
         public void SyncFile()
         {
             foreach (var element in UIElements)
             {
-                foreach (FieldInfo field in ScanSetting.GetFields())
+                foreach (FieldInfo field in Scaning.GetFields())
                 {
-                    object value = field.GetValue(settingFile);
+                    object value = field.GetValue(Storage.file);
                     switch (value)
                     {
                         case float f:
                             if (element.Value is Slider slide)
                             {
                                 if (field.Name == element.Key)
-                                    field.SetValue(settingFile, slide.value);
+                                    field.SetValue(Storage.file, slide.value);
                             }
                             break;
                         case int i:
                             if (element.Value is Dropdown dropdown)
                             {
                                 if (field.Name == element.Key)
-                                    field.SetValue(settingFile, dropdown.value);
+                                    field.SetValue(Storage.file, dropdown.value);
                             }
                             break;
                         case bool b:
                             if (element.Value is Toggle toggle)
                             {
                                 if (field.Name == element.Key)
-                                    field.SetValue(settingFile, toggle.isOn);
+                                    field.SetValue(Storage.file, toggle.isOn);
                             }
                             break;
                         default:
@@ -168,15 +146,15 @@ namespace RealMethod
                     }
                 }
             }
-            storage.OnFileSynced();
+            Storage.provider.OnFileSynced();
         }
         public void SyncUI()
         {
             foreach (var element in UIElements)
             {
-                foreach (FieldInfo field in ScanSetting.GetFields())
+                foreach (FieldInfo field in Scaning.GetFields())
                 {
-                    object value = field.GetValue(settingFile);
+                    object value = field.GetValue(Storage.file);
                     switch (value)
                     {
                         case float f:
@@ -207,43 +185,62 @@ namespace RealMethod
                 }
             }
         }
-    }
+        public Selectable FindElement(string label)
+        {
+            return UIElements[label];
+        }
+        public string FindLabel(Selectable element)
+        {
+            foreach (var elem in UIElements)
+            {
+                if (elem.Value == element)
+                {
+                    return elem.Key;
+                }
+            }
+            return string.Empty;
+        }
 
-    public interface ISettingStorage
-    {
-        bool IsSettingDirty { get; }
-        void OnSettingCreated();
-        void OnSettingStarted();
-        void OnFileSynced();
+        // Private Functions
+        private void OnSlideChanged(float value)
+        {
+            SyncFile();
+        }
+        private void OnDropdownChanged(int value)
+        {
+            SyncFile();
+        }
+        private void OnToggleChanged(bool value)
+        {
+            SyncFile();
+        }
     }
 
     public abstract class SettingFile : SaveFile, ISettingStorage
     {
-        public ISettingStorage provider => this;
         protected bool IsDirty { get; private set; }
-
 
         // Implement ISettingStorage Interface
         public bool IsSettingDirty => IsDirty;
-        void ISettingStorage.OnSettingCreated()
+        void IStorage.StorageCreated(UnityEngine.Object author)
         {
-            OnSettingCreate();
+            SetupSettingData();
         }
-        void ISettingStorage.OnSettingStarted()
+        void IStorage.StorageLoaded(UnityEngine.Object author)
         {
-            OnSettingStart();
+            ApplySettingData();
         }
         void ISettingStorage.OnFileSynced()
         {
             IsDirty = true;
-            OnSettingDataUpdated();
+            ApplySettingData();
         }
 
         // Protected Method
         protected sealed override void OnSaved()
         {
             IsDirty = false;
-            OnSettingSaved();
+            OnSettingFileSaved();
         }
         protected float NormalMixerVolume(float param)
         {
@@ -255,10 +252,11 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        protected abstract void OnSettingCreate();
-        protected abstract void OnSettingStart();
-        protected abstract void OnSettingDataUpdated();
-        protected abstract void OnSettingSaved();
+        protected abstract void SetupSettingData();
+        protected abstract void ApplySettingData();
+        protected abstract void OnSettingFileSaved();
+
+
     }
 
 }
