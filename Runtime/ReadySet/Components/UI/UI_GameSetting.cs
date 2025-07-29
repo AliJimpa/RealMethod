@@ -148,6 +148,7 @@ namespace RealMethod
             }
             Storage.provider.OnFileSynced();
         }
+        [ContextMenu("Sync_UI")]
         public void SyncUI()
         {
             foreach (var element in UIElements)
