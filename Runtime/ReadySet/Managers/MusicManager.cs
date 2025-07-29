@@ -5,7 +5,7 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Manager/MusicManager")]
     public sealed class MusicManager : CompositManager<DefaulMusicState, DefaulMusicLayer>
     {
-        public override void ServiceAssigned()
+        protected override void ServiceAssigned()
         {
            
         }

@@ -64,7 +64,7 @@ namespace RealMethod
         protected MusicLayer[] Layers;
         [SerializeField]
         private bool PlayOnInitiate = false;
-        [SerializeField, ConditionalHide("PlayOnAwake", true, false)]
+        [SerializeField, ConditionalHide("PlayOnInitiate", true, false)]
         private int InitiateLayer = 0;
 
 
@@ -95,22 +95,16 @@ namespace RealMethod
         // IGameManager Interface Implementation
         protected override void InitiateManager(bool AlwaysLoaded)
         {
-            if (!AlwaysLoaded)
-            {
-                Debug.LogError("You can't use MusicManager in [World] Scope");
-                return;
-            }
-
             if (PlayOnInitiate)
             {
                 this[InitiateLayer].Play();
             }
 
             if (Game.TryFindService(out stateService))
-                {
-                    stateService.OnStateUpdate += OnStateChanged;
-                    ServiceAssigned();
-                }
+            {
+                stateService.OnStateUpdate += OnStateChanged;
+                ServiceAssigned();
+            }
 
             CheckDuplicateLayers();
         }
@@ -235,7 +229,9 @@ namespace RealMethod
         }
 
         //Abstract Method
-        public abstract void ServiceAssigned();
+        protected abstract void ServiceAssigned();
+        
+        
 
     }
 

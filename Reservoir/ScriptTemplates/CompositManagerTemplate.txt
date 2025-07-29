@@ -4,7 +4,7 @@ public class #SCRIPTNAME# : CompositManager<STATESETVICE, MUSCIENUM>
 {
 
     // Base CompositManager Methods
-    public override void OnStateConnect()
+    protected override void OnStateConnect()
     {
 
     }
