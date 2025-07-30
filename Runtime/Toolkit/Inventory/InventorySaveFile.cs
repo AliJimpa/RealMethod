@@ -33,7 +33,6 @@ namespace RealMethod
                 RM_PlayerPrefs.SetArray("ItemsName", ItemsName.ToArray());
                 RM_PlayerPrefs.SetArray("ItemsQuantity", ItemsQuantity.ToArray());
                 RM_PlayerPrefs.SetArray("ItemsCapacity", ItemsCapacity.ToArray());
-                RM_PlayerPrefs.SetBool("InventoryFile", true);
             }
         }
         protected override void OnLoaded()
@@ -49,7 +48,6 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
             {
-                PlayerPrefs.DeleteKey("InventoryFile");
                 ItemsName = null;
                 ItemsQuantity = null;
                 ItemsCapacity = null;
