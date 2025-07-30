@@ -64,6 +64,10 @@ namespace RealMethod
         {
             return tutorialStorage.RemoveTutorial(config);
         }
+        public void Clear()
+        {
+            tutorialStorage.StorageClear();
+        }
 
         // Private Functions
         private void OnTutorialMessageShown(TutorialConfig config, ITutorialMessage provider)

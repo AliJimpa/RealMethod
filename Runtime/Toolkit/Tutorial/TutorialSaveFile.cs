@@ -54,6 +54,10 @@ namespace RealMethod
         {
             return TutorialMessage.Contains(conf.Label);
         }
+        void IStorage.StorageClear()
+        {
+            TutorialMessage.Clear();
+        }
 
 #if UNITY_EDITOR
         public override void OnEditorPlay()
