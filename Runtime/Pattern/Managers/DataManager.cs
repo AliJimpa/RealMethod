@@ -13,6 +13,7 @@ namespace RealMethod
     {
         void StorageCreated(Object author);
         void StorageLoaded(Object author);
+        void StorageClear();
     }
     [System.Serializable]
     public struct StorageFile<T, J> where T : IStorage where J : SaveFile
@@ -78,6 +79,10 @@ namespace RealMethod
                 provider.StorageCreated(author);
                 return false;
             }
+        }
+        public void Clear()
+        {
+            provider.StorageClear();
         }
 
         // Private Functions
