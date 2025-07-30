@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RealMethod
@@ -21,14 +22,16 @@ namespace RealMethod
         public System.Action<IUpgradeItem> OnLocked;
 
         private List<IUpgradeItem> AvailableItems;
-        public int AvailableCount => AvailableItems.Count;
-        private Hictionary<IUpgradeItem> Items = new Hictionary<IUpgradeItem>();
-        public int ItemCount => Items.Count;
+        public int AvailableCount => AvailableItems != null ? AvailableItems.Count : 0;
+        private Dictionary<string, IUpgradeItem> Items;
+        public int ItemCount => Items != null ? Items.Count : 0;
         private IUpgradeStorage upgradeStorage;
 
         // Unity Methods
-        protected virtual void Start()
+        protected void Awake()
         {
+            Items = new Dictionary<string, IUpgradeItem>();
+
             // Identify Items
             int CurrentID = 1;
             for (int m = 0; m < Maps.Length; m++)
@@ -92,7 +95,7 @@ namespace RealMethod
             IUpgradeItem item = Items[itemLabel];
             if (item.Prerequisites(!free))
             {
-                item.Unlock();
+                item.Unlock(!free);
                 foreach (var nextitem in item.GetNextAvailables())
                 {
                     AvailableItems.Add(nextitem);
@@ -134,12 +137,12 @@ namespace RealMethod
         }
         public IUpgradeItem[] GetItems()
         {
-            return Items.GetValues();
+            return Items.Values.ToArray();
         }
         public IUpgradeItem[] GetItems(string configLabel)
         {
             List<IUpgradeItem> CacheItems = new List<IUpgradeItem>();
-            foreach (var item in Items.GetValues())
+            foreach (var item in Items.Values.ToArray())
             {
                 if (item.ConfigLabel == configLabel)
                 {

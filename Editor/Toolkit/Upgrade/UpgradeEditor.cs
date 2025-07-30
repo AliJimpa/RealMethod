@@ -23,7 +23,7 @@ namespace RealMethod
                 {
                     foreach (var item in BaseComponent.GetItems())
                     {
-                        EditorGUILayout.LabelField($"Name: {item.Label} - Status: {CheckStatus(item)} - Available: {BaseComponent.IsAvailable(item)} ");
+                        EditorGUILayout.LabelField($"Name: {item.Label} - Status: {CheckStatus(item)} ");
                     }
                 }
                 EditorGUILayout.Space();

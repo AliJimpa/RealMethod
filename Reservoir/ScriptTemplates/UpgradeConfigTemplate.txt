@@ -5,6 +5,9 @@ using UnityEngine;
 public class #SCRIPTNAME# : UpgradeMapConfig
 {
     // UpgradeMapConfig Methods
+    protected override void Initiated(Upgrade owner)
+    {
+    }
     protected override IUpgradeItem GenerateItem(int index)
     {
     }
@@ -12,9 +15,6 @@ public class #SCRIPTNAME# : UpgradeMapConfig
     {
     }
     protected override int GetItemCount()
-    {
-    }
-    protected override void Initiated(Upgrade owner)
     {
     }
 }

@@ -9,10 +9,12 @@ namespace RealMethod
         void Sync(bool status);
 
         bool Prerequisites(bool cost);
-        void Unlock();
+        void Unlock(bool cost);
         void Lock();
 
         IUpgradeItem[] GetNextAvailables();
+        void SetNextAvailables(IUpgradeItem[] items);
+        void PreviousItem(IUpgradeItem items);
     }
     public interface IUpgradeConfig
     {
