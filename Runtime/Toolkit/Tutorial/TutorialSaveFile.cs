@@ -55,34 +55,40 @@ namespace RealMethod
             return TutorialMessage.Contains(conf.Label);
         }
 
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+            TutorialMessage.Clear();
+        }
+#endif
 
     }
 
 
 
-    #if UNITY_EDITOR
-        [UnityEditor.CustomEditor(typeof(TutorialSaveFile))]
-        internal class UIvsGameInputHandlerEditor : UnityEditor.Editor
+#if UNITY_EDITOR
+    [UnityEditor.CustomEditor(typeof(TutorialSaveFile))]
+    internal class UIvsGameInputHandlerEditor : UnityEditor.Editor
+    {
+        public override void OnInspectorGUI()
         {
-            public override void OnInspectorGUI()
+            base.OnInspectorGUI();
+
+            using (new UnityEditor.EditorGUI.DisabledScope(true))
             {
-                base.OnInspectorGUI();
+                UnityEditor.EditorGUILayout.Space();
+                UnityEditor.EditorGUILayout.LabelField("Debug");
+                UnityEditor.EditorGUILayout.Space();
 
-                using (new UnityEditor.EditorGUI.DisabledScope(true))
+                using (new UnityEditor.EditorGUI.IndentLevelScope())
                 {
-                    UnityEditor.EditorGUILayout.Space();
-                    UnityEditor.EditorGUILayout.LabelField("Debug");
-                    UnityEditor.EditorGUILayout.Space();
-
-                    using (new UnityEditor.EditorGUI.IndentLevelScope())
+                    foreach (var item in ((TutorialSaveFile)target).TutorialMessage)
                     {
-                        foreach (var item in ((TutorialSaveFile)target).TutorialMessage)
-                        {
-                            UnityEditor.EditorGUILayout.LabelField("Message", item.ToString());
-                        }
+                        UnityEditor.EditorGUILayout.LabelField("Message", item.ToString());
                     }
                 }
             }
         }
-    #endif
+    }
+#endif
 }
