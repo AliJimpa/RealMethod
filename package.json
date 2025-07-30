@@ -1,6 +1,6 @@
 {
   "name": "com.mustard.realmethod",
-  "version": "3.8.0",
+  "version": "3.8.2",
   "displayName": "RealMethod",
   "description": "A modern concept for making game in unity.",
   "unity": "6000.0",
@@ -18,6 +18,11 @@
     {
       "displayName": "Basic Usage",
       "description": "How to use Mustard Utilities",
+      "path": "Samples~/Basic"
+    },
+    {
+      "displayName": "Tutorial",
+      "description": "Some Prefab & Config for Implement Basic Tutorial in your game",
       "path": "Samples~/Basic"
     }
   ],
