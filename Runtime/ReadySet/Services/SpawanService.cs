@@ -467,6 +467,10 @@ namespace RealMethod
         {
             return new GameObject(name);
         }
+        public static T Clone<T>(T original) where T : Object
+        {
+            return Object.Instantiate(original);
+        }
         public static MeshRenderer Mesh(Mesh geometry)
         {
             GameObject emptyobject = new GameObject(geometry.name);
