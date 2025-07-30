@@ -31,6 +31,8 @@ namespace RealMethod
         }
         protected override void OnDeleted()
         {
+            if (UsePlayerPrefs)
+                TutorialMessage.Clear();
         }
 
         // IMplement ITutorialStorage Interface
