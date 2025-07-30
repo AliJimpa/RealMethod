@@ -1,0 +1,11 @@
+using RealMethod;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME#  : BaseTutorialConfig
+{
+    // Implement BaseTutorialConfig
+    protected override ITutorialMessage PostInstantiate(ITutorialMessage provider)
+    {
+        return provider;
+    }
+}

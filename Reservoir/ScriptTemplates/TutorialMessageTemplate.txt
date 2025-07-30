@@ -1,25 +1,28 @@
 using RealMethod;
 
-public class #SCRIPTNAME# : TutorialMessage
+[AddComponentMenu("#PROJECTNAME#/UI/#SCRIPTNAME#")]
+public class #SCRIPTNAME# : MonoBehaviour, ITutorialMessage
 {
-
-    // TutorialMessage Method
-    protected override void OnInitiate(Object author)
+    // Implement ITutorialMessage Interface
+    public event ITutorialMessage.Finish OnFinished;
+    public MonoBehaviour GetClass()
     {
+        return this;
     }
-    protected override void OnMessage(string title, string message)
+    void ITutorialMessage.Initiate(Object author, Tutorial owner, TutorialConfig config)
     {
+        
     }
-    protected override void OnScreenPosition(Vector3 position, TutorialPlacement placement, float Offset)
+    void ITutorialMessage.SetPosition(Vector3 position, bool isWorld, TutorialPlacement direction, float bufferOffset)
     {
+        if (isWorld)
+        {
+            
+        }
+        else
+        {
+            
+        }
     }
-    protected override void OnWorldPosition(Vector3 position, TutorialPlacement placement, float Offset)
-    {
-    }
-    protected override void OnDesign(Sprite image, Color tint)
-    {
-    }
-
-
 
 }
