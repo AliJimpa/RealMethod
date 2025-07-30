@@ -188,11 +188,7 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("Trigger2DTemplate.txt", "MyTrigger.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Component/TutorialMessage", false, 80)]
-        public static void CreateTutorialMessage()
-        {
-            string Path = RM_Create.Script("TutorialMessageTemplate.txt.txt", "MyTutorial.cs");
-        }
+        
 
         // Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Editor/SettingSection", false, 80)]

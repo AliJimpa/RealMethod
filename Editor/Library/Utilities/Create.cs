@@ -56,7 +56,7 @@ namespace RealMethod.Editor
             Selection.activeObject = AssetDatabase.LoadAssetAtPath<MonoScript>(newScriptPath);
             return newScriptPath;
         }
-        public static void Prefab(string prefabName, bool UseProject = false)
+        public static GameObject Prefab(string prefabName, bool UseProject = false)
         {
 
             string prefabPath = string.Empty;
@@ -83,10 +83,12 @@ namespace RealMethod.Editor
 
                 // Select the newly created instance
                 Selection.activeObject = instance;
+                return instance;
             }
             else
             {
                 Debug.LogError("Prefab not found at path: " + prefabPath);
+                return null;
             }
         }
         public static void GameObjectInScene<T>(string Name = "GameObject") where T : Component
