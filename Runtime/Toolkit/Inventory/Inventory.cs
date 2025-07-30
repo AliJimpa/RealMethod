@@ -357,7 +357,7 @@ namespace RealMethod
         public void Clear()
         {
             Items.Clear();
-            inventoryStorage.Clear();
+            inventoryStorage.StorageClear();
         }
 
         // Protected Functions

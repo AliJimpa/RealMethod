@@ -8,7 +8,6 @@ namespace RealMethod
         // amount > 0 : AddQuantity , amount < 0 RemoveqQuantity , amount = 0 ZiroQuantity
         void UpdateQuantity(string name, int amount);
         void UpdateCapacity(int value);
-        void Clear();
     }
 
     public interface IInventoryItem

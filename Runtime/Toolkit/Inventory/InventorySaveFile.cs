@@ -112,7 +112,7 @@ namespace RealMethod
             }
             return Result.ToArray();
         }
-        void IInventoryStorage.Clear()
+        void IStorage.StorageClear()
         {
             ItemsName.Clear();
             ItemsQuantity.Clear();
