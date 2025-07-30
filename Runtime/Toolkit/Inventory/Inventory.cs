@@ -108,7 +108,7 @@ namespace RealMethod
         }
 
         // Unity Methods
-        protected virtual void Awake()
+        private void Awake()
         {
             inventoryStorage = GetStorage();
 

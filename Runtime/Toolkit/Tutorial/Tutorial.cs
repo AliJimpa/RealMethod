@@ -8,7 +8,7 @@ namespace RealMethod
         protected ITutorialStorage tutorialStorage;
 
         // Unity Methods
-        protected virtual void Start()
+        private void Awake()
         {
             tutorialStorage = GetStorage();
             if (tutorialStorage == null)
