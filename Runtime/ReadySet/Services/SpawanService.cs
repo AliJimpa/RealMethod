@@ -280,20 +280,20 @@ namespace RealMethod
             }
         }
 
-        // Generic 
-        public static T Obj<T>(T original) where T : Object
+        // Cloning 
+        public static T Clone<T>(T original) where T : Object
         {
             return Object.Instantiate(original);
         }
-        public static T Obj<T>(T original, Transform parent) where T : Object
+        public static T Clone<T>(T original, Transform parent) where T : Object
         {
             return Object.Instantiate(original, parent);
         }
-        public static T Obj<T>(T original, Vector3 position, Quaternion rotation) where T : Object
+        public static T Clone<T>(T original, Vector3 position, Quaternion rotation) where T : Object
         {
             return Object.Instantiate(original, position, rotation);
         }
-        public static T Obj<T>(T original, Transform parent, bool worldPositionStays) where T : Object
+        public static T Clone<T>(T original, Transform parent, bool worldPositionStays) where T : Object
         {
             return Object.Instantiate(original, parent, worldPositionStays);
         }
@@ -466,10 +466,6 @@ namespace RealMethod
         public static GameObject New(string name)
         {
             return new GameObject(name);
-        }
-        public static T Clone<T>(T original) where T : Object
-        {
-            return Object.Instantiate(original);
         }
         public static MeshRenderer Mesh(Mesh geometry)
         {
