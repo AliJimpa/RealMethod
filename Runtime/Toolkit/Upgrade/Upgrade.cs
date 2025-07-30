@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,178 +12,197 @@ namespace RealMethod
             Action,
             Both,
         }
-
         [Header("Setting")]
         [SerializeField]
-        private UpgradeConfig[] Configs;
+        private UpgradeMapConfig[] Maps;
         [SerializeField]
         private UpgradeBehavior Behavior;
+        public System.Action<IUpgradeItem> OnUnlocked;
+        public System.Action<IUpgradeItem> OnLocked;
 
-        public Action<UpgradeItem> OnUnlocked;
-        public Action<UpgradeItem> OnLocked;
-
-        private Hictionary<UpgradeItem> Items = new Hictionary<UpgradeItem>(5);
-        protected IUpgradeStorage storage { get; private set; }
-        public int Count => Items.Count;
-
-
+        private List<IUpgradeItem> AvailableItems;
+        public int AvailableCount => AvailableItems.Count;
+        private Hictionary<IUpgradeItem> Items = new Hictionary<IUpgradeItem>();
+        public int ItemCount => Items.Count;
+        private IUpgradeStorage upgradeStorage;
 
         // Unity Methods
-        protected virtual void Awake()
+        protected virtual void Start()
         {
-            // Create Clone of all UpgradeAssets
-            foreach (var conf in Configs)
+            // Identify Items
+            int CurrentID = 1;
+            for (int m = 0; m < Maps.Length; m++)
             {
-                conf.OnAwake(this);
-                UpgradeItem previousasset = null;
-                foreach (var Uasset in conf.line)
+                IUpgradeItem[] MapItems = Maps[m].provider.GenerateItems(this);
+                for (int it = 0; it < MapItems.Length; it++)
                 {
-                    UpgradeItem NewAsset = Instantiate(Uasset);
-                    IUpgradeable IController = NewAsset;
-                    if (IController.Initiate(this, conf, previousasset))
+                    MapItems[it].Identify(Maps[m], CurrentID);
+                    Items.Add(MapItems[it].Label, MapItems[it]);
+                    CurrentID++;
+                }
+            }
+
+            upgradeStorage = GetStorage();
+            if (LoadStorage())
+            {
+                // Load Unlocked Asset
+                foreach (var id in upgradeStorage.GetUnlockItems())
+                {
+                    Items[id].Sync(true);
+                }
+                // Load AvailableItems
+                string[] items = upgradeStorage.GetAvailableItems();
+                AvailableItems = new List<IUpgradeItem>(items.Length);
+                foreach (var item in items)
+                {
+                    AvailableItems.Add(FindItem(item));
+                }
+            }
+            else
+            {
+                // Create AvailableItems
+                AvailableItems = new List<IUpgradeItem>(Maps.Length);
+                foreach (var conf in Maps)
+                {
+                    IUpgradeItem item = conf.provider.GetStartItem();
+                    if (item != null)
                     {
-                        Items.Add(Uasset.Title, NewAsset);
-                        previousasset = NewAsset;
+                        AvailableItems.Add(item);
                     }
                 }
             }
+        }
 
-            // Create SaveFile
-            storage = GetStorage();
-            if (storage != null)
+
+        // Public functions
+        public bool IsUnlocked(IUpgradeItem item)
+        {
+            return IsUnlocked(item.Label);
+        }
+        public bool IsUnlocked(string itemLabel)
+        {
+            return Items[itemLabel].IsUnlocked;
+        }
+        public bool SetUnlock(IUpgradeItem item, bool free = false)
+        {
+            return SetUnlock(item.Label, free);
+        }
+        public bool SetUnlock(string itemLabel, bool free = false)
+        {
+            IUpgradeItem item = Items[itemLabel];
+            if (item.Prerequisites(!free))
             {
-                // Load or Create
-                if (!IsStorageLoaded())
+                item.Unlock();
+                foreach (var nextitem in item.GetNextAvailables())
                 {
-                    storage.CreateNewItems(Items.GetValues());
+                    AvailableItems.Add(nextitem);
+                    upgradeStorage.AddAvailableItem(nextitem);
                 }
+                upgradeStorage.UnlockItem(item);
+                MessageBehavior(item, true);
+                return true;
             }
             else
             {
-                Debug.LogWarning("Storage is Not Valid");
-                enabled = false;
-                return;
+                return false;
             }
         }
-
-        // Publci Functions
-        public bool IsUnlocked(string title)
+        public bool SetLock(IUpgradeItem item)
         {
-            if (storage != null)
+            return SetLock(item.Label);
+        }
+        public bool SetLock(string itemLabel)
+        {
+            IUpgradeItem item = Items[itemLabel];
+            if (item.IsUnlocked)
             {
-                return storage.IsUnAvalibal(FindAsset(title));
+                item.Lock();
+                foreach (var nextitem in item.GetNextAvailables())
+                {
+                    AvailableItems.Remove(nextitem);
+                    upgradeStorage.RemoveAvalibelItem(nextitem);
+                }
+                upgradeStorage.LockItem(item);
+                MessageBehavior(item, false);
+                return true;
             }
             return false;
         }
-        public bool CanUnlock(string title)
+        public IUpgradeItem FindItem(string itemLabel)
         {
-            return FindAsset(title).CanUnlock();
+            return Items[itemLabel];
         }
-        public void Unlock(string title)
+        public IUpgradeItem[] GetItems()
         {
-            if (CanUnlock(title))
-            {
-                UnlockeAsset(FindAsset(title), false);
-            }
+            return Items.GetValues();
         }
-        public void ForceUnlock(string title)
+        public IUpgradeItem[] GetItems(string configLabel)
         {
-            UnlockeAsset(FindAsset(title), true);
-        }
-        public void Lock(string title)
-        {
-            if (IsUnlocked(title))
-            {
-                LockAsset(FindAsset(title));
-            }
-            else
-            {
-                Debug.LogWarning("This asset is already Locked");
-            }
-        }
-        public UpgradeItem FindAsset(string title)
-        {
-            return Items[title];
-        }
-        public T[] CopyItemsByClass<T>() where T : UpgradeItem
-        {
-            List<T> Result = new List<T>();
+            List<IUpgradeItem> CacheItems = new List<IUpgradeItem>();
             foreach (var item in Items.GetValues())
             {
-                if (item is T finditem)
+                if (item.ConfigLabel == configLabel)
                 {
-                    Result.Add(finditem);
+                    CacheItems.Add(item);
                 }
             }
-            return Result.ToArray();
+            return CacheItems.ToArray();
         }
-        public void Clear()
+        public IUpgradeItem GetAvailableItem(int index)
         {
-            Items.Clear();
-            storage.CreateNewItems(Items.GetValues());
+            return AvailableItems[index];
         }
-        public UpgradeConfig GetConfig(int index)
+        public IUpgradeItem GetAvailableItem(string configLabel)
         {
-            if (Configs == null)
+            UpgradeMapConfig targetConfig = GetConfigByName(configLabel);
+            foreach (var avitem in AvailableItems)
             {
-                Debug.LogWarning("Configs is not valid");
-                return null;
-            }
-            return Configs[index];
-        }
-        public UpgradeItem[] GetLineAssets(int line)
-        {
-            List<UpgradeItem> Result = new List<UpgradeItem>();
-            UpgradeConfig TargetCongfig = GetConfig(line);
-            foreach (var item in TargetCongfig.line)
-            {
-                Result.Add(FindAsset(item.Title));
-            }
-            return Result.ToArray();
-        }
-        public UpgradeItem GetActiveAssetinLine(int line)
-        {
-            foreach (var asset in GetLineAssets(line))
-            {
-                if (!IsUnlocked(asset.Title))
+                if (avitem.ConfigLabel == configLabel)
                 {
-                    return asset;
+                    return avitem;
                 }
             }
             return null;
         }
+        public bool IsAvailable(IUpgradeItem item)
+        {
+            return IsAvailable(item);
+        }
+        public bool IsAvailable(string itemLabel)
+        {
+            foreach (var item in AvailableItems)
+            {
+                if (item.Label == itemLabel)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        public void Clear()
+        {
+            upgradeStorage.StorageClear();
+        }
+
+        // Protected Functions
+        protected UpgradeMapConfig GetConfigByName(string configLabel)
+        {
+            foreach (var conf in Maps)
+            {
+                if (conf.Label == configLabel)
+                {
+                    return conf;
+                }
+            }
+            return null;
+        }
+
         // Private Functions
-        private void UnlockeAsset(UpgradeItem item, bool free)
-        {
-            if (storage.SwapToUnAvalibal(item))
-            {
-                IUpgradeable IController = item;
-                IController.SetUnlock(free);
-                MessageBehavior(item, true);
-            }
-            else
-            {
-                Debug.LogError("There is issue please Remove UpgradeSavefile");
-            }
-        }
-        private void LockAsset(UpgradeItem item)
-        {
-            if (storage.SwapToAvalibal(item))
-            {
-                IUpgradeable IController = item;
-                IController.SetLock();
-                MessageBehavior(item, false);
-            }
-            else
-            {
-                Debug.LogError("There is issue please Remove UpgradeSavefile");
-            }
-        }
-        private void MessageBehavior(UpgradeItem item, bool isunlock)
+        private void MessageBehavior(IUpgradeItem item, bool isUnlock)
         {
             if (Behavior == UpgradeBehavior.Action || Behavior == UpgradeBehavior.Both)
             {
-                if (isunlock)
+                if (isUnlock)
                 {
                     OnUnlocked?.Invoke(item);
                 }
@@ -196,7 +214,7 @@ namespace RealMethod
 
             if (Behavior == UpgradeBehavior.SendMessage || Behavior == UpgradeBehavior.Both)
             {
-                if (isunlock)
+                if (isUnlock)
                 {
                     SendMessage("OnUnlocked", SendMessageOptions.RequireReceiver);
                 }
@@ -206,71 +224,38 @@ namespace RealMethod
                 }
             }
 
-            if (isunlock)
+            if (isUnlock)
             {
-                OnUnlockedAsset(item);
+                UnlockedItem(item);
             }
             else
             {
-                OnLockedAsset(item);
+                lockedItem(item);
             }
         }
 
-
         // Abstract Methods
-        protected abstract void OnUnlockedAsset(UpgradeItem item);
-        protected abstract void OnLockedAsset(UpgradeItem item);
+        protected abstract void UnlockedItem(IUpgradeItem item);
+        protected abstract void lockedItem(IUpgradeItem item);
         protected abstract IUpgradeStorage GetStorage();
-        protected abstract bool IsStorageLoaded();
+        protected abstract bool LoadStorage();
     }
-
     public abstract class UpgradeStorage : Upgrade
     {
         [Header("Save")]
         [SerializeField]
-        private bool UseCustomFile = false;
-        [SerializeField, ConditionalHide("UseCustomFile", true, false)]
-        private SaveFile _SaveFile;
-        public SaveFile File => _SaveFile;
+        private StorageFile<IUpgradeStorage, UpgradeSaveFile> storage;
+        public SaveFile file => storage.file;
 
-        // Upgrade Methods
+        // override Methods
         protected sealed override IUpgradeStorage GetStorage()
         {
-            if (UseCustomFile)
-            {
-                if (_SaveFile is IUpgradeStorage newstorage)
-                {
-                    return newstorage;
-                }
-                else
-                {
-                    Debug.LogWarning("IUpgradeStorage Interface not implemented in CustomSavefile.");
-                    UseCustomFile = false;
-                }
-
-            }
-
-            _SaveFile = ScriptableObject.CreateInstance<UpgradeSaveFile>();
-            _SaveFile.name = "RMUpgradeSaveFile";
-            return _SaveFile as IUpgradeStorage;
+            return storage.provider;
         }
-        protected sealed override bool IsStorageLoaded()
+        protected sealed override bool LoadStorage()
         {
-            // Find Data Maanger 
-            DataManager savesystem = Game.FindManager<DataManager>();
-            if (savesystem != null)
-            {
-                if (savesystem.IsExistFile(_SaveFile))
-                {
-                    savesystem.LoadFile(_SaveFile);
-                    return true;
-                }
-            }
-
-            return false;
+            return storage.Load(this);
         }
-
-
     }
 
 }

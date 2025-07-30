@@ -7,11 +7,12 @@ namespace RealMethod
     [CreateAssetMenu(fileName = "UpgradeSaveFile", menuName = "RealMethod/Upgrade/SaveFile", order = 1)]
     public class UpgradeSaveFile : SaveFile, IUpgradeStorage
     {
+
         [Header("Setting")]
         public bool UsePlayerPrefs = true;
         [Header("Storage")]
-        public List<string> Avalable;
-        public List<string> UnAvalibal;
+        public List<string> UnlockItems;
+        public List<string> AvailableItems;
 
         // Base SaveFile Method
         protected override void OnStable(DataManager manager)
@@ -21,72 +22,79 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
             {
-                RM_PlayerPrefs.SetArray("availableUpgrades", Avalable.ToArray());
-                RM_PlayerPrefs.SetArray("unlockedUpgrades", UnAvalibal.ToArray());
-                RM_PlayerPrefs.SetBool("UpgradeFile", true);
+                RM_PlayerPrefs.SetArray("UnlockItems", UnlockItems.ToArray());
+                RM_PlayerPrefs.SetArray("AvailableItems", AvailableItems.ToArray());
             }
         }
         protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
             {
-                Avalable = RM_PlayerPrefs.GetArray<string>("availableUpgrades").ToList();
-                UnAvalibal = RM_PlayerPrefs.GetArray<string>("unlockedUpgrades").ToList();
+                UnlockItems = RM_PlayerPrefs.GetArray<string>("UnlockItems").ToList();
+                AvailableItems = RM_PlayerPrefs.GetArray<string>("AvailableItems").ToList();
             }
         }
         protected override void OnDeleted()
         {
             if (UsePlayerPrefs)
             {
-                PlayerPrefs.DeleteKey("UpgradeFile");
-                Avalable = null;
-                UnAvalibal = null;
+                UnlockItems = null;
+                AvailableItems = null;
             }
 
         }
+
 
 
         // Implement IUpgradeStorage Interface
-        void IUpgradeStorage.CreateNewItems(UpgradeItem[] list)
+        public void StorageCreated(Object author)
         {
-            string[] UNames = list.Select(upgrade => upgrade.Title).ToArray();
-            Avalable = UNames.ToList();
-            UnAvalibal = new List<string>(Avalable.Count);
-        }
-        bool IUpgradeStorage.SwapToUnAvalibal(UpgradeItem target)
-        {
-            foreach (var Uname in Avalable)
+            if (author is Upgrade upgrator)
             {
-                if (Uname == target.Title)
+                for (int i = 0; i < upgrator.AvailableCount; i++)
                 {
-                    Avalable.Remove(target.Title);
-                    UnAvalibal.Add(target.Title);
-                    return true;
+                    AvailableItems.Add(upgrator.GetAvailableItem(i).Label);
                 }
             }
-            return false;
-        }
-        bool IUpgradeStorage.SwapToAvalibal(UpgradeItem target)
-        {
-            foreach (var Uname in UnAvalibal)
+            else
             {
-                if (Uname == target.Title)
-                {
-                    UnAvalibal.Remove(target.Title);
-                    Avalable.Add(target.Title);
-                    return true;
-                }
+                Debug.LogWarning($"{this} Storage Should create by Upgrade Class");
             }
-            return false;
         }
-        bool IUpgradeStorage.IsUnAvalibal(UpgradeItem target)
+        public void StorageLoaded(Object author)
         {
-            return UnAvalibal.Contains(target.Title);
         }
-        bool IUpgradeStorage.IsAvalabel(UpgradeItem target)
+        public void UnlockItem(IUpgradeItem item)
         {
-            return Avalable.Contains(target.Title);
+            UnlockItems.Add(item.Label);
         }
+        public void LockItem(IUpgradeItem item)
+        {
+            UnlockItems.Remove(item.Label);
+        }
+        public void AddAvailableItem(IUpgradeItem item)
+        {
+            AvailableItems.Add(item.Label);
+        }
+        public void RemoveAvalibelItem(IUpgradeItem item)
+        {
+            AvailableItems.Add(item.Label);
+        }
+        public string[] GetAvailableItems()
+        {
+            return AvailableItems.ToArray();
+        }
+        public string[] GetUnlockItems()
+        {
+            return UnlockItems.ToArray();
+        }
+        public void StorageClear()
+        {
+            UnlockItems.Clear();
+            AvailableItems.Clear();
+        }
+
+
 
     }
 

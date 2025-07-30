@@ -1,20 +1,32 @@
-using System.Collections.Generic;
-
 namespace RealMethod
 {
-    public interface IUpgradeable
+    public interface IUpgradeItem
     {
-        bool Initiate(Upgrade owner, UpgradeConfig config, UpgradeItem previous);
-        void SetUnlock(bool free = false);
-        void SetLock();
+        string Label { get; }
+        bool IsUnlocked { get; }
+        string ConfigLabel { get; }
+        void Identify(UpgradeMapConfig map, int index);
+        void Sync(bool status);
+
+        bool Prerequisites(bool cost);
+        void Unlock();
+        void Lock();
+
+        IUpgradeItem[] GetNextAvailables();
+    }
+    public interface IUpgradeConfig
+    {
+        IUpgradeItem[] GenerateItems(Upgrade owner);
+        IUpgradeItem GetStartItem();
     }
 
-    public interface IUpgradeStorage
+    public interface IUpgradeStorage : IStorage
     {
-        void CreateNewItems(UpgradeItem[] list);
-        bool SwapToUnAvalibal(UpgradeItem target);
-        bool SwapToAvalibal(UpgradeItem target);
-        bool IsUnAvalibal(UpgradeItem target);
-        bool IsAvalabel(UpgradeItem target);
+        void UnlockItem(IUpgradeItem item);
+        void LockItem(IUpgradeItem item);
+        void AddAvailableItem(IUpgradeItem item);
+        void RemoveAvalibelItem(IUpgradeItem item);
+        string[] GetAvailableItems();
+        string[] GetUnlockItems();
     }
 }

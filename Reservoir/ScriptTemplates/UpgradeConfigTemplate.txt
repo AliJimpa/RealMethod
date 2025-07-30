@@ -2,11 +2,19 @@ using RealMethod;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : UpgradeConfig
+public class #SCRIPTNAME# : UpgradeMapConfig
 {
-    // UpgradeConfig Methods
-    public override void OnAwake(Upgrade owner)
+    // UpgradeMapConfig Methods
+    protected override IUpgradeItem GenerateItem(int index)
     {
-
+    }
+    protected override IUpgradeItem GetBeginItem()
+    {
+    }
+    protected override int GetItemCount()
+    {
+    }
+    protected override void Initiated(Upgrade owner)
+    {
     }
 }

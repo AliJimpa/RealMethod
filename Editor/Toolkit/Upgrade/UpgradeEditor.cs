@@ -19,25 +19,21 @@ namespace RealMethod
             EditorGUILayout.LabelField(" ----------------- Items ----------------- ");
             if (BaseComponent != null)
             {
-                if (BaseComponent.Count > 0)
+                if (BaseComponent.AvailableCount > 0)
                 {
-                    foreach (UpgradeItem item in BaseComponent.CopyItemsByClass<UpgradeItem>())
+                    foreach (var item in BaseComponent.GetItems())
                     {
-                        EditorGUILayout.LabelField($"Name: {item.Title} - Status: {checkunlock(item)} ");
+                        EditorGUILayout.LabelField($"Name: {item.Label} - Status: {CheckStatus(item)} - Available: {BaseComponent.IsAvailable(item)} ");
                     }
                 }
                 EditorGUILayout.Space();
-                EditorGUILayout.LabelField($"TotalAsset: {BaseComponent.Count}");
+                EditorGUILayout.LabelField($"TotalAsset: {BaseComponent.ItemCount}");
             }
 
 
         }
 
-
-
-
-
-        private string checkunlock(UpgradeItem item)
+        private string CheckStatus(IUpgradeItem item)
         {
             return item.IsUnlocked ? "Unlock" : "Lock";
         }

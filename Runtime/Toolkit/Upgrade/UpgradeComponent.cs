@@ -7,16 +7,20 @@ namespace RealMethod
     public sealed class UpgradeComponent : UpgradeStorage
     {
         [Header("Events")]
-        public UnityEvent<UpgradeItem> Unlocked;
+        public UnityEvent<bool> Unlocked;
 
         // Base Upgrade Methods
-        protected override void OnLockedAsset(UpgradeItem item)
+        protected override void UnlockedItem(IUpgradeItem item)
         {
+            Unlocked?.Invoke(true);
         }
-        protected override void OnUnlockedAsset(UpgradeItem item)
+        protected override void lockedItem(IUpgradeItem item)
         {
-            Unlocked?.Invoke(item);
+            Unlocked?.Invoke(false);
         }
+        
+
+
     }
 
 
