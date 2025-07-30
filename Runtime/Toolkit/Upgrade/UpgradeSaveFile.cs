@@ -78,7 +78,7 @@ namespace RealMethod
         }
         public void RemoveAvalibelItem(IUpgradeItem item)
         {
-            AvailableItems.Add(item.Label);
+            AvailableItems.Remove(item.Label);
         }
         public string[] GetAvailableItems()
         {
@@ -90,8 +90,10 @@ namespace RealMethod
         }
         public void StorageClear()
         {
-            UnlockItems.Clear();
-            AvailableItems.Clear();
+            if (UnlockItems != null)
+                UnlockItems.Clear();
+            if (UnlockItems != null)
+                AvailableItems.Clear();
         }
 
 

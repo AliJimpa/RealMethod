@@ -8,11 +8,13 @@ namespace RealMethod
         [SerializeField]
         protected string itemName;
         public string ItemName => itemName;
+        [SerializeField]
+        private UpgradeAsset[] Dependency;
 
         protected UpgradeMapConfig Owner { get; private set; }
         public bool isUnlocked { get; private set; }
-        protected IUpgradeItem[] NextAvailables { get; private set; }
-        protected IUpgradeItem previousItem { get; private set; }
+        public IUpgradeItem[] NextAvailables { get; private set; }
+        public IUpgradeItem previousItem { get; private set; }
         public IUpgradeItem provider => this;
 
         // Implement IUpgradeItem Interface
@@ -33,7 +35,21 @@ namespace RealMethod
         bool IUpgradeItem.Prerequisites(bool cost)
         {
             bool ValidateConst = cost ? CheckPayment() : true;
-            return CheckDependency(previousItem) & ValidateConst;
+            IUpgradeItem[] alldependeditem;
+            if (Dependency != null)
+            {
+                alldependeditem = new IUpgradeItem[Dependency.Length + 1];
+                for (int i = 0; i < Dependency.Length; i++)
+                {
+                    alldependeditem[i] = Dependency[i];
+                }
+            }
+            else
+            {
+                alldependeditem = new IUpgradeItem[1];
+            }
+            alldependeditem[alldependeditem.Length - 1] = previousItem;
+            return CheckDependency(alldependeditem) & ValidateConst;
         }
         void IUpgradeItem.Unlock(bool cost)
         {
@@ -46,21 +62,24 @@ namespace RealMethod
             {
                 Apply();
             }
+            isUnlocked = true;
         }
         void IUpgradeItem.Lock()
         {
+            isUnlocked = false;
             Deny();
         }
-        void IUpgradeItem.SetNextAvailables(IUpgradeItem[] items)
+        void IUpgradeItem.AddNextAvailables(IUpgradeItem items)
         {
-            NextAvailables = items;
+            NextAvailables = new IUpgradeItem[1] { items };
         }
         IUpgradeItem[] IUpgradeItem.GetNextAvailables()
         {
             return NextAvailables;
         }
-        void IUpgradeItem.PreviousItem(IUpgradeItem items)
+        void IUpgradeItem.OnPreviousItem(IUpgradeItem items)
         {
+            Print.LogWarning(items != null ? items.Label : "Null");
             previousItem = items;
         }
 
@@ -70,10 +89,8 @@ namespace RealMethod
         protected abstract void Apply();
         protected abstract void PayCost();
         protected abstract void Deny();
-        protected abstract bool CheckDependency(IUpgradeItem previousItem);
+        protected abstract bool CheckDependency(IUpgradeItem[] dependedItems);
         protected abstract bool CheckPayment();
-
-
     }
 
 }

@@ -19,11 +19,11 @@ namespace RealMethod
             EditorGUILayout.LabelField(" ----------------- Items ----------------- ");
             if (BaseComponent != null)
             {
-                if (BaseComponent.AvailableCount > 0)
+                if (BaseComponent.ItemCount > 0)
                 {
                     foreach (var item in BaseComponent.GetItems())
                     {
-                        EditorGUILayout.LabelField($"Name: {item.Label} - Status: {CheckStatus(item)} ");
+                        EditorGUILayout.LabelField($"Name: {item.Label} - Status: {CheckStatus(item)}");
                     }
                 }
                 EditorGUILayout.Space();

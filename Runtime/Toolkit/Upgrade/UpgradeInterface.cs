@@ -13,8 +13,8 @@ namespace RealMethod
         void Lock();
 
         IUpgradeItem[] GetNextAvailables();
-        void SetNextAvailables(IUpgradeItem[] items);
-        void PreviousItem(IUpgradeItem items);
+        void AddNextAvailables(IUpgradeItem items);
+        void OnPreviousItem(IUpgradeItem items);
     }
     public interface IUpgradeConfig
     {

@@ -31,23 +31,23 @@ namespace RealMethod
         }
         protected override void Apply()
         {
-            Debug.Log($"{itemName} Applyed");
+            MyOwner.UpdateIem(this, true);
         }
         protected override void PayCost()
         {
-            MyOwner.Pay(Price);
+            MyOwner.payment.Disbursement(Price);
         }
-        protected override bool CheckDependency(IUpgradeItem previousItem)
+        protected override bool CheckDependency(IUpgradeItem[] items)
         {
-            return previousItem.IsUnlocked;
+            return previousItem != null ? previousItem.IsUnlocked : true;
         }
         protected override bool CheckPayment()
         {
-            return MyOwner.GetCoin() >= Price;
+            return MyOwner.payment.GetCapital() >= Price;
         }
         protected override void Deny()
         {
-            Debug.Log($"{itemName} Denied");
+            MyOwner.UpdateIem(this, false);
         }
 
 
@@ -60,16 +60,15 @@ namespace RealMethod
     [CreateAssetMenu(fileName = "ChainUpgradeMap", menuName = "RealMethod/Upgrade/ChainMap", order = 1)]
     public class ChainUpgradeMapConfig : UpgradeMapConfig
     {
-
         [Header("Setting")]
         [SerializeField]
-        private int Count;
-        [SerializeField]
         private SaveFile CoinFile;
+        [SerializeField]
+        private int[] pricing;
         [Header("Status")]
         [SerializeField, ReadOnly]
         private ChainUpgradeAsset[] items;
-        private IPayment payment
+        public IPayment payment
         {
             get
             {
@@ -83,27 +82,33 @@ namespace RealMethod
                     return null;
                 }
             }
-
         }
 
-
+        [SerializeField]
+        private System.Action<bool> OnUpgrade;
 
         // UpgradeMapConfig Methods
         protected override void Initiated(Upgrade owner)
         {
-            items = new ChainUpgradeAsset[Count];
+            if (pricing != null)
+            {
+                items = new ChainUpgradeAsset[pricing.Length];
+            }
+            else
+            {
+                Debug.LogError("Initiate faild");
+            }
         }
         protected override IUpgradeItem GenerateItem(int index, IUpgradeItem previousItem)
         {
-            ChainUpgradeAsset MyItem = CreateInstance<ChainUpgradeAsset>();
-            MyItem.SetPrice(10);
+            items[index] = CreateInstance<ChainUpgradeAsset>();
+            items[index].SetPrice(pricing[index]);
             if (previousItem != null)
             {
-                previousItem.SetNextAvailables(new IUpgradeItem[1] { MyItem.provider });
+                previousItem.AddNextAvailables(items[index].provider);
             }
-            MyItem.provider.PreviousItem(previousItem);
-            items[index] = MyItem;
-            return MyItem.provider;
+            items[index].provider.OnPreviousItem(previousItem);
+            return items[index].provider;
         }
         protected override IUpgradeItem GetBeginItem()
         {
@@ -111,22 +116,19 @@ namespace RealMethod
         }
         protected override int GetItemCount()
         {
-            return Count;
+            return pricing.Length;
         }
 
 
-        public int GetCoin()
+        // Public Method
+        public void BindUpgrade(System.Action<bool> callback)
         {
-            return payment != null ? payment.GetCapital() : 0;
+            OnUpgrade += callback;
         }
-        public void Pay(int fee)
+        public void UpdateIem(IUpgradeItem item, bool status)
         {
-            if (payment != null)
-            {
-                payment.Disbursement(fee);
-            }
+            OnUpgrade?.Invoke(status);
         }
-
     }
 
 }
