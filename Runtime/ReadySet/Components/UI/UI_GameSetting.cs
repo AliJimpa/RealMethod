@@ -201,6 +201,11 @@ namespace RealMethod
             }
             return string.Empty;
         }
+        public void ResetFile()
+        {
+            Storage.Clear();
+            SyncUI();
+        }
 
         // Private Functions
         private void OnSlideChanged(float value)
@@ -236,6 +241,10 @@ namespace RealMethod
             IsDirty = true;
             ApplySettingData();
         }
+        void IStorage.StorageClear()
+        {
+            OnResetSetting();
+        }
 
         // Protected Method
         protected sealed override void OnSaved()
@@ -256,6 +265,7 @@ namespace RealMethod
         protected abstract void SetupSettingData();
         protected abstract void ApplySettingData();
         protected abstract void OnSettingFileSaved();
+        protected abstract void OnResetSetting();
 
 
     }

@@ -14,6 +14,7 @@ public class #SCRIPTNAME# : SettingFile
     protected override void SetupSettingData(){}
     protected override void ApplySettingData(){}
     protected override void OnSettingFileSaved(){}
+    protected override void OnResetSetting() {}
 
 
 #if UNITY_EDITOR
