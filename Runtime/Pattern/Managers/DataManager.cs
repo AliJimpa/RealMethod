@@ -68,9 +68,9 @@ namespace RealMethod
                 return false;
             }
 
-            if (saveManager.IsExistFile(_SaveFile))
+            if (saveManager.IsExistFile(file))
             {
-                saveManager.LoadFile(_SaveFile);
+                saveManager.LoadFile(file);
                 provider.StorageLoaded(author);
                 return true;
             }
@@ -86,13 +86,13 @@ namespace RealMethod
         }
 
         // Private Functions
-        private bool TryGetStorage(out T provider)
+        private bool TryGetStorage(out T _provider)
         {
             if (UseCustomFile)
             {
                 if (_SaveFile is T customProvider)
                 {
-                    provider = customProvider;
+                    _provider = customProvider;
                     return true;
                 }
                 else
@@ -105,13 +105,13 @@ namespace RealMethod
             if (_SaveFile is T autoProvider)
             {
                 _SaveFile.name = $"RM{typeof(J)}";
-                provider = autoProvider;
+                _provider = autoProvider;
                 return true;
             }
             else
             {
                 Debug.LogError($"Storage Interface not implemented in SaveFileType {typeof(J)}");
-                provider = default;
+                _provider = default;
                 return false;
             }
         }

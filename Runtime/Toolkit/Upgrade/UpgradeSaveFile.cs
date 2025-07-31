@@ -7,7 +7,6 @@ namespace RealMethod
     [CreateAssetMenu(fileName = "UpgradeSaveFile", menuName = "RealMethod/Upgrade/SaveFile", order = 1)]
     public class UpgradeSaveFile : SaveFile, IUpgradeStorage
     {
-
         [Header("Setting")]
         public bool UsePlayerPrefs = true;
         [Header("Storage")]
@@ -43,7 +42,6 @@ namespace RealMethod
             }
 
         }
-
 
 
         // Implement IUpgradeStorage Interface
@@ -95,8 +93,6 @@ namespace RealMethod
             if (UnlockItems != null)
                 AvailableItems.Clear();
         }
-
-
 
     }
 
