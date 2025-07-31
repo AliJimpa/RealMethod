@@ -63,7 +63,6 @@ namespace RealMethod
             }
             else
             {
-                upgradeStorage.StorageClear();
                 // Create AvailableItems
                 AvailableItems = new List<IUpgradeItem>(Maps.Length);
                 foreach (var conf in Maps)

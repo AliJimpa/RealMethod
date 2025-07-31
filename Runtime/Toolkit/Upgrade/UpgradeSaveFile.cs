@@ -49,10 +49,8 @@ namespace RealMethod
         {
             if (author is Upgrade upgrator)
             {
-                for (int i = 0; i < upgrator.AvailableCount; i++)
-                {
-                    AvailableItems.Add(upgrator.GetAvailableItem(i).Label);
-                }
+                UnlockItems = new List<string>(upgrator.ItemCount);
+                AvailableItems = new List<string>();
             }
             else
             {
