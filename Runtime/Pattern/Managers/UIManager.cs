@@ -344,9 +344,9 @@ namespace RealMethod
                         break;
                     case UIMethod.uGUI:
                         CanvasGroup CG = Layers[name].GetComponent<CanvasGroup>();
+                        CG.alpha = 1;
                         CG.interactable = true;
                         CG.blocksRaycasts = true;
-                        CG.alpha = 1;
                         break;
                     case UIMethod.UI_Toolkit:
                         Layers[name].GetComponent<UIDocument>().enabled = true;
@@ -370,9 +370,9 @@ namespace RealMethod
                         break;
                     case UIMethod.uGUI:
                         CanvasGroup CG = Layers[name].GetComponent<CanvasGroup>();
+                        CG.alpha = 0;
                         CG.interactable = false;
                         CG.blocksRaycasts = false;
-                        CG.alpha = 0;
                         break;
                     case UIMethod.UI_Toolkit:
                         Layers[name].GetComponent<UIDocument>().enabled = false;
@@ -572,8 +572,7 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
-            canvas.alpha = 1;
-            canvas.interactable = true;
+            EnableLayer(canvas.gameObject.name);
             OnFadeIn?.Invoke(canvas, false);
         }
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration, Action<GameObject> callback)
@@ -587,8 +586,7 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
-            canvas.alpha = 1;
-            canvas.interactable = true;
+            EnableLayer(canvas.gameObject.name);
             OnFadeIn?.Invoke(canvas, false);
             callback?.Invoke(canvas.gameObject);
         }
@@ -596,6 +594,7 @@ namespace RealMethod
         {
             float elapsedTime = 0f;
             canvas.interactable = false;
+            canvas.blocksRaycasts = false;
             OnFadeOut?.Invoke(canvas, true);
             while (elapsedTime < fadeDuration)
             {
@@ -604,14 +603,14 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
-            canvas.alpha = 0;
-
+            DisableLayer(canvas.gameObject.name);
             OnFadeOut?.Invoke(canvas, false);
         }
         private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration, Action<GameObject> callback)
         {
             float elapsedTime = 0f;
             canvas.interactable = false;
+            canvas.blocksRaycasts = false;
             OnFadeOut?.Invoke(canvas, true);
             while (elapsedTime < fadeDuration)
             {
@@ -620,7 +619,7 @@ namespace RealMethod
 
                 yield return null; // Wait for the next frame
             }
-            canvas.alpha = 0;
+            DisableLayer(canvas.gameObject.name);
             OnFadeOut?.Invoke(canvas, false);
             callback?.Invoke(canvas.gameObject);
         }
