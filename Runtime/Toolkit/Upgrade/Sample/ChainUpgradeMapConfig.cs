@@ -2,12 +2,6 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IPayment
-    {
-        int GetCapital();
-        void Disbursement(int amount);
-    }
-
     public class ChainUpgradeAsset : UpgradeAsset
     {
         private int Price;

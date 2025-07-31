@@ -1,4 +1,3 @@
-
 namespace RealMethod
 {
     public interface IInitializable
@@ -13,10 +12,6 @@ namespace RealMethod
     {
         void Initialize(TArgumentA argumentA, TArgumentB argumentB);
     }
-
-
-
-
 
 }
 

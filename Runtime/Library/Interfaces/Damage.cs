@@ -16,8 +16,8 @@ namespace RealMethod
     /// <summary>
     /// Interface for objects that can take and restore damage.
     /// </summary>
-    /// <typeparam name="TD">The type representing damage data (e.g., int, float, struct).</typeparam>
-    /// <typeparam name="R">The type representing damage data (e.g., int, float, struct).</typeparam>
+    /// <typeparam name="TD">The type representing TakeDamage data (e.g., int, float, struct).</typeparam>
+    /// <typeparam name="R">The type representing Restore data (e.g., int, float, struct).</typeparam>
     public interface IDamage<TD, R> : IDamage where TD : struct where R : struct
     {
         /// <summary>
@@ -34,7 +34,6 @@ namespace RealMethod
     /// <summary>
     /// Extended interface for damageable objects with health tracking.
     /// </summary>
-    /// <typeparam name="D">The type representing damage data.</typeparam>
     /// <typeparam name="H">The type representing health values (e.g., int, float).</typeparam>
     public interface IDamageable<TD, R, H> : IDamage<TD, R> where TD : struct where R : struct
     {
