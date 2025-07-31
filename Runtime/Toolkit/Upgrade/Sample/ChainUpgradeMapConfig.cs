@@ -4,7 +4,9 @@ namespace RealMethod
 {
     public class ChainUpgradeAsset : UpgradeAsset
     {
-        private int Price;
+        private int price;
+        public int Price => price;
+
         private ChainUpgradeMapConfig MyOwner;
 
         // UpgradeAsset Methods
@@ -29,7 +31,7 @@ namespace RealMethod
         }
         protected override void PayCost()
         {
-            MyOwner.payment.Disbursement(Price);
+            MyOwner.payment.Disbursement(price);
         }
         protected override bool CheckDependency(IUpgradeItem[] items)
         {
@@ -37,7 +39,7 @@ namespace RealMethod
         }
         protected override bool CheckPayment()
         {
-            return MyOwner.payment.GetCapital() >= Price;
+            return MyOwner.payment.GetCapital() >= price;
         }
         protected override void Deny()
         {
@@ -45,9 +47,9 @@ namespace RealMethod
         }
 
 
-        public void SetPrice(int price)
+        public void SetPrice(int camount)
         {
-            Price = price;
+            price = camount;
         }
     }
 
