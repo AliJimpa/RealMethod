@@ -207,6 +207,7 @@ namespace RealMethod
         public GameObject AddLayer(string name, WPrefab Prefab, MonoBehaviour Owner)
         {
             GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
+            SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
             if (widget != null)
@@ -235,8 +236,8 @@ namespace RealMethod
                 return null;
             }
 
-
             GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
+            SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
             if (widget != null)
@@ -256,7 +257,6 @@ namespace RealMethod
             {
                 return null;
             }
-
         }
         public T AddLayer<T>(string name, WPrefab Prefab) where T : MonoBehaviour
         {
