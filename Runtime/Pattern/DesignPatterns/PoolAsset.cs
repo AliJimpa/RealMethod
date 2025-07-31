@@ -16,16 +16,6 @@ namespace RealMethod
         protected Stack<T> Available = new Stack<T>();
         private bool Prewarmed = false;
 
-
-#if UNITY_EDITOR
-        // Base DataAsset Methods
-        public override void OnEditorPlay()
-        {
-            //base.OnEditorPlay();
-            Prewarmed = false;
-        }
-#endif
-
         // IPool Interface Implement
         void IPool.Prewarm(int amount)
         {
@@ -182,6 +172,15 @@ namespace RealMethod
         protected abstract T CreateObject();
         protected abstract IEnumerator PostProcess(T Comp);
 
+
+#if UNITY_EDITOR
+        // Base DataAsset Methods
+        public override void OnEditorPlay()
+        {
+            //base.OnEditorPlay();
+            Prewarmed = false;
+        }
+#endif
     }
 
     public interface IPool

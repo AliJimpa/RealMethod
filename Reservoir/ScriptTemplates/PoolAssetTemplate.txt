@@ -3,7 +3,7 @@ using RealMethod;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/Pool/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : PoolAsset<YOURCOMPONENET>
+public class #SCRIPTNAME# : PoolAsset<YOURCOMPONENET>, IPoolSpawner<YOURCOMPONENET>, IPoolDespawner<YOURCOMPONENET>
 {
     [Header("Setting")]
     [SerializeField]
@@ -45,6 +45,14 @@ public class #SCRIPTNAME# : PoolAsset<YOURCOMPONENET>
     {
         UseCacheData = 0;
         return Request();
+    }
+    public void Despawn()
+    {
+        Provider.Return();
+    }
+    public void Despawn(Transform target)
+    {
+        Return(target);
     }
 
 
@@ -88,12 +96,23 @@ public class #SCRIPTNAME# : PoolAsset<YOURCOMPONENET>
 
 
     // IEnumerator
-    private IEnumerator PoolBack(Component source)
+    private IEnumerator PoolBack(Transform source)
     {
         // Befor Timer
         yield return new WaitForSeconds(Duration);
         // After Time
+        Return(source);
+        yield return null;
     }
 
+
+#if UNITY_EDITOR
+    // Base DataAsset Methods
+    public override void OnEditorPlay()
+    {
+        base.OnEditorPlay();
+        UseCacheData = 0;
+    }
+#endif
 
 }
