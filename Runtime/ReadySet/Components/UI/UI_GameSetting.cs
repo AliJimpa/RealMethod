@@ -211,14 +211,17 @@ namespace RealMethod
         private void OnSlideChanged(float value)
         {
             SyncFile();
+            SendMessage("OnSettingUpdate", SendMessageOptions.DontRequireReceiver);
         }
         private void OnDropdownChanged(int value)
         {
             SyncFile();
+            SendMessage("OnSettingUpdate", SendMessageOptions.DontRequireReceiver);
         }
         private void OnToggleChanged(bool value)
         {
             SyncFile();
+            SendMessage("OnSettingUpdate", SendMessageOptions.DontRequireReceiver);
         }
     }
 
