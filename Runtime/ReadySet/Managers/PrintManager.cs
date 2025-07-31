@@ -36,7 +36,7 @@ namespace RealMethod
             x = -1;
             y = -1;
             size = 1;
-            TextColor = Color.black;
+            TextColor = GetColor(type);
             messagetype = type;
         }
         public LogData(string Message, bool Console)
@@ -46,7 +46,7 @@ namespace RealMethod
             x = -1;
             y = -1;
             size = 1;
-            TextColor = Color.black;
+            TextColor = Color.cyan;
             messagetype = LogType.Log;
         }
 
@@ -57,7 +57,7 @@ namespace RealMethod
             x = -1;
             y = -1;
             size = 1;
-            TextColor = Color.black;
+            TextColor = Color.cyan;
             messagetype = LogType.Log;
         }
         public LogData(string Message, float Duration, LogType type)
@@ -67,7 +67,7 @@ namespace RealMethod
             x = -1;
             y = -1;
             size = 1;
-            TextColor = Color.black;
+            TextColor = GetColor(type);
             messagetype = type;
         }
         public LogData(string Message, float Duration, bool Console)
@@ -77,7 +77,7 @@ namespace RealMethod
             x = -1;
             y = -1;
             size = 1;
-            TextColor = Color.black;
+            TextColor = Color.cyan;
             messagetype = LogType.Exception;
         }
 
@@ -110,7 +110,7 @@ namespace RealMethod
             x = X;
             y = Y;
             size = 1;
-            TextColor = Color.black;
+            TextColor = Color.cyan;
             messagetype = LogType.Log;
         }
         public LogData(string Message, float Duration, float X, float Y, Color TargetColor)
@@ -131,7 +131,7 @@ namespace RealMethod
             x = X;
             y = Y;
             size = 1;
-            TextColor = Color.black;
+            TextColor = Color.cyan;
             messagetype = LogType.Log;
         }
 
@@ -142,7 +142,7 @@ namespace RealMethod
             x = X;
             y = Y;
             size = Size;
-            TextColor = Color.black;
+            TextColor = Color.cyan;
             messagetype = LogType.Log;
         }
 
@@ -153,7 +153,7 @@ namespace RealMethod
             x = X;
             y = Y;
             size = Size > 0 ? Size : 1;
-            TextColor = Color.black;
+            TextColor = Color.cyan;
             messagetype = type;
         }
 
@@ -174,10 +174,29 @@ namespace RealMethod
             x = X;
             y = Y;
             size = Size > 0 ? Size : 1;
-            TextColor = Color.black;
+            TextColor = GetColor(type);
             messagetype = type;
         }
 
+
+        private Color GetColor(LogType type)
+        {
+            switch (type)
+            {
+                case LogType.Log:
+                    return Color.cyan;
+                case LogType.Warning:
+                    return Color.yellow;
+                case LogType.Error:
+                    return Color.red;
+                case LogType.Assert:
+                    return Color.black;
+                case LogType.Exception:
+                    return Color.white;
+                default:
+                    return Color.blue;
+            }
+        }
     }
     [Serializable]
     public class ButtonData
@@ -388,7 +407,7 @@ namespace RealMethod
             Logs.Clear();
             Buttons.Clear();
         }
-      
+
 
         // Enumerators
         private IEnumerator RemoveLog(LogData log)

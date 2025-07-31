@@ -48,26 +48,29 @@ namespace RealMethod
             CacheInstance = null;
         }
 
-
+        public static void Log(string message, Color color, float duration = 2)
+        {
+            Manager.Add(new LogData(message, duration, color));
+        }
         public static void Log(string message, float duration = 2)
         {
-            Instance.Printer.Add(new LogData(message, duration));
+            Manager.Add(new LogData(message, duration));
         }
         public static void LogWarning(string message, float duration = 2)
         {
-            Instance.Printer.Add(new LogData(message, duration, LogType.Warning));
+            Manager.Add(new LogData(message, duration, LogType.Warning));
         }
         public static void LogError(string message, float duration = 2)
         {
-            Instance.Printer.Add(new LogData(message, duration, LogType.Error));
+            Manager.Add(new LogData(message, duration, LogType.Error));
         }
         public static void LogAssertion(string message, float duration = 2)
         {
-            Instance.Printer.Add(new LogData(message, duration, LogType.Assert));
+            Manager.Add(new LogData(message, duration, LogType.Assert));
         }
         public static void Button(string name, object author, string funtionName)
         {
-            Instance.Printer.Add(new ButtonData(name, author, funtionName));
+            Manager.Add(new ButtonData(name, author, funtionName));
         }
     }
 
