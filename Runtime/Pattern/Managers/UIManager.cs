@@ -78,11 +78,8 @@ namespace RealMethod
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            UnityEditor.EditorApplication.delayCall += () =>
-            {
-                if (gameObject != null && gameObject.layer != 5)
-                    gameObject.layer = 5;
-            };
+            if (gameObject.layer != 5)
+                gameObject.layer = 5;
         }
 #endif
 
