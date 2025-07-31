@@ -2,15 +2,6 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public enum TutorialPlacement
-    {
-        POINT_TO_TOP,
-        POINT_TO_BOTTOM,
-        POINT_TO_LEFT,
-        POINT_TO_RIGHT
-    }
-
-
     public interface ITutorialSpawner
     {
         ITutorialMessage InstantiateObject(Transform parent);

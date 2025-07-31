@@ -2,6 +2,13 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public enum TutorialPlacement
+    {
+        POINT_TO_TOP,
+        POINT_TO_BOTTOM,
+        POINT_TO_LEFT,
+        POINT_TO_RIGHT
+    }
     public abstract class BaseTutorialConfig : ConfigAsset, ITutorialSpawner
     {
         [Header("Setting")]
@@ -46,6 +53,8 @@ namespace RealMethod
         // Abstract Methods
         protected abstract ITutorialMessage PostInstantiate(ITutorialMessage provider);
     }
+
+
 
     [CreateAssetMenu(fileName = "Tutorial", menuName = "RealMethod/Tutorial/Config", order = 1)]
     public class TutorialConfig : BaseTutorialConfig
