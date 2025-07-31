@@ -87,7 +87,10 @@ namespace RealMethod
             Print.LogWarning(items != null ? items.Label : "Null");
             previousItem = items;
         }
-
+        T IUpgradeItem.GetClass<T>()
+        {
+            return this as T;
+        }
 
         // Protected Fucntion
         protected virtual string MakeName(string mapName, int mapIndex, int itemIndex, int various)

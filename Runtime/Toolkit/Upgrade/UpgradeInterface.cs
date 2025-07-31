@@ -1,3 +1,7 @@
+
+
+using UnityEngine;
+
 namespace RealMethod
 {
     public interface IUpgradeItem
@@ -15,6 +19,8 @@ namespace RealMethod
         IUpgradeItem[] GetNextAvailables();
         void AddNextAvailables(IUpgradeItem items);
         void OnPreviousItem(IUpgradeItem items);
+
+        T GetClass<T>() where T : Object;
     }
     public interface IUpgradeConfig
     {
