@@ -80,7 +80,7 @@ namespace RealMethod
         {
             UnityEditor.EditorApplication.delayCall += () =>
             {
-                if (gameObject.layer != 5)
+                if (gameObject != null && gameObject.layer != 5)
                     gameObject.layer = 5;
             };
         }
