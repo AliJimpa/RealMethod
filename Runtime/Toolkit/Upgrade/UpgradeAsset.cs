@@ -6,8 +6,8 @@ namespace RealMethod
     {
         [Header("UpgradeItem")]
         [SerializeField]
-        private bool StaticName = false;
-        [SerializeField, ConditionalHide("StaticName", true, false)]
+        private bool OverrideName = false;
+        [SerializeField, ConditionalHide("OverrideName", true, false)]
         protected string itemName;
         public string ItemName => itemName;
         [SerializeField]
@@ -26,7 +26,10 @@ namespace RealMethod
         void IUpgradeItem.Identify(UpgradeMapConfig map, int mapIndex, int itemIndex, int various)
         {
             Owner = map;
-            itemName = MakeName(map.Label, mapIndex, itemIndex, various);
+            if (OverrideName)
+            {
+                itemName = MakeName(map.Label, mapIndex, itemIndex, various);
+            }
             Initiate();
         }
         void IUpgradeItem.Sync(bool status)
