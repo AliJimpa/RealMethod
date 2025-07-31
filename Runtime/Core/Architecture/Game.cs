@@ -44,6 +44,7 @@ namespace RealMethod
         public static GameConfig Config { get; private set; }
         public static World World { get; private set; }
         public static GameService Service { get; private set; }
+        public static bool isPaused => Time.timeScale == 0;
 
         // Private Variable
         private IGameManager[] Managers;
@@ -190,7 +191,6 @@ namespace RealMethod
         {
             return GameServices.Select(service => service.GetType().Name).ToArray();
         }
-
         public static Coroutine OpenScene(int sceneIndex)
         {
             if (SceneManager.GetActiveScene().buildIndex != sceneIndex)
@@ -277,6 +277,16 @@ namespace RealMethod
             {
                 return AlternativeInstance;
             }
+        }
+        public static void SetPause(bool paused)
+        {
+            Time.timeScale = paused ? 0 : 1;
+        }
+        public static void SetSpeed(float speed, bool physicSafe = true)
+        {
+            Time.timeScale = speed;
+            if (physicSafe)
+                Time.fixedDeltaTime = 0.02f * Time.timeScale; // Keeps physics in sync
         }
         // Private Static Functions
         private static void InitializeGame(bool CreateInstance = true)
