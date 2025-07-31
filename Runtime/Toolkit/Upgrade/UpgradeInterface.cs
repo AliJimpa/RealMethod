@@ -5,7 +5,7 @@ namespace RealMethod
         string Label { get; }
         bool IsUnlocked { get; }
         string ConfigLabel { get; }
-        void Identify(UpgradeMapConfig map, int index);
+        void Identify(UpgradeMapConfig map, int mapIndex, int itemIndex, int various);
         void Sync(bool status);
 
         bool Prerequisites(bool cost);

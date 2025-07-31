@@ -1,3 +1,4 @@
+using Codice.CM.Common;
 using UnityEngine;
 
 namespace RealMethod
@@ -6,6 +7,8 @@ namespace RealMethod
     {
         [Header("UpgradeItem")]
         [SerializeField]
+        private bool StaticName = false;
+        [SerializeField, ConditionalHide("StaticName", true, false)]
         protected string itemName;
         public string ItemName => itemName;
         [SerializeField]
@@ -21,10 +24,10 @@ namespace RealMethod
         public string Label => itemName;
         public bool IsUnlocked => isUnlocked;
         public string ConfigLabel => Owner.Label;
-        void IUpgradeItem.Identify(UpgradeMapConfig map, int index)
+        void IUpgradeItem.Identify(UpgradeMapConfig map, int mapIndex, int itemIndex, int various)
         {
             Owner = map;
-            itemName = $"{map.Label}_{index}";
+            itemName = MakeName(map.Label, mapIndex, itemIndex, various);
             Initiate();
         }
         void IUpgradeItem.Sync(bool status)
@@ -82,6 +85,14 @@ namespace RealMethod
             Print.LogWarning(items != null ? items.Label : "Null");
             previousItem = items;
         }
+
+
+        // Protected Fucntion
+        protected virtual string MakeName(string mapName, int mapIndex, int itemIndex, int various)
+        {
+            return $"{mapName}_{itemIndex}";
+        }
+
 
         // Abstract Methods
         protected abstract void Initiate();

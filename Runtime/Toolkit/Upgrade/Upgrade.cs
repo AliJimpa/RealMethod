@@ -39,7 +39,7 @@ namespace RealMethod
                 IUpgradeItem[] MapItems = Maps[m].provider.GenerateItems(this);
                 for (int it = 0; it < MapItems.Length; it++)
                 {
-                    MapItems[it].Identify(Maps[m], CurrentID);
+                    MapItems[it].Identify(Maps[m], m, it, CurrentID);
                     Items.Add(MapItems[it].Label, MapItems[it]);
                     CurrentID++;
                 }
@@ -258,7 +258,7 @@ namespace RealMethod
                 IUpgradeItem[] MapItems = Maps[m].provider.GenerateItems(this);
                 for (int it = 0; it < MapItems.Length; it++)
                 {
-                    MapItems[it].Identify(Maps[m], CurrentID);
+                    MapItems[it].Identify(Maps[m], m, it, CurrentID);
                     Items.Add(MapItems[it].Label, MapItems[it]);
                     CurrentID++;
                 }
