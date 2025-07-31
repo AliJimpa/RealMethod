@@ -220,6 +220,10 @@ namespace RealMethod
         {
             return AvailableItems[index];
         }
+        public IUpgradeItem GetAvailableItem(UpgradeMapConfig config)
+        {
+            return GetAvailableItem(config.Label);
+        }
         public IUpgradeItem GetAvailableItem(string configLabel)
         {
             foreach (var avitem in AvailableItems)
