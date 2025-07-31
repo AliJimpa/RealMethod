@@ -40,8 +40,15 @@ namespace RealMethod
                 for (int it = 0; it < MapItems.Length; it++)
                 {
                     MapItems[it].Identify(Maps[m], m, it, CurrentID);
-                    Items.Add(MapItems[it].Label, MapItems[it]);
-                    CurrentID++;
+                    if (!Items.ContainsKey(MapItems[it].Label))
+                    {
+                        Items.Add(MapItems[it].Label, MapItems[it]);
+                        CurrentID++;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Item Can't Add , Item with this name:{MapItems[it].Label} is already exsit");
+                    }
                 }
             }
 
@@ -54,11 +61,11 @@ namespace RealMethod
                     Items[id].Sync(true);
                 }
                 // Load AvailableItems
-                string[] items = upgradeStorage.GetAvailableItems();
-                AvailableItems = new List<IUpgradeItem>(items.Length);
-                foreach (var item in items)
+                string[] itemsName = upgradeStorage.GetAvailableItems();
+                AvailableItems = new List<IUpgradeItem>(itemsName.Length);
+                foreach (var itemN in itemsName)
                 {
-                    AvailableItems.Add(FindItem(item));
+                    AvailableItems.Add(Items[itemN]);
                 }
             }
             else
@@ -81,63 +88,47 @@ namespace RealMethod
         // Public functions
         public bool IsValidItem(IUpgradeItem item)
         {
-            return IsValidItem(item.Label);
-        }
-        public bool IsValidItem(string itemLabel)
-        {
-            return Items.ContainsKey(itemLabel);
+            return Items.ContainsKey(item.Label);
         }
         public bool CanUnlock(IUpgradeItem item, bool free = false)
         {
-            return CanUnlock(item.Label, free);
-        }
-        public bool CanUnlock(string itemLabel, bool free = false)
-        {
-            if (!Items.ContainsKey(itemLabel))
+            if (!Items.ContainsKey(item.Label))
             {
                 Debug.LogWarning("Item Not Found");
                 return false;
             }
-            return Items[itemLabel].Prerequisites(!free);
+            return Items[item.Label].Prerequisites(!free);
         }
         public bool IsUnlocked(IUpgradeItem item)
         {
-            return IsUnlocked(item.Label);
-        }
-        public bool IsUnlocked(string itemLabel)
-        {
-            if (!Items.ContainsKey(itemLabel))
+            if (!Items.ContainsKey(item.Label))
             {
                 Debug.LogWarning("Item Not Found");
                 return false;
             }
-            return Items[itemLabel].IsUnlocked;
+            return Items[item.Label].IsUnlocked;
         }
         public bool SetUnlock(IUpgradeItem item, bool free = false)
         {
-            return SetUnlock(item.Label, free);
-        }
-        public bool SetUnlock(string itemLabel, bool free = false)
-        {
-            if (!Items.ContainsKey(itemLabel))
+            if (!Items.ContainsKey(item.Label))
             {
                 Debug.LogWarning("Item Not Found");
                 return false;
             }
-            IUpgradeItem item = Items[itemLabel];
-            if (item.IsUnlocked)
+            IUpgradeItem TargetItem = Items[item.Label];
+            if (TargetItem.IsUnlocked)
             {
                 Debug.LogWarning("Item already is unlocked");
                 return false;
             }
-            if (item.Prerequisites(!free))
+            if (TargetItem.Prerequisites(!free))
             {
-                item.Unlock(!free);
-                AvailableItems.Remove(item);
-                upgradeStorage.RemoveAvalibelItem(item);
-                if (item.GetNextAvailables() != null)
+                TargetItem.Unlock(!free);
+                AvailableItems.Remove(TargetItem);
+                upgradeStorage.RemoveAvalibelItem(TargetItem);
+                if (TargetItem.GetNextAvailables() != null)
                 {
-                    foreach (var nextitem in item.GetNextAvailables())
+                    foreach (var nextitem in TargetItem.GetNextAvailables())
                     {
                         if (!nextitem.IsUnlocked)
                         {
@@ -146,8 +137,8 @@ namespace RealMethod
                         }
                     }
                 }
-                upgradeStorage.UnlockItem(item);
-                MessageBehavior(item, true);
+                upgradeStorage.UnlockItem(TargetItem);
+                MessageBehavior(TargetItem, true);
                 return true;
             }
             else
@@ -157,31 +148,27 @@ namespace RealMethod
         }
         public bool SetLock(IUpgradeItem item)
         {
-            return SetLock(item.Label);
-        }
-        public bool SetLock(string itemLabel)
-        {
-            if (!Items.ContainsKey(itemLabel))
+            if (!Items.ContainsKey(item.Label))
             {
                 Debug.LogWarning("Item Not Found");
                 return false;
             }
-            IUpgradeItem item = Items[itemLabel];
-            if (item.IsUnlocked)
+            IUpgradeItem TargetItem = Items[item.Label];
+            if (TargetItem.IsUnlocked)
             {
-                item.Lock();
-                AvailableItems.Add(item);
-                upgradeStorage.AddAvailableItem(item);
-                if (item.GetNextAvailables() != null)
+                TargetItem.Lock();
+                AvailableItems.Add(TargetItem);
+                upgradeStorage.AddAvailableItem(TargetItem);
+                if (TargetItem.GetNextAvailables() != null)
                 {
-                    foreach (var nextitem in item.GetNextAvailables())
+                    foreach (var nextitem in TargetItem.GetNextAvailables())
                     {
                         AvailableItems.Remove(nextitem);
                         upgradeStorage.RemoveAvalibelItem(nextitem);
                     }
                 }
-                upgradeStorage.LockItem(item);
-                MessageBehavior(item, false);
+                upgradeStorage.LockItem(TargetItem);
+                MessageBehavior(TargetItem, false);
                 return true;
             }
             else
@@ -189,22 +176,26 @@ namespace RealMethod
                 Debug.LogWarning("Item already is locked");
                 return false;
             }
-
         }
-        public IUpgradeItem FindItem(string itemLabel)
+        public bool TryFindItem(string label, out IUpgradeItem item)
         {
-            if (!Items.ContainsKey(itemLabel))
+            if (!Items.ContainsKey(label))
             {
-                Debug.LogWarning("Item Not Found");
-                return null;
+                item = null;
+                return false;
             }
-            return Items[itemLabel];
+            item = Items[label];
+            return true;
         }
         public IUpgradeItem[] GetItems()
         {
             return Items.Values.ToArray();
         }
-        public IUpgradeItem[] GetItems(string configLabel)
+        public IUpgradeItem[] GetConfigItems(UpgradeMapConfig config)
+        {
+            return GetConfigItems(config.Label);
+        }
+        public IUpgradeItem[] GetConfigItems(string configLabel)
         {
             List<IUpgradeItem> CacheItems = new List<IUpgradeItem>();
             foreach (var item in Items.Values.ToArray())
@@ -220,10 +211,6 @@ namespace RealMethod
         {
             return AvailableItems[index];
         }
-        public IUpgradeItem GetAvailableItem(UpgradeMapConfig config)
-        {
-            return GetAvailableItem(config.Label);
-        }
         public IUpgradeItem GetAvailableItem(string configLabel)
         {
             foreach (var avitem in AvailableItems)
@@ -237,13 +224,9 @@ namespace RealMethod
         }
         public bool IsAvailable(IUpgradeItem item)
         {
-            return IsAvailable(item);
-        }
-        public bool IsAvailable(string itemLabel)
-        {
-            foreach (var item in AvailableItems)
+            foreach (var avItem in AvailableItems)
             {
-                if (item.Label == itemLabel)
+                if (avItem.Label == item.Label)
                 {
                     return true;
                 }
@@ -262,8 +245,15 @@ namespace RealMethod
                 for (int it = 0; it < MapItems.Length; it++)
                 {
                     MapItems[it].Identify(Maps[m], m, it, CurrentID);
-                    Items.Add(MapItems[it].Label, MapItems[it]);
-                    CurrentID++;
+                    if (!Items.ContainsKey(MapItems[it].Label))
+                    {
+                        Items.Add(MapItems[it].Label, MapItems[it]);
+                        CurrentID++;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Item Can't Add , Item with this name:{MapItems[it].Label} is already exsit");
+                    }
                 }
             }
             upgradeStorage.StorageClear();
@@ -279,22 +269,7 @@ namespace RealMethod
                 }
             }
         }
-        public UpgradeMapConfig GetConfig(string configLabel)
-        {
-            foreach (var conf in Maps)
-            {
-                if (conf.Label == configLabel)
-                {
-                    return conf;
-                }
-            }
-            return null;
-        }
-        public UpgradeMapConfig GetConfig(int index)
-        {
-            return Maps[index];
-        }
-
+        
         // Private Functions
         private void MessageBehavior(IUpgradeItem item, bool isUnlock)
         {

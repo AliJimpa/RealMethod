@@ -60,8 +60,7 @@ namespace RealMethod
         [SerializeField]
         private SaveFile CoinFile;
         [SerializeField]
-        private int[] pricing;
-        [Header("Status")]
+        public int[] pricing;
         [SerializeField, ReadOnly]
         private ChainUpgradeAsset[] items;
         public IPayment payment

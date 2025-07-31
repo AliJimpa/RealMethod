@@ -26,7 +26,7 @@ namespace RealMethod
         void IUpgradeItem.Identify(UpgradeMapConfig map, int mapIndex, int itemIndex, int various)
         {
             Owner = map;
-            if (OverrideName)
+            if (!OverrideName)
             {
                 itemName = MakeName(map.Label, mapIndex, itemIndex, various);
             }
@@ -84,7 +84,6 @@ namespace RealMethod
         }
         void IUpgradeItem.OnPreviousItem(IUpgradeItem items)
         {
-            Print.LogWarning(items != null ? items.Label : "Null");
             previousItem = items;
         }
         T IUpgradeItem.GetClass<T>()

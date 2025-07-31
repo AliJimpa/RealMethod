@@ -50,8 +50,8 @@ namespace RealMethod
         }
 
         protected abstract void Initiated(Upgrade owner);
-        protected abstract int GetItemCount();
         protected abstract IUpgradeItem GenerateItem(int index, IUpgradeItem previousItem);
         protected abstract IUpgradeItem GetBeginItem();
+        protected abstract int GetItemCount();
     }
 }
