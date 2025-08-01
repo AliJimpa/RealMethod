@@ -5,10 +5,24 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Manager/MusicManager")]
     public sealed class MusicManager : CompositManager<DefaulMusicState, DefaulMusicLayer>
     {
+
+        [Header("Music")]
+        [SerializeField]
+        private bool AddServiceOnAwake = false;
+        private void Awake()
+        {
+            if (AddServiceOnAwake)
+                Game.AddService<DefaulMusicState>(this);
+        }
+
         protected override void ServiceAssigned()
         {
-           
         }
+
+
+
+
+
 
 #if UNITY_EDITOR
         [ContextMenu("CreateLayer")]
@@ -41,7 +55,6 @@ namespace RealMethod
         }
 #endif
 
-
     }
 
     public enum DefaulMusicLayer
@@ -49,8 +62,17 @@ namespace RealMethod
         Default,
         Menu,
         StartGame,
-        Quest,
+        Level,
+        Cutscene,
+        Victory,
+        Defeat,
+        GameOver,
+        Tutorial,
+        Loading,
         Exploration,
+        Combat,
+        Dialogue,
+        Quest,
         Fight,
         BossFight,
         Puzzle,
@@ -61,6 +83,7 @@ namespace RealMethod
         Damaged,
         Racing,
         Pause,
+        Inventory,
         EndGame,
     }
 
@@ -72,29 +95,31 @@ namespace RealMethod
         }
 
         // Service Methods
+        protected override void OnStart(object Author)
+        {
+        }
         protected override void OnEnd(object Author)
         {
 
         }
 
         // StateService Methods
-        protected override void OnStart(object Author, DefaulMusicLayer State)
-        {
-
-        }
         protected override DefaulMusicLayer DefaultState()
         {
             return DefaulMusicLayer.Default;
         }
         public override bool CanSwitch(DefaulMusicLayer A, DefaulMusicLayer B)
         {
+            if (A == B)
+            {
+                return false;
+            }
             return true;
         }
         protected override bool CanResetforNewWorld(World NewWorld)
         {
             return false;
         }
-
 
     }
 

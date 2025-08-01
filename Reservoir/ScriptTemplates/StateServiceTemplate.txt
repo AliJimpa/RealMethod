@@ -15,14 +15,25 @@ public class #SCRIPTNAME# : StateService<GameState>
     }
 
     // Service Methods
+    protected override void OnStart(object Author)
+    {
+    }
     protected override void OnEnd(object Author)
     {
-        throw new System.NotImplementedException();
     }
 
     // StateService Methods
-    protected override void OnStart(object Author, GameState State){}
-    protected override GameState DefaultState() {}
-    public override bool CanSwitch(GameState A, GameState B){}
-    protected override bool CanResetforNewWorld(World NewWorld){}
+    protected override GameState DefaultState() {
+        return GameState.Default;
+    }
+    public override bool CanSwitch(GameState A, GameState B){
+        if(A==B)
+        {
+            return false;
+        }
+        return true;
+    }
+    protected override bool CanResetforNewWorld(World NewWorld){
+        return false;
+    }
 }

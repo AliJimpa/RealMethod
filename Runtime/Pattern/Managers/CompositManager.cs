@@ -63,9 +63,10 @@ namespace RealMethod
         [SerializeField]
         protected MusicLayer[] Layers;
         [SerializeField]
-        private bool PlayOnInitiate = false;
-        [SerializeField, ConditionalHide("PlayOnInitiate", true, false)]
-        private int InitiateLayer = 0;
+        private bool PlayOnServiceStart = false;
+        [SerializeField, ConditionalHide("PlayOnServiceStart", true, false)]
+        private byte StartState = 0;
+
 
 
         protected T stateService;
@@ -95,14 +96,13 @@ namespace RealMethod
         // IGameManager Interface Implementation
         protected override void InitiateManager(bool AlwaysLoaded)
         {
-            if (PlayOnInitiate)
-            {
-                this[InitiateLayer].Play();
-            }
-
             if (Game.TryFindService(out stateService))
             {
                 stateService.OnStateUpdate += OnStateChanged;
+                if (PlayOnServiceStart)
+                {
+                    stateService.SetState(StartState);
+                }
                 ServiceAssigned();
             }
 
@@ -116,6 +116,10 @@ namespace RealMethod
                 {
                     stateService = stateserv;
                     stateService.OnStateUpdate += OnStateChanged;
+                    if (PlayOnServiceStart)
+                    {
+                        stateService.SetState(StartState);
+                    }
                     ServiceAssigned();
                 }
             }
@@ -124,6 +128,13 @@ namespace RealMethod
         // Public Methods
         public void CrossfadeLayer(J LayerA, J LayerB, float Duration)
         {
+            AudioSource ASa = this[LayerA];
+            AudioSource ASb = this[LayerB];
+            if (ASa == null || ASb == null)
+            {
+                Debug.LogWarning($"Cannot crossfade layers: {LayerA} or {LayerB} not found.");
+                return;
+            }
             StartCoroutine(CrossfadeTracks(this[LayerA], this[LayerB], Duration));
         }
         public void FadeInLayer(J Layer, float Duration)
@@ -187,7 +198,8 @@ namespace RealMethod
         //IEnumerator Corotine
         private IEnumerator CrossfadeTracks(AudioSource sourceA, AudioSource sourceB, float duration)
         {
-            sourceA.Play();
+            sourceA.volume = 1f;
+            sourceB.volume = 0f;
             sourceB.Play();
 
             float timer = 0f;
@@ -200,7 +212,9 @@ namespace RealMethod
                 yield return null;
             }
 
+            sourceA.volume = 0f; // Ensure the first track is fully faded out at the ends
             sourceA.Stop();
+            sourceB.volume = 1f; // Ensure the second track is fully audible at the end
         }
         private IEnumerator fadeTrack(AudioSource source, bool fadeIn, float duration)
         {
@@ -230,8 +244,8 @@ namespace RealMethod
 
         //Abstract Method
         protected abstract void ServiceAssigned();
-        
-        
+
+
 
     }
 
