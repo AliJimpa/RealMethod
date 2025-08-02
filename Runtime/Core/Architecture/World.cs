@@ -100,7 +100,7 @@ namespace RealMethod
             }
             return null;
         }
-        public GameObject GetPlayerObject()
+        public GameObject GetPlayerObject(byte index = 0)
         {
             return PlayerObject;
         }
