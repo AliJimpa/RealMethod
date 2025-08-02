@@ -10,13 +10,14 @@ namespace RealMethod
     {
         // Private Static Variables
         private static Game AlternativeInstance;
+        private static bool CanInitiate = true;
 
         // Public Static Variables
         public static Game Instance
         {
             get
             {
-                if (AlternativeInstance == null)
+                if (AlternativeInstance == null && CanInitiate)
                 {
                     // Find Game In Scene
                     Game[] components = FindObjectsByType<Game>(FindObjectsSortMode.InstanceID);
@@ -65,6 +66,7 @@ namespace RealMethod
         // Unity Method
         private void OnDestroy()
         {
+            CanInitiate = false;
             if (GameServices != null)
             {
                 for (int i = 0; i < GameServices.Count; i++)
