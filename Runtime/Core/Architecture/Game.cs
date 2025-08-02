@@ -44,7 +44,18 @@ namespace RealMethod
         public static GameConfig Config { get; private set; }
         public static World World { get; private set; }
         public static GameService Service { get; private set; }
-        public static GameObject Player => World != null ? World.GetPlayerObject() : null;
+        public static GameObject Player
+        {
+            get
+            {
+                if (World == null)
+                {
+                    Debug.LogWarning("World is not set. Returning null for Player.");
+                    return null;
+                }
+                return World.GetPlayerObject();
+            }
+        }
         public static bool isPaused => Time.timeScale == 0;
 
         // Private Variable

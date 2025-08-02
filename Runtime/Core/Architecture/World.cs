@@ -104,7 +104,7 @@ namespace RealMethod
         {
             return PlayerObject;
         }
-        public T[] GetComponentsInPlayer<T>() where T : MonoBehaviour
+        public T[] GetComponentsInPlayer<T>(byte index = 0) where T : MonoBehaviour
         {
             T[] components = PlayerObject.GetComponentsInChildren<T>();
             if (components.Length > 0)
@@ -114,7 +114,7 @@ namespace RealMethod
             Debug.LogWarning($"No components of type {typeof(T).Name} found on {PlayerObject.name} or its children.");
             return null;
         }
-        public T GetComponentInPlayer<T>() where T : MonoBehaviour
+        public T GetComponentInPlayer<T>(byte index = 0) where T : MonoBehaviour
         {
             return PlayerObject.GetComponentInChildren<T>();
         }
