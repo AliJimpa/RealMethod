@@ -1,11 +1,11 @@
 {
   "name": "com.mustard.realmethod",
-  "version": "3.15.0",
+  "version": "3.18.0",
   "displayName": "RealMethod",
   "description": "A modern concept for making game in unity.",
   "unity": "6000.0",
   "author": {
-    "name": "Ali maybe(Arsalan)",
+    "name": "Ali & maybe(Arsalan)",
     "url": "https://alibadpa.weebly.com"
   },
   "keywords": [
