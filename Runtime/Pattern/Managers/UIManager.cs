@@ -88,6 +88,10 @@ namespace RealMethod
         {
             return Layers.ContainsKey(name);
         }
+        public GameObject GetLayer(string name)
+        {
+            return Layers[name];
+        }
         public GameObject CreateLayer(string name)
         {
             GameObject Result;
@@ -287,10 +291,6 @@ namespace RealMethod
             }
 
             return false;
-        }
-        public GameObject FindLayer(string name)
-        {
-            return Layers[name];
         }
         public void SortLayer(string name, int Order)
         {
@@ -512,6 +512,19 @@ namespace RealMethod
             else
             {
                 Debug.LogError("Just use for 'uGUI' Method");
+            }
+        }
+        public bool TryFindLayer(string name, out GameObject layer)
+        {
+            if (IsValid(name))
+            {
+                layer = Layers[name];
+                return true;
+            }
+            else
+            {
+                layer = null;
+                return false;
             }
         }
         public bool TryFindWidget(string name, out IWidget TargetWidget)
