@@ -53,10 +53,13 @@ namespace RealMethod
         // Unity Method
         private void OnDestroy()
         {
-            for (int i = 0; i < GameServices.Count; i++)
+            if (GameServices != null)
             {
-                GameServices[i].provider.Deleted(this);
-                GameServices.RemoveAt(i);
+                for (int i = 0; i < GameServices.Count; i++)
+                {
+                    GameServices[i].provider.Deleted(this);
+                    GameServices.RemoveAt(i);
+                }
             }
             GameClosed();
         }
