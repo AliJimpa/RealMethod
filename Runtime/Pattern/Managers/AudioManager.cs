@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Pool;
 
 namespace RealMethod
 {
@@ -11,6 +12,8 @@ namespace RealMethod
         [SerializeField]
         private AudioMixerGroup DefaultGroup;
         public AudioMixerGroup defaultGroup => DefaultGroup;
+
+        public ObjectPool<AudioSource> soundPool;
 
         protected override void InitiateManager(bool AlwaysLoaded)
         {
@@ -24,6 +27,16 @@ namespace RealMethod
             {
                 SpawnServ.BringManager(this);
             }
+
+            soundPool = new ObjectPool<AudioSource>(
+            createFunc: CreateSource,
+            actionOnGet: OnTakeSource,
+            actionOnRelease: OnReturnedSource,
+            actionOnDestroy: OnDestroySource,
+            collectionCheck: false,
+            defaultCapacity: 10,
+            maxSize: 500
+        );
         }
         protected override void InitiateService(Service service)
         {
@@ -33,18 +46,17 @@ namespace RealMethod
             }
         }
 
-        // Public Methods
-        public AudioSource PlaySound(AudioClip clip, AudioMixerGroup group, Vector3 location, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
+        // Public Functions
+        public AudioSource PlaySound(AudioClip clip, Vector3 location, Transform parent = null, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            GameObject SoundObject = new GameObject("Audio3D_" + clip.name, new System.Type[1] { typeof(AudioSource) });
-            AudioSource source = SoundObject.GetComponent<AudioSource>();
-            SoundObject.transform.position = location;
+            AudioSource source = soundPool.Get();
             source.clip = clip;
-            source.outputAudioMixerGroup = group;
+            source.outputAudioMixerGroup = group != null ? group : DefaultGroup;
             source.spatialBlend = 1;
             source.minDistance = rolloffDistanceMin;
             source.loop = loop;
-            SoundObject.transform.SetParent(transform);
+            source.transform.SetParent(parent == null ? transform : parent);
+            source.transform.localPosition = location;
             source.Play();
             if (autoDestroy)
             {
@@ -59,28 +71,15 @@ namespace RealMethod
             }
             return source;
         }
-        public AudioSource PlaySound(AudioClip clip, Vector3 location, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
+        public AudioSource PlaySound2D(AudioClip clip, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            return PlaySound(clip, DefaultGroup, location, rolloffDistanceMin, loop, pauseTime, autoDestroy);
-        }
-        public AudioSource PlaySound(AudioClip clip, AudioMixerGroup group, Vector3 location, bool autoDestroy = true)
-        {
-            return PlaySound(clip, group, location, autoDestroy);
-        }
-        public AudioSource PlaySound(AudioClip clip, Vector3 location, bool autoDestroy = true)
-        {
-            return PlaySound(clip, DefaultGroup, location, autoDestroy);
-        }
-        public AudioSource PlaySound2D(AudioClip clip, AudioMixerGroup group, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
-        {
-            GameObject SoundObject = new GameObject("Audio2D_" + clip.name, new System.Type[1] { typeof(AudioSource) });
-            AudioSource source = SoundObject.GetComponent<AudioSource>();
+            AudioSource source = soundPool.Get();
             source.clip = clip;
-            source.outputAudioMixerGroup = group;
+            source.outputAudioMixerGroup = group != null ? group : DefaultGroup;
             source.spatialBlend = 0;
             source.minDistance = rolloffDistanceMin;
             source.loop = loop;
-            SoundObject.transform.SetParent(transform);
+            source.transform.SetParent(transform);
             source.Play();
             if (autoDestroy)
             {
@@ -95,17 +94,31 @@ namespace RealMethod
             }
             return source;
         }
-        public AudioSource PlaySound2D(AudioClip clip, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
+        public void Clear()
         {
-            return PlaySound2D(clip, DefaultGroup, rolloffDistanceMin, loop, pauseTime, autoDestroy);
+            soundPool.Clear();
         }
-        public AudioSource PlaySound2D(AudioClip clip, AudioMixerGroup group, bool autoDestroy = true)
+
+        // Private Functions
+        private AudioSource CreateSource()
         {
-            return PlaySound2D(clip, group, autoDestroy);
+            GameObject SoundObject = new GameObject($"Sound_{soundPool.CountAll + 1}", new System.Type[1] { typeof(AudioSource) });
+            return SoundObject.GetComponent<AudioSource>(); ;
         }
-        public AudioSource PlaySound2D(AudioClip clip, bool autoDestroy = true)
+        private void OnTakeSource(AudioSource source)
         {
-            return PlaySound2D(clip, DefaultGroup, autoDestroy);
+            source.gameObject.SetActive(true);
+        }
+        private void OnReturnedSource(AudioSource source)
+        {
+            source.Stop();
+            source.clip = null;
+            source.gameObject.SetActive(false);
+        }
+        private void OnDestroySource(AudioSource source)
+        {
+            if (source != null)
+                Destroy(source.gameObject);
         }
 
         // Abstract Methods
@@ -120,7 +133,7 @@ namespace RealMethod
         private IEnumerator DestroyAtEnd(AudioSource source)
         {
             yield return new WaitForSeconds(source.clip.length);
-            Destroy(source.gameObject);
+            soundPool.Release(source);
         }
 
     }

@@ -189,33 +189,44 @@ namespace RealMethod
         }
 
         // Sound
-        public static AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
+        public AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
             if (instance.GameAudio != null)
             {
-                return instance.GameAudio.PlaySound2D(clip, autoDestroy);
+                return instance.GameAudio.PlaySound(clip, location, parent, group, rolloffDistanceMin, loop, pauseTime, autoDestroy);
             }
             else
             {
                 GameObject AudioObject = new GameObject();
                 AudioObject.name = "Audio_" + clip.name;
-                AudioObject.transform.SetParent(Game.World.transform);
                 AudioSource source = AudioObject.AddComponent<AudioSource>();
                 source.clip = clip;
+                source.outputAudioMixerGroup = group;
                 source.spatialBlend = 0;
+                source.minDistance = rolloffDistanceMin;
+                source.transform.SetParent(parent != null ? parent : Game.World.transform);
+                AudioObject.transform.localPosition = location;
                 source.Play();
                 if (autoDestroy)
                 {
                     AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
                 }
+                else
+                {
+                    Debug.LogWarning("for loop or puaseTime , you need to use AudioManager");
+                }
                 return source;
             }
         }
-        public static AudioSource Sound2D(AudioClip clip, AudioMixerGroup group, bool autoDestroy = true)
+        public AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, bool autoDestroy = true)
+        {
+            return Sound3D(clip, location, parent, null, 1f, false, 0f, autoDestroy);
+        }
+        public AudioSource Sound2D(AudioClip clip, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
             if (instance.GameAudio != null)
             {
-                return instance.GameAudio.PlaySound2D(clip, group, autoDestroy);
+                return instance.GameAudio.PlaySound2D(clip, group, 1, loop, pauseTime, autoDestroy);
             }
             else
             {
@@ -226,60 +237,23 @@ namespace RealMethod
                 source.clip = clip;
                 source.outputAudioMixerGroup = group;
                 source.spatialBlend = 0;
+                source.minDistance = rolloffDistanceMin;
                 source.Play();
                 if (autoDestroy)
                 {
                     AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
                 }
+                else
+                {
+                    Debug.LogWarning("for loop or puaseTime , you need to use AudioManager");
+                }
                 return source;
             }
         }
-        public static AudioSource Sound3D(AudioClip clip, Vector3 location, bool autoDestroy = true)
+        public AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
         {
-            if (instance.GameAudio != null)
-            {
-                return instance.GameAudio.PlaySound(clip, location, autoDestroy);
-            }
-            else
-            {
-                GameObject AudioObject = new GameObject();
-                AudioObject.name = "Audio_" + clip.name;
-                AudioObject.transform.position = location;
-                AudioSource source = AudioObject.AddComponent<AudioSource>();
-                source.clip = clip;
-                source.spatialBlend = 0;
-                source.Play();
-                if (autoDestroy)
-                {
-                    AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
-                }
-                return source;
-            }
+            return Sound2D(clip, null, 1f, false, 0f, autoDestroy);
         }
-        public static AudioSource Sound3D(AudioClip clip, AudioMixerGroup group, Vector3 location, bool autoDestroy = true)
-        {
-            if (instance.GameAudio != null)
-            {
-                return instance.GameAudio.PlaySound(clip, group, location, autoDestroy);
-            }
-            else
-            {
-                GameObject AudioObject = new GameObject();
-                AudioObject.name = "Audio_" + clip.name;
-                AudioObject.transform.position = location;
-                AudioSource source = AudioObject.AddComponent<AudioSource>();
-                source.clip = clip;
-                source.outputAudioMixerGroup = group;
-                source.spatialBlend = 0;
-                source.Play();
-                if (autoDestroy)
-                {
-                    AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
-                }
-                return source;
-            }
-        }
-
         // Cloning 
         public static T Clone<T>(T original) where T : Object
         {
