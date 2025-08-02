@@ -22,11 +22,11 @@ namespace RealMethod
             {
                 if (BaseComponent.Count > 0)
                 {
-                    foreach (var item in BaseComponent.CopyItemsByClass<ItemAsset>())
+                    foreach (var item in BaseComponent.CopyItemsByClass<IInventoryItem>())
                     {
                         //EditorGUILayout.BeginHorizontal();
                         int ItemQuantity = BaseComponent.GetQuantity(item);
-                        EditorGUILayout.LabelField($"Name: {item.Title}({item.name}) - Quantity: {ItemQuantity} ");
+                        EditorGUILayout.LabelField($"Name: {item.Title}({item.GetClass<DataAsset>().name}) - Quantity: {ItemQuantity} ");
                         total += ItemQuantity;
                         //EditorGUILayout.EndHorizontal();
                     }

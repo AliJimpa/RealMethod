@@ -4,13 +4,13 @@ namespace RealMethod
     {
         InventoryItemProperty[] GetItems();
         void CreateItem(InventoryItemProperty item);
-        void DestroyItem(string name);
+        void DestroyItem(IInventoryItem item);
         // amount > 0 : AddQuantity , amount < 0 RemoveqQuantity , amount = 0 ZiroQuantity
-        void UpdateQuantity(string name, int amount);
-        void UpdateCapacity(int value);
+        void UpdateQuantity(IInventoryItem item, int amount);
+        void UpdateCapacity(IInventoryItem item, int value);
     }
 
-    public interface IInventoryItem
+    public interface IInventoryItem : IItem
     {
         void PickedUp(Inventory owner, int quantity);
         void Cahanged(int quantity);

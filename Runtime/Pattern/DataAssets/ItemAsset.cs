@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class ItemAsset : DataAsset
+    public abstract class ItemAsset : DataAsset, IItem
     {
-        [Header("Basic")]
+        [Header("Item")]
         [SerializeField]
         protected string title;
         public string Title => title;
@@ -32,12 +32,21 @@ namespace RealMethod
             }
         }
 
+        public T GetClass<T>() where T : DataAsset
+        {
+            return this as T;
+        }
+
 
 #if UNITY_EDITOR
-        protected void ChangeName(string NewName)
+        public void ChangeName(string NewName)
         {
             title = NewName;
         }
+        // public override void OnEditorPlay()
+        // {
+        //     base.OnEditorPlay();
+        // }
 #endif
 
     }

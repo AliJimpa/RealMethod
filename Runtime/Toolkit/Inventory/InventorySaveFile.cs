@@ -68,16 +68,16 @@ namespace RealMethod
             ItemsQuantity.Add(item.Quantity);
             ItemsCapacity.Add(item.Capacity);
         }
-        void IInventoryStorage.DestroyItem(string name)
+        void IInventoryStorage.DestroyItem(IInventoryItem item)
         {
-            int Target = GetIndexItem(name);
+            int Target = GetIndexItem(item.Title);
             ItemsName.RemoveAt(Target);
             ItemsQuantity.RemoveAt(Target);
             ItemsCapacity.RemoveAt(Target);
         }
-        void IInventoryStorage.UpdateQuantity(string name, int amount)
+        void IInventoryStorage.UpdateQuantity(IInventoryItem item, int amount)
         {
-            int Target = GetIndexItem(name);
+            int Target = GetIndexItem(item.Title);
             if (amount != 0)
             {
                 ItemsQuantity[Target] += amount;
@@ -88,26 +88,33 @@ namespace RealMethod
             }
 
         }
-        void IInventoryStorage.UpdateCapacity(int value)
+        void IInventoryStorage.UpdateCapacity(IInventoryItem item, int value)
         {
-            int Target = GetIndexItem(name);
+            int Target = GetIndexItem(item.Title);
             ItemsCapacity[Target] = value;
         }
         InventoryItemProperty[] IInventoryStorage.GetItems()
         {
             // Load All Assets
-            var allItems = Resources.LoadAll<ItemAsset>("Inventory");
-            var itemDict = allItems.ToDictionary(item => item.Title, item => item);
+            var allItems = Resources.LoadAll<DataAsset>("Inventory");
             List<InventoryItemProperty> Result = new List<InventoryItemProperty>();
-            for (int i = 0; i < ItemsName.Count; i++)
+            foreach (var itemAsset in allItems)
             {
-                if (itemDict[ItemsName[i]] != null)
+                if (itemAsset is IInventoryItem item)
                 {
-                    Result.Add(new InventoryItemProperty(itemDict[ItemsName[i]], ItemsQuantity[i], ItemsCapacity[i]));
+                    for (int i = 0; i < ItemsName.Count; i++)
+                    {
+                        if (ItemsName[i] == item.Title)
+                        {
+                            Result.Add(new InventoryItemProperty(item, ItemsQuantity[i], ItemsCapacity[i]));
+                            continue;
+                        }
+                        Debug.LogError($"Cant Find Item from GameSetting {ItemsName[i]}");
+                    }
                 }
                 else
                 {
-                    Debug.LogError($"Cant Find Item from GameSetting {ItemsName[i]}");
+                    Debug.LogWarning($"Loaded Asset {itemAsset} is not implementd {typeof(IInventoryItem)}");
                 }
             }
             return Result.ToArray();

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,9 +7,9 @@ namespace RealMethod
     public class InventoryItemProperty
     {
         [SerializeField]
-        private ItemAsset ItemAsset;
-        public ItemAsset Asset => ItemAsset;
-        public string Name => Asset.Title;
+        private IInventoryItem Item;
+        public IInventoryItem provider => Item;
+        public string Name => provider.Title;
         [SerializeField]
         private int ItemQuantity;
         public int Quantity => ItemQuantity;
@@ -18,15 +17,15 @@ namespace RealMethod
         private int ItemCapacity;
         public int Capacity => ItemCapacity;
 
-        public InventoryItemProperty(ItemAsset asset, int quantity, int capacity)
+        public InventoryItemProperty(IInventoryItem item, int quantity, int capacity)
         {
-            ItemAsset = asset;
+            Item = item;
             ItemQuantity = quantity;
             ItemCapacity = capacity;
         }
-        public InventoryItemProperty(ItemAsset asset, int quantity)
+        public InventoryItemProperty(IInventoryItem item, int quantity)
         {
-            ItemAsset = asset;
+            Item = item;
             ItemQuantity = quantity;
             ItemCapacity = 0;
         }
@@ -88,12 +87,12 @@ namespace RealMethod
         [SerializeField]
         private BehaviorType Behavior;
         [SerializeField]
-        private ItemAsset[] DefaultItem;
+        private DataAsset[] DefaultItem;
 
         // Actions
-        public Action<ItemAsset, int> OnItemAdded;
-        public Action<ItemAsset, int> OnItemUpdated;
-        public Action OnItemRemoved;
+        public System.Action<IInventoryItem, int> OnItemAdded;
+        public System.Action<IInventoryItem, int> OnItemUpdated;
+        public System.Action OnItemRemoved;
 
         // Private Variable
         private Hictionary<InventoryItemProperty> Items;
@@ -102,9 +101,9 @@ namespace RealMethod
 
 
 
-        public ItemAsset this[string itemName]
+        public IInventoryItem this[string itemName]
         {
-            get => Items[itemName].Asset;
+            get => Items[itemName].provider;
         }
 
         // Unity Methods
@@ -133,9 +132,17 @@ namespace RealMethod
                 if (DefaultItem != null)
                 {
                     Items = new Hictionary<InventoryItemProperty>(DefaultItem.Length);
-                    foreach (var item in DefaultItem)
+                    foreach (var itemAsset in DefaultItem)
                     {
-                        ItemAdded(item);
+                        if (itemAsset is IInventoryItem item)
+                        {
+                            ItemAdded(item);
+                        }
+                        else
+                        {
+                            Debug.LogWarning("ItemAsset {itemAsset} is not implement IInventoryItem");
+                        }
+
                     }
                 }
                 else
@@ -146,53 +153,39 @@ namespace RealMethod
         }
 
         // Public Functions
-        public int GetQuantity(string itemName)
+        public bool TryFindItem(string itemTitle, out IInventoryItem item)
         {
-            if (Items.ContainsKey(itemName))
+            if (Items.ContainsKey(itemTitle))
             {
-                return Items[itemName].Quantity;
+                item = Items[itemTitle].provider;
+                return true;
             }
             else
             {
-                Debug.LogWarning("Ther isnt any item with this Name [Be sure to use ItemTitle]");
-                return -1;
-            }
-        }
-        public int GetQuantity(ItemAsset item)
-        {
-            if (GetInterface(item) != null)
-            {
-                return GetQuantity(item.Title);
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        public bool IsValidItem(string itemName)
-        {
-            return Items.ContainsKey(itemName);
-        }
-        public bool IsValidItem(ItemAsset item)
-        {
-            if (GetInterface(item) != null)
-            {
-                return Items.ContainsKey(item.Title);
-            }
-            else
-            {
+                item = default;
                 return false;
             }
         }
-        public bool AddNewItem(ItemAsset item, int quantity, int capacity)
+        public int GetQuantity(IInventoryItem item)
         {
-            IInventoryItem invitem = GetInterface(item);
-            if (invitem == null)
-                return false;
-
+            if (Items.ContainsKey(item.Title))
+            {
+                return Items[item.Title].Quantity;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        public bool IsValidItem(IInventoryItem item)
+        {
+            return Items.ContainsKey(item.Title);
+        }
+        public bool AddNewItem(IInventoryItem item, int quantity, int capacity)
+        {
             if (!Items.ContainsKey(item.Title))
             {
-                if (invitem.CanPickUp(this))
+                if (item.CanPickUp(this))
                 {
                     InventoryItemProperty NewItem = new InventoryItemProperty(item, quantity, capacity);
                     Items.Add(item.Title, NewItem);
@@ -211,26 +204,22 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool AddItem(ItemAsset item, int quantity = 1)
+        public bool AddItem(IInventoryItem item, int quantity = 1)
         {
-            IInventoryItem invitem = GetInterface(item);
-            if (invitem == null)
-                return false;
-
             if (_capacity == 0 || Items.Count < _capacity)
             {
                 if (Items.ContainsKey(item.Title))
                 {
-                    if (invitem.CanChange(true))
+                    if (item.CanChange(true))
                     {
                         Items[item.Title].Add(quantity);
-                        inventoryStorage.UpdateQuantity(item.Title, quantity);
+                        inventoryStorage.UpdateQuantity(item, quantity);
                         MessageBehavior(ItemState.Update, item, quantity);
                     }
                 }
                 else
                 {
-                    if (invitem.CanPickUp(this))
+                    if (item.CanPickUp(this))
                     {
                         InventoryItemProperty NewItem = new InventoryItemProperty(item, quantity);
                         Items.Add(item.Title, NewItem);
@@ -246,57 +235,53 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool SetItemCapacity(string itemName, int newCpacity)
+        public bool SetItemCapacity(IInventoryItem item, int newCpacity)
         {
             InventoryItemProperty target;
-            if (Items.TryGetValue(itemName, out target))
+            if (Items.TryGetValue(item.Title, out target))
             {
-                inventoryStorage.UpdateCapacity(newCpacity);
+                inventoryStorage.UpdateCapacity(item, newCpacity);
                 target.NewCpacity(newCpacity);
                 return true;
             }
             else
             {
-                Debug.LogError($"Can't Find Item With this Name {itemName} [Be sure to use ItemTitle]");
+                Debug.LogError($"Can't Find Item With this Name {item.Title}");
                 return false;
             }
         }
-        public bool RemoveItem(string itemName, int quantity = 1)
+        public bool RemoveItem(IInventoryItem item, int quantity = 1)
         {
             InventoryItemProperty target;
-            if (Items.TryGetValue(itemName, out target))
+            if (Items.TryGetValue(item.Title, out target))
             {
-                IInventoryItem invitem = GetInterface(target.Asset);
-                if (invitem == null)
-                    return false;
-
-                if (invitem.CanChange(true))
+                if (item.CanChange(true))
                 {
                     if (target.Remove(quantity))
                     {
-                        inventoryStorage.UpdateQuantity(itemName, -quantity);
-                        MessageBehavior(ItemState.Update, target.Asset, target.Quantity);
+                        inventoryStorage.UpdateQuantity(item, -quantity);
+                        MessageBehavior(ItemState.Update, item, target.Quantity);
                         return true;
                     }
                     else
                     {
-                        if (invitem.CanDropp(this))
+                        if (item.CanDropp(this))
                         {
-                            if (Items.Remove(itemName))
+                            if (Items.Remove(item.Title))
                             {
-                                inventoryStorage.DestroyItem(itemName);
+                                inventoryStorage.DestroyItem(item);
                                 MessageBehavior(ItemState.Delete, null, 0);
                             }
                             else
                             {
-                                Debug.LogError($"Can't Remove Item With this Name {itemName} [Be sure to use ItemTitle]");
+                                Debug.LogError($"Can't Remove Item With this item {item}");
                             }
                             return true;
                         }
                         else
                         {
-                            inventoryStorage.UpdateQuantity(itemName, 0);
-                            MessageBehavior(ItemState.Update, target.Asset, 0);
+                            inventoryStorage.UpdateQuantity(item, 0);
+                            MessageBehavior(ItemState.Update, item, 0);
                             return true;
                         }
 
@@ -309,50 +294,39 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Ther isnt any Item with this Name {itemName} [Be sure to use ItemTitle]");
+                Debug.LogWarning($"Ther isnt any Item with this item {item}");
                 return false;
             }
         }
-        public bool DeleteItem(string itemName)
+        public bool DeleteItem(IInventoryItem item)
         {
-            if (Items.ContainsKey(itemName))
+            if (Items.ContainsKey(item.Title))
             {
-                bool Result = Items.Remove(itemName);
+                bool Result = Items.Remove(item.Title);
                 if (Result)
                 {
-                    inventoryStorage.DestroyItem(itemName);
+                    inventoryStorage.DestroyItem(item);
                     MessageBehavior(ItemState.Delete, null, 0);
                 }
                 return Result;
             }
             else
             {
-                Debug.LogWarning($"Ther isnt any Item With this Name {itemName} [Be sure to use ItemTitle]");
+                Debug.LogWarning($"Ther isnt any Item With this item {item}");
                 return false;
             }
         }
-        public T[] CopyItemsByClass<T>() where T : ItemAsset
+        public T[] CopyItemsByClass<T>() where T : IInventoryItem
         {
             List<T> Result = new List<T>();
             foreach (var pack in Items.GetValues())
             {
-                if (pack.Asset is T finditem)
+                if (pack.provider is T finditem)
                 {
                     Result.Add(finditem);
                 }
             }
             return Result.ToArray();
-        }
-        public T CopyItemByClass<T>() where T : ItemAsset
-        {
-            foreach (var pack in Items.GetValues())
-            {
-                if (pack.Asset is T finditem)
-                {
-                    return finditem;
-                }
-            }
-            return null;
         }
         public void Clear()
         {
@@ -370,25 +344,12 @@ namespace RealMethod
         }
 
         // Private Functions
-        private IInventoryItem GetInterface(ItemAsset item)
+        private void MessageBehavior(ItemState state, IInventoryItem target, int quantity)
         {
-            if (item is IInventoryItem InvItem)
-            {
-                return InvItem;
-            }
-            else
-            {
-                Debug.LogWarning("Your item can use for Inventory [IInventoryItem interface not implemented]");
-                return null;
-            }
-        }
-        private void MessageBehavior(ItemState state, ItemAsset target, int quantity)
-        {
-            IInventoryItem invitem = GetInterface(target);
             switch (state)
             {
                 case ItemState.Create:
-                    invitem.PickedUp(this, quantity);
+                    target.PickedUp(this, quantity);
                     switch (Behavior)
                     {
                         case BehaviorType.Action:
@@ -410,7 +371,7 @@ namespace RealMethod
                     ItemAdded(target);
                     break;
                 case ItemState.Update:
-                    invitem.Cahanged(quantity);
+                    target.Cahanged(quantity);
                     switch (Behavior)
                     {
                         case BehaviorType.Action:
@@ -432,7 +393,7 @@ namespace RealMethod
                     ItemUpdated(target, quantity);
                     break;
                 case ItemState.Delete:
-                    invitem.Dropped(this);
+                    target.Dropped(this);
                     switch (Behavior)
                     {
                         case BehaviorType.Action:
@@ -457,8 +418,8 @@ namespace RealMethod
         }
 
         // Abstract Methods 
-        protected abstract void ItemAdded(ItemAsset target);
-        protected abstract void ItemUpdated(ItemAsset target, int Quantity);
+        protected abstract void ItemAdded(IInventoryItem target);
+        protected abstract void ItemUpdated(IInventoryItem target, int Quantity);
         protected abstract void ItemRemoved();
         protected abstract IInventoryStorage GetStorage();
         protected abstract bool LoadStorage();

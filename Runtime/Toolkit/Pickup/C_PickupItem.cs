@@ -14,14 +14,27 @@ namespace RealMethod
         private int capacity;
         [Header("Resource")]
         [SerializeField]
-        private ItemAsset items;
+        private DataAsset items;
+
+        private IInventoryItem itemprovider;
 
         // ExecutCommand Methods
         protected override bool OnInitiate(Object author, Object owner)
         {
             if (items == null)
+            {
                 Debug.LogWarning("Items is not valid");
-            return items != null;
+                return false;
+            }
+
+            if (items is IInventoryItem itemprovider)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         protected override bool CanExecute(object Owner)
         {
@@ -65,11 +78,11 @@ namespace RealMethod
                 {
                     if (AsNewIdentity)
                     {
-                        inven.AddNewItem(items, quantity, capacity);
+                        inven.AddNewItem(itemprovider, quantity, capacity);
                     }
                     else
                     {
-                        inven.AddItem(items, quantity);
+                        inven.AddItem(itemprovider, quantity);
                     }
                 }
                 else

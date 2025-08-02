@@ -364,6 +364,7 @@ namespace RealMethod
             return Abilities.GetValues();
         }
 
+        // Private Functions
         private void UpdateAbility()
         {
             foreach (var ability in Abilities.GetValues())
