@@ -5,55 +5,24 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Manager/MusicManager")]
     public sealed class MusicManager : CompositManager<DefaulMusicState, DefaulMusicLayer>
     {
-
         [Header("Music")]
         [SerializeField]
-        private bool AddServiceOnAwake = false;
-        private void Awake()
+        private AudioClip[] CreateLayers;
+        [SerializeField]
+        private bool AddServiceOnInitiate = false;
+
+        protected override void OnInitiate(bool AlwaysLoaded)
         {
-            if (AddServiceOnAwake)
+            foreach (var clip in CreateLayers)
+            {
+                CreateLayer(clip);
+            }
+            if (AddServiceOnInitiate)
                 Game.AddService<DefaulMusicState>(this);
         }
-
-        protected override void ServiceAssigned()
+        protected override void MusicStateAssigned()
         {
         }
-
-
-
-
-
-
-#if UNITY_EDITOR
-        [ContextMenu("CreateLayer")]
-        private void CreateLayers_Editor()
-        {
-            if (Layers != null && Layers.Length > 0)
-            {
-                for (int i = 0; i < Layers.Length; i++)
-                {
-                    if (Layers[i].source == null)
-                    {
-                        GameObject layerobject = new GameObject($"Layer_{Layers[i].layer}");
-                        Layers[i].SetSource(layerobject.AddComponent<AudioSource>());
-                        layerobject.transform.SetParent(transform);
-                    }
-                }
-            }
-        }
-        [ContextMenu("ClearLayer")]
-        private void ClearLayers_Editor()
-        {
-            if (Layers != null && Layers.Length > 0)
-            {
-                foreach (var layer in Layers)
-                {
-                    if (layer.source.gameObject != null)
-                        DestroyImmediate(layer.source.gameObject);
-                }
-            }
-        }
-#endif
 
     }
 

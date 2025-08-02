@@ -1,20 +1,22 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Codice.CM.Common.Tree.Partial;
+using System.Collections;
 
 
 namespace RealMethod
 {
-    public struct Hictionary<T>
+    public struct Hictionary<T> //: IEnumerable<KeyValuePair<Hash128, T>>
     {
         private Dictionary<Hash128, T> List;
         public int Count => List.Count;
+
 
         public Hictionary(int Prewarm)
         {
             List = new Dictionary<Hash128, T>(Prewarm);
         }
 
+        // Access values
         public T this[string Name]
         {
             get => List[Hash128.Compute(Name)];
@@ -74,5 +76,17 @@ namespace RealMethod
         {
             return List.TryAdd(Hash128.Compute(Name), Value);
         }
+
+        // // Implement IEnumerable<KeyValuePair<TKey, TValue>>
+        // public IEnumerator<KeyValuePair<Hash128, T>> GetEnumerator()
+        // {
+        //     return List.GetEnumerator(); // Delegates to the internal dictionary
+        // }
+
+        // // Non-generic IEnumerable
+        // IEnumerator IEnumerable.GetEnumerator()
+        // {
+        //     return GetEnumerator();
+        // }
     }
 }
