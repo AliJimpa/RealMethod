@@ -2,44 +2,24 @@ using RealMethod;
 
 public class #SCRIPTNAME# : CompositManager<STATESETVICE, MUSCIENUM>
 {
+        [Header("Music")]
+        [SerializeField]
+        private AudioClip[] CreateLayers;
+        [SerializeField]
+        private bool AddServiceOnInitiate = false;
 
-    // Base CompositManager Methods
-    protected override void OnStateConnect()
-    {
-
-    }
-
-#if UNITY_EDITOR
-        [ContextMenu("CreateLayer")]
-        private void CreateLayers_Editor()
+        protected override void OnInitiate(bool AlwaysLoaded)
         {
-            if (Layers != null && Layers.Length > 0)
+            foreach (var clip in CreateLayers)
             {
-                for (int i = 0; i < Layers.Length; i++)
-                {
-                    if (Layers[i].source == null)
-                    {
-                        GameObject layerobject = new GameObject($"Layer_{Layers[i].layer}");
-                        Layers[i].SetSource(layerobject.AddComponent<AudioSource>());
-                        layerobject.transform.SetParent(transform);
-                    }
-                }
+                CreateLayer(clip);
             }
+            if (AddServiceOnInitiate)
+                Game.AddService<DefaulMusicState>(this);
         }
-        [ContextMenu("ClearLayer")]
-        private void ClearLayers_Editor()
+        protected override void MusicStateAssigned()
         {
-            if (Layers != null && Layers.Length > 0)
-            {
-                foreach (var layer in Layers)
-                {
-                    if (layer.source.gameObject != null)
-                        DestroyImmediate(layer.source.gameObject);
-                }
-            }
         }
-#endif
-
 }
 
 public enum MUSCIENUM
@@ -51,27 +31,35 @@ public enum MUSCIENUM
 
 public sealed class STATESETVICE : StateService<MUSCIENUM>
 {
-    public DefaulMusicState() : base(MUSCIENUM.Default) // Replace default(StateList) with an actual enum value if needed
-    {
-    }
-    // Service Methods
-    protected override void OnEnd(object Author)
-    {
-    }
-    // StateService Methods
-    protected override void OnStart(object Author, MUSCIENUM State)
-    {
-    }
-    protected override MUSCIENUM DefaultState()
-    {
-        return MUSCIENUM.Default;
-    }
-    public override bool CanSwitch(MUSCIENUM A, MUSCIENUM B)
-    {
-        return true;
-    }
-    protected override bool CanResetforNewWorld(World NewWorld)
-    {
-        return false;
-    }
+     public MUSCIENUM() : base(MUSCIENUM.Default) // This is the First State Value
+        {
+
+        }
+
+        // Service Methods
+        protected override void OnStart(object Author)
+        {
+        }
+        protected override void OnEnd(object Author)
+        {
+
+        }
+
+        // StateService Methods
+        protected override DefaulMusicLayer DefaultState()
+        {
+            return DefaulMusicLayer.Default;
+        }
+        public override bool CanSwitch(DefaulMusicLayer A, DefaulMusicLayer B)
+        {
+            if (A == B)
+            {
+                return false;
+            }
+            return true;
+        }
+        protected override bool CanResetforNewWorld(World NewWorld)
+        {
+            return false;
+        }
 }
