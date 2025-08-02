@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.UIElements;
+using UnityEngine.VFX;
 
 namespace RealMethod
 {
     // Abstract Class
-    public abstract class Prefab
+    public abstract class PrefabCore
     {
         [SerializeField]
         private GameObject PrefabAsset;  // <-- this name must match
@@ -29,7 +31,7 @@ namespace RealMethod
     }
     // Prefab Class
     [System.Serializable]
-    public class Prefab<T> : Prefab where T : Component
+    public class PrefabCore<T> : PrefabCore where T : Component
     {
         // Prefab Methods
         public override bool IsValid()
@@ -44,20 +46,34 @@ namespace RealMethod
     }
 
 
-
     // Sample
     [System.Serializable]
-    public class UPrefab : Prefab<Transform>
+    public class Prefab : PrefabCore<Transform>
     {
 
     }
     [System.Serializable]
-    public class WPrefab : Prefab<RectTransform>
+    public class UPrefab : PrefabCore<RectTransform>
     {
 
     }
     [System.Serializable]
-    public class PPrefab : Prefab<ParticleSystem>
+    public class UKPrefab : PrefabCore<UIDocument>
+    {
+
+    }
+    [System.Serializable]
+    public class VPrefab : PrefabCore<ParticleSystem>
+    {
+
+    }
+    [System.Serializable]
+    public class VEPrefab : PrefabCore<VisualEffect>
+    {
+
+    }
+    [System.Serializable]
+    public class SPrefab : PrefabCore<AudioBehaviour>
     {
 
     }

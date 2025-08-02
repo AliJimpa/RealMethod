@@ -139,7 +139,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static GameObject Widget(string Name, WPrefab Prefab, MonoBehaviour Owner)
+        public static GameObject Widget(string Name, UPrefab Prefab, MonoBehaviour Owner)
         {
             if (instance.GameUI != null)
             {
@@ -151,7 +151,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static GameObject Widget(string Name, WPrefab Prefab)
+        public static GameObject Widget(string Name, UPrefab Prefab)
         {
             if (instance.GameUI != null)
             {
@@ -163,7 +163,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T Widget<T>(string Name, WPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
+        public static T Widget<T>(string Name, UPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
         {
             if (instance.GameUI != null)
             {
@@ -175,7 +175,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T Widget<T>(string Name, WPrefab Prefab) where T : MonoBehaviour
+        public static T Widget<T>(string Name, UPrefab Prefab) where T : MonoBehaviour
         {
             if (instance.GameUI != null)
             {
@@ -299,51 +299,51 @@ namespace RealMethod
         }
 
         // Prefab
-        public static GameObject Prefab(UPrefab prefab)
+        public static GameObject Prefab(PrefabCore prefab)
         {
             return Object.Instantiate(prefab.asset, Game.World.transform);
         }
-        public static GameObject Prefab(UPrefab prefab, Transform parent)
+        public static GameObject Prefab(PrefabCore prefab, Transform parent)
         {
             return Object.Instantiate(prefab.asset, parent);
         }
-        public static GameObject Prefab(UPrefab prefab, Transform parent, bool instantiateInWorldSpace)
+        public static GameObject Prefab(PrefabCore prefab, Transform parent, bool instantiateInWorldSpace)
         {
             return Object.Instantiate(prefab.asset, parent, instantiateInWorldSpace);
         }
-        public static GameObject Prefab(UPrefab prefab, Vector3 location, Vector3 rotation)
+        public static GameObject Prefab(PrefabCore prefab, Vector3 location, Vector3 rotation)
         {
             return Object.Instantiate(prefab.asset, location, Quaternion.Euler(rotation));
         }
-        public static GameObject Prefab(UPrefab prefab, Vector3 location, Quaternion rotation)
+        public static GameObject Prefab(PrefabCore prefab, Vector3 location, Quaternion rotation)
         {
             return Object.Instantiate(prefab.asset, location, rotation);
         }
-        public static GameObject Prefab(UPrefab prefab, Vector3 location)
+        public static GameObject Prefab(PrefabCore prefab, Vector3 location)
         {
             return Object.Instantiate(prefab.asset, location, Quaternion.identity);
         }
-        public static GameObject Prefab(UPrefab prefab, Vector3 location, Vector3 rotation, Transform parent)
+        public static GameObject Prefab(PrefabCore prefab, Vector3 location, Vector3 rotation, Transform parent)
         {
             return Object.Instantiate(prefab.asset, location, Quaternion.Euler(rotation), parent);
         }
-        public static GameObject Prefab(UPrefab prefab, UnityEngine.SceneManagement.Scene scene)
+        public static GameObject Prefab(PrefabCore prefab, UnityEngine.SceneManagement.Scene scene)
         {
             return Object.Instantiate(prefab.asset, scene) as GameObject;
         }
-        public static T Prefab<T>(Prefab<T> original) where T : Component
+        public static T Prefab<T>(PrefabCore<T> original) where T : Component
         {
             return Object.Instantiate(original.GetSoftClassTarget());
         }
-        public static T Prefab<T>(Prefab<T> original, Transform parent) where T : Component
+        public static T Prefab<T>(PrefabCore<T> original, Transform parent) where T : Component
         {
             return Object.Instantiate(original.GetSoftClassTarget(), parent);
         }
-        public static T Prefab<T>(Prefab<T> original, Vector3 position, Quaternion rotation) where T : Component
+        public static T Prefab<T>(PrefabCore<T> original, Vector3 position, Quaternion rotation) where T : Component
         {
             return Object.Instantiate(original.GetSoftClassTarget(), position, rotation);
         }
-        public static T Prefab<T>(Prefab<T> original, Transform parent, bool worldPositionStays) where T : Component
+        public static T Prefab<T>(PrefabCore<T> original, Transform parent, bool worldPositionStays) where T : Component
         {
             return Object.Instantiate(original.GetSoftClassTarget(), parent, worldPositionStays);
         }
@@ -413,11 +413,11 @@ namespace RealMethod
         }
 
         // Particle
-        public static ParticleSystem Particle(PPrefab prefab, Vector3 location, Vector3 rotation)
+        public static ParticleSystem Particle(VPrefab prefab, Vector3 location, Vector3 rotation)
         {
             return Prefab(prefab, location, Quaternion.Euler(rotation));
         }
-        public static ParticleSystem Particle(PPrefab prefab, Transform parent)
+        public static ParticleSystem Particle(VPrefab prefab, Transform parent)
         {
             return Prefab(prefab, parent);
         }

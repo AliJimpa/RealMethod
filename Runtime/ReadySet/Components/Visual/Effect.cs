@@ -122,7 +122,7 @@ namespace RealMethod
 
 
     [System.Serializable]
-    public class EPrefab : Prefab<Effect>
+    public class EPrefab : PrefabCore<Effect>
     {
 
     }

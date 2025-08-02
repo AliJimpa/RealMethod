@@ -24,7 +24,7 @@ namespace RealMethod
         protected abstract bool OnInitiate(Object author, Object owner);
     }
     [System.Serializable]
-    public class CPrefab : Prefab<Command>
+    public class CPrefab : PrefabCore<Command>
     {
 
     }

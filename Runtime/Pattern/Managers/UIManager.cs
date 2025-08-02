@@ -201,7 +201,7 @@ namespace RealMethod
         {
             return CreateLayer<T>(name, UIAsset, this);
         }
-        public GameObject AddLayer(string name, WPrefab Prefab, MonoBehaviour Owner)
+        public GameObject AddLayer(string name, UPrefab Prefab, MonoBehaviour Owner)
         {
             GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
             SpawnedObject.name = name;
@@ -221,11 +221,11 @@ namespace RealMethod
             }
             return SpawnedObject;
         }
-        public GameObject AddLayer(string name, WPrefab Prefab)
+        public GameObject AddLayer(string name, UPrefab Prefab)
         {
             return AddLayer(name, Prefab, this);
         }
-        public T AddLayer<T>(string name, WPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
+        public T AddLayer<T>(string name, UPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
         {
             if (!Prefab.HasInterface<IWidget>())
             {
@@ -255,7 +255,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public T AddLayer<T>(string name, WPrefab Prefab) where T : MonoBehaviour
+        public T AddLayer<T>(string name, UPrefab Prefab) where T : MonoBehaviour
         {
             return AddLayer<T>(name, Prefab, this);
         }

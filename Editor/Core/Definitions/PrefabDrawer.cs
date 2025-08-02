@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod.Editor
 {
 
-    [CustomPropertyDrawer(typeof(Prefab<>), true)]
+    [CustomPropertyDrawer(typeof(PrefabCore<>), true)]
     public class PrefabDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -73,7 +73,7 @@ namespace RealMethod.Editor
         {
             while (type != null && type != typeof(object))
             {
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Prefab<>))
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(PrefabCore<>))
                 {
                     return type.GetGenericArguments()[0];
                 }
