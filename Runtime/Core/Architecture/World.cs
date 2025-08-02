@@ -43,12 +43,6 @@ namespace RealMethod
                 return;
             }
 
-            //Find Player or Create newone
-            if (!InitiatePlayer(ref PlayerObject))
-            {
-                return;
-            }
-
             // Get All Managers
             List<IGameManager> CashManagers = new List<IGameManager>(10);
             foreach (var manager in GetComponentsInChildren<IGameManager>()) // Self Mangers
@@ -69,6 +63,12 @@ namespace RealMethod
             }
             Managers = new IGameManager[CashManagers.Count];
             Managers = CashManagers.ToArray();
+
+            //Find Player or Create newone
+            if (!InitiatePlayer(ref PlayerObject))
+            {
+                return;
+            }
 
             AwakeWorld();
         }
