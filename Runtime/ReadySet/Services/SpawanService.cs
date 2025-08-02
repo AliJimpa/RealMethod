@@ -189,7 +189,7 @@ namespace RealMethod
         }
 
         // Sound
-        public AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
+        public static AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
             if (instance.GameAudio != null)
             {
@@ -218,11 +218,11 @@ namespace RealMethod
                 return source;
             }
         }
-        public AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, bool autoDestroy = true)
+        public static AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, bool autoDestroy = true)
         {
             return Sound3D(clip, location, parent, null, 1f, false, 0f, autoDestroy);
         }
-        public AudioSource Sound2D(AudioClip clip, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
+        public static AudioSource Sound2D(AudioClip clip, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
             if (instance.GameAudio != null)
             {
@@ -250,7 +250,7 @@ namespace RealMethod
                 return source;
             }
         }
-        public AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
+        public static AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
         {
             return Sound2D(clip, null, 1f, false, 0f, autoDestroy);
         }
