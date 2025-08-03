@@ -165,7 +165,7 @@ namespace RealMethod
                         return Data;
                     }
                     MyRequest = (PCGRequest)Activator.CreateInstance(RequestType);
-                    var requestInterface = MyRequest as ICommandInitiator;
+                    var requestInterface = MyRequest as ICommand;
                     if (requestInterface != null)
                     {
                         if (!requestInterface.Initiate(this, this))
@@ -202,7 +202,7 @@ namespace RealMethod
                         return Data;
                     }
                     MyRequest = (PCGRequest)Activator.CreateInstance(RequestType);
-                    var requestInterface = MyRequest as ICommandInitiator;
+                    var requestInterface = MyRequest as ICommand;
                     if (requestInterface != null)
                     {
                         if (!requestInterface.Initiate(this, this))
@@ -239,7 +239,7 @@ namespace RealMethod
                         return Data;
                     }
                     MyRequest = (PCGRequest)Activator.CreateInstance(RequestType);
-                    var requestInterface = MyRequest as ICommandInitiator;
+                    var requestInterface = MyRequest as ICommand;
                     if (requestInterface != null)
                     {
                         if (!requestInterface.Initiate(this, this))
@@ -276,7 +276,7 @@ namespace RealMethod
                         return Data;
                     }
                     MyRequest = (PCGRequest)Activator.CreateInstance(RequestType);
-                    var requestInterface = MyRequest as ICommandInitiator;
+                    var requestInterface = MyRequest as ICommand;
                     if (requestInterface != null)
                     {
                         if (!requestInterface.Initiate(this, this))

@@ -2,46 +2,15 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    // A base one-shot command
-    public interface ICommandInitiator
+    // Base Command
+    public abstract class Command : MonoBehaviour, ICommand
     {
-        bool Initiate(Object author, Object owner);
-        T CastCommand<T>() where T : Object;
-    }
-    public abstract class Command : MonoBehaviour, ICommandInitiator
-    {
-        // Implement ICommandInitiator Interface
-        bool ICommandInitiator.Initiate(Object author, Object owner)
+        // Implement ICommand Interface
+        bool ICommand.Initiate(Object author, Object owner)
         {
             return OnInitiate(author, owner);
         }
-        T ICommandInitiator.CastCommand<T>() where T : class
-        {
-            return this as T;
-        }
-
-        // Abstract Methods
-        protected abstract bool OnInitiate(Object author, Object owner);
-    }
-    [System.Serializable]
-    public class CPrefab : PrefabCore<Command>
-    {
-
-    }
-
-
-
-
-
-    // A base one-shot command you can execute immediately.
-    public interface ICommandExecuter
-    {
-        void ExecuteCommand(object Executer);
-    }
-    public abstract class ExecutCommand : Command, ICommandExecuter
-    {
-        // Implement ICommandExecuter Interface
-        void ICommandExecuter.ExecuteCommand(object Executer)
+        void ICommand.ExecuteCommand(object Executer)
         {
             if (CanExecute(Executer))
             {
@@ -50,50 +19,43 @@ namespace RealMethod
         }
 
         // Abstract Methods
+        protected abstract bool OnInitiate(Object author, Object owner);
         protected abstract void Execute(object Owner);
         protected abstract bool CanExecute(object Owner);
     }
 
-    // A command targeted at a specific type (e.g., a component).
-    public abstract class TargetedCommand<T> : ExecutCommand where T : MonoBehaviour
-    {
-        public T MyOwner { get; private set; }
+    // Execut Command
+    // public abstract class ExecutCommand : Command, ICommand
+    // {
+    //     // Implement ICommandExecuter Interface
 
-        // Override Methods
-        protected sealed override bool OnInitiate(Object author, Object owner)
-        {
-            if (owner is T MyOwner)
-            {
-                return OnInitiate(author);
-            }
-            else
-            {
-                Debug.LogError($"Command '{GetType().Name}' could not be initiated: Owner is not of type '{typeof(T).Name}'.");
-                return false;
-            }
-        }
 
-        // Abstract Methods
-        protected abstract bool OnInitiate(Object author);
-    }
+    //     // Abstract Methods
 
-    //A longer-living command with start, update, end — like an ability/effect.
-    public interface ICommandLife
-    {
-        /// <summary> Called when the command starts. </summary>
-        void StartCommand(float Duration = 0);
-        /// <summary> Called every update or tick cycle. </summary>
-        void UpdateCommand();
-        /// <summary> Called to pause the command temporarily. </summary>
-        void StopCommand();
-        /// <summary> Called to Clear initating command. </summary>
-        void ClearCommand();
-        /// <summary> Elapsed time since command Live. </summary>
-        float RemainingTime { get; }
-        // <summary> Whether the command has finished execution. </summary>
-        bool IsFinished { get; }
-    }
-    ////////////// Note : You shoul implement Desable() for Stoped & Update() for UpdateCommand.
+    // }
+    // public abstract class TargetedCommand<T> : ExecutCommand where T : MonoBehaviour
+    // {
+    //     public T MyOwner { get; private set; }
+
+    //     // Override Methods
+    //     protected sealed override bool OnInitiate(Object author, Object owner)
+    //     {
+    //         if (owner is T MyOwner)
+    //         {
+    //             return OnInitiate(author);
+    //         }
+    //         else
+    //         {
+    //             Debug.LogError($"Command '{GetType().Name}' could not be initiated: Owner is not of type '{typeof(T).Name}'.");
+    //             return false;
+    //         }
+    //     }
+
+    //     // Abstract Methods
+    //     protected abstract bool OnInitiate(Object author);
+    // }
+
+    // Lifetime Command
     public abstract class LifecycleCommand : Command, ICommandLife
     {
         // Public Variable
@@ -242,22 +204,6 @@ namespace RealMethod
         protected abstract void OnUpdate();
         protected abstract void OnEnd();
     }
-
-    // A longer-living command that controled
-    public interface ICommandBehaviour
-    {
-        /// <summary> Called to pause the command temporarily. </summary>
-        void PauseCommand();
-        /// <summary> Called to resume the command after a pause. </summary>
-        void ResumeCommand();
-        /// <summary> Called to reset the command propetries. </summary>
-        void ResetCommand();
-        /// <summary> Resets command state (useful for pooling). </summary>
-        void RestartCommand(float Duration = 0);
-        /// <summary> Whether the command is currently paused. </summary>
-        bool IsPaused { get; }
-    }
-    ////////////// Note : You shoul implement Desable() for Pause & Update() for UpdateCommand.
     public abstract class ActionCommand : LifecycleCommand, ICommandBehaviour
     {
         // Public Variable
@@ -308,8 +254,10 @@ namespace RealMethod
     }
 
 
+    [System.Serializable]
+    public class CPrefab : PrefabCore<Command>
+    {
 
-
-
+    }
 
 }

@@ -8,7 +8,7 @@ namespace RealMethod
         // Unity Methods
         private void Awake()
         {
-            foreach (var command in GetComponents<ICommandInitiator>())
+            foreach (var command in GetComponents<ICommand>())
             {
                 command.Initiate(null, this);
             }
@@ -17,21 +17,21 @@ namespace RealMethod
         // Trigger3D Methods
         protected override void OnEnter(Collider other)
         {
-            foreach (var command in GetComponents<ICommandExecuter>())
+            foreach (var command in GetComponents<ICommand>())
             {
                 command.ExecuteCommand(other);
             }
         }
         protected override void OnStay(Collider other)
         {
-            foreach (var command in GetComponents<ICommandExecuter>())
+            foreach (var command in GetComponents<ICommand>())
             {
                 command.ExecuteCommand(other);
             }
         }
         protected override void OnExit(Collider other)
         {
-            foreach (var command in GetComponents<ICommandExecuter>())
+            foreach (var command in GetComponents<ICommand>())
             {
                 command.ExecuteCommand(other);
             }

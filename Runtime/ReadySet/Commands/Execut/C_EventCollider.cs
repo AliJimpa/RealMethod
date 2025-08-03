@@ -4,7 +4,7 @@ using UnityEngine.Events;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Commands/Execut/Collide")]
-    public sealed class C_EventCollider : ExecutCommand
+    public sealed class C_EventCollider : Command
     {
         public UnityEvent<Collider> OnTrigger;
 

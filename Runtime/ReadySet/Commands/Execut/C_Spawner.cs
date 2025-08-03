@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Commands/Execut/Spawner")]
-    public sealed class C_Spawner : ExecutCommand
+    public sealed class C_Spawner : Command
     {
         [Header("Setting")]
         private bool AutoAttach = false;

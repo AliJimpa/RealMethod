@@ -4,7 +4,7 @@ using UnityEngine.Events;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Commands/Execut/Event")]
-    public sealed class C_Event : ExecutCommand
+    public sealed class C_Event : Command
     {
         public UnityEvent<MonoBehaviour> OnExecute;
 

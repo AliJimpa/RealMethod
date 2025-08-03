@@ -4,7 +4,7 @@ using UnityEngine.Events;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Commands/Execut/Timer")]
-    public sealed class C_Timer : ExecutCommand
+    public sealed class C_Timer : Command
     {
         private enum UpdateMethod
         {

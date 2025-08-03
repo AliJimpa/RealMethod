@@ -13,7 +13,7 @@ namespace RealMethod
         private ParticleSystem[] AllParticles;
         private AudioSource[] AllAudioSources;
         private VisualEffect[] AllVisualEffects;
-        private ICommandExecuter[] AllExecutCommands;
+        private ICommand[] AllExecutCommands;
         private ICommandLife[] AllActionCommands;
 
         /// Haptic
@@ -43,8 +43,8 @@ namespace RealMethod
                 }
             }
             AllVisualEffects = GetComponentsInChildren<VisualEffect>();
-            AllExecutCommands = GetComponents<ICommandExecuter>();
-            ICommandInitiator[] CommandInitators = GetComponents<ICommandInitiator>();
+            AllExecutCommands = GetComponents<ICommand>();
+            ICommand[] CommandInitators = GetComponents<ICommand>();
             foreach (var com in CommandInitators)
             {
                 com.Initiate(this, this);

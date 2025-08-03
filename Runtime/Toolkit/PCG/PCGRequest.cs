@@ -9,12 +9,12 @@ namespace RealMethod
         Break = 2
     }
 
-    public abstract class PCGRequest : ICommandInitiator
+    public abstract class PCGRequest : ICommand
     {
         private PCGGenerationAsset Owner;
 
-        // Implement ICommandInitiator Interface
-        public bool Initiate(Object author, Object owner)
+        // Implement ICommand Interface
+        bool ICommand.Initiate(Object author, Object owner)
         {
             if (owner is PCGGenerationAsset result)
             {
@@ -27,9 +27,9 @@ namespace RealMethod
                 return false;
             }
         }
-        public T CastCommand<T>() where T : Object
+        void ICommand.ExecuteCommand(object Executer)
         {
-            return this as T;
+            throw new System.NotImplementedException();
         }
 
         // Protected Methods
@@ -48,6 +48,8 @@ namespace RealMethod
         // Abstract Methods
         protected abstract void Initialized();
         public abstract PCGRequestResult Process(ref PCGData Context, string StringParam, float FloatParam, Vector3 VectorParam);
+
+
 
     }
 

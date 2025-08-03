@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Commands/Execut/ScneLoader")]
-    public sealed class C_ScneLoader : ExecutCommand
+    public sealed class C_ScneLoader : Command
     {
         private enum LoadMethod
         {

@@ -425,7 +425,7 @@ namespace RealMethod
             }
             GameObject SpawnedObject = Object.Instantiate(prefab.asset, owner.transform);
             T TargetCommand = SpawnedObject.GetComponent<T>();
-            if (!TargetCommand.GetComponent<ICommandInitiator>().Initiate(author, owner))
+            if (!TargetCommand.GetComponent<ICommand>().Initiate(author, owner))
             {
                 Debug.LogWarning($"Spawn Command Breack: Initiation failed for command '{typeof(T).Name}' on '{prefab.Name}'.");
             }
