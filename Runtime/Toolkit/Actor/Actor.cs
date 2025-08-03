@@ -43,31 +43,31 @@ namespace RealMethod
     }
 
 
-    public abstract class Act : LifecycleCommand
+    public abstract class Act
     {
-        protected override bool CanUpdate()
-        {
-            throw new System.NotImplementedException();
-        }
+        // protected override bool CanUpdate()
+        // {
+        //     throw new System.NotImplementedException();
+        // }
 
-        protected override void OnBegin()
-        {
-            throw new System.NotImplementedException();
-        }
+        // protected override void OnBegin()
+        // {
+        //     throw new System.NotImplementedException();
+        // }
 
-        protected override void OnEnd()
-        {
-            throw new System.NotImplementedException();
-        }
+        // protected override void OnEnd()
+        // {
+        //     throw new System.NotImplementedException();
+        // }
 
-        protected override void OnInitiate()
-        {
-            throw new System.NotImplementedException();
-        }
+        // protected override void OnInitiate()
+        // {
+        //     throw new System.NotImplementedException();
+        // }
 
-        protected override void OnUpdate()
-        {
-            throw new System.NotImplementedException();
-        }
+        // protected override void OnUpdate()
+        // {
+        //     throw new System.NotImplementedException();
+        // }
     }
 }
