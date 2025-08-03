@@ -373,15 +373,15 @@ namespace RealMethod
         }
 
         // Effect
-        public static Effect Effect(EPrefab prefab)
+        public static Effector Effect(EPrefab prefab)
         {
             return Prefab(prefab);
         }
-        public static Effect Effect(EPrefab prefab, Vector3 location, Vector3 rotation)
+        public static Effector Effect(EPrefab prefab, Vector3 location, Vector3 rotation)
         {
             return Prefab(prefab, location, Quaternion.Euler(rotation));
         }
-        public static Effect Effect(EPrefab prefab, Transform parent)
+        public static Effector Effect(EPrefab prefab, Transform parent)
         {
             return Prefab(prefab, parent);
         }
@@ -416,7 +416,7 @@ namespace RealMethod
         }
 
         // Realmethod
-        public static T Command<T>(CPrefab prefab, MonoBehaviour owner, Object author) where T : Command
+        public static T Command<T>(CPrefab prefab, MonoBehaviour owner, Object author) where T : MonoCommand
         {
             if (owner == null || author == null)
             {

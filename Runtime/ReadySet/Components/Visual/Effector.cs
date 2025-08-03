@@ -3,8 +3,8 @@ using UnityEngine.VFX;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/General/Effect")]
-    public sealed class Effect : MonoBehaviour
+    [AddComponentMenu("RealMethod/General/Effector")]
+    public sealed class Effector : MonoBehaviour
     {
         [Header("Effect")]
         [SerializeField]
@@ -122,7 +122,7 @@ namespace RealMethod
 
 
     [System.Serializable]
-    public class EPrefab : PrefabCore<Effect>
+    public class EPrefab : PrefabCore<Effector>
     {
 
     }

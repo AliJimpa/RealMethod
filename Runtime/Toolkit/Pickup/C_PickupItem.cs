@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Execut/PickupItem")]
-    public sealed class C_PickupItem : Command
+    [AddComponentMenu("RealMethod/Command/PickupItem")]
+    public sealed class C_PickupItem : MonoCommand
     {
         [Header("Setting")]
         [SerializeField]
