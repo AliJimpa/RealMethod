@@ -3,8 +3,8 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Execut/Event")]
-    public sealed class C_Event : Command
+    [AddComponentMenu("RealMethod/Command/Event")]
+    public sealed class C_Event : MonoCommand
     {
         public UnityEvent<MonoBehaviour> OnExecute;
 

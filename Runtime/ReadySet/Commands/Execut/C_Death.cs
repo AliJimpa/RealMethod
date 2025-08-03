@@ -3,8 +3,8 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Execut/Death")]
-    public sealed class C_Death : Command
+    [AddComponentMenu("RealMethod/Command/Death")]
+    public sealed class C_Death : MonoCommand
     {
         [Header("Setting")]
         [SerializeField]

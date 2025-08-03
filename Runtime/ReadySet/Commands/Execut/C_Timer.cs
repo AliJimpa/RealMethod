@@ -3,8 +3,8 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Execut/Timer")]
-    public sealed class C_Timer : Command
+    [AddComponentMenu("RealMethod/Command/Timer")]
+    public sealed class C_Timer : MonoCommand
     {
         private enum UpdateMethod
         {

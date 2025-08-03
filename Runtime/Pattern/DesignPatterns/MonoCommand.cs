@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     // Base Command
-    public abstract class Command : MonoBehaviour, ICommand
+    public abstract class MonoCommand : MonoBehaviour, ICommand
     {
         // Implement ICommand Interface
         bool ICommand.Initiate(Object author, Object owner)
@@ -24,39 +24,9 @@ namespace RealMethod
         protected abstract bool CanExecute(object Owner);
     }
 
-    // Execut Command
-    // public abstract class ExecutCommand : Command, ICommand
-    // {
-    //     // Implement ICommandExecuter Interface
-
-
-    //     // Abstract Methods
-
-    // }
-    // public abstract class TargetedCommand<T> : ExecutCommand where T : MonoBehaviour
-    // {
-    //     public T MyOwner { get; private set; }
-
-    //     // Override Methods
-    //     protected sealed override bool OnInitiate(Object author, Object owner)
-    //     {
-    //         if (owner is T MyOwner)
-    //         {
-    //             return OnInitiate(author);
-    //         }
-    //         else
-    //         {
-    //             Debug.LogError($"Command '{GetType().Name}' could not be initiated: Owner is not of type '{typeof(T).Name}'.");
-    //             return false;
-    //         }
-    //     }
-
-    //     // Abstract Methods
-    //     protected abstract bool OnInitiate(Object author);
-    // }
 
     // Lifetime Command
-    public abstract class LifecycleCommand : Command, ICommandLife
+    public abstract class LifecycleCommand : MonoCommand, ICommandLife
     {
         // Public Variable
         public bool IsValidated { get; private set; }
@@ -255,7 +225,7 @@ namespace RealMethod
 
 
     [System.Serializable]
-    public class CPrefab : PrefabCore<Command>
+    public class CPrefab : PrefabCore<MonoCommand>
     {
 
     }

@@ -3,8 +3,8 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Commands/Execut/Collide")]
-    public sealed class C_EventCollider : Command
+    [AddComponentMenu("RealMethod/Command/Collide")]
+    public sealed class C_EventCollider : MonoCommand
     {
         public UnityEvent<Collider> OnTrigger;
 
