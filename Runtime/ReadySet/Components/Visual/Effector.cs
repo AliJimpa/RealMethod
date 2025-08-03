@@ -14,7 +14,6 @@ namespace RealMethod
         private AudioSource[] AllAudioSources;
         private VisualEffect[] AllVisualEffects;
         private ICommand[] AllExecutCommands;
-        private ICommandLife[] AllActionCommands;
 
         /// Haptic
         /// UI
