@@ -416,7 +416,7 @@ namespace RealMethod
         }
 
         // Realmethod
-        public static T Command<T>(CPrefab prefab, MonoBehaviour owner, Object author) where T : MonoCommand
+        public static T Command<T>(CPrefab prefab, MonoBehaviour owner, Object author) where T : Command
         {
             if (owner == null || author == null)
             {

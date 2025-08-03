@@ -2,11 +2,6 @@ namespace RealMethod
 {
     public interface ITask
     {
-
-    }
-
-    public interface ITaskLife : ITask
-    {
         /// <summary> Called when the task starts. </summary>
         void StartTask(float Duration = 0);
         /// <summary> Called every update or tick cycle. </summary>
@@ -26,8 +21,7 @@ namespace RealMethod
         // <summary> Whether the task has finished execution. </summary>
         bool IsFinished { get; }
     }
-
-    public interface ITaskController : ITaskLife
+    public interface ITaskAction : ITask
     {
         /// <summary> Called to pause the task temporarily. </summary>
         void PauseTask();

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Command/Fracture")]
-    public sealed class C_Fracture : MonoCommand
+    public sealed class C_Fracture : Command
     {
         [Header("Fracture")]
         [SerializeField]

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Command/Spawner")]
-    public sealed class C_Spawner : MonoCommand
+    public sealed class C_Spawner : Command
     {
         [Header("Setting")]
         private bool AutoAttach = false;

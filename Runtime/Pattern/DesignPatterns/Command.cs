@@ -2,8 +2,16 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    // A base command you can execute immediately.
+    public interface ICommand
+    {
+        bool Initiate(Object author, Object owner);
+        void ExecuteCommand(object Executer);
+    }
+
+    
     // Base Command
-    public abstract class MonoCommand : MonoBehaviour, ICommand
+    public abstract class Command : MonoBehaviour, ICommand
     {
         // Implement ICommand Interface
         bool ICommand.Initiate(Object author, Object owner)
@@ -25,7 +33,7 @@ namespace RealMethod
     }
 
     [System.Serializable]
-    public class CPrefab : PrefabCore<MonoCommand>
+    public class CPrefab : PrefabCore<Command>
     {
 
     }

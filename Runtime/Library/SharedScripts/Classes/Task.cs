@@ -3,11 +3,11 @@ using UnityEngine;
 namespace RealMethod
 {
     // Lifetime Command
-    public abstract class TaskEffect : ITaskLife
+    public abstract class TaskObject : ITask
     {
         // Public Variable
-        public System.Action<TaskEffect> OnStarted;
-        public System.Action<TaskEffect> OnFinished;
+        public System.Action<TaskObject> OnStarted;
+        public System.Action<TaskObject> OnFinished;
 
         // Protected Variable
         protected Object MyAuthor { get; private set; }
@@ -20,7 +20,7 @@ namespace RealMethod
         private bool islive = false;
 
         // Override Methods
-        public TaskEffect(Object author, Object owner)
+        public TaskObject(Object author, Object owner)
         {
             MyAuthor = author;
             MyOwner = owner;
@@ -32,7 +32,7 @@ namespace RealMethod
         public void Finish()
         {
             if (islive)
-                ((ITaskLife)this).StopTask();
+                ((ITask)this).StopTask();
         }
         protected void ResetValues()
         {
@@ -51,7 +51,7 @@ namespace RealMethod
         public float ElapsedTime => lifetime - residuary;
         public float NormalizedTime => residuary / lifetime;
         public bool IsFinished => !islive;
-        void ITaskLife.StartTask(float Duration)
+        void ITask.StartTask(float Duration)
         {
             if (IsValidated)
             {
@@ -69,7 +69,7 @@ namespace RealMethod
                 Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
             }
         }
-        void ITaskLife.UpdateTask()
+        void ITask.UpdateTask()
         {
             // Check Initiate
             if (!IsValidated)
@@ -109,7 +109,7 @@ namespace RealMethod
 
             OnUpdate();
         }
-        void ITaskLife.StopTask()
+        void ITask.StopTask()
         {
             if (IsValidated)
             {
@@ -125,7 +125,7 @@ namespace RealMethod
                 Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
             }
         }
-        void ITaskLife.ClearTask()
+        void ITask.ClearTask()
         {
             Finish();
             IsValidated = false;
@@ -140,7 +140,7 @@ namespace RealMethod
         protected abstract void OnUpdate();
         protected abstract void OnEnd();
     }
-    public abstract class TaskAction : TaskEffect, ITaskController
+    public abstract class TaskAction : TaskObject, ITaskAction
     {
         // Public Variable
         public System.Action<TaskAction> OnPaused;
@@ -162,30 +162,30 @@ namespace RealMethod
 
         // Implement ILiveCommand Interface
         public bool IsPaused => !isRunning;
-        void ITaskController.PauseTask()
+        void ITaskAction.PauseTask()
         {
             isRunning = false;
             OnPause();
             OnPaused?.Invoke(this);
         }
-        void ITaskController.ResumeTask()
+        void ITaskAction.ResumeTask()
         {
             isRunning = true;
             OnResume();
             OnResumed?.Invoke(this);
         }
-        void ITaskController.ResetTask()
+        void ITaskAction.ResetTask()
         {
             ResetValues();
             isRunning = true;
             OnReset();
         }
-        void ITaskController.RestartTask(float Duration)
+        void ITaskAction.RestartTask(float Duration)
         {
             ResetValues();
             isRunning = true;
             OnReset();
-            ((ITaskLife)this).StartTask(Duration);
+            ((ITask)this).StartTask(Duration);
         }
 
         // Abstract Methods

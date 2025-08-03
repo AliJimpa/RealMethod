@@ -4,7 +4,7 @@ using UnityEngine.Events;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Command/Death")]
-    public sealed class C_Death : MonoCommand
+    public sealed class C_Death : Command
     {
         [Header("Setting")]
         [SerializeField]
