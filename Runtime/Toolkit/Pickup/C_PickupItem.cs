@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Command/PickupItem")]
-    public sealed class C_PickupItem : MonoCommand
+    public sealed class C_PickupItem : Command
     {
         [Header("Setting")]
         [SerializeField]
