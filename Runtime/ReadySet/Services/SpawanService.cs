@@ -431,9 +431,13 @@ namespace RealMethod
             }
             return TargetCommand;
         }
-        public static T DataAsset<T>() where T : DataAsset
+        public static T Data<T>() where T : DataAsset
         {
             return ScriptableObject.CreateInstance<T>();
+        }
+        public static T File<T>() where T : FileAsset
+        {
+            return FileAsset.Create<T>();
         }
 
         // Other
