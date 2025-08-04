@@ -3,15 +3,8 @@ using UnityEngine;
 
 public class #SCRIPTNAME# : Command
 {
-    private void Awake()
-    {
-        if (enabled)
-            enabled = false;
-    }
-
-    // Base Command Mtethods
-    protected override void OnInitiate(Object author, Object owner)
-    {
-        enabled = true;
-    }
+    // Command Mtethods
+    protected override bool OnInitiate(Object author, Object owner){}
+    protected override void Execute(object Owner){}
+    protected override bool CanExecute(object Owner){}
 }

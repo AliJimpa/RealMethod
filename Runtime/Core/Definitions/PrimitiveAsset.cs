@@ -25,7 +25,7 @@ namespace RealMethod
 
 #if UNITY_EDITOR
         /// This method runs once at game start, calls OnEditorPlay
-        [UnityEditor.InitializeOnEnterPlayMode]
+        [InitializeOnEnterPlayMode]
         private static void EditorReset()
         {
             var assets = Resources.FindObjectsOfTypeAll<DataAsset>();

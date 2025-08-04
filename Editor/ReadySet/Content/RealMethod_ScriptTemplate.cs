@@ -4,7 +4,6 @@ namespace RealMethod.Editor
 {
     class RealMethodScriptTemplate
     {
-
         // Essential
         [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Game", false, 80)]
         public static void CreateGameClass()
@@ -16,24 +15,13 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("WorldTemplate.txt", "MyWorld.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Service", false, 80)]
-        public static void CreateService()
-        {
-            string Path = RM_Create.Script("ServiceTemplate.txt", "MyServicec.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Essential/GameConfig", false, 80)]
-        public static void CreateGameConfig()
-        {
-            string Path = RM_Create.Script("GameConfigTemplate.txt", "MyGameConfig.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Essential/Manager", false, 80)]
+
+        // Managers
+        [MenuItem("Assets/Create/Scripting/RealMethod/Manager/BaseManager", false, 80)]
         public static void CreateManager()
         {
             string Path = RM_Create.Script("ManagerTemplate.txt", "MyManager.cs");
         }
-
-
-        // Managers
         [MenuItem("Assets/Create/Scripting/RealMethod/Manager/AudioManager", false, 80)]
         public static void CreateAudioManager()
         {
@@ -67,6 +55,11 @@ namespace RealMethod.Editor
 
 
         // Service
+        [MenuItem("Assets/Create/Scripting/RealMethod/Service/BaseService", false, 80)]
+        public static void CreateService()
+        {
+            string Path = RM_Create.Script("ServiceTemplate.txt", "MyServicec.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Service/GameService", false, 80)]
         public static void CreateGameServiceClass()
         {
@@ -90,62 +83,78 @@ namespace RealMethod.Editor
 
 
         // Assets
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/DataAsset", false, 80)]
+        // // Data
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Data/BaseData", false, 80)]
         public static void CreateDataAsset()
         {
             string Path = RM_Create.Script("DataAssetTemplate.txt", "MyDataAsset.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/ItemAsset", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Data/ItemAsset", false, 80)]
         public static void CreateItemAsset()
         {
             string Path = RM_Create.Script("ItemAssetTemplate.txt", "MyItemAsset.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/SharedRootAsset", false, 80)]
-        public static void CreateSharedRootAsset()
-        {
-            string Path = RM_Create.Script("SharedRootAssetTemplate.txt", "MySharedRootAsset.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/PoolAsset", false, 80)]
-        public static void CreatePoolAsset()
-        {
-            string Path = RM_Create.Script("PoolAssetTemplate.txt", "MyPoolAsset.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/SaveAsset", false, 80)]
-        public static void CreateSaveFile()
-        {
-            string Path = RM_Create.Script("SaveFileTemplate.txt", "MySaveFile.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/GameSetting", false, 80)]
-        public static void CreateGameSettingFile()
-        {
-            string Path = RM_Create.Script("GameSettingFileTemplate.txt", "GameSettingFile.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/TableAsset", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Data/TableAsset", false, 80)]
         public static void CreateTableAsset()
         {
             string Path = RM_Create.Script("TableTemplate.txt", "MyTableAsset.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Task", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Data/Task", false, 80)]
         public static void CreateTaskAsset()
         {
             string Path = RM_Create.Script("TaskAssetTemplate.txt", "MyTaskAsset.cs");
         }
-
-        //Config
-        [MenuItem("Assets/Create/Scripting/RealMethod/Config/ConfigAsset", false, 80)]
+        // // Config
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Config/BaseConfig", false, 80)]
         public static void CreateConfigAsset()
         {
             string Path = RM_Create.Script("ConfigAssetTemplate.txt", "MyConfigAsset.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Config/Haptic", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Config/GameConfig", false, 80)]
+        public static void CreateGameConfig()
+        {
+            string Path = RM_Create.Script("GameConfigTemplate.txt", "MyGameConfig.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Config/Haptic", false, 80)]
         public static void CreateHapticConfig()
         {
             string Path = RM_Create.Script("HapticConfigTemplate.txt", "MyHaptic.cs");
         }
+        // // Files
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/File/BaseFile", false, 80)]
+        public static void CreateFileAsset()
+        {
+            string Path = RM_Create.Script("FileAssetTemplate.txt", "MyFileAsset.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/File/SaveFile", false, 80)]
+        public static void CreateSaveFile()
+        {
+            string Path = RM_Create.Script("SaveFileTemplate.txt", "MySaveFile.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/File/GameSetting", false, 80)]
+        public static void CreateGameSettingFile()
+        {
+            string Path = RM_Create.Script("GameSettingFileTemplate.txt", "GameSettingFile.cs");
+        }
+        // // Unique
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Unique/BaseUnique", false, 80)]
+        public static void CreateUniqueAsset()
+        {
+            string Path = RM_Create.Script("UniqueAssetTemplate.txt", "MyFileAsset.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Unique/SharedRootAsset", false, 80)]
+        public static void CreateSharedRootAsset()
+        {
+            string Path = RM_Create.Script("SharedRootAssetTemplate.txt", "MySharedRootAsset.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Unique/PoolAsset", false, 80)]
+        public static void CreatePoolAsset()
+        {
+            string Path = RM_Create.Script("PoolAssetTemplate.txt", "MyPoolAsset.cs");
+        }
 
-
-
-        // UI
+        // General
+        // // UI
         [MenuItem("Assets/Create/Scripting/RealMethod/General/UI/Widget", false, 80)]
         public static void CreateWidget()
         {
@@ -156,39 +165,19 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("WidgetToolkitTemplate.txt", "MyWidgetToolkit.cs");
         }
-
-        // Pattern
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/BaseCommand", false, 80)]
+        // // Command
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command", false, 80)]
         public static void CreateCommand()
         {
             string Path = RM_Create.Script("CommandTemplate.txt", "MyCommand.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/ExecutCommand", false, 80)]
-        public static void CreateExecutCommand()
-        {
-            string Path = RM_Create.Script("ExecutCommandTemplate.txt", "MyExecutCommand.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/TargetedCommand", false, 80)]
-        public static void CreateTargetedCommand()
-        {
-            string Path = RM_Create.Script("TargetedCommandTemplate.txt", "MyTargetedCommand.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/LifecycleCommand", false, 80)]
-        public static void CreateLifecycleCommand()
-        {
-            string Path = RM_Create.Script("LifecycleCommandTemplate.txt", "MyLifecycleCommand.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/ActionCommand", false, 80)]
-        public static void CreateActionCommand()
-        {
-            string Path = RM_Create.Script("ActionCommandTemplate.txt", "MyActionCommand.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Component/Trigger3D", false, 80)]
+        // // Trigger
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Trigger/Trigger3D", false, 80)]
         public static void CreateTrigger3D()
         {
             string Path = RM_Create.Script("Trigger3DTemplate.txt", "MyTrigger.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/General/Component/Trigger2D", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/General/Trigger/Trigger2D", false, 80)]
         public static void CreateTrigger2D()
         {
             string Path = RM_Create.Script("Trigger2DTemplate.txt", "MyTrigger.cs");
