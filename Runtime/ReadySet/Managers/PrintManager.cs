@@ -287,7 +287,7 @@ namespace RealMethod
 
     }
 
-
+    [AddComponentMenu("RealMethod/Manager/PrintManager")]
     public sealed class PrintManager : GizmoManager
     {
         private class LogRender : GUIRenderer
