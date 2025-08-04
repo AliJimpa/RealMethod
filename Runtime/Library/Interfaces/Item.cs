@@ -2,9 +2,8 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IItem
+    public interface IItem : IIdentifier
     {
-        string Title { get; }
         Texture2D Icon { get; }
         Sprite GetSpriteIcon();
         Sprite GetSpriteIcon(Rect rect, Vector2 pivot);

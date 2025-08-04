@@ -26,7 +26,7 @@ namespace RealMethod
                     {
                         //EditorGUILayout.BeginHorizontal();
                         int ItemQuantity = BaseComponent.GetQuantity(item);
-                        EditorGUILayout.LabelField($"Name: {item.Title}({item.GetClass<DataAsset>().name}) - Quantity: {ItemQuantity} ");
+                        EditorGUILayout.LabelField($"Name: {item.NameID}({item.GetClass<DataAsset>().name}) - Quantity: {ItemQuantity} ");
                         total += ItemQuantity;
                         //EditorGUILayout.EndHorizontal();
                     }

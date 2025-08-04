@@ -70,14 +70,14 @@ namespace RealMethod
         }
         void IInventoryStorage.DestroyItem(IInventoryItem item)
         {
-            int Target = GetIndexItem(item.Title);
+            int Target = GetIndexItem(item.NameID);
             ItemsName.RemoveAt(Target);
             ItemsQuantity.RemoveAt(Target);
             ItemsCapacity.RemoveAt(Target);
         }
         void IInventoryStorage.UpdateQuantity(IInventoryItem item, int amount)
         {
-            int Target = GetIndexItem(item.Title);
+            int Target = GetIndexItem(item.NameID);
             if (amount != 0)
             {
                 ItemsQuantity[Target] += amount;
@@ -90,7 +90,7 @@ namespace RealMethod
         }
         void IInventoryStorage.UpdateCapacity(IInventoryItem item, int value)
         {
-            int Target = GetIndexItem(item.Title);
+            int Target = GetIndexItem(item.NameID);
             ItemsCapacity[Target] = value;
         }
         InventoryItemProperty[] IInventoryStorage.GetItems()
@@ -104,7 +104,7 @@ namespace RealMethod
                 {
                     for (int i = 0; i < ItemsName.Count; i++)
                     {
-                        if (ItemsName[i] == item.Title)
+                        if (ItemsName[i] == item.NameID)
                         {
                             Result.Add(new InventoryItemProperty(item, ItemsQuantity[i], ItemsCapacity[i]));
                             continue;

@@ -108,7 +108,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public ITask Add(Object task, float duration = -1)
+        public void Add(TaskAsset task, float duration = -1)
         {
             if (task is ITask provider)
             {
@@ -117,12 +117,10 @@ namespace RealMethod
                 if (RemoveAfterEnd)
                     provider.OnTaskComplete += AnyTaskFinished;
                 Tasks.Add(provider.NameID, provider);
-                return provider;
             }
             else
             {
                 Debug.LogWarning($"ITask not Implemented in this Task {task}");
-                return null;
             }
         }
         public bool Remove(string taskName)
