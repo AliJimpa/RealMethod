@@ -30,7 +30,7 @@ namespace RealMethod
         PercentAdd,
         PercentMult
     }
-    
+
     public class GameStat : IModifiableStat
     {
         private string statName;
@@ -99,5 +99,6 @@ namespace RealMethod
             return value;
         }
     }
+
 
 }
