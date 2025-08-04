@@ -1,15 +1,19 @@
 namespace RealMethod
 {
-    public interface ITask
+    public interface IBehaviour
+    {
+
+    }
+    public interface IBehaviourMethod : IBehaviour
     {
         /// <summary> Called when the task starts. </summary>
-        void StartTask(float Duration = 0);
+        void Start(float Duration = 0);
         /// <summary> Called every update or tick cycle. </summary>
-        void UpdateTask();
+        void Update();
         /// <summary> Called to pause the task temporarily. </summary>
-        void StopTask();
+        void Stop();
         /// <summary> Called to Clear initating task. </summary>
-        void ClearTask();
+        void Clear();
         /// <summary> Has task infinit lifetime. </summary>
         bool IsInfinit { get; }
         /// <summary> Remain time since task Live. </summary>
@@ -21,16 +25,16 @@ namespace RealMethod
         // <summary> Whether the task has finished execution. </summary>
         bool IsFinished { get; }
     }
-    public interface ITaskAction : ITask
+    public interface IBehaviourAction : IBehaviourMethod
     {
         /// <summary> Called to pause the task temporarily. </summary>
-        void PauseTask();
+        void Pause();
         /// <summary> Called to resume the task after a pause. </summary>
-        void ResumeTask();
+        void Resume();
         /// <summary> Called to reset the task propetries. </summary>
-        void ResetTask();
+        void Reset();
         /// <summary> Resets task state (useful for pooling). </summary>
-        void RestartTask(float Duration = 0);
+        void Restart(float Duration = 0);
         /// <summary> Whether the task is currently paused. </summary>
         bool IsPaused { get; }
     }
