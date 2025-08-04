@@ -125,6 +125,11 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("TableTemplate.txt", "MyTableAsset.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Task", false, 80)]
+        public static void CreateTaskAsset()
+        {
+            string Path = RM_Create.Script("TaskAssetTemplate.txt", "MyTaskAsset.cs");
+        }
 
         //Config
         [MenuItem("Assets/Create/Scripting/RealMethod/Config/ConfigAsset", false, 80)]
@@ -151,7 +156,7 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("WidgetToolkitTemplate.txt", "MyWidgetToolkit.cs");
         }
-        
+
         // Pattern
         [MenuItem("Assets/Create/Scripting/RealMethod/General/Command/BaseCommand", false, 80)]
         public static void CreateCommand()
@@ -188,7 +193,7 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("Trigger2DTemplate.txt", "MyTrigger.cs");
         }
-        
+
 
         // Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Editor/SettingSection", false, 80)]

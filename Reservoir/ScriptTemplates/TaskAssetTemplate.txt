@@ -1,0 +1,16 @@
+using RealMethod;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : TaskAsset
+{
+
+    // TaskAsset Methods
+    protected override void OnInitiate(){}
+    protected override void OnBegin(){}
+    protected override void OnUpdate(){}
+    protected override void OnPause(){}
+    protected override void OnResume(){}
+    protected override void OnReset(){}    
+    protected override void OnEnd(){}
+    
+}
