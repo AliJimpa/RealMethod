@@ -14,7 +14,6 @@ namespace RealMethod
         Object GetClass();
     }
 
-
     public abstract class TaskManager : MonoBehaviour, IGameManager
     {
         [Header("Setting")]
@@ -23,7 +22,7 @@ namespace RealMethod
         [SerializeField, Tooltip("after play game Didn't change this value ")]
         private bool RemoveAfterEnd = false;
         [SerializeField]
-        private DataAsset[] DefaultTasks;
+        private TaskAsset[] DefaultTasks;
 
 
         private Hictionary<ITask> Tasks;
@@ -108,20 +107,13 @@ namespace RealMethod
                 return false;
             }
         }
-        public void Add(TaskAsset task, float duration = -1)
+        public void Add(ITask task, float duration = -1)
         {
-            if (task is ITask provider)
-            {
-                provider.Initiate(this, this);
-                provider.Start(-1);
-                if (RemoveAfterEnd)
-                    provider.OnTaskComplete += AnyTaskFinished;
-                Tasks.Add(provider.NameID, provider);
-            }
-            else
-            {
-                Debug.LogWarning($"ITask not Implemented in this Task {task}");
-            }
+            task.Initiate(this, this);
+            task.Start(-1);
+            if (RemoveAfterEnd)
+                task.OnTaskComplete += AnyTaskFinished;
+            Tasks.Add(task.NameID, task);
         }
         public bool Remove(string taskName)
         {

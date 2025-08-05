@@ -2,14 +2,13 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IResource
+    public interface IResourceUnit : IIdentifier
     {
-        string Name { get; }
         float MaxValue { get; }
         float CurrentValue { get; }
         float MinValue { get; }
     }
-    interface IModifiableResource : IResource
+    interface IModifiableResource : IResourceUnit
     {
         void SetValue(float value);
         void ModifyValue(float delta);
@@ -71,7 +70,7 @@ namespace RealMethod
         }
 
         // Implement Interfaces
-        public string Name => resourceName;
+        public string NameID => resourceName;
         public float MaxValue => maxValue;
         public float CurrentValue => currentValue;
         public float MinValue => minValue;
