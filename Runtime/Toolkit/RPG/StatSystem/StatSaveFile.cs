@@ -7,19 +7,17 @@ namespace RealMethod
     public class StatSaveFile : SaveFile, IStatStorage
     {
         [System.Serializable]
-        private class Modifier : IStatModifier, IIdentifier
+        private class Sg_Modifier : IStatModifier
         {
-            public string NameID { get; private set; }
-            public string ConfigID { get; private set; }
-            public int ModifyIndex { get; private set; }
+            public int StatIndex { get; private set; }
+            public string ConfigName { get; private set; }
             public float Value { get; private set; }
             public IStatModifier.StatUnitModifierType Type { get; private set; }
             public int Priority { get; private set; }
-            public Modifier(IIdentifier statID, IIdentifier buffID, int index, float value, IStatModifier.StatUnitModifierType type, int priority)
+            public Sg_Modifier(int statIndex, IIdentifier config, float value, IStatModifier.StatUnitModifierType type, int priority)
             {
-                NameID = statID.NameID;
-                ConfigID = buffID.NameID;
-                ModifyIndex = index;
+                StatIndex = statIndex;
+                ConfigName = config.NameID;
                 Value = value;
                 Type = type;
                 Priority = priority;
@@ -29,10 +27,17 @@ namespace RealMethod
                 Value = newValue;
             }
         }
+        private class Sg_Stat
+        {
+            public float value;
+            public float min;
+            public float max;
+        }
+
 
         [SerializeField, ReadOnly]
-        private List<Modifier> modifiersObject = new List<Modifier>(5);
-
+        private List<Sg_Modifier> modifiersObject = new List<Sg_Modifier>(5);
+        private Hictionary<Sg_Stat> Stats = new Hictionary<Sg_Stat>();
 
 
         protected override void OnStable(DataManager manager)
@@ -52,52 +57,72 @@ namespace RealMethod
         // Implement IStorage Interface
         void IStorage.StorageCreated(Object author)
         {
-
+            modifiersObject.Clear();
+            Stats.Clear();
         }
         void IStorage.StorageLoaded(Object author)
         {
         }
         void IStorage.StorageClear()
         {
+            modifiersObject.Clear();
+            Stats.Clear();
         }
         // Implement IStatStorage Interface
-        IStatModifier IStatStorage.CreateModifier(IStat stat, IIdentifier ModiferID, int ModiferIndex, float value, IStatModifier.StatUnitModifierType type, int priority)
+        IStatModifier IStatStorage.CreateModifier(int StatIndex, IIdentifier config, float value, IStatModifier.StatUnitModifierType type, int priority)
         {
-            Modifier NewModif = new(stat, ModiferID, ModiferIndex, value, type, priority);
+            Sg_Modifier NewModif = new(StatIndex, config, value, type, priority);
             modifiersObject.Add(NewModif);
             return NewModif;
         }
-        public IStatModifier GetModifier(IIdentifier ModiferID, int ModiferIndex)
+        IStatModifier[] IStatStorage.GetModifiers(int StatIndex)
         {
+            List<IStatModifier> Filterd = new List<IStatModifier>();
             foreach (var modif in modifiersObject)
             {
-                if (modif.ConfigID == ModiferID.NameID)
+                if (modif.StatIndex == StatIndex)
                 {
-                    if (modif.ModifyIndex == ModiferIndex)
-                    {
-                        return modif;
-                    }
+                    Filterd.Add(modif);
                 }
             }
-            return null;
+            return Filterd.ToArray();
         }
-        public void RemoveModifier(IIdentifier ModiferID, int ModiferIndex)
+        public void RemoveModifier(int StatIndex, IIdentifier config, IModifiableStat StatData)
         {
             foreach (var modif in modifiersObject)
             {
-                if (modif.ConfigID == ModiferID.NameID)
+                if (modif.StatIndex == StatIndex)
                 {
-                    if (modif.ModifyIndex == ModiferIndex)
+                    if (modif.ConfigName == config.NameID)
                     {
+                        StatData.RemoveModifier(modif);
                         modifiersObject.Remove(modif);
                         return;
                     }
                 }
             }
-            Debug.LogWarning($"Can't find Modifer: {ModiferID.NameID} with Index: {ModiferIndex} for Remove");
         }
 
-
-
+        void IStatStorage.StartStats(IStat[] stats)
+        {
+            foreach (var stat in stats)
+            {
+                Sg_Stat myval = new Sg_Stat();
+                myval.value = stat.BaseValue;
+                myval.min = stat.MinValue;
+                myval.max = stat.MaxValue;
+                Stats.Add(stat.NameID, myval);
+            }
+        }
+        bool IStatStorage.TryLoadStats(StatData data)
+        {
+            if (Stats.ContainsKey(data.NameID))
+            {
+                Sg_Stat myvalue = Stats[data.NameID];
+                data.SetValue(myvalue.value);
+                data.SetLimitation(myvalue.min, myvalue.max);
+            }
+            return false;
+        }
     }
 }
