@@ -2,7 +2,7 @@ namespace RealMethod
 {
     public interface IResourceItem : IItem
     {
-        T GetResourceProvider<T>() where T : IResource;
+        IResource GetResourceProvider();
     }
 
 

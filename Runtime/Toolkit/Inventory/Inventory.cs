@@ -194,6 +194,10 @@ namespace RealMethod
                 return false;
             }
         }
+        public IResource GetResourceProvider(IInventoryItem item)
+        {
+            return Items[item.NameID];
+        }
         public int GetQuantity(IInventoryItem item)
         {
             if (Items.ContainsKey(item.NameID))
