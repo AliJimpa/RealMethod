@@ -13,7 +13,10 @@ namespace RealMethod
     public abstract class BaseStatData : IStat, IModifiableStat
     {
         [SerializeField]
-        private float baseValue;
+        private float firstValue;
+        public float FirstValue => firstValue;
+        [SerializeField, ReadOnly]
+        private float exteraValue;
         [SerializeField, ReadOnly]
         private float currentValue;
         [SerializeField]
@@ -33,7 +36,7 @@ namespace RealMethod
         }
         public BaseStatData(float startValue, float min, float max)
         {
-            baseValue = startValue;
+            firstValue = startValue;
             minValue = min;
             maxValue = max;
         }
@@ -41,16 +44,23 @@ namespace RealMethod
 
         // Implement IStat Interface
         public string NameID => GetStatName();
-        public float BaseValue => baseValue;
+        public float BaseValue => firstValue + exteraValue;
         public float Value => GetFinalValue();
         public float MinValue => minValue;
         public float MaxValue => maxValue;
         // Implement IModifiableStat Interface
         void IModifiableStat.AddModifier(IStatModifier mod)
         {
-            modifiers.Add(mod);
-            isDirty = true;
-            OnChangeValue?.Invoke(this);
+            if (!modifiers.Contains(mod))
+            {
+                modifiers.Add(mod);
+                isDirty = true;
+                OnChangeValue?.Invoke(this);
+            }
+            else
+            {
+                Debug.LogWarning("The Modifier already added!");
+            }
         }
         void IModifiableStat.RemoveModifier(IStatModifier mod)
         {
@@ -60,14 +70,18 @@ namespace RealMethod
         }
 
         // Public Functions
-        public void SetValue(float value)
+        public void SetExteraValue(float value)
         {
-            baseValue = value;
+            exteraValue = value;
+            isDirty = true;
+            OnChangeValue?.Invoke(this);
         }
         public void SetLimitation(float min, float max)
         {
             minValue = min;
             maxValue = max;
+            isDirty = true;
+            OnChangeValue?.Invoke(this);
         }
 
         // Private Functions
@@ -79,7 +93,7 @@ namespace RealMethod
         {
             if (isDirty)
             {
-                float finalValue = baseValue;
+                float finalValue = BaseValue;
                 float sumPercentAdd = 0f;
                 // Sort by Priority before applying modifiers
                 IEnumerable<IStatModifier> modifiersToApply = CanSort() ? modifiers.OrderBy(m => m.Priority) : modifiers;
@@ -127,8 +141,6 @@ namespace RealMethod
         public bool IsAllowedClamp { get; protected set; }
         public bool IsAllowedSort { get; protected set; }
 
-
-
         // BaseStatData Methods
         protected sealed override string GetStatName()
         {
@@ -160,8 +172,6 @@ namespace RealMethod
         // Abstract Method
         protected abstract void OnLoaded();
         protected abstract void OnInitiate(StatProfile profile);
-
-
     }
 
 }

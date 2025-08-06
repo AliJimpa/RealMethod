@@ -29,10 +29,4 @@ namespace RealMethod
         void UpdateValue(float newValue);
     }
 
-    public interface IStatInitiator
-    {
-        void Initialize();
-    }
-
-
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RealMethod
@@ -6,38 +7,16 @@ namespace RealMethod
     [CreateAssetMenu(fileName = "StatSaveFile", menuName = "RealMethod/RPG/SaveFile", order = 1)]
     public class StatSaveFile : SaveFile, IStatStorage
     {
-        [System.Serializable]
-        private class Sg_Modifier : IStatModifier
-        {
-            public int StatIndex { get; private set; }
-            public string ConfigName { get; private set; }
-            public float Value { get; private set; }
-            public IStatModifier.StatUnitModifierType Type { get; private set; }
-            public int Priority { get; private set; }
-            public Sg_Modifier(int statIndex, IIdentifier config, float value, IStatModifier.StatUnitModifierType type, int priority)
-            {
-                StatIndex = statIndex;
-                ConfigName = config.NameID;
-                Value = value;
-                Type = type;
-                Priority = priority;
-            }
-            public void UpdateValue(float newValue)
-            {
-                Value = newValue;
-            }
-        }
-        private class Sg_Stat
-        {
-            public float value;
-            public float min;
-            public float max;
-        }
-
-
-        [SerializeField, ReadOnly]
-        private List<Sg_Modifier> modifiersObject = new List<Sg_Modifier>(5);
-        private Hictionary<Sg_Stat> Stats = new Hictionary<Sg_Stat>();
+        [Header("Stat")]
+        [SerializeField, ReadOnly, TextArea]
+        protected string Description = "This Save file include IStatStorage for store data by StatProfile for saving Stat items";
+        [SerializeField]
+        private bool UsePlayerPrefs = true;
+        [Header("Storage")]
+        public List<string> Names = new List<string>(5);
+        public List<float> Values = new List<float>(5);
+        public List<float> Mins = new List<float>(5);
+        public List<float> Maxs = new List<float>(5);
 
 
         protected override void OnStable(DataManager manager)
@@ -45,82 +24,64 @@ namespace RealMethod
         }
         protected override void OnSaved()
         {
+            if (UsePlayerPrefs)
+            {
+                RM_PlayerPrefs.SetArray("StatName", Names.ToArray());
+                RM_PlayerPrefs.SetArray("StatBaseValue", Values.ToArray());
+                RM_PlayerPrefs.SetArray("StatMin", Mins.ToArray());
+                RM_PlayerPrefs.SetArray("StatMax", Maxs.ToArray());
+            }
         }
         protected override void OnLoaded()
         {
+            if (UsePlayerPrefs)
+            {
+                Names = RM_PlayerPrefs.GetArray<string>("StatName").ToList();
+                Values = RM_PlayerPrefs.GetArray<float>("StatBaseValue").ToList();
+                Mins = RM_PlayerPrefs.GetArray<float>("StatMin").ToList();
+                Maxs = RM_PlayerPrefs.GetArray<float>("StatMax").ToList();
+            }
         }
         protected override void OnDeleted()
         {
+            if (UsePlayerPrefs)
+            {
+                Names = null;
+                Values = null;
+                Mins = null;
+                Maxs = null;
+            }
         }
 
 
         // Implement IStorage Interface
         void IStorage.StorageCreated(Object author)
         {
-            modifiersObject.Clear();
-            Stats.Clear();
         }
         void IStorage.StorageLoaded(Object author)
         {
         }
         void IStorage.StorageClear()
         {
-            modifiersObject.Clear();
-            Stats.Clear();
         }
         // Implement IStatStorage Interface
-        IStatModifier IStatStorage.CreateModifier(int StatIndex, IIdentifier config, float value, IStatModifier.StatUnitModifierType type, int priority)
-        {
-            Sg_Modifier NewModif = new(StatIndex, config, value, type, priority);
-            modifiersObject.Add(NewModif);
-            return NewModif;
-        }
-        IStatModifier[] IStatStorage.GetModifiers(int StatIndex)
-        {
-            List<IStatModifier> Filterd = new List<IStatModifier>();
-            foreach (var modif in modifiersObject)
-            {
-                if (modif.StatIndex == StatIndex)
-                {
-                    Filterd.Add(modif);
-                }
-            }
-            return Filterd.ToArray();
-        }
-        public void RemoveModifier(int StatIndex, IIdentifier config, IModifiableStat StatData)
-        {
-            foreach (var modif in modifiersObject)
-            {
-                if (modif.StatIndex == StatIndex)
-                {
-                    if (modif.ConfigName == config.NameID)
-                    {
-                        StatData.RemoveModifier(modif);
-                        modifiersObject.Remove(modif);
-                        return;
-                    }
-                }
-            }
-        }
-
-        void IStatStorage.StartStats(IStat[] stats)
+        void IStatStorage.StoreStats(IStat[] stats)
         {
             foreach (var stat in stats)
             {
-                Sg_Stat myval = new Sg_Stat();
-                myval.value = stat.BaseValue;
-                myval.min = stat.MinValue;
-                myval.max = stat.MaxValue;
-                Stats.Add(stat.NameID, myval);
+                Names.Add(stat.NameID);
+                Values.Add(stat.BaseValue);
+                Mins.Add(stat.MinValue);
+                Maxs.Add(stat.MaxValue);
             }
         }
         bool IStatStorage.TryLoadStats(StatData data)
         {
-            if (Stats.ContainsKey(data.NameID))
+            if (Names.Contains(data.NameID))
             {
-                Sg_Stat myvalue = Stats[data.NameID];
-                data.SetValue(myvalue.value);
-                data.SetLimitation(myvalue.min, myvalue.max);
+                int targetindex = Names.IndexOf(data.NameID);
+                data.SetExteraValue(Values[targetindex] - data.FirstValue);
+                data.SetLimitation(Mins[targetindex], Maxs[targetindex]);
             }
             return false;
         }

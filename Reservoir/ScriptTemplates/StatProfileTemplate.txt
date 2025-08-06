@@ -1,0 +1,46 @@
+using UnityEngine;
+using RealMethod;
+
+
+public enum STATTYPE
+{
+    Vitality,
+    AttackPower,
+    Defense,
+}
+
+[System.Serializable]
+public class STATOBJECT : StatData
+{
+    // StatData Methods
+    protected override void OnInitiate(StatProfile profile)
+    {
+        // Call when Stat Initialized in Profiler
+    }
+    protected override bool CheckModifier(IStatModifier mod)
+    {
+        // Use for filter some modifier
+        return true;
+    }
+    protected override void OnLoaded()
+    {
+        // Call when stat data loaded
+    }
+}
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : StatProfileStorage<STATTYPE, STATOBJECT>
+{
+
+#if UNITY_EDITOR
+    public override void OnEditorPlay()
+    {
+        //base.OnEditorPlay();
+    }
+    private void OnValidate()
+    {
+        ChangeName(name);
+    }
+#endif
+
+}

@@ -3,25 +3,28 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public interface IStatContainer
+    {
+        IStat GetStat(int index);
+        BaseStatData GetStatData(int index);
+        void ApplyBuff(BuffConfig config);
+        void DeclineBuff(BuffConfig config);
+    }
     public interface IStatStorage : IStorage
     {
-        void StartStats(IStat[] stat);
+        void StoreStats(IStat[] stat);
         bool TryLoadStats(StatData data);
-
-
-        IStatModifier CreateModifier(int StatIndex, IIdentifier config, float value, IStatModifier.StatUnitModifierType type, int priority);
-        IStatModifier[] GetModifiers(int StatIndex);
-        void RemoveModifier(int StatIndex, IIdentifier config, IModifiableStat StatData);
     }
 
-    public abstract class StatProfile : DataAsset, IIdentifier
+    public abstract class StatProfile : DataAsset, IIdentifier, IStatContainer
     {
         [Header("Profile")]
+        [SerializeField]
         private string profileName;
-        [SerializeField]
-        private bool clamp;
+        [SerializeField, Tooltip("No Runtine effect")]
+        private bool clamp = true;
         public bool Clamp => clamp;
-        [SerializeField]
+        [SerializeField, Tooltip("No Runtine effect")]
         private bool sortPriority;
         public bool SortPriority => sortPriority;
         public int Count => GetStatCount();
@@ -39,7 +42,17 @@ namespace RealMethod
 
         // Abstract Method
         public abstract IStat GetStat(int index);
+        public abstract BaseStatData GetStatData(int index);
+        public abstract void ApplyBuff(BuffConfig config);
+        public abstract void DeclineBuff(BuffConfig config);
         protected abstract int GetStatCount();
+
+#if UNITY_EDITOR
+        public void ChangeName(string NewName)
+        {
+            profileName = NewName;
+        }
+#endif
     }
     public abstract class StatProfile<En, Sd> : StatProfile where En : System.Enum where Sd : StatData
     {
@@ -66,10 +79,47 @@ namespace RealMethod
             }
             return null;
         }
+        public sealed override BaseStatData GetStatData(int index)
+        {
+            CheckStorage();
+            int i = 0;
+            foreach (var stat in ChacterStats)
+            {
+                if (i == index)
+                {
+                    return stat.Value;
+                }
+                i++;
+            }
+            return null;
+        }
         protected sealed override int GetStatCount()
         {
             return ChacterStats != null ? ChacterStats.Count : 0;
         }
+        public sealed override void ApplyBuff(BuffConfig config)
+        {
+            CheckStorage();
+            foreach (var stat in ChacterStats)
+            {
+                foreach (var modf in config.GetModifiers(stat.Key))
+                {
+                    ((IModifiableStat)stat.Value).AddModifier(modf);
+                }
+            }
+        }
+        public sealed override void DeclineBuff(BuffConfig config)
+        {
+            CheckStorage();
+            foreach (var stat in ChacterStats)
+            {
+                foreach (var modf in config.GetModifiers(stat.Key))
+                {
+                    ((IModifiableStat)stat.Value).RemoveModifier(modf);
+                }
+            }
+        }
+
 
         // Public Functions
         public En[] GetStatList()
@@ -80,27 +130,6 @@ namespace RealMethod
         {
             CheckStorage();
             return ChacterStats[identity];
-        }
-        public void ApplyBuff(StatModifierConfig config)
-        {
-            CheckStorage();
-            foreach (var stat in ChacterStats)
-            {
-                IStatModifier[] result = config.MakeModifiers(stat.Key, Storage);
-                foreach (var modf in result)
-                {
-                    ((IModifiableStat)stat.Value).AddModifier(modf);
-                }
-            }
-        }
-        public void DeclineBuff(StatModifierConfig config)
-        {
-            CheckStorage();
-            foreach (var stat in ChacterStats)
-            {
-                int statindex = System.Convert.ToInt32(stat.Key);
-                Storage.RemoveModifier(statindex, config, stat.Value);
-            }
         }
 
         // Private Functions
@@ -119,11 +148,6 @@ namespace RealMethod
                             ((IStatDatainitializer)stat.Value).SetName(NameID + "_" + stat.Key.ToString());
                             if (Storage.TryLoadStats(stat.Value))
                             {
-                                IStatModifier[] statmodifiers = Storage.GetModifiers(System.Convert.ToInt32(stat.Key));
-                                foreach (var modif in statmodifiers)
-                                {
-                                    ((IModifiableStat)stat.Value).AddModifier(modif);
-                                }
                                 ((IStatDatainitializer)stat.Value).initializer(this, true);
                             }
                             else
@@ -140,7 +164,7 @@ namespace RealMethod
                             ((IStatDatainitializer)stat.Value).SetName(NameID + "_" + stat.Key.ToString());
                             ((IStatDatainitializer)stat.Value).initializer(this, false);
                         }
-                        Storage.StartStats(ChacterStats.Values.ToArray());
+                        Storage.StoreStats(ChacterStats.Values.ToArray());
                     }
                 }
                 else

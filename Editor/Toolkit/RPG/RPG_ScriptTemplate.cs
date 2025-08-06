@@ -4,10 +4,16 @@ namespace RealMethod.Editor
 {
     class RPG_ScriptTemplate
     {
-        // [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Inventory/Item", false, 80)]
-        // public static void CreateItem()
-        // {
-        //     string Path = RM_Create.Script("InventoryItemTemplate.txt", "MyItem.cs");
-        // }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/RPG/Profile", false, 80)]
+        public static void CreateStatProfile()
+        {
+            string Path = RM_Create.Script("StatProfileTemplate.txt", "MyProfile.cs");
+        }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/RPG/Buff", false, 80)]
+        public static void CreateBuffConfig()
+        {
+            string Path = RM_Create.Script("BuffConfigTemplate.txt", "MyBuff.cs");
+        }
+
     }
 }

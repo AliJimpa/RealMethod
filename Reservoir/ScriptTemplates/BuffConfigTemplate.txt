@@ -1,0 +1,13 @@
+using UnityEngine;
+using RealMethod;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class MyBuffConfig : BuffConfig<STATTYPE> // find your STATTYPE enum in StatProfile
+{
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        ChangeName(name);
+    }
+#endif
+}
