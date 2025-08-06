@@ -26,8 +26,8 @@ public class #SCRIPTNAME# : ItemAsset, IInventoryItem
     {
         return true;
     }
-    public Object GetResourceObject()
+    public T GetResourceProvider<T>() where T : IResource
     {
-        return this;
+        return default;
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class ItemAsset : DataAsset, IItem
+    public abstract class ItemAsset : DataAsset, IItemAsset
     {
         [Header("Item")]
         [SerializeField]
@@ -32,7 +32,7 @@ namespace RealMethod
             }
         }
 
-        public DataAsset GetItem()
+        public DataAsset GetAsset()
         {
             return this;
         }

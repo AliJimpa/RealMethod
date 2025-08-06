@@ -1,11 +1,12 @@
-using UnityEngine;
-
 namespace RealMethod
 {
-    public interface IResourceItem : IIdentifier
+    public interface IResourceItem : IItem
     {
-        Object GetResourceObject();
+        T GetResourceProvider<T>() where T : IResource;
     }
+
+
+
     public interface IResource
     {
         float MaxValue { get; }
@@ -15,25 +16,30 @@ namespace RealMethod
     }
 
 
-
     // Resource Type
-    public interface IConsumable : IResource
+    interface IModifiableResource : IResource
+    {
+        void Add(float amount);
+        void Subtract(float amount);
+        void Set(float amount);
+    }
+    public interface IConsumableResource : IResource
     {
         bool CanConsume(float amount);
         void Consume(float amount);
     }
-    public interface IRegenerable : IResource
+    public interface IRegenerableResource : IResource
     {
         float RegenerationRate { get; } // Units per second
         void Regenerate(float deltaTime);
     }
-    public interface IChargeable : IResource
+    public interface IChargeableResource : IResource
     {
         void Charge(float amount);
         void ResetCharge();
         bool IsFullyCharged { get; }
     }
-    public interface ITimeGated
+    public interface ITimeGatedResource
     {
         float CooldownDuration { get; }
         float CooldownRemaining { get; }
@@ -42,11 +48,11 @@ namespace RealMethod
         void StartCooldown();
         void TickCooldown(float deltaTime);
     }
-    public interface IRefundable
+    public interface IRefundableResource
     {
         float Refund(float percent); // return refunded amount
     }
-    public interface IDecaying : IResource
+    public interface IDecayingResource : IResource
     {
         float DecayRate { get; }
         void Decay(float deltaTime);
@@ -56,12 +62,7 @@ namespace RealMethod
 
 
 
-    interface IModifiableResource
-    {
-        void Add(float amount);
-        void Subtract(float amount);
-        void Set(float amount);
-    }
+
 
 
     // interface IResourceContainer

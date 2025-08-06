@@ -10,7 +10,7 @@ namespace RealMethod
         void UpdateCapacity(IInventoryItem item, int value);
     }
 
-    public interface IInventoryItem : IItem , IResourceItem
+    public interface IInventoryItem : IItemAsset , IResourceItem
     {
         void PickedUp(Inventory owner, int quantity);
         void Cahanged(int quantity);
