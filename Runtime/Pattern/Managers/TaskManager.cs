@@ -1,17 +1,14 @@
-using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RealMethod
 {
-
-    public delegate void TaskCallback(ITask provider);
-    public interface ITask : IBehaviourAction, IIdentifier
+    public delegate void TaskCallback(bool enable);
+    public interface ITask
     {
-        // Only expose event binding — not invoking
-        event TaskCallback OnTaskComplete;
-        bool IsValidated { get; }
-        void Initiate(TaskManager owner, Object author);
-        Object GetClass();
+        void Enable(Object author);
+        void Update();
+        void Disable(Object author);
     }
 
     public abstract class TaskManager : MonoBehaviour, IGameManager
@@ -19,14 +16,11 @@ namespace RealMethod
         [Header("Setting")]
         [SerializeField]
         private UpdateMethod updateMethod = UpdateMethod.Update;
-        [SerializeField, Tooltip("after play game Didn't change this value ")]
-        private bool RemoveAfterEnd = false;
         [SerializeField]
         private TaskAsset[] DefaultTasks;
 
-
-        private Hictionary<ITask> Tasks;
-        public int Count => Tasks.IsValid() ? Tasks.Count : 0;
+        private List<ITask> Tasks;
+        public int Count => Tasks != null ? Tasks.Count : 0;
 
         // Implement IGameManager Interface
         MonoBehaviour IGameManager.GetManagerClass()
@@ -37,26 +31,15 @@ namespace RealMethod
         {
             if (DefaultTasks != null)
             {
-                Tasks = new Hictionary<ITask>(DefaultTasks.Length + 5);
+                Tasks = new List<ITask>(DefaultTasks.Length + 5);
                 foreach (var task in DefaultTasks)
                 {
-                    if (task is ITask provider)
-                    {
-                        provider.Initiate(this, this);
-                        provider.Start(-1);
-                        if (RemoveAfterEnd)
-                            provider.OnTaskComplete += AnyTaskFinished;
-                        Tasks.Add(provider.NameID, provider);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"ITask not Implemented in this Task {task}");
-                    }
+                    Add(task, this);
                 }
             }
             else
             {
-                Tasks = new Hictionary<ITask>(5);
+                Tasks = new List<ITask>(5);
             }
 
             InitiateManager(AlwaysLoaded);
@@ -71,58 +54,40 @@ namespace RealMethod
         {
             if (updateMethod == UpdateMethod.LateUpdate)
             {
-                UpdateAbility();
+                UpdateTasks();
             }
         }
         private void Update()
         {
             if (updateMethod == UpdateMethod.Update)
             {
-                UpdateAbility();
+                UpdateTasks();
             }
         }
         private void FixedUpdate()
         {
             if (updateMethod == UpdateMethod.FixedUpdate)
             {
-                UpdateAbility();
+                UpdateTasks();
             }
         }
 
         // Public Functions
-        public bool IsValid(string taskName)
+        public bool IsValid(ITask task)
         {
-            return Tasks.ContainsKey(taskName);
+            return Tasks.Contains(task);
         }
-        public bool TryFindTask(string taskName, out ITask task)
+        public void Add(ITask task, Object author)
         {
-            if (Tasks.ContainsKey(taskName))
-            {
-                task = Tasks[taskName];
-                return true;
-            }
-            else
-            {
-                task = null;
-                return false;
-            }
+            task.Enable(author);
+            Tasks.Add(task);
         }
-        public void Add(ITask task, float duration = -1)
+        public bool Remove(ITask task, Object author)
         {
-            task.Initiate(this, this);
-            task.Start(-1);
-            if (RemoveAfterEnd)
-                task.OnTaskComplete += AnyTaskFinished;
-            Tasks.Add(task.NameID, task);
-        }
-        public bool Remove(string taskName)
-        {
-            ITask provider;
-            if (TryFindTask(taskName, out provider))
+            if (Tasks.Contains(task))
             {
-                if (RemoveAfterEnd)
-                    provider.OnTaskComplete -= AnyTaskFinished;
-                Tasks.Remove(taskName);
+                task.Disable(author);
+                Tasks.Remove(task);
                 return true;
             }
             else
@@ -132,25 +97,15 @@ namespace RealMethod
         }
         public ITask[] GetAllTasks()
         {
-            return Tasks.GetValues().ToArray();
+            return Tasks.ToArray();
         }
 
         // Private Functions
-        private void UpdateAbility()
+        private void UpdateTasks()
         {
-            foreach (var task in Tasks.GetValues())
+            foreach (var task in Tasks)
             {
                 task.Update();
-            }
-        }
-        private void AnyTaskFinished(ITask provider)
-        {
-            if (RemoveAfterEnd)
-            {
-                if (!Remove(provider.NameID))
-                {
-                    Debug.LogWarning($"Can't find any task with {provider.NameID} for removing");
-                }
             }
         }
 
@@ -163,9 +118,43 @@ namespace RealMethod
 
     public abstract class TaskAsset : DataAsset, ITask
     {
+        private event TaskCallback onTaskStatus;
+        public bool IsEnable { get; private set; }
+
+        // Implement ITask Interface
+        void ITask.Enable(Object author)
+        {
+            IsEnable = true;
+            OnTaskEnable(author);
+            onTaskStatus?.Invoke(true);
+        }
+        void ITask.Update()
+        {
+            OnTaskUpdate();
+        }
+        void ITask.Disable(Object author)
+        {
+            IsEnable = false;
+            OnTaskDisable(author);
+            onTaskStatus?.Invoke(false);
+        }
+
+        // Abstract Methods
+        protected abstract void OnTaskEnable(Object author);
+        protected abstract void OnTaskUpdate();
+        protected abstract void OnTaskDisable(Object author);
+
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+            IsEnable = false;
+        }
+#endif
+    }
+
+    public abstract class TaskBehaviour : TaskAsset, IBehaviourAction
+    {
         [Header("Task")]
-        [SerializeField]
-        private string taskName;
         [SerializeField]
         private bool infinit = false;
         [SerializeField, ConditionalHide("infinit", true, true)]
@@ -179,11 +168,9 @@ namespace RealMethod
 
         // Protected Variable
         protected Object Author { get; private set; }
-        protected TaskManager Manager { get; private set; }
-
 
         // Private Variable
-        private event TaskCallback onTaskComplete;
+        private IBehaviourCycle MyCycle;
         private bool isValidated;
         private float lifetime = -1;
         private float residuary = -1;
@@ -191,66 +178,36 @@ namespace RealMethod
         private bool isRunning = true;
 
 
-
-        // Functions
-        public void Finish()
-        {
-            if (islive)
-                ((IBehaviourMethod)this).Stop();
-        }
-        private void ResetTaskValues()
-        {
-            islive = false;
-            lifetime = -1;
-            residuary = -1;
-        }
-        protected virtual float PreProcessDuration(float OverrideDuration)
-        {
-            if (OverrideDuration < 0)
-            {
-                return infinit ? 0 : baseDuration;
-            }
-            return OverrideDuration;
-        }
-        protected virtual bool CanUpdate()
-        {
-            return isRunning;
-        }
-
-
-        // Implement ITask Interface
-        public string NameID => taskName;
-        public bool IsValidated => isValidated;
-        event TaskCallback ITask.OnTaskComplete
-        {
-            add { onTaskComplete += value; }
-            remove { onTaskComplete -= value; }
-        }
-        void ITask.Initiate(TaskManager owner, Object author)
+        // TaskAsset Methods
+        protected sealed override void OnTaskEnable(Object author)
         {
             Author = author;
-            Manager = owner;
             isValidated = true;
+            MyCycle = this;
             OnInitiate();
+            MyCycle.Start();
         }
-        Object ITask.GetClass()
+        protected sealed override void OnTaskUpdate()
         {
-            return this;
+            MyCycle.Update();
         }
-        // Implement IBehaviourMethod Interface
-        public bool IsInfinit => lifetime == 0;
-        public float RemainingTime => residuary;
-        public float ElapsedTime => lifetime - residuary;
-        public float NormalizedTime => residuary / lifetime;
-        public bool IsFinished => !islive;
-        void IBehaviourMethod.Start(float Duration)
+        protected sealed override void OnTaskDisable(Object author)
         {
+            isValidated = false;
+            Author = null;
+        }
+
+
+        // Implement IBehaviour Interface
+        public bool IsStarted => islive;
+        void IBehaviour.Start()
+        {
+            lifetime = infinit ? 0 : baseDuration;
             if (isValidated)
             {
                 if (!islive)
                 {
-                    lifetime = PreProcessDuration(Duration);
-                    residuary = lifetime > 0 ? lifetime : 0;
+                    residuary = lifetime;
                     OnBegin();
                     OnStarted?.Invoke(this);
                     islive = true;
@@ -258,15 +215,61 @@ namespace RealMethod
             }
             else
             {
+                Debug.LogError("First You Sould Initiate Behaviour");
+            }
+        }
+        void IBehaviour.Stop()
+        {
+            if (isValidated)
+            {
+                if (islive)
+                {
+                    islive = false;
+                    OnEnd();
+                    OnFinished?.Invoke(this);
+                }
+            }
+            else
+            {
                 Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
             }
         }
-        void IBehaviourMethod.Update()
+        void IBehaviour.Clear()
+        {
+            Finish();
+            isValidated = false;
+            Author = null;
+        }
+        // Implement IBehaviourCycle Interface
+        public bool IsInfinit => infinit;
+        public float RemainingTime => residuary;
+        public float ElapsedTime => lifetime - residuary;
+        public float NormalizedTime => residuary / lifetime;
+        public bool IsFinished => !islive;
+        void IBehaviourCycle.Start(float overrideTime)
+        {
+            lifetime = overrideTime;
+            if (isValidated)
+            {
+                if (!islive)
+                {
+                    residuary = lifetime;
+                    OnBegin();
+                    OnStarted?.Invoke(this);
+                    islive = true;
+                }
+            }
+            else
+            {
+                Debug.LogError("First You Sould Initiate Behaviour");
+            }
+        }
+        void IBehaviourCycle.Update()
         {
             // Check Initiate
             if (!isValidated)
             {
-                Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
+                Debug.LogError("First You Sould Validate");
                 return;
             }
 
@@ -290,7 +293,7 @@ namespace RealMethod
             }
             else
             {
-                if (!IsInfinit)
+                if (!infinit)
                 {
                     // Stop Command Teime over
                     residuary = 0;
@@ -300,30 +303,6 @@ namespace RealMethod
             }
 
             OnUpdate();
-        }
-        void IBehaviourMethod.Stop()
-        {
-            if (isValidated)
-            {
-                if (islive)
-                {
-                    islive = false;
-                    OnEnd();
-                    OnFinished?.Invoke(this);
-                    onTaskComplete?.Invoke(this);
-                }
-            }
-            else
-            {
-                Debug.LogError("First You Sould Initiate Command with ICommandInitiator");
-            }
-        }
-        void IBehaviourMethod.Clear()
-        {
-            Finish();
-            isValidated = false;
-            Author = null;
-            Manager = null;
         }
         // Implement IBehaviourAction Interface
         public bool IsPaused => !isRunning;
@@ -350,7 +329,33 @@ namespace RealMethod
             ResetTaskValues();
             isRunning = true;
             OnReset();
-            ((IBehaviourMethod)this).Start(Duration);
+            if (Duration > 0)
+            {
+                ((IBehaviourCycle)this).Start(Duration);
+            }
+            else
+            {
+                ((IBehaviour)this).Start();
+            }
+        }
+
+
+        // Functions
+        public void Finish()
+        {
+            if (islive)
+                ((IBehaviour)this).Stop();
+        }
+        private void ResetTaskValues()
+        {
+            islive = false;
+            isRunning = true;
+            lifetime = -1;
+            residuary = -1;
+        }
+        protected virtual bool CanUpdate()
+        {
+            return isRunning;
         }
 
 
@@ -363,16 +368,15 @@ namespace RealMethod
         protected abstract void OnReset();
         protected abstract void OnEnd();
 
-
 #if UNITY_EDITOR
-        public override void OnEditorPlay()
+        public sealed override void OnEditorPlay()
         {
+            base.OnEditorPlay();
             ResetTaskValues();
         }
 #endif
 
 
     }
-
 
 }

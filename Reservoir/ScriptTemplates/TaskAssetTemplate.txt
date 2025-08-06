@@ -1,7 +1,7 @@
 using RealMethod;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : TaskAsset
+public class #SCRIPTNAME# : TaskBehaviour
 {
 
     // TaskAsset Methods
