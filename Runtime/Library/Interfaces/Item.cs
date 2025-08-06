@@ -7,7 +7,7 @@ namespace RealMethod
         Texture2D Icon { get; }
         Sprite GetSpriteIcon();
         Sprite GetSpriteIcon(Rect rect, Vector2 pivot);
-        T GetClass<T>() where T : DataAsset;
+        DataAsset GetItem();
 
 #if UNITY_EDITOR
         void ChangeName(string NewName);

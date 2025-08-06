@@ -2,29 +2,68 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IResourceUnit : IIdentifier
+    public interface IResourceItem : IIdentifier
+    {
+        Object GetResourceObject();
+    }
+    public interface IResource
     {
         float MaxValue { get; }
         float CurrentValue { get; }
-        float MinValue { get; }
+        void Refill(); // Sets to MaxValue
+        void Deplete(); // Sets to MinValue/Empty
     }
-    interface IModifiableResource : IResourceUnit
-    {
-        void SetValue(float value);
-        void ModifyValue(float delta);
-        void Refill();        // Sets to MaxValue
-        void Deplete();       // Sets to MinValue
-    }
-    interface IConsumableResource : IModifiableResource
+
+
+
+    // Resource Type
+    public interface IConsumable : IResource
     {
         bool CanConsume(float amount);
-        bool Consume(float amount);
+        void Consume(float amount);
     }
-    interface IRegenerableResource : IModifiableResource
+    public interface IRegenerable : IResource
     {
-        float RegenRate { get; }  // Units per second
-        void Regenerate(float deltatime);
+        float RegenerationRate { get; } // Units per second
+        void Regenerate(float deltaTime);
     }
+    public interface IChargeable : IResource
+    {
+        void Charge(float amount);
+        void ResetCharge();
+        bool IsFullyCharged { get; }
+    }
+    public interface ITimeGated
+    {
+        float CooldownDuration { get; }
+        float CooldownRemaining { get; }
+
+        bool IsAvailable { get; }
+        void StartCooldown();
+        void TickCooldown(float deltaTime);
+    }
+    public interface IRefundable
+    {
+        float Refund(float percent); // return refunded amount
+    }
+    public interface IDecaying : IResource
+    {
+        float DecayRate { get; }
+        void Decay(float deltaTime);
+    }
+
+
+
+
+
+    interface IModifiableResource
+    {
+        void Add(float amount);
+        void Subtract(float amount);
+        void Set(float amount);
+    }
+
+
     // interface IResourceContainer
     // {
     //     void AddResource(GameResource resource);
@@ -33,82 +72,6 @@ namespace RealMethod
     //     bool HasResource(string name);
     //     IReadOnlyDictionary<string, IResource> GetAllResources();
     // }
-
-    public class GameResource : IConsumableResource, IRegenerableResource
-    {
-        private string resourceName;
-        [SerializeField]
-        private float maxValue;
-        [SerializeField]
-        private float currentValue;
-        [SerializeField]
-        private float minValue;
-        [SerializeField]
-        private bool isRegenerated = false;
-        [SerializeField, ConditionalHide("isRegenerated", true, false)]
-        private float regenRate = 5;
-
-        public GameResource(string name)
-        {
-            resourceName = name;
-        }
-        public GameResource(string name, float min, float max)
-        {
-            resourceName = name;
-            maxValue = max;
-            currentValue = max;
-            minValue = min;
-        }
-        public GameResource(string name, float min, float max, float genRate)
-        {
-            resourceName = name;
-            maxValue = max;
-            regenRate = genRate;
-            isRegenerated = genRate > 0 ? true : false;
-            currentValue = maxValue;
-            minValue = min;
-        }
-
-        // Implement Interfaces
-        public string NameID => resourceName;
-        public float MaxValue => maxValue;
-        public float CurrentValue => currentValue;
-        public float MinValue => minValue;
-        public float RegenRate => regenRate;
-
-        // Public Functions
-        public bool CanConsume(float amount) => currentValue >= amount;
-        public bool Consume(float amount)
-        {
-            if (!CanConsume(amount))
-                return false;
-
-            ModifyValue(-amount);
-            return true;
-        }
-        public void SetValue(float value)
-        {
-            currentValue = Mathf.Clamp(value, MinValue, MaxValue);
-        }
-        public void ModifyValue(float delta)
-        {
-            SetValue(CurrentValue + delta);
-        }
-        public void Regenerate(float deltaTime)
-        {
-            if (isRegenerated)
-                ModifyValue(RegenRate * deltaTime);
-        }
-        public void Refill()
-        {
-            currentValue = MaxValue;
-        }
-        public void Deplete()
-        {
-            currentValue = MinValue;
-        }
-
-    }
     // public class ResourceContainer : MonoBehaviour, IResourceContainer
     // {
     //     private Dictionary<string, IResource> resources = new();

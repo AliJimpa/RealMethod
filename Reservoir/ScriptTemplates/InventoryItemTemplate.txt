@@ -26,4 +26,8 @@ public class #SCRIPTNAME# : ItemAsset, IInventoryItem
     {
         return true;
     }
+    public Object GetResourceObject()
+    {
+        return this;
+    }
 }

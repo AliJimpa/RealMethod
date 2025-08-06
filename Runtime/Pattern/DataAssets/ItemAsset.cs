@@ -32,9 +32,9 @@ namespace RealMethod
             }
         }
 
-        public T GetClass<T>() where T : DataAsset
+        public DataAsset GetItem()
         {
-            return this as T;
+            return this;
         }
 
 

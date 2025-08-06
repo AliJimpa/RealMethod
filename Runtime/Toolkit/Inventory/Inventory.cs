@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RealMethod
 {
 
-    public class InventoryItemProperty
+    public class InventoryItemProperty : IResource
     {
         [SerializeField]
         private IInventoryItem Item;
@@ -30,6 +30,19 @@ namespace RealMethod
             ItemCapacity = 0;
         }
 
+        // Implement IResource Interface
+        public float MaxValue => ItemCapacity;
+        public float CurrentValue => ItemQuantity;
+        public void Refill()
+        {
+            ItemQuantity = ItemCapacity;
+        }
+        public void Deplete()
+        {
+            ItemQuantity = 0;
+        }
+
+        // Public Functions
         public bool Add(int value = 1)
         {
             ItemQuantity = ItemQuantity + value;
@@ -60,6 +73,8 @@ namespace RealMethod
         {
             ItemCapacity = amount;
         }
+
+
     }
 
     public abstract class Inventory : MonoBehaviour
@@ -163,6 +178,19 @@ namespace RealMethod
             else
             {
                 item = default;
+                return false;
+            }
+        }
+        public bool TryFindResourceItem(string itemTitle, out IResource resource)
+        {
+            if (Items.ContainsKey(itemTitle))
+            {
+                resource = Items[itemTitle];
+                return true;
+            }
+            else
+            {
+                resource = null;
                 return false;
             }
         }
