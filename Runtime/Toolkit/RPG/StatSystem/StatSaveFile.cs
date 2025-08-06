@@ -80,7 +80,7 @@ namespace RealMethod
             if (Names.Contains(data.NameID))
             {
                 int targetindex = Names.IndexOf(data.NameID);
-                data.SetExteraValue(Values[targetindex] - data.FirstValue);
+                data.SetExtraValue(Values[targetindex] - data.FirstValue);
                 data.SetLimitation(Mins[targetindex], Maxs[targetindex]);
             }
             return false;

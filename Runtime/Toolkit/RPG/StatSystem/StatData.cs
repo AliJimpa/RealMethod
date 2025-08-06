@@ -16,7 +16,7 @@ namespace RealMethod
         private float firstValue;
         public float FirstValue => firstValue;
         [SerializeField, ReadOnly]
-        private float exteraValue;
+        private float extraValue;
         [SerializeField, ReadOnly]
         private float currentValue;
         [SerializeField]
@@ -44,7 +44,7 @@ namespace RealMethod
 
         // Implement IStat Interface
         public string NameID => GetStatName();
-        public float BaseValue => firstValue + exteraValue;
+        public float BaseValue => firstValue + extraValue;
         public float Value => GetFinalValue();
         public float MinValue => minValue;
         public float MaxValue => maxValue;
@@ -70,9 +70,9 @@ namespace RealMethod
         }
 
         // Public Functions
-        public void SetExteraValue(float value)
+        public void SetExtraValue(float value)
         {
-            exteraValue = value;
+            extraValue = value;
             isDirty = true;
             OnChangeValue?.Invoke(this);
         }
