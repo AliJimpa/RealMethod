@@ -177,7 +177,7 @@ namespace RealMethod
                 return 0;
             }
         }
-        public bool IsValidItem(IInventoryItem item)
+        public bool IsValidItem(IIdentifier item)
         {
             return Items.ContainsKey(item.NameID);
         }
