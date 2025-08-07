@@ -45,7 +45,10 @@ namespace RealMethod
         public abstract BaseStatData GetStatData(int index);
         public abstract void ApplyBuff(BuffConfig config);
         public abstract void DeclineBuff(BuffConfig config);
+        public abstract string[] GetStatNames();
         protected abstract int GetStatCount();
+        protected abstract IStatStorage GetStorage();
+        protected abstract bool LoadStorage();
 
 #if UNITY_EDITOR
         public void ChangeName(string NewName)
@@ -54,11 +57,27 @@ namespace RealMethod
         }
 #endif
     }
-    public abstract class StatProfile<En, Sd> : StatProfile where En : System.Enum where Sd : StatData
+    public abstract class StatProfileStorage : StatProfile
+    {
+        [Header("Save")]
+        [SerializeField]
+        private StorageFile<IStatStorage, StatSaveFile> storage;
+        public SaveFile file => storage.file;
+
+        protected sealed override IStatStorage GetStorage()
+        {
+            return storage.provider;
+        }
+        protected sealed override bool LoadStorage()
+        {
+            return storage.Load(this);
+        }
+    }
+    public abstract class StatProfile<En, Sd> : StatProfileStorage where En : System.Enum where Sd : StatData
     {
         [System.Serializable]
         private class GameStat : SerializableDictionary<En, Sd> { }
-        [Header("Stat")]
+        [Header("Definition")]
         [SerializeField]
         private GameStat ChacterStats;
         protected IStatStorage Storage { get; private set; }
@@ -93,10 +112,6 @@ namespace RealMethod
             }
             return null;
         }
-        protected sealed override int GetStatCount()
-        {
-            return ChacterStats != null ? ChacterStats.Count : 0;
-        }
         public sealed override void ApplyBuff(BuffConfig config)
         {
             CheckStorage();
@@ -119,7 +134,19 @@ namespace RealMethod
                 }
             }
         }
-
+        public sealed override string[] GetStatNames()
+        {
+            string[] result = new string[ChacterStats.Count];
+            for (int i = 0; i < ChacterStats.Count; i++)
+            {
+                result[i] = ChacterStats.ElementAt(i).Key.ToString();
+            }
+            return result;
+        }
+        protected sealed override int GetStatCount()
+        {
+            return ChacterStats != null ? ChacterStats.Count : 0;
+        }
 
         // Public Functions
         public En[] GetStatList()
@@ -175,25 +202,16 @@ namespace RealMethod
         }
 
 
-        // Abstract Method
-        protected abstract IStatStorage GetStorage();
-        protected abstract bool LoadStorage();
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+            foreach (var stat in ChacterStats)
+            {
+                stat.Value.Clear();
+            }
+        }
+#endif
     }
-    public abstract class StatProfileStorage<En, Sd> : StatProfile<En, Sd> where En : System.Enum where Sd : StatData
-    {
-        [Header("Save")]
-        [SerializeField]
-        private StorageFile<IStatStorage, StatSaveFile> storage;
-        public SaveFile file => storage.file;
 
-        protected sealed override IStatStorage GetStorage()
-        {
-            return storage.provider;
-        }
-        protected sealed override bool LoadStorage()
-        {
-            return storage.Load(this);
-        }
-    }
 
 }

@@ -3,17 +3,17 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Toolkit/RPG/CharacterStat")]
-    public class CharacterStat : MonoBehaviour, IStatContainer
+    public abstract class CharacterStat : MonoBehaviour, IStatContainer
     {
         [Header("Character")]
         [SerializeField]
-        private StatProfile profile;
+        private StatProfileStorage profile;
         [Header("Setting")]
         [SerializeField]
         private BuffConfig[] DefaultBuff;
-        [Header("Events")]
-        public UnityEvent<BaseStatData> OnStatUpdate;
+
+
+        protected DataManager SaveSystem;
 
 
         // Unity Methods
@@ -27,18 +27,22 @@ namespace RealMethod
                 }
             }
         }
+        private void Start()
+        {
+            SaveSystem = Game.FindManager<DataManager>();
+        }
         private void OnEnable()
         {
             for (int i = 0; i < profile.Count; i++)
             {
-                profile.GetStatData(i).OnChangeValue += OnAnyStatChange;
+                profile.GetStatData(i).OnChangeValue += OnStatChange;
             }
         }
         private void OnDisable()
         {
             for (int i = 0; i < profile.Count; i++)
             {
-                profile.GetStatData(i).OnChangeValue -= OnAnyStatChange;
+                profile.GetStatData(i).OnChangeValue -= OnStatChange;
             }
         }
 
@@ -55,10 +59,12 @@ namespace RealMethod
         public void ApplyBuff(BuffConfig config)
         {
             profile.ApplyBuff(config);
+            OnBuffAppled(config);
         }
         public void DeclineBuff(BuffConfig config)
         {
             profile.DeclineBuff(config);
+            OnBuffDeclined(config);
         }
         public BaseStatData[] GetAllStatData()
         {
@@ -76,12 +82,46 @@ namespace RealMethod
                 return null;
             }
         }
+        public void Save()
+        {
+            if (SaveSystem)
+            {
+                SaveSystem.SaveFile(profile.file);
+            }
+            else
+            {
+                Debug.LogWarning("DataManger is not find in scen");
+            }
 
-        // Private Functions
-        private void OnAnyStatChange(BaseStatData data)
+        }
+
+        // Abstract Methods
+        protected abstract void OnStatChange(BaseStatData data);
+        protected abstract void OnBuffAppled(BuffConfig config);
+        protected abstract void OnBuffDeclined(BuffConfig config);
+    }
+
+
+    [AddComponentMenu("RealMethod/Toolkit/RPG/CharacterStat")]
+    public class CharacterStatComponent : CharacterStat
+    {
+        [Header("Events")]
+        public UnityEvent<BaseStatData> OnStatUpdate;
+
+        // CharacterStat Methods
+        protected override void OnStatChange(BaseStatData data)
         {
             OnStatUpdate?.Invoke(data);
         }
+        protected override void OnBuffAppled(BuffConfig config)
+        {
 
+        }
+        protected override void OnBuffDeclined(BuffConfig config)
+        {
+
+        }
+        
     }
+
 }

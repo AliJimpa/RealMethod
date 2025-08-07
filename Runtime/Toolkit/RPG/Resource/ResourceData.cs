@@ -10,13 +10,21 @@ namespace RealMethod
         public string NameID => throw new System.NotImplementedException();
         public void Deplete()
         {
-            throw new System.NotImplementedException();
+
         }
         public void Refill()
         {
-            throw new System.NotImplementedException();
+
         }
     }
+
+
+    // public class ResourceData : MonoBehaviour
+    // {
+
+    // }
+    
+
     // public class GameResource : IConsumableResource, IRegenerableResource
     // {
     //     private string resourceName;

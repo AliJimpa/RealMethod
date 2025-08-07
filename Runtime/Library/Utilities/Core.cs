@@ -138,7 +138,7 @@ namespace RealMethod
             }
         }
 
-        public  class prefs
+        public class prefs
         {
             // Boolean
             public static void SetBool(string key, bool value)
@@ -317,5 +317,12 @@ namespace RealMethod
             }
         }
 
+        public class enume
+        {
+            public static bool AreEnumValuesEqual<T, J>(T a, J b) where T : Enum where J : Enum
+            {
+                return Convert.ToInt32(a) == Convert.ToInt32(b);
+            }
+        }
     }
 }

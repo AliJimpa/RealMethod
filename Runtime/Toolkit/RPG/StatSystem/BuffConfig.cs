@@ -12,7 +12,7 @@ namespace RealMethod
         public string NameID => configName;
 
         // Abstract Method
-        public abstract IStatModifier[] GetModifiers<J>(J StateName) where J : System.Enum;
+        public abstract IStatModifier[] GetModifiers<T>(T StateName) where T : System.Enum;
 
 #if UNITY_EDITOR
         public void ChangeName(string NewName)
@@ -27,21 +27,9 @@ namespace RealMethod
         private struct Modifier : IStatModifier
         {
             [SerializeField]
-            private T Stat;
-            private int cacheindex;
-            private bool iscahed;
-            public int StatIndex
-            {
-                get
-                {
-                    if (!iscahed)
-                    {
-                        cacheindex = System.Convert.ToInt32(Stat);
-                        iscahed = true;
-                    }
-                    return cacheindex;
-                }
-            }
+            private T stat;
+            public T Stat => stat;
+            [Space]
             [SerializeField]
             private float value;
             [SerializeField]
@@ -53,27 +41,30 @@ namespace RealMethod
             public float Value => value;
             public IStatModifier.StatUnitModifierType Type => type;
             public int Priority => priority;
-            public void UpdateValue(float newValue)
-            {
-                value = newValue;
-            }
         }
-
         [Header("Modifiers")]
         [SerializeField]
         private Modifier[] presets;
         public int Count => presets != null ? presets.Length : 0;
+
+        public IStatModifier this[int index]
+        {
+            get
+            {
+                return presets[index];
+            }
+        }
 
         // StatModifierConfig Methods
         public sealed override IStatModifier[] GetModifiers<J>(J StateName)
         {
             List<IStatModifier> Result = new List<IStatModifier>();
             int targetindex = System.Convert.ToInt32(StateName);
-            foreach (var pre in presets)
+            foreach (var modif in presets)
             {
-                if (pre.StatIndex == targetindex)
+                if (RM_Core.enume.AreEnumValuesEqual(modif.Stat , StateName))
                 {
-                    Result.Add(pre);
+                    Result.Add(modif);
                 }
             }
             return Result.ToArray();

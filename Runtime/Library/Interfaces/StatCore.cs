@@ -12,6 +12,7 @@ namespace RealMethod
     public interface IModifiableStat
     {
         void AddModifier(IStatModifier modifier);
+        //void UpdateModifier(IStatModifier modifier);
         void RemoveModifier(IStatModifier modifier);
     }
 
@@ -26,7 +27,7 @@ namespace RealMethod
         float Value { get; }
         StatUnitModifierType Type { get; } // e.g., Flat, PercentAdd, PercentMult
         int Priority { get; } // Order of application
-        void UpdateValue(float newValue);
+        //void UpdateValue(float newValue);
     }
 
 }

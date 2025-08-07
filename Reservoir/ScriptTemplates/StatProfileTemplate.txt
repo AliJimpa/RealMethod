@@ -29,13 +29,13 @@ public class STATOBJECT : StatData
 }
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : StatProfileStorage<STATTYPE, STATOBJECT>
+public class #SCRIPTNAME# : StatProfile<STATTYPE, STATOBJECT>
 {
 
 #if UNITY_EDITOR
     public override void OnEditorPlay()
     {
-        //base.OnEditorPlay();
+        base.OnEditorPlay(); // should be call for clear Stats
     }
     private void OnValidate()
     {

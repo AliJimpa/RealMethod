@@ -83,6 +83,13 @@ namespace RealMethod
             isDirty = true;
             OnChangeValue?.Invoke(this);
         }
+        public void Clear()
+        {
+            modifiers.Clear();
+            extraValue = 0;
+            currentValue = 0;
+            isDirty = false;
+        }
 
         // Private Functions
         private float Clamp(float value)
