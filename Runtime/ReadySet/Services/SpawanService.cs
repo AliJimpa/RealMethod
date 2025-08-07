@@ -30,6 +30,7 @@ namespace RealMethod
         public Despawn GameDespawn;
         public AudioManager GameAudio;
         public UIManager GameUI;
+        public TaskManager GameTask;
 
         // Base Service
         protected override void OnStart(object Author)
@@ -75,6 +76,20 @@ namespace RealMethod
                     Debug.LogError($"Spawn Service already have AudioManager Cant Enter this {uIManager}");
                 }
             }
+
+            // Bring TaskManager
+            if (manager.GetManagerClass() is TaskManager taskmanager)
+            {
+                if (GameTask == null)
+                {
+                    GameTask = taskmanager;
+                }
+                else
+                {
+                    Debug.LogError($"Spawn Service already have AudioManager Cant Enter this {taskmanager}");
+                }
+            }
+
         }
 
 
@@ -441,6 +456,37 @@ namespace RealMethod
             return FileAsset.Create<T>();
         }
 
+        // Task
+        public static bool Task(Object TaskObj, Object author)
+        {
+            if (instance.GameTask != null)
+            {
+                if (TaskObj is ITask task)
+                {
+                    if (!instance.GameTask.IsValid(task))
+                    {
+                        instance.GameTask.Add(task, author);
+                        return true;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Task already is running");
+                        return false;
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Your Object should have {typeof(ITask)} Interfave");
+                    return false;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: TaskManager is not available.");
+                return false;
+            }
+        }
+
         // Other
         public static GameObject New(string name)
         {
@@ -541,6 +587,38 @@ namespace RealMethod
             {
                 if (debug)
                     Debug.LogWarning("PoolAsset does not implement IPoolDespawner.");
+                return false;
+            }
+        }
+
+        // Task
+        public static bool Task(Object TaskObj, Object author, bool debug = true)
+        {
+            if (Spawn.instance.GameTask == null)
+            {
+                if (debug)
+                    Debug.LogWarning("TaskManager is not available.");
+                return false;
+            }
+
+            if (TaskObj is ITask task)
+            {
+                if (Spawn.instance.GameTask.IsValid(task))
+                {
+                    Spawn.instance.GameTask.Remove(task, author);
+                    return true;
+                }
+                else
+                {
+                    if (debug)
+                        Debug.LogWarning($"Task Not Found!");
+                    return false;
+                }
+            }
+            else
+            {
+                if (debug)
+                    Debug.LogWarning($"Your Object should have {typeof(ITask)} Interfave");
                 return false;
             }
         }

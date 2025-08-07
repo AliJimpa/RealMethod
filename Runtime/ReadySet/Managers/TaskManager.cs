@@ -11,7 +11,8 @@ namespace RealMethod
         void Disable(Object author);
     }
 
-    public abstract class TaskManager : MonoBehaviour, IGameManager
+    [AddComponentMenu("RealMethod/Manager/TaskManager")]
+    public sealed class TaskManager : MonoBehaviour, IGameManager
     {
         [Header("Setting")]
         [SerializeField]
@@ -29,6 +30,11 @@ namespace RealMethod
         }
         void IGameManager.InitiateManager(bool AlwaysLoaded)
         {
+            if (Game.TryFindService(out Spawn SpawnServ))
+            {
+                SpawnServ.BringManager(this);
+            }
+
             if (DefaultTasks != null)
             {
                 Tasks = new List<ITask>(DefaultTasks.Length + 5);
@@ -42,11 +48,13 @@ namespace RealMethod
                 Tasks = new List<ITask>(5);
             }
 
-            InitiateManager(AlwaysLoaded);
         }
         void IGameManager.InitiateService(Service service)
         {
-            InitiateService(service);
+            if (service is Spawn spawnservice)
+            {
+                spawnservice.BringManager(this);
+            }
         }
 
         // Unity Method
@@ -109,12 +117,8 @@ namespace RealMethod
             }
         }
 
-
-        // Abstract Method
-        protected abstract void InitiateManager(bool AlwaysLoaded);
-        protected abstract void InitiateService(Service service);
-
     }
+
 
     public abstract class TaskAsset : DataAsset, ITask
     {
@@ -151,7 +155,6 @@ namespace RealMethod
         }
 #endif
     }
-
     public abstract class TaskBehaviour : TaskAsset, IBehaviourAction
     {
         [Header("Task")]
