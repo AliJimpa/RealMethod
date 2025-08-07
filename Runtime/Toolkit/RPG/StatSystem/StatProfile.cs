@@ -189,14 +189,14 @@ namespace RealMethod
                     {
                         foreach (var stat in ChacterStats)
                         {
-                            ((IStatDatainitializer)stat.Value).SetName(NameID + "_" + stat.Key.ToString());
+                            ((IStatDataInitializer)stat.Value).SetName(NameID + "_" + stat.Key.ToString());
                             if (Storage.TryLoadStats(stat.Value))
                             {
-                                ((IStatDatainitializer)stat.Value).initializer(this, true);
+                                ((IStatDataInitializer)stat.Value).Initializer(this, true);
                             }
                             else
                             {
-                                ((IStatDatainitializer)stat.Value).initializer(this, false);
+                                ((IStatDataInitializer)stat.Value).Initializer(this, false);
                                 Debug.LogWarning($"This {stat.Key} Stat is not any load Value");
                             }
                         }
@@ -205,8 +205,8 @@ namespace RealMethod
                     {
                         foreach (var stat in ChacterStats)
                         {
-                            ((IStatDatainitializer)stat.Value).SetName(NameID + "_" + stat.Key.ToString());
-                            ((IStatDatainitializer)stat.Value).initializer(this, false);
+                            ((IStatDataInitializer)stat.Value).SetName(NameID + "_" + stat.Key.ToString());
+                            ((IStatDataInitializer)stat.Value).Initializer(this, false);
                         }
                         Storage.StoreStats(ChacterStats.Values.ToArray());
                     }

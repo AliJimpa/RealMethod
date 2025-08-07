@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IStatDatainitializer
+    public interface IStatDataInitializer
     {
         void SetName(string statName);
-        void initializer(StatProfile profile, bool isloaded);
+        void Initializer(StatProfile profile, bool isloaded);
     }
 
     public abstract class BaseStatData : IStat, IModifiableStat
@@ -152,7 +152,7 @@ namespace RealMethod
 
 
     }
-    public abstract class StatData : BaseStatData, IStatDatainitializer
+    public abstract class StatData : BaseStatData, IStatDataInitializer
     {
         private string MyName = string.Empty;
         public bool IsAllowedClamp { get; protected set; }
@@ -173,11 +173,11 @@ namespace RealMethod
         }
 
         // Implement IStatDatainitializer Interface
-        void IStatDatainitializer.SetName(string statName)
+        void IStatDataInitializer.SetName(string statName)
         {
             MyName = statName;
         }
-        void IStatDatainitializer.initializer(StatProfile profile, bool isloaded)
+        void IStatDataInitializer.Initializer(StatProfile profile, bool isloaded)
         {
             IsAllowedClamp = profile.Clamp;
             IsAllowedSort = profile.SortPriority;

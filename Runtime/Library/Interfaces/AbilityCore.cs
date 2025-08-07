@@ -7,7 +7,7 @@ namespace RealMethod
         Transform targetPoint { get; }
     }
 
-    public interface IAbility
+    public interface IAbility : IIdentifier
     {
         bool CanUse(GameObject user);
         bool TryUse(GameObject user, IAbilityContext context);
@@ -15,7 +15,7 @@ namespace RealMethod
 
     public interface IAbilityEffect
     {
-        void Apply(GameObject caster, GameObject target);
+        void Apply(GameObject caster, IAbilityContext target);
     }
 
 

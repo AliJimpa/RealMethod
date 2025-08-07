@@ -2,6 +2,11 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public interface IResourceContainer
+    {
+        IResource GetResource(string nameID);
+        ResourceData GetResourceData(string nameID);
+    }
     public interface IResourceDatainitializer
     {
         void initialize(StatProfile profile = null);
@@ -14,6 +19,7 @@ namespace RealMethod
         [SerializeField]
         private float value;
 
+        public IResource provider => this;
         public System.Action<IResource> OnChangeMaxValue;
         public System.Action<IResource> OnChangeValue;
 
@@ -71,7 +77,7 @@ namespace RealMethod
         private StatRatio maxValueEffects;
         private float maxeffectvalue;
 
-        public ResourceData(float val, float max) : base (val , max)
+        public ResourceData(float val, float max) : base(val, max)
         {
         }
 
@@ -138,8 +144,6 @@ namespace RealMethod
         protected abstract void OnInitiate();
 
     }
-
-
 
 
     // public class RegenerableResource : IRegenerableResource
