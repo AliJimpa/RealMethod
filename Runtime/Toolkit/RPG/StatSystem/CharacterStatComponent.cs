@@ -35,14 +35,14 @@ namespace RealMethod
         {
             for (int i = 0; i < profile.Count; i++)
             {
-                profile.GetStatData(i).OnChangeValue += OnStatChange;
+                profile.GetStat(i).BindNotify(OnStatChange);
             }
         }
         private void OnDisable()
         {
             for (int i = 0; i < profile.Count; i++)
             {
-                profile.GetStatData(i).OnChangeValue -= OnStatChange;
+                profile.GetStat(i).UnbindNotify(OnStatChange);
             }
         }
 
@@ -96,7 +96,7 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        protected abstract void OnStatChange(BaseStatData data);
+        protected abstract void OnStatChange(IStat data);
         protected abstract void OnBuffAppled(BuffConfig config);
         protected abstract void OnBuffDeclined(BuffConfig config);
     }
@@ -106,10 +106,10 @@ namespace RealMethod
     public class CharacterStatComponent : CharacterStat
     {
         [Header("Events")]
-        public UnityEvent<BaseStatData> OnStatUpdate;
+        public UnityEvent<IStat> OnStatUpdate;
 
         // CharacterStat Methods
-        protected override void OnStatChange(BaseStatData data)
+        protected override void OnStatChange(IStat data)
         {
             OnStatUpdate?.Invoke(data);
         }

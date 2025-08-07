@@ -24,7 +24,7 @@ namespace RealMethod
         [SerializeField]
         private float maxValue;
 
-        public System.Action<BaseStatData> OnChangeValue;
+        private System.Action<IStat> OnChangeValue;
 
         private List<IStatModifier> modifiers = new List<IStatModifier>(5);
         public int modifiersCount => modifiers.Count;
@@ -48,6 +48,14 @@ namespace RealMethod
         public float Value => GetFinalValue();
         public float MinValue => minValue;
         public float MaxValue => maxValue;
+        public void BindNotify(System.Action<IStat> handler)
+        {
+            OnChangeValue += handler;
+        }
+        public void UnbindNotify(System.Action<IStat> handler)
+        {
+            OnChangeValue -= handler;
+        }
         // Implement IModifiableStat Interface
         void IModifiableStat.AddModifier(IStatModifier mod)
         {
@@ -141,6 +149,8 @@ namespace RealMethod
         protected abstract bool CheckModifier(IStatModifier mod);
         protected abstract bool CanClamp();
         protected abstract bool CanSort();
+
+
     }
     public abstract class StatData : BaseStatData, IStatDatainitializer
     {

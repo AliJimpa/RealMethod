@@ -42,6 +42,7 @@ namespace RealMethod
 
         // Abstract Method
         public abstract IStat GetStat(int index);
+        public abstract IStat GetStat(string name);
         public abstract BaseStatData GetStatData(int index);
         public abstract void ApplyBuff(BuffConfig config);
         public abstract void DeclineBuff(BuffConfig config);
@@ -95,6 +96,17 @@ namespace RealMethod
                     return stat.Value;
                 }
                 i++;
+            }
+            return null;
+        }
+        public sealed override IStat GetStat(string name)
+        {
+            foreach (var stat in ChacterStats)
+            {
+                if (stat.Key.ToString() == name)
+                {
+                    return stat.Value;
+                }
             }
             return null;
         }
