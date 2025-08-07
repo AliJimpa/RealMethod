@@ -2,16 +2,25 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public interface IAbilityContext
+    {
+        Transform targetPoint { get; }
+    }
+
     public interface IAbility
     {
-        void CanUse();
-        bool TryUse();
+        bool CanUse(GameObject user);
+        bool TryUse(GameObject user, IAbilityContext context);
     }
 
     public interface IAbilityEffect
     {
         void Apply(GameObject caster, GameObject target);
     }
+
+
+
+
 
 
     public interface IAbility2

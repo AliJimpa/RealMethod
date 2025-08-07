@@ -11,12 +11,10 @@ namespace RealMethod
         /// <summary> Whether the Behaviour is currently started. </summary>
         bool IsStarted { get; }
     }
-    public interface IBehaviourCycle : IBehaviour
+    public interface IBehaviourCycle : IBehaviour , ITick
     {
         /// <summary> Called when the Behaviour starts with override Time. </summary>
         void Start(float overrideTime);
-        /// <summary> Called every update or tick cycle. </summary>
-        void Update();
         // <summary> Whether the Behaviour has finished execution. </summary>
         bool IsFinished { get; }
         /// <summary> Has Behaviour infinit lifetime. </summary>

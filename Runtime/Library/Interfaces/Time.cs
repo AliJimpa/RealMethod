@@ -3,10 +3,16 @@ namespace RealMethod
     public interface ICooldown
     {
         float CooldownDuration { get; }
-        float CooldownRemaining { get; }
 
         bool IsAvailable { get; }
+        void ResetCooldown();
         void StartCooldown();
-        void TickCooldown(float deltaTime);
+
     }
+
+    public interface ICooldownTick : ICooldown, ITick
+    {
+        float CooldownRemaining { get; }
+    }
+
 }

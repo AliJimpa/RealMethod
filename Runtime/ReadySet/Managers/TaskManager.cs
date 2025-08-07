@@ -173,7 +173,7 @@ namespace RealMethod
         protected Object Author { get; private set; }
 
         // Private Variable
-        private IBehaviourCycle MyCycle;
+        private ITick Loop;
         private bool isValidated;
         private float lifetime = -1;
         private float residuary = -1;
@@ -186,13 +186,13 @@ namespace RealMethod
         {
             Author = author;
             isValidated = true;
-            MyCycle = this;
+            Loop = this;
             OnInitiate();
-            MyCycle.Start();
+            ((IBehaviour)this).Start();
         }
         protected sealed override void OnTaskUpdate()
         {
-            MyCycle.Update();
+            Loop.Tick(Time.deltaTime);
         }
         protected sealed override void OnTaskDisable(Object author)
         {
@@ -267,7 +267,7 @@ namespace RealMethod
                 Debug.LogError("First You Sould Initiate Behaviour");
             }
         }
-        void IBehaviourCycle.Update()
+        void ITick.Tick(float deltaTime)
         {
             // Check Initiate
             if (!isValidated)
