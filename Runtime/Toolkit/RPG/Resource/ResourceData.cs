@@ -4,7 +4,7 @@ namespace RealMethod
 {
     public interface IResourceDatainitializer
     {
-        void initializer(StatProfile profile = null);
+        void initialize(StatProfile profile = null);
     }
 
     public abstract class ResourceData : IResource, IModifiableResource, IConsumableResource
@@ -17,6 +17,10 @@ namespace RealMethod
         public System.Action<IResource> OnChangeMaxValue;
         public System.Action<IResource> OnChangeValue;
 
+        public ResourceData()
+        {
+
+        }
         public ResourceData(float val, float max)
         {
             maxValue = max;
@@ -67,7 +71,7 @@ namespace RealMethod
         private StatRatio maxValueEffects;
         private float maxeffectvalue;
 
-        public ResourceData(float val, float max) : base(val, max)
+        public ResourceData(float val, float max) : base (val , max)
         {
         }
 
@@ -78,7 +82,7 @@ namespace RealMethod
         }
 
         // Implement IResourceDatainitializer Interface
-        void IResourceDatainitializer.initializer(StatProfile profile)
+        public void initialize(StatProfile profile = null)
         {
             if (profile != null)
             {
@@ -91,18 +95,21 @@ namespace RealMethod
                 return;
             }
 
+            float Finalvalue = 0;
             foreach (var effect in maxValueEffects)
             {
                 IStat TargetStat = statProfile.GetStat(effect.Key.ToString());
                 if (TargetStat != null)
                 {
                     TargetStat.BindNotify(AnyStatChange);
+                    Finalvalue = Finalvalue + (TargetStat.Value * effect.Value);
                 }
                 else
                 {
                     Debug.LogWarning($"Can't find Stat {effect.Key} in Profile {statProfile}");
                 }
             }
+            maxeffectvalue = Finalvalue;
 
             OnInitiate();
         }

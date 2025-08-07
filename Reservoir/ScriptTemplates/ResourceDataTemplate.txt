@@ -1,0 +1,11 @@
+[System.Serializable]
+public class #SCRIPTNAME# : ResourceData<STATTYPE> // find your STATTYPE enum in StatProfile
+{
+    public #SCRIPTNAME#(float val, float max) : base(val,max)
+    {
+    }
+    protected override void OnInitiate()
+    {
+
+    }
+}

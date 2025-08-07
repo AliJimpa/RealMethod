@@ -47,6 +47,7 @@ namespace RealMethod
         public abstract void ApplyBuff(BuffConfig config);
         public abstract void DeclineBuff(BuffConfig config);
         public abstract string[] GetStatNames();
+        public abstract void StoreStats();
         protected abstract int GetStatCount();
         protected abstract IStatStorage GetStorage();
         protected abstract bool LoadStorage();
@@ -154,6 +155,10 @@ namespace RealMethod
                 result[i] = ChacterStats.ElementAt(i).Key.ToString();
             }
             return result;
+        }
+        public sealed override void StoreStats()
+        {
+            Storage.StoreStats(ChacterStats.Values.ToArray());
         }
         protected sealed override int GetStatCount()
         {

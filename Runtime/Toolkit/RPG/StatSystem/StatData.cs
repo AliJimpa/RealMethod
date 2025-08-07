@@ -28,7 +28,7 @@ namespace RealMethod
 
         private List<IStatModifier> modifiers = new List<IStatModifier>(5);
         public int modifiersCount => modifiers.Count;
-        private bool isDirty = false;
+        private bool isDirty = true;
 
         public BaseStatData()
         {
@@ -96,7 +96,7 @@ namespace RealMethod
             modifiers.Clear();
             extraValue = 0;
             currentValue = 0;
-            isDirty = false;
+            isDirty = true;
         }
 
         // Private Functions

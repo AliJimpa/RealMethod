@@ -86,6 +86,7 @@ namespace RealMethod
         {
             if (SaveSystem)
             {
+                profile.StoreStats();
                 SaveSystem.SaveFile(profile.file);
             }
             else

@@ -31,11 +31,11 @@ namespace RealMethod
         {
             base.OnInspectorGUI();
 
-            
+
             if (!EditorApplication.isPlaying)
                 return;
 
-            
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField(" ----------------- Items ----------------- ");
             if (BaseComponent != null)
@@ -44,7 +44,7 @@ namespace RealMethod
                 {
                     foreach (var stat in MyData)
                     {
-                        EditorGUILayout.LabelField($"{stat.NameID}: {stat.MinValue} . {stat.Value} . {stat.MaxValue}  ({stat.modifiersCount})");
+                        EditorGUILayout.LabelField($"{stat.NameID}: {stat.MaxValue}<{stat.Value}>{stat.MinValue} . ({stat.modifiersCount})");
                     }
                 }
                 EditorGUILayout.Space();

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [CreateAssetMenu(fileName = "StatSaveFile", menuName = "RealMethod/RPG/SaveFile", order = 1)]
+    [CreateAssetMenu(fileName = "StatSaveFile", menuName = "RealMethod/RPG/StatSaveFile", order = 1)]
     public class StatSaveFile : SaveFile, IStatStorage
     {
         [Header("Stat")]
@@ -14,7 +14,7 @@ namespace RealMethod
         private bool UsePlayerPrefs = true;
         [Header("Storage")]
         public List<string> Names = new List<string>(5);
-        public List<float> Values = new List<float>(5);
+        public List<float> BaseValue = new List<float>(5);
         public List<float> Mins = new List<float>(5);
         public List<float> Maxs = new List<float>(5);
 
@@ -27,7 +27,7 @@ namespace RealMethod
             if (UsePlayerPrefs)
             {
                 RM_PlayerPrefs.SetArray("StatName", Names.ToArray());
-                RM_PlayerPrefs.SetArray("StatBaseValue", Values.ToArray());
+                RM_PlayerPrefs.SetArray("StatBaseValue", BaseValue.ToArray());
                 RM_PlayerPrefs.SetArray("StatMin", Mins.ToArray());
                 RM_PlayerPrefs.SetArray("StatMax", Maxs.ToArray());
             }
@@ -37,7 +37,7 @@ namespace RealMethod
             if (UsePlayerPrefs)
             {
                 Names = RM_PlayerPrefs.GetArray<string>("StatName").ToList();
-                Values = RM_PlayerPrefs.GetArray<float>("StatBaseValue").ToList();
+                BaseValue = RM_PlayerPrefs.GetArray<float>("StatBaseValue").ToList();
                 Mins = RM_PlayerPrefs.GetArray<float>("StatMin").ToList();
                 Maxs = RM_PlayerPrefs.GetArray<float>("StatMax").ToList();
             }
@@ -47,7 +47,7 @@ namespace RealMethod
             if (UsePlayerPrefs)
             {
                 Names = null;
-                Values = null;
+                BaseValue = null;
                 Mins = null;
                 Maxs = null;
             }
@@ -69,10 +69,21 @@ namespace RealMethod
         {
             foreach (var stat in stats)
             {
-                Names.Add(stat.NameID);
-                Values.Add(stat.BaseValue);
-                Mins.Add(stat.MinValue);
-                Maxs.Add(stat.MaxValue);
+                if (Names.Contains(stat.NameID))
+                {
+                    int targetindex = Names.IndexOf(stat.NameID);
+                    Debug.LogWarning(targetindex);
+                    BaseValue[targetindex] = stat.BaseValue;
+                    Mins[targetindex] = stat.MinValue;
+                    Maxs[targetindex] = stat.MaxValue;
+                }
+                else
+                {
+                    Names.Add(stat.NameID);
+                    BaseValue.Add(stat.BaseValue);
+                    Mins.Add(stat.MinValue);
+                    Maxs.Add(stat.MaxValue);
+                }
             }
         }
         bool IStatStorage.TryLoadStats(StatData data)
@@ -80,10 +91,18 @@ namespace RealMethod
             if (Names.Contains(data.NameID))
             {
                 int targetindex = Names.IndexOf(data.NameID);
-                data.SetExtraValue(Values[targetindex] - data.FirstValue);
+                data.SetExtraValue(BaseValue[targetindex] - data.FirstValue);
                 data.SetLimitation(Mins[targetindex], Maxs[targetindex]);
             }
             return false;
+        }
+
+        public override void OnEditorPlay()
+        {
+            Names.Clear();
+            BaseValue.Clear();
+            Mins.Clear();
+            Maxs.Clear();
         }
     }
 }
