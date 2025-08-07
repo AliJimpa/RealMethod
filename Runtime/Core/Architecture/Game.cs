@@ -10,32 +10,30 @@ namespace RealMethod
     {
         // Private Static Variables
         private static Game AlternativeInstance;
-        private static bool CanInitiate = true;
+        private static bool _isGameDown = false;
 
         // Public Static Variables
         public static Game Instance
         {
             get
             {
-                if (AlternativeInstance == null && CanInitiate)
+                if (AlternativeInstance == null && !_isGameDown)
                 {
                     // Find Game In Scene
                     Game[] components = FindObjectsByType<Game>(FindObjectsSortMode.InstanceID);
+
                     if (components.Length == 1)
                     {
                         AlternativeInstance = components[0];
                         InitializeGame(false);
                     }
+                    else if (components.Length == 0)
+                    {
+                        InitializeGame();
+                    }
                     else
                     {
-                        if (components.Length == 0)
-                        {
-                            InitializeGame();
-                        }
-                        else
-                        {
-                            Debug.LogError("The 'Game' Class Component should be active in scene & just One");
-                        }
+                        Debug.LogError($"Expected exactly one active 'Game' component in the scene, but found {components.Length}.");
                     }
                 }
                 return AlternativeInstance;
@@ -66,7 +64,7 @@ namespace RealMethod
         // Unity Method
         private void OnDestroy()
         {
-            CanInitiate = false;
+            _isGameDown = true;
             if (GameServices != null)
             {
                 for (int i = 0; i < GameServices.Count; i++)
@@ -402,6 +400,11 @@ namespace RealMethod
             {
                 Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
             }
+        }
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            _isGameDown = false;
         }
         // Abstract Methods
         protected abstract void GameServiceCreated();
