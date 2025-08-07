@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerAbilityHandler : MonoBehaviour
 {
-    public Ability[] abilities;
+    public AbilityGPT[] abilities;
     public Transform aimTransform;
 
     void Update()
@@ -19,7 +19,7 @@ public class PlayerAbilityHandler : MonoBehaviour
         context.target = GetTarget();
         context.targetPoint = GetTargetPoint();
 
-        //abilities[index].TryUse(gameObject, context);
+        abilities[index].TryUse(gameObject, context);
     }
 
     GameObject GetTarget()

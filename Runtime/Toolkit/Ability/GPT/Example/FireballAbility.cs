@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Abilities/Fireball")]
-public class FireballAbility : Ability
+public class FireballAbility : AbilityGPT
 {
     public GameObject fireballPrefab;
     public float projectileSpeed = 10f;
