@@ -2,102 +2,244 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public class ResourceData : IResource
+    public interface IResourceDatainitializer
     {
-        // Implement IResourceUnit Interface
-        public float MaxValue => throw new System.NotImplementedException();
-        public float CurrentValue => throw new System.NotImplementedException();
-        public string NameID => throw new System.NotImplementedException();
-        public void Deplete()
-        {
+        void initializer(StatProfile profile = null);
+    }
 
-        }
-        public void Refill()
-        {
+    public abstract class ResourceData : IResource, IModifiableResource, IConsumableResource
+    {
+        [SerializeField]
+        private float maxValue;
+        [SerializeField]
+        private float value;
 
+        public System.Action<IResource> OnChangeMaxValue;
+        public System.Action<IResource> OnChangeValue;
+
+        public ResourceData(float val, float max)
+        {
+            maxValue = max;
+            value = val;
         }
+
+        // Implement IResource Interface
+        float IResource.Value => value;
+        float IResource.MaxValue => GetMaxValue(maxValue);
+        void IResource.Refill()
+        {
+            value = ((IResource)this).MaxValue;
+            OnChangeMaxValue?.Invoke(this);
+        }
+        void IResource.Deplete()
+        {
+            value = 0;
+            OnChangeMaxValue?.Invoke(this);
+        }
+        // Implement IModifiableResource Interface
+        void IModifiableResource.Set(float val)
+        {
+            value = val;
+        }
+        void IModifiableResource.Modify(float amount)
+        {
+            value = value + amount;
+        }
+        // Implement IConsumableResource Interface
+        bool IConsumableResource.CanConsume(float amount) => value >= amount;
+        void IConsumableResource.Consume(float amount)
+        {
+            if (((IConsumableResource)this).CanConsume(amount))
+                value -= amount;
+        }
+
+        // Abstract Method
+        protected abstract float GetMaxValue(float defaultValue);
+    }
+    public abstract class ResourceData<T> : ResourceData, IResourceDatainitializer where T : System.Enum
+    {
+        [System.Serializable]
+        private class StatRatio : SerializableDictionary<T, float> { }
+        [Space]
+        [SerializeField]
+        private StatProfile statProfile;
+        [SerializeField]
+        private StatRatio maxValueEffects;
+        private float maxeffectvalue;
+
+        public ResourceData(float val, float max) : base(val, max)
+        {
+        }
+
+        // ResourceData Methods
+        protected sealed override float GetMaxValue(float defaultValue)
+        {
+            return defaultValue + maxeffectvalue;
+        }
+
+        // Implement IResourceDatainitializer Interface
+        void IResourceDatainitializer.initializer(StatProfile profile)
+        {
+            if (profile != null)
+            {
+                statProfile = profile;
+            }
+
+            if (statProfile == null)
+            {
+                Debug.LogWarning($"The ResourceData need to StatProfiel, initializ failed!");
+                return;
+            }
+
+            foreach (var effect in maxValueEffects)
+            {
+                IStat TargetStat = statProfile.GetStat(effect.Key.ToString());
+                if (TargetStat != null)
+                {
+                    TargetStat.BindNotify(AnyStatChange);
+                }
+                else
+                {
+                    Debug.LogWarning($"Can't find Stat {effect.Key} in Profile {statProfile}");
+                }
+            }
+
+            OnInitiate();
+        }
+
+        // Private Functions
+        private void AnyStatChange(IStat stat)
+        {
+            float Finalvalue = 0;
+            foreach (var effect in maxValueEffects)
+            {
+                IStat TargetStat = statProfile.GetStat(effect.Key.ToString());
+                if (TargetStat != null)
+                {
+                    Finalvalue = Finalvalue + (TargetStat.Value * effect.Value);
+                }
+                else
+                {
+                    Debug.LogWarning($"Can't find Stat {effect.Key} in Profile {statProfile}");
+                }
+            }
+            OnChangeMaxValue?.Invoke(this);
+            maxeffectvalue = Finalvalue;
+        }
+
+        // Abstract Method
+        protected abstract void OnInitiate();
+
     }
 
 
-    // public class ResourceData : MonoBehaviour
+
+
+    // public class RegenerableResource : IRegenerableResource
     // {
+    //     public float MaxValue { get; private set; }
+    //     public float CurrentValue { get; private set; }
 
-    // }
-    
+    //     public float RegenerationRate { get; private set; }
 
-    // public class GameResource : IConsumableResource, IRegenerableResource
-    // {
-    //     private string resourceName;
-    //     [SerializeField]
-    //     private float maxValue;
-    //     [SerializeField]
-    //     private float currentValue;
-    //     [SerializeField]
-    //     private float minValue;
-    //     [SerializeField]
-    //     private bool isRegenerated = false;
-    //     [SerializeField, ConditionalHide("isRegenerated", true, false)]
-    //     private float regenRate = 5;
-
-    //     public GameResource(string name)
+    //     public RegenerableResource(float maxValue, float regenerationRate)
     //     {
-    //         resourceName = name;
-    //     }
-    //     public GameResource(string name, float min, float max)
-    //     {
-    //         resourceName = name;
-    //         maxValue = max;
-    //         currentValue = max;
-    //         minValue = min;
-    //     }
-    //     public GameResource(string name, float min, float max, float genRate)
-    //     {
-    //         resourceName = name;
-    //         maxValue = max;
-    //         regenRate = genRate;
-    //         isRegenerated = genRate > 0 ? true : false;
-    //         currentValue = maxValue;
-    //         minValue = min;
+    //         MaxValue = maxValue;
+    //         CurrentValue = maxValue;
+    //         RegenerationRate = regenerationRate;
     //     }
 
-    //     // Implement Interfaces
-    //     public string NameID => resourceName;
-    //     public float MaxValue => maxValue;
-    //     public float CurrentValue => currentValue;
-    //     public float MinValue => minValue;
-    //     public float RegenRate => regenRate;
-
-    //     // Public Functions
-    //     public bool CanConsume(float amount) => currentValue >= amount;
-    //     public bool Consume(float amount)
-    //     {
-    //         if (!CanConsume(amount))
-    //             return false;
-
-    //         ModifyValue(-amount);
-    //         return true;
-    //     }
-    //     public void SetValue(float value)
-    //     {
-    //         currentValue = Mathf.Clamp(value, MinValue, MaxValue);
-    //     }
-    //     public void ModifyValue(float delta)
-    //     {
-    //         SetValue(CurrentValue + delta);
-    //     }
     //     public void Regenerate(float deltaTime)
     //     {
-    //         if (isRegenerated)
-    //             ModifyValue(RegenRate * deltaTime);
+    //         CurrentValue = Mathf.Min(CurrentValue + RegenerationRate * deltaTime, MaxValue);
     //     }
-    //     public void Refill()
+    // }
+
+    // public class ChargeableResource : IChargeableResource
+    // {
+    //     private float _charge;
+    //     private float _maxCharge;
+
+    //     public bool IsFullyCharged => _charge >= _maxCharge;
+
+    //     public ChargeableResource(float maxCharge)
     //     {
-    //         currentValue = MaxValue;
-    //     }
-    //     public void Deplete()
-    //     {
-    //         currentValue = MinValue;
+    //         _maxCharge = maxCharge;
+    //         _charge = 0f;
     //     }
 
+    //     public void Charge(float amount)
+    //     {
+    //         _charge = Mathf.Min(_charge + amount, _maxCharge);
+    //     }
+
+    //     public void ResetCharge()
+    //     {
+    //         _charge = 0f;
+    //     }
+    // }
+
+    // public class TimeGatedResource : ITimeGatedResource
+    // {
+    //     public float CooldownDuration { get; private set; }
+    //     public float CooldownRemaining { get; private set; }
+
+    //     public bool IsAvailable => CooldownRemaining <= 0f;
+
+    //     public TimeGatedResource(float cooldownDuration)
+    //     {
+    //         CooldownDuration = cooldownDuration;
+    //         CooldownRemaining = 0f;
+    //     }
+
+    //     public void StartCooldown()
+    //     {
+    //         CooldownRemaining = CooldownDuration;
+    //     }
+
+    //     public void TickCooldown(float deltaTime)
+    //     {
+    //         if (CooldownRemaining > 0f)
+    //             CooldownRemaining -= deltaTime;
+    //     }
+    // }
+
+    // public class RefundableResource : IRefundableResource
+    // {
+    //     public float MaxValue { get; private set; }
+    //     public float CurrentValue { get; private set; }
+
+    //     public RefundableResource(float maxValue)
+    //     {
+    //         MaxValue = maxValue;
+    //         CurrentValue = maxValue;
+    //     }
+
+    //     public float Refund(float percent)
+    //     {
+    //         float refundAmount = MaxValue * Mathf.Clamp01(percent);
+    //         CurrentValue = Mathf.Min(CurrentValue + refundAmount, MaxValue);
+    //         return refundAmount;
+    //     }
+    // }
+
+    // public class DecayingResource : IDecayingResource
+    // {
+    //     public float MaxValue { get; private set; }
+    //     public float CurrentValue { get; private set; }
+
+    //     public float DecayRate { get; private set; }
+
+    //     public DecayingResource(float maxValue, float decayRate)
+    //     {
+    //         MaxValue = maxValue;
+    //         CurrentValue = maxValue;
+    //         DecayRate = decayRate;
+    //     }
+
+    //     public void Decay(float deltaTime)
+    //     {
+    //         CurrentValue = Mathf.Max(CurrentValue - DecayRate * deltaTime, 0f);
+    //     }
     // }
 }

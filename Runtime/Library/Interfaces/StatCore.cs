@@ -7,6 +7,8 @@ namespace RealMethod
         float Value { get; }
         float MinValue { get; }
         float MaxValue { get; }
+        void BindNotify(System.Action<IStat> handler);
+        void UnbindNotify(System.Action<IStat> handler);
     }
 
     public interface IModifiableStat

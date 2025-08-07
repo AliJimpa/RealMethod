@@ -10,7 +10,7 @@ namespace RealMethod
     public interface IResource
     {
         float MaxValue { get; }
-        float CurrentValue { get; }
+        float Value { get; }
         void Refill(); // Sets to MaxValue
         void Deplete(); // Sets to MinValue/Empty
     }
@@ -19,9 +19,8 @@ namespace RealMethod
     // Resource Type
     interface IModifiableResource : IResource
     {
-        void Add(float amount);
-        void Subtract(float amount);
-        void Set(float amount);
+        void Set(float val);
+        void Modify(float amount);
     }
     public interface IConsumableResource : IResource
     {
@@ -38,20 +37,7 @@ namespace RealMethod
         void Charge(float amount);
         void ResetCharge();
         bool IsFullyCharged { get; }
-    }
-    public interface ITimeGatedResource
-    {
-        float CooldownDuration { get; }
-        float CooldownRemaining { get; }
-
-        bool IsAvailable { get; }
-        void StartCooldown();
-        void TickCooldown(float deltaTime);
-    }
-    public interface IRefundableResource
-    {
-        float Refund(float percent); // return refunded amount
-    }
+    } 
     public interface IDecayingResource : IResource
     {
         float DecayRate { get; }

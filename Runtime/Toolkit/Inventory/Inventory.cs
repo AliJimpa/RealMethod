@@ -32,7 +32,7 @@ namespace RealMethod
 
         // Implement IResource Interface
         public float MaxValue => ItemCapacity;
-        public float CurrentValue => ItemQuantity;
+        public float Value => ItemQuantity;
         public void Refill()
         {
             ItemQuantity = ItemCapacity;
