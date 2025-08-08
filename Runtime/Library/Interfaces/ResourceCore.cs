@@ -17,7 +17,7 @@ namespace RealMethod
 
 
     // Resource Type
-    interface IModifiableResource : IResource
+    public interface IModifiableResource : IResource
     {
         void Set(float val);
         void Modify(float amount);
