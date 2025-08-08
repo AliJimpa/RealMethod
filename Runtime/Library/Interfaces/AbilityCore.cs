@@ -15,6 +15,7 @@ namespace RealMethod
 
     public interface IAbilityEffect
     {
+        void Initiate(Object owner);
         void Apply(GameObject caster, IAbilityContext target);
     }
 

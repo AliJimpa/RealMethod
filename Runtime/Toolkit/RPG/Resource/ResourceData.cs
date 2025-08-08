@@ -5,6 +5,7 @@ namespace RealMethod
     public interface IResourceContainer
     {
         IResource GetResource(string nameID);
+        IConsumableResource GetConsumableResource(string nameID);
         ResourceData GetResourceData(string nameID);
     }
     public interface IResourceDatainitializer
@@ -12,8 +13,10 @@ namespace RealMethod
         void initialize(StatProfile profile = null);
     }
 
-    public abstract class ResourceData : IResource, IModifiableResource, IConsumableResource
+    public abstract class ResourceData : IIdentifier, IResource, IModifiableResource, IConsumableResource
     {
+        [SerializeField]
+        private string resourceName;
         [SerializeField]
         private float maxValue;
         [SerializeField]
@@ -36,6 +39,9 @@ namespace RealMethod
         // Implement IResource Interface
         float IResource.Value => value;
         float IResource.MaxValue => GetMaxValue(maxValue);
+
+        // Implement IIdentifier Interface
+        public string NameID => resourceName;
         void IResource.Refill()
         {
             value = ((IResource)this).MaxValue;

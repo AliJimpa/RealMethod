@@ -10,7 +10,7 @@ namespace RealMethod.Editor
     public abstract class EditorProperty
     {
         protected Object Owner;
-        protected string PropertyName { get; private set; }
+        public string PropertyName { get; private set; }
         private ErrorAction PropertyError = null;
 
         public EditorProperty(string _Name, Object _Owner)
@@ -306,6 +306,33 @@ namespace RealMethod.Editor
 
 
     }
+    public class EP_Dropdown : EditorProperty<int>
+    {
+        private string[] Options;
+
+        public EP_Dropdown(string Name, string[] options, Object other) : base(Name, other)
+        {
+            Options = options;
+        }
+
+        protected override byte UpdateRender()
+        {
+            CashValue = EditorGUILayout.Popup("Ability Effect", CurrentValue, Options);
+            if (CashValue == CurrentValue)
+            {
+                return 0; // No change
+            }
+            else
+            {
+                SetValue(CashValue);
+                return 1; // Changed
+            }
+        }
+        protected override void FixError(int Id)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
     public class EP_ScriptableObject<T> : EditorProperty<T> where T : ScriptableObject
     {
         public EP_ScriptableObject(string Name, Object other) : base(Name, other)
@@ -458,6 +485,8 @@ namespace RealMethod.Editor
         public Vector2 ScrollPosition = Vector2.zero;
         public Vector2 Size = new(20, 200);
 
+        public System.Action<T> OnItemChange;
+
         public EP_List(string _Name, Object _Owner) : base(_Name, _Owner)
         {
         }
@@ -473,7 +502,10 @@ namespace RealMethod.Editor
                 ScrollPosition = GUILayout.BeginScrollView(ScrollPosition, GUILayout.Height(Size.y));
             foreach (var item in MyList)
             {
-                item.Render();
+                if (item.Render() == 1)
+                {
+                    OnItemChange?.Invoke(item);
+                }
             }
             if (EnableScrollView)
                 GUILayout.EndScrollView();

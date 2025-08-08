@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting.YamlDotNet.RepresentationModel;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -25,12 +24,21 @@ namespace RealMethod
         {
             if (CanUse(user))
             {
-                foreach (var effect in GetEffects())
+                IAbilityEffect[] Effects = GetEffects();
+                if (Effects != null)
                 {
-                    effect.Apply(user, context);
+                    foreach (var effect in Effects)
+                    {
+                        effect.Apply(user, context);
+                    }
+                    ((ICooldown)this).StartCooldown();
+                    return true;
                 }
-                ((ICooldown)this).StartCooldown();
-                return true;
+                else
+                {
+                    Debug.LogWarning($"There isn't any effect in {this}");
+                    return false;
+                }
             }
             return false;
         }
@@ -52,36 +60,56 @@ namespace RealMethod
         protected abstract float GetCooldown();
         protected abstract IAbilityEffect[] GetEffects();
         protected abstract bool Prerequisite(GameObject user);
+
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+            lastUsedTime = -Mathf.Infinity;
+        }
+#endif
     }
     public abstract class AbilityEffectAsset : AbilityAsset
     {
-        [Header("Effect")]
+        [System.NonSerialized]
         public string[] effects;
-        public object[] cache;
+
+        private List<object> effectsObject = new List<object>();
+        private IAbilityEffect[] myEffects;
 
         // AbilityAsset Method
         protected sealed override IAbilityEffect[] GetEffects()
         {
-            cache = new Object[effects.Length];
-            for (int i = 0; i < effects.Length; i++)
+            //return null;
+            if (myEffects == null)
             {
-                cache[i] = System.Activator.CreateInstance(GetClassType(effects[i]));
-            }
-            List<IAbilityEffect> result = new List<IAbilityEffect>();
-            foreach (var ca in cache)
-            {
-                if (ca is IAbilityEffect provider)
+                if (effects != null)
                 {
-                    result.Add(provider);
+                    effectsObject.Clear();
+                    List<IAbilityEffect> result = new List<IAbilityEffect>();
+                    for (int i = 0; i < effects.Length; i++)
+                    {
+                        object targetObj = System.Activator.CreateInstance(GetClassType(effects[i]));
+                        if (targetObj is IAbilityEffect provider)
+                        {
+                            provider.Initiate(this);
+                            effectsObject.Add(targetObj);
+                            result.Add(provider);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"The target object {targetObj} not implement {typeof(IAbilityEffect)}");
+                        }
+
+                    }
+                    myEffects = result.ToArray();
                 }
                 else
                 {
-                    Debug.LogWarning($"The target object {ca} not implement {typeof(IAbilityEffect)}");
+                    return null;
                 }
             }
-            return result.ToArray();
+            return myEffects;
         }
-
 
         private System.Type GetClassType(string classname)
         {
@@ -93,8 +121,15 @@ namespace RealMethod
             }
             return null;
         }
-    }
 
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+            base.OnEditorPlay();
+            myEffects = null;
+        }
+#endif
+    }
     public abstract class AbilityAction : AbilityEffectAsset, IAbilityAction
     {
         private AbilityController MyController;
@@ -117,6 +152,4 @@ namespace RealMethod
         protected abstract void OnInitiate();
         protected abstract bool CheckInput(InputAction.CallbackContext context);
     }
-
-
 }
