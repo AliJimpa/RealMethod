@@ -10,9 +10,9 @@ namespace RealMethod
         Sprite GetSpriteIcon(Rect rect, Vector2 pivot);
     }
 
-    public interface IItemAsset : IItem
+    public interface IItemData : IItem
     {
-        DataAsset GetAsset();
+        PrimitiveAsset GetAsset();
 #if UNITY_EDITOR
         void ChangeName(string NewName);
 #endif

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class ItemAsset : DataAsset, IItemData
+    public abstract class ItemConfig : ConfigAsset, IItemData
     {
         [Header("Item")]
         [SerializeField]

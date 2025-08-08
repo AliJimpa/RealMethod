@@ -1,0 +1,13 @@
+using UnityEngine;
+using RealMethod;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : ItemConfig
+{
+    #if UNITY_EDITOR
+    // public override void OnEditorPlay()
+    // {
+    //     base.OnEditorPlay();
+    // }
+    #endif
+}

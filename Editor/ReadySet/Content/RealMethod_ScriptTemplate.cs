@@ -110,6 +110,11 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("ConfigAssetTemplate.txt", "MyConfigAsset.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Config/ItemConfig", false, 80)]
+        public static void CreateItemConfig()
+        {
+            string Path = RM_Create.Script("ItemConfigTemplate.txt", "MyItemConfig.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Config/GameConfig", false, 80)]
         public static void CreateGameConfig()
         {
