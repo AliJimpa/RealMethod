@@ -30,8 +30,9 @@ namespace RealMethod
         {
 
         }
-        public ResourceData(float val, float max)
+        public ResourceData(string ReName, float val, float max)
         {
+            resourceName = ReName;
             maxValue = max;
             value = val;
         }
@@ -83,9 +84,11 @@ namespace RealMethod
         private StatRatio maxValueEffects;
         private float maxeffectvalue;
 
-        public ResourceData(float val, float max) : base(val, max)
+        
+        public ResourceData(string ReName, float val, float max) : base(ReName, val, max)
         {
         }
+
 
         // ResourceData Methods
         protected sealed override float GetMaxValue(float defaultValue)

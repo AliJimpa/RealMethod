@@ -1,7 +1,9 @@
+using RealMethod;
+
 [System.Serializable]
 public class #SCRIPTNAME# : ResourceData<STATTYPE> // find your STATTYPE enum in StatProfile
 {
-    public #SCRIPTNAME#(float val, float max) : base(val,max)
+    public #SCRIPTNAME#(string ReName, float val, float max) : base(ReName, val, max)
     {
     }
     protected override void OnInitiate()
