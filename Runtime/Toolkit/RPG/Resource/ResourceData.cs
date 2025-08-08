@@ -45,7 +45,7 @@ namespace RealMethod
         public string NameID => resourceName;
         void IResource.Refill()
         {
-            value = ((IResource)this).MaxValue;
+            value = provider.MaxValue;
             OnChangeMaxValue?.Invoke(this);
         }
         void IResource.Deplete()
@@ -60,7 +60,7 @@ namespace RealMethod
         }
         void IModifiableResource.Modify(float amount)
         {
-            value = value + amount;
+            value = Mathf.Clamp(value + amount, 0, provider.MaxValue);
         }
         // Implement IConsumableResource Interface
         bool IConsumableResource.CanConsume(float amount) => value >= amount;
@@ -82,9 +82,10 @@ namespace RealMethod
         private StatProfile statProfile;
         [SerializeField]
         private StatRatio maxValueEffects;
+        [SerializeField, ReadOnly]
         private float maxeffectvalue;
 
-        
+
         public ResourceData(string ReName, float val, float max) : base(ReName, val, max)
         {
         }
