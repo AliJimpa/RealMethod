@@ -1,0 +1,10 @@
+using RealMethod;
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : AbilityAsset
+{
+    // AbilityAsset Methods
+    protected override float GetCooldown() { return 2; }
+    protected override bool Prerequisite(GameObject user) { return true; }
+}

@@ -1,0 +1,13 @@
+using RealMethod;
+using UnityEngine;
+
+private class #SCRIPTNAME# : AbilityEffect
+{
+    // AbilityEffect Methods
+    protected override void OnInitiate(Object owner)
+    {
+    }
+    protected override void Apply(GameObject caster, IAbilityContext target)
+    {
+    }
+}

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Toolkit/Ability/AbilityController")]
-    public class AbilityControllerComponent : AbilityController
+    public sealed class AbilityControllerComponent : AbilityController
     {
         [Header("Raycast")]
         [SerializeField]
