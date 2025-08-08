@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [CreateAssetMenu(fileName = "Ability", menuName = "RealMethod/Ability/Asset", order = 0)]
-    public class Ability : AbilityEffectAsset
+    [CreateAssetMenu(fileName = "AbilityResource", menuName = "RealMethod/Ability/AbilityResource", order = 0)]
+    public class AbilityResource : AbilityEffectAsset
     {
         [Header("Setting")]
         [SerializeField]
