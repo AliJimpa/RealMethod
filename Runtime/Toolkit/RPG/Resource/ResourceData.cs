@@ -77,13 +77,13 @@ namespace RealMethod
     {
         [System.Serializable]
         private class StatRatio : SerializableDictionary<T, float> { }
+        [SerializeField, ReadOnly]
+        private float maxeffectvalue;
         [Space]
         [SerializeField]
         private StatProfile statProfile;
         [SerializeField]
         private StatRatio maxValueEffects;
-        [SerializeField, ReadOnly]
-        private float maxeffectvalue;
 
 
         public ResourceData(string ReName, float val, float max) : base(ReName, val, max)
