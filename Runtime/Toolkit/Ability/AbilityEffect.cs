@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    [System.Serializable]
     public abstract class AbilityEffect : IAbilityEffect
     {
         // Implement IAbilityEffect interface
