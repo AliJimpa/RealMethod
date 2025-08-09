@@ -88,6 +88,13 @@ namespace RealMethod
         private GameStat ChacterStats;
         protected IStatStorage Storage { get; private set; }
 
+        public Sd this[En identity]
+        {
+            get
+            {
+                return ChacterStats[identity];
+            }
+        }
 
         // StatProfileStorage Methods
         public sealed override IStat GetStat(int index)
