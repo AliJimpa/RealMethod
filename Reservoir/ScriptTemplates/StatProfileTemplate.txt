@@ -2,18 +2,6 @@ using UnityEngine;
 using RealMethod;
 
 
-public enum STATTYPE
-{
-    Vitality,
-    AttackPower,
-    Defense,
-}
-
-public interface IStatContainer : IPrimitiveStatContainer<STATTYPE>
-{
-    
-}
-
 [System.Serializable]
 public class STATOBJECT : StatData
 {
@@ -49,6 +37,3 @@ public class #SCRIPTNAME# : StatProfile<STATTYPE, STATOBJECT>
 #endif
 
 }
-
-[System.Serializable]
-private class StatEfficiency : SerializableDictionary<STATTYPE, float> { }

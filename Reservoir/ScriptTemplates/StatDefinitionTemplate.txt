@@ -1,0 +1,20 @@
+using RealMethod;
+
+
+// StatType List
+public enum STATTYPE
+{
+    Vitality,
+    AttackPower,
+    Defense,
+}
+
+// StatContainer Interface
+public interface IStatContainer : IPrimitiveStatContainer<STATTYPE>
+{
+    
+}
+
+// StatEfficiency use for all time you want effect stat to a paramter
+[System.Serializable]
+public class StatEfficiency : SerializableDictionary<STATTYPE, float> { }
