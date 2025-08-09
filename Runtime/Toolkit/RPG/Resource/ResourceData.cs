@@ -10,7 +10,7 @@ namespace RealMethod
     }
     public interface IResourceDatainitializer
     {
-        void initialize(StatProfile profile = null);
+        void initialize(StatProfile profile);
     }
 
     public abstract class ResourceData : IIdentifier, IResource, IModifiableResource, IConsumableResource
@@ -18,9 +18,10 @@ namespace RealMethod
         [SerializeField]
         private string resourceName;
         [SerializeField]
-        private float maxValue;
-        [SerializeField]
         private float value;
+        [SerializeField]
+        private float defaultMaxValue;
+
 
         public IResource provider => this;
         public System.Action<IResource> OnChangeMaxValue;
@@ -33,14 +34,13 @@ namespace RealMethod
         public ResourceData(string ReName, float val, float max)
         {
             resourceName = ReName;
-            maxValue = max;
+            defaultMaxValue = max;
             value = val;
         }
 
         // Implement IResource Interface
         float IResource.Value => value;
-        float IResource.MaxValue => GetMaxValue(maxValue);
-
+        float IResource.MaxValue => GetMaxValue(defaultMaxValue);
         // Implement IIdentifier Interface
         public string NameID => resourceName;
         void IResource.Refill()
@@ -78,33 +78,27 @@ namespace RealMethod
         [System.Serializable]
         private class StatRatio : SerializableDictionary<T, float> { }
         [SerializeField, ReadOnly]
-        private float maxeffectvalue;
-        [Space]
+        private float statEffectsValue;
+        [SerializeField, ReadOnly]
+        private float additiveValue = 0;
         [SerializeField]
-        private StatProfile statProfile;
-        [SerializeField]
-        private StatRatio maxValueEffects;
+        private StatRatio statEffects;
 
+        private StatProfile statProfile;
 
         public ResourceData(string ReName, float val, float max) : base(ReName, val, max)
         {
         }
 
-
         // ResourceData Methods
         protected sealed override float GetMaxValue(float defaultValue)
         {
-            return defaultValue + maxeffectvalue;
+            return defaultValue + statEffectsValue + additiveValue;
         }
-
         // Implement IResourceDatainitializer Interface
-        public void initialize(StatProfile profile = null)
+        public void initialize(StatProfile profile)
         {
-            if (profile != null)
-            {
-                statProfile = profile;
-            }
-
+            statProfile = profile;
             if (statProfile == null)
             {
                 Debug.LogWarning($"The ResourceData need to StatProfiel, initializ failed!");
@@ -112,7 +106,7 @@ namespace RealMethod
             }
 
             float Finalvalue = 0;
-            foreach (var effect in maxValueEffects)
+            foreach (var effect in statEffects)
             {
                 IStat TargetStat = statProfile.GetStat(effect.Key.ToString());
                 if (TargetStat != null)
@@ -125,16 +119,22 @@ namespace RealMethod
                     Debug.LogWarning($"Can't find Stat {effect.Key} in Profile {statProfile}");
                 }
             }
-            maxeffectvalue = Finalvalue;
+            statEffectsValue = Finalvalue;
 
             OnInitiate();
+        }
+
+        // Public Functions
+        public void SetAdditiveValue(float val)
+        {
+            additiveValue = val;
         }
 
         // Private Functions
         private void AnyStatChange(IStat stat)
         {
             float Finalvalue = 0;
-            foreach (var effect in maxValueEffects)
+            foreach (var effect in statEffects)
             {
                 IStat TargetStat = statProfile.GetStat(effect.Key.ToString());
                 if (TargetStat != null)
@@ -147,12 +147,12 @@ namespace RealMethod
                 }
             }
             OnChangeMaxValue?.Invoke(this);
-            maxeffectvalue = Finalvalue;
+            statEffectsValue = Finalvalue;
         }
+
 
         // Abstract Method
         protected abstract void OnInitiate();
-
     }
 
 

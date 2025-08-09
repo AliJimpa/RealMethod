@@ -85,7 +85,7 @@ namespace RealMethod
         protected IStatStorage Storage { get; private set; }
 
 
-        // StatContainer Methods
+        // StatProfileStorage Methods
         public sealed override IStat GetStat(int index)
         {
             CheckStorage();
@@ -102,6 +102,7 @@ namespace RealMethod
         }
         public sealed override IStat GetStat(string name)
         {
+            CheckStorage();
             foreach (var stat in ChacterStats)
             {
                 if (stat.Key.ToString() == name)
@@ -158,6 +159,7 @@ namespace RealMethod
         }
         public sealed override void StoreStats()
         {
+            CheckStorage();
             Storage.StoreStats(ChacterStats.Values.ToArray());
         }
         protected sealed override int GetStatCount()
@@ -174,6 +176,13 @@ namespace RealMethod
         {
             CheckStorage();
             return ChacterStats[identity];
+        }
+        public void Clear()
+        {
+            foreach (var stat in ChacterStats)
+            {
+                stat.Value.Clear();
+            }
         }
 
         // Private Functions
@@ -222,10 +231,7 @@ namespace RealMethod
 #if UNITY_EDITOR
         public override void OnEditorPlay()
         {
-            foreach (var stat in ChacterStats)
-            {
-                stat.Value.Clear();
-            }
+            Clear();
         }
 #endif
     }

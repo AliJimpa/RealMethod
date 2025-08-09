@@ -12,13 +12,23 @@ namespace RealMethod
 
     public abstract class BaseStatData : IStat, IModifiableStat
     {
-        [SerializeField]
-        private float firstValue;
-        public float FirstValue => firstValue;
-        [SerializeField, ReadOnly]
-        private float extraValue;
+        [System.Serializable]
+        private struct TwoValue
+        {
+            public float firstValue;
+            [ReadOnly]
+            public float upgradeValue;
+            public float GetMergeValue()
+            {
+                return firstValue + upgradeValue;
+            }
+        }
         [SerializeField, ReadOnly]
         private float currentValue;
+        [SerializeField]
+        private TwoValue baseValue;
+        public float FirstValue => baseValue.firstValue;
+        public float UpgradeValue => baseValue.upgradeValue;
         [SerializeField]
         private float minValue;
         [SerializeField]
@@ -36,7 +46,7 @@ namespace RealMethod
         }
         public BaseStatData(float startValue, float min, float max)
         {
-            firstValue = startValue;
+            baseValue.firstValue = startValue;
             minValue = min;
             maxValue = max;
         }
@@ -44,7 +54,7 @@ namespace RealMethod
 
         // Implement IStat Interface
         public string NameID => GetStatName();
-        public float BaseValue => firstValue + extraValue;
+        public float BaseValue => baseValue.GetMergeValue();
         public float Value => GetFinalValue();
         public float MinValue => minValue;
         public float MaxValue => maxValue;
@@ -78,9 +88,9 @@ namespace RealMethod
         }
 
         // Public Functions
-        public void SetExtraValue(float value)
+        public void SetUpgradeValue(float value)
         {
-            extraValue = value;
+            baseValue.upgradeValue = value;
             isDirty = true;
             OnChangeValue?.Invoke(this);
         }
@@ -94,7 +104,7 @@ namespace RealMethod
         public void Clear()
         {
             modifiers.Clear();
-            extraValue = 0;
+            baseValue.upgradeValue = 0;
             currentValue = 0;
             isDirty = true;
         }

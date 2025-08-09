@@ -91,7 +91,7 @@ namespace RealMethod
             if (Names.Contains(data.NameID))
             {
                 int targetindex = Names.IndexOf(data.NameID);
-                data.SetExtraValue(BaseValue[targetindex] - data.FirstValue);
+                data.SetUpgradeValue(BaseValue[targetindex] - data.FirstValue);
                 data.SetLimitation(Mins[targetindex], Maxs[targetindex]);
             }
             return false;
