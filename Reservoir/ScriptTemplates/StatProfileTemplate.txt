@@ -49,3 +49,6 @@ public class #SCRIPTNAME# : StatProfile<STATTYPE, STATOBJECT>
 #endif
 
 }
+
+[System.Serializable]
+private class StatEfficiency : SerializableDictionary<STATTYPE, float> { }
