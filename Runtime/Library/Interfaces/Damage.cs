@@ -18,6 +18,8 @@ namespace RealMethod
         float MaxHealth { get; }
         float CurrentHealth { get; }
 
+        event System.Action<float> OnHealthChanged;
+
         /// <summary>
         /// Simple damage (only amount + optional source)
         /// </summary>
@@ -30,6 +32,7 @@ namespace RealMethod
     /// <typeparam name="T">The type representing TakeDamage data (e.g., int, float, struct).</typeparam>
     public interface IDamageable<T, R> : IDamageable where T : struct where R : struct
     {
+        event System.Action<T> OnHit;
         /// <summary>
         /// Applies damage to the object.
         /// </summary>
