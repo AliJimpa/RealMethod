@@ -3,11 +3,12 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    public abstract class CharacterStat : MonoBehaviour, IStatContainer
+    public abstract class CharacterStat : MonoBehaviour, IPrimitiveStatContainer
     {
         [Header("Character")]
         [SerializeField]
         private StatProfileStorage profile;
+        public StatProfileStorage Profile { get; private set; }
         [Header("Setting")]
         [SerializeField]
         private BuffConfig[] DefaultBuff;
@@ -19,11 +20,12 @@ namespace RealMethod
         // Unity Methods
         private void Awake()
         {
+            Profile = Instantiate(Profile);
             if (DefaultBuff != null)
             {
                 foreach (var buff in DefaultBuff)
                 {
-                    profile.ApplyBuff(buff);
+                    Profile.ApplyBuff(buff);
                 }
             }
         }
@@ -33,16 +35,16 @@ namespace RealMethod
         }
         private void OnEnable()
         {
-            for (int i = 0; i < profile.Count; i++)
+            for (int i = 0; i < Profile.Count; i++)
             {
-                profile.GetStat(i).BindNotify(OnStatChange);
+                Profile.GetStat(i).BindNotify(OnStatChange);
             }
         }
         private void OnDisable()
         {
-            for (int i = 0; i < profile.Count; i++)
+            for (int i = 0; i < Profile.Count; i++)
             {
-                profile.GetStat(i).UnbindNotify(OnStatChange);
+                Profile.GetStat(i).UnbindNotify(OnStatChange);
             }
         }
 
@@ -50,30 +52,30 @@ namespace RealMethod
         // Implement IStatContainer Interface
         public IStat GetStat(int index)
         {
-            return profile.GetStat(index);
+            return Profile.GetStat(index);
         }
         public BaseStatData GetStatData(int index)
         {
-            return profile.GetStatData(index);
+            return Profile.GetStatData(index);
         }
         public void ApplyBuff(BuffConfig config)
         {
-            profile.ApplyBuff(config);
+            Profile.ApplyBuff(config);
             OnBuffAppled(config);
         }
         public void DeclineBuff(BuffConfig config)
         {
-            profile.DeclineBuff(config);
+            Profile.DeclineBuff(config);
             OnBuffDeclined(config);
         }
         public BaseStatData[] GetAllStatData()
         {
-            if (profile != null)
+            if (Profile != null)
             {
-                BaseStatData[] result = new BaseStatData[profile.Count];
-                for (int i = 0; i < profile.Count; i++)
+                BaseStatData[] result = new BaseStatData[Profile.Count];
+                for (int i = 0; i < Profile.Count; i++)
                 {
-                    result[i] = profile.GetStatData(i);
+                    result[i] = Profile.GetStatData(i);
                 }
                 return result;
             }
@@ -86,8 +88,8 @@ namespace RealMethod
         {
             if (SaveSystem)
             {
-                profile.StoreStats();
-                SaveSystem.SaveFile(profile.file);
+                Profile.StoreStats();
+                SaveSystem.SaveFile(Profile.file);
             }
             else
             {
@@ -122,7 +124,7 @@ namespace RealMethod
         {
 
         }
-        
+
     }
 
 }

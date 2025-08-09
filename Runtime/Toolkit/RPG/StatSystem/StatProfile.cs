@@ -3,12 +3,16 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IStatContainer
+    public interface IPrimitiveStatContainer
     {
         IStat GetStat(int index);
-        BaseStatData GetStatData(int index);
         void ApplyBuff(BuffConfig config);
         void DeclineBuff(BuffConfig config);
+    }
+    public interface IPrimitiveStatContainer<T> : IPrimitiveStatContainer where T : System.Enum
+    {
+        IStat GetStat(T identity);
+        BaseStatData GetStatData(T identity);
     }
     public interface IStatStorage : IStorage
     {
@@ -16,7 +20,7 @@ namespace RealMethod
         bool TryLoadStats(StatData data);
     }
 
-    public abstract class StatProfile : DataAsset, IIdentifier, IStatContainer
+    public abstract class StatProfile : DataAsset, IIdentifier, IPrimitiveStatContainer
     {
         [Header("Profile")]
         [SerializeField]

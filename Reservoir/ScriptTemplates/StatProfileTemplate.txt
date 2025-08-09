@@ -9,6 +9,11 @@ public enum STATTYPE
     Defense,
 }
 
+public interface IStatContainer : IPrimitiveStatContainer<STATTYPE>
+{
+    
+}
+
 [System.Serializable]
 public class STATOBJECT : StatData
 {
