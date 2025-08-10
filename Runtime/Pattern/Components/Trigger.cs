@@ -96,10 +96,10 @@ namespace RealMethod
         protected abstract void OnExit(T other);
 
 #if UNITY_EDITOR
-        [Header("Debug")]
-        public bool Draw = true;
+        [Header("Draw")]
+        public bool _draw = true;
         [ConditionalHide("Draw", true, false)]
-        public Color color = new Color(0.5f, 0.5f, 0.5f, 0.4f);
+        public Color _drawColor = new Color(0.5f, 0.5f, 0.5f, 0.4f);
         protected virtual void OnValidate()
         {
             T TargetComp = GetComponent<T>();
@@ -125,7 +125,7 @@ namespace RealMethod
         }
         private void OnDrawGizmos()
         {
-            if (Draw)
+            if (_draw)
             {
                 T TargetComp = GetComponent<T>();
                 if (TargetComp == null)
@@ -145,7 +145,7 @@ namespace RealMethod
                                 break;
                             default:
                                 Debug.LogWarning("Cant' Draw Debug for This Collider");
-                                Draw = false;
+                                _draw = false;
                                 break;
                         }
                     }
@@ -166,7 +166,7 @@ namespace RealMethod
                                     break;
                                 default:
                                     Debug.LogWarning("Cant' Draw Debug for This Collider");
-                                    Draw = false;
+                                    _draw = false;
                                     break;
                             }
                         }
@@ -176,7 +176,7 @@ namespace RealMethod
         }
         protected virtual void DrawBoxCollider3D(BoxCollider box)
         {
-            Gizmos.color = color;
+            Gizmos.color = _drawColor;
 
             // Get box collider properties
             Vector3 center = box.center;
@@ -190,7 +190,7 @@ namespace RealMethod
             Gizmos.DrawWireCube(center, size);
 
             // Optional: Draw a semi-transparent filled cube
-            Gizmos.color = new Color(color.r, color.g, color.b, color.a);
+            Gizmos.color = new Color(_drawColor.r, _drawColor.g, _drawColor.b, _drawColor.a);
             Gizmos.DrawCube(center, size);
         }
         protected virtual void DrawSpherCollider3D(SphereCollider sphere)
@@ -199,7 +199,7 @@ namespace RealMethod
             float radius = sphere.radius;
 
             Gizmos.DrawWireSphere(center, radius);
-            Gizmos.color = new Color(color.r, color.g, color.b, 0.2f);
+            Gizmos.color = new Color(_drawColor.r, _drawColor.g, _drawColor.b, 0.2f);
             Gizmos.DrawSphere(center, radius);
         }
         protected virtual void DrawBoxCollider2D(BoxCollider2D box)
