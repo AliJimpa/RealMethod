@@ -8,35 +8,59 @@ namespace RealMethod
     {
         public static T Wheel<T>(this Dictionary<T, float> DataBase)
         {
-            float[] weightlist = DataBase.Values.ToArray();
-            float Rnd = Random.Range(0, weightlist.Sum());
-            T Result = default;
+            if (DataBase == null || DataBase.Count == 0)
+                throw new System.ArgumentException("Database is null or empty");
+
+            // Ensure all weights are non-negative
+            if (DataBase.Values.Any(w => w < 0))
+                throw new System.ArgumentException("Weights cannot be negative");
+
+            float totalWeight = DataBase.Values.Sum();
+
+            if (totalWeight == 0)
+                throw new System.InvalidOperationException("Sum of weights must be greater than zero");
+
+            float rnd = Random.Range(0f, totalWeight);
+
             foreach (var item in DataBase)
             {
-                Result = item.Key;
-                Rnd -= item.Value;
-                if (Rnd <= 0)
+                rnd -= item.Value;
+                if (rnd <= 0f)
                 {
-                    break;
+                    return item.Key;
                 }
             }
-            return Result;
+
+            // Fallback (should rarely happen due to floating point errors)
+            return DataBase.Keys.Last();
         }
         public static T Wheel<T>(this SerializableDictionary<T, float> DataBase)
         {
-            float[] weightlist = DataBase.Values.ToArray();
-            float Rnd = Random.Range(0, weightlist.Sum());
-            T Result = default;
+            if (DataBase == null || DataBase.Count == 0)
+                throw new System.ArgumentException("Database is null or empty");
+
+            // Ensure all weights are non-negative
+            if (DataBase.Values.Any(w => w < 0))
+                throw new System.ArgumentException("Weights cannot be negative");
+
+            float totalWeight = DataBase.Values.Sum();
+
+            if (totalWeight == 0)
+                throw new System.InvalidOperationException("Sum of weights must be greater than zero");
+
+            float rnd = Random.Range(0f, totalWeight);
+
             foreach (var item in DataBase)
             {
-                Result = item.Key;
-                Rnd -= item.Value;
-                if (Rnd <= 0)
+                rnd -= item.Value;
+                if (rnd <= 0f)
                 {
-                    break;
+                    return item.Key;
                 }
             }
-            return Result;
+
+            // Fallback (should rarely happen due to floating point errors)
+            return DataBase.Keys.Last();
         }
         public static void MergeWith<TKey, TValue>(this Dictionary<TKey, TValue> dict1, Dictionary<TKey, TValue> dict2, bool overwrite = false)
         {

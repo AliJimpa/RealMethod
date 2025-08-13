@@ -23,16 +23,6 @@ namespace RealMethod
     [Serializable]
     public class StringColorArrayDictionary : SerializableDictionary<string, Color[], ColorArrayStorage> { }
 
-    [Serializable]
-    public class MyClass
-    {
-        public int i;
-        public string str;
-    }
-
-    [Serializable]
-    public class QuaternionMyClassDictionary : SerializableDictionary<Quaternion, MyClass> { }
-
 #if NET_4_6 || NET_STANDARD_2_0
     [Serializable]
     public class StringHashSet : SerializableHashSet<string> { }
