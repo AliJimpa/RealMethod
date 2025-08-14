@@ -28,6 +28,7 @@ namespace RealMethod
 
         // Abstract Methods
         public abstract bool IsValid();
+        public abstract System.Type GetTargetClass(); // <--- added
     }
     // Prefab Class
     [System.Serializable]
@@ -43,6 +44,8 @@ namespace RealMethod
         {
             return asset.GetComponent<T>();
         }
+
+        public override System.Type GetTargetClass() => typeof(T); // <--- implemented
     }
 
 
