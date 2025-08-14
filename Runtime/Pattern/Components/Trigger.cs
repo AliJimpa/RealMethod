@@ -98,7 +98,7 @@ namespace RealMethod
 #if UNITY_EDITOR
         [Header("Draw")]
         public bool _draw = true;
-        [ConditionalHide("Draw", true, false)]
+        [ConditionalHide("_draw", true, false)]
         public Color _drawColor = new Color(0.5f, 0.5f, 0.5f, 0.4f);
         protected virtual void OnValidate()
         {
@@ -208,7 +208,7 @@ namespace RealMethod
         }
         protected virtual void DrawCircleCollider2D(CircleCollider2D circle)
         {
-            
+
         }
 #endif
     }
