@@ -18,7 +18,7 @@ namespace RealMethod
         [Header("Setting")]
         [SerializeField]
         private bool CheckOnAwake = true;
-        [space]
+        [Space]
         [SerializeField]
         private bool Detect_Touch = true;
         [SerializeField]
