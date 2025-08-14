@@ -3,7 +3,7 @@ using UnityEngine.VFX;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/General/Effector")]
+    [AddComponentMenu("RealMethod/Visual/Effector")]
     public sealed class Effector : MonoBehaviour
     {
         [Header("Effect")]

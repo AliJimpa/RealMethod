@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/General/RuleEvent")]
+    [AddComponentMenu("RealMethod/Method/RuleEvent")]
     public sealed class RuleEvent : MonoBehaviour
     {
         [Header("Rule")]
