@@ -8,6 +8,7 @@ namespace RealMethod
         IStat GetStat(int index);
         void ApplyBuff(BuffConfig config);
         void DeclineBuff(BuffConfig config);
+        void InitializeResource(IResourceData resource);
     }
     public interface IPrimitiveStatContainer<T> : IPrimitiveStatContainer where T : System.Enum
     {
@@ -43,6 +44,10 @@ namespace RealMethod
 
         // Implement IIdentifier Interface
         public string NameID => profileName;
+        void IPrimitiveStatContainer.InitializeResource(IResourceData resource)
+        {
+            resource.Initialize(this);
+        }
 
         // Abstract Method
         public abstract IStat GetStat(int index);

@@ -97,11 +97,16 @@ namespace RealMethod
             }
 
         }
+        void IPrimitiveStatContainer.InitializeResource(IResourceData resource)
+        {
+            resource.Initialize(Profile);
+        }
 
         // Abstract Methods
         protected abstract void OnStatChange(IStat data);
         protected abstract void OnBuffAppled(BuffConfig config);
         protected abstract void OnBuffDeclined(BuffConfig config);
+
     }
 
 

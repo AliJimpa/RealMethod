@@ -8,9 +8,9 @@ namespace RealMethod
         IConsumableResource GetConsumableResource(string nameID);
         ResourceData GetResourceData(string nameID);
     }
-    public interface IResourceDatainitializer
+    public interface IResourceData
     {
-        void initialize(StatProfile profile);
+        void Initialize(StatProfile profile);
         void SetAdditiveValue(float val);
         float AdditiveMaxValue { get; }
     }
@@ -80,7 +80,7 @@ namespace RealMethod
         // Abstract Method
         protected abstract float GetMaxValue(float defaultValue);
     }
-    public abstract class ResourceData<T> : ResourceData, IResourceDatainitializer where T : System.Enum
+    public abstract class ResourceData<T> : ResourceData, IResourceData where T : System.Enum
     {
         [System.Serializable]
         private class StatRatio : SerializableDictionary<T, float> { }
@@ -105,7 +105,7 @@ namespace RealMethod
         }
 
         // Implement IResourceDatainitializer Interface
-        public void initialize(StatProfile profile)
+        public void Initialize(StatProfile profile)
         {
             statProfile = profile;
             if (statProfile == null)
