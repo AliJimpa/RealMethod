@@ -13,7 +13,6 @@ namespace RealMethod
     public interface IPrimitiveStatContainer<T> : IPrimitiveStatContainer where T : System.Enum
     {
         IStat GetStat(T identity);
-        BaseStatData GetStatData(T identity);
     }
     public interface IStatStorage : IStorage
     {
@@ -84,7 +83,7 @@ namespace RealMethod
             return storage.Load(this);
         }
     }
-    public abstract class StatProfile<En, Sd> : StatProfileStorage where En : System.Enum where Sd : StatData
+    public abstract class StatProfile<En, Sd> : StatProfileStorage , IPrimitiveStatContainer<En> where En : System.Enum where Sd : StatData
     {
         [System.Serializable]
         private class GameStat : SerializableDictionary<En, Sd> { }
@@ -251,6 +250,5 @@ namespace RealMethod
         }
 #endif
     }
-
 
 }
