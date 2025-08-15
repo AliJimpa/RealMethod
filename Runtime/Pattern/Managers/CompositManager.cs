@@ -81,7 +81,7 @@ namespace RealMethod
         {
             return Layers.ContainsKey(layerName);
         }
-        public void AddLayer(string layerName, SPrefab prefab)
+        public void AddLayer(string layerName, APrefab prefab)
         {
             if (IsValidLayer(layerName))
             {

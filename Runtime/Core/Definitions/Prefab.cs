@@ -66,7 +66,7 @@ namespace RealMethod
 
     }
     [System.Serializable]
-    public class VPrefab : PrefabCore<ParticleSystem>
+    public class PSPrefab : PrefabCore<ParticleSystem>
     {
 
     }
@@ -76,7 +76,7 @@ namespace RealMethod
 
     }
     [System.Serializable]
-    public class SPrefab : PrefabCore<AudioBehaviour>
+    public class APrefab : PrefabCore<AudioBehaviour>
     {
 
     }

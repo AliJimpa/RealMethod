@@ -403,11 +403,11 @@ namespace RealMethod
         }
 
         // Particle
-        public static ParticleSystem Particle(VPrefab prefab, Vector3 location, Vector3 rotation)
+        public static ParticleSystem Particle(PSPrefab prefab, Vector3 location, Vector3 rotation)
         {
             return Prefab(prefab, location, Quaternion.Euler(rotation));
         }
-        public static ParticleSystem Particle(VPrefab prefab, Transform parent)
+        public static ParticleSystem Particle(PSPrefab prefab, Transform parent)
         {
             return Prefab(prefab, parent);
         }

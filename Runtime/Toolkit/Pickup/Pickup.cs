@@ -1,8 +1,13 @@
-using System;
 using UnityEngine;
 
 namespace RealMethod
 {
+    [System.Serializable]
+    public class PKPrefab : PrefabCore<AudioBehaviour>
+    {
+
+    }
+
     public interface IPicker
     {
         public bool CanTake(Trigger trigger);
@@ -95,7 +100,6 @@ namespace RealMethod
         protected abstract void OnPickUp(T Picker);
 
     }
-
 
     [RequireComponent(typeof(Collider))]
     public abstract class Pickup3D : Pickup<Collider>
