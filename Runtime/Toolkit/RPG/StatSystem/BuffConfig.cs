@@ -5,7 +5,7 @@ namespace RealMethod
 {
     public abstract class BuffConfig : ConfigAsset, IIdentifier
     {
-        [Header("StatConfig")]
+        [Header("Setting")]
         [SerializeField]
         private string configName;
         // Implement IIdentifier Interface
@@ -42,7 +42,7 @@ namespace RealMethod
             public IStatModifier.StatUnitModifierType Type => type;
             public int Priority => priority;
         }
-        [Header("Modifiers")]
+        [Space]
         [SerializeField]
         private Modifier[] presets;
         public int Count => presets != null ? presets.Length : 0;
@@ -62,7 +62,7 @@ namespace RealMethod
             int targetindex = System.Convert.ToInt32(StateName);
             foreach (var modif in presets)
             {
-                if (RM_Core.enume.AreEnumValuesEqual(modif.Stat , StateName))
+                if (RM_Core.enume.AreEnumValuesEqual(modif.Stat, StateName))
                 {
                     Result.Add(modif);
                 }
