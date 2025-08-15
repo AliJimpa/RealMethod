@@ -4,10 +4,9 @@ using UnityEngine;
 namespace RealMethod
 {
     public delegate void TaskCallback(bool enable);
-    public interface ITask
+    public interface ITask : ITick
     {
         void Enable(Object author);
-        void Update();
         void Disable(Object author);
     }
 
@@ -111,14 +110,14 @@ namespace RealMethod
         // Private Functions
         private void UpdateTasks()
         {
+            float delta = Time.deltaTime;
             foreach (var task in Tasks)
             {
-                task.Update();
+                task.Tick(delta);
             }
         }
 
     }
-
 
     public abstract class TaskAsset : DataAsset, ITask
     {
@@ -132,7 +131,7 @@ namespace RealMethod
             OnTaskEnable(author);
             onTaskStatus?.Invoke(true);
         }
-        void ITask.Update()
+        void ITick.Tick(float delta)
         {
             OnTaskUpdate();
         }

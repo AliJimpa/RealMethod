@@ -42,7 +42,6 @@ namespace RealMethod
             public IStatModifier.StatUnitModifierType Type => type;
             public int Priority => priority;
         }
-        [Space]
         [SerializeField]
         private Modifier[] presets;
         public int Count => presets != null ? presets.Length : 0;
