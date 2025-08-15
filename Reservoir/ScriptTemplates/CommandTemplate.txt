@@ -4,7 +4,12 @@ using UnityEngine;
 public class #SCRIPTNAME# : Command
 {
     // Command Mtethods
-    protected override bool OnInitiate(Object author, Object owner){}
+    protected override bool OnInitiate(Object author, Object owner){
+        return true;
+    }
+    protected override bool CanExecute(object Owner){
+        return true;
+    }
     protected override void Execute(object Owner){}
-    protected override bool CanExecute(object Owner){}
+    
 }
