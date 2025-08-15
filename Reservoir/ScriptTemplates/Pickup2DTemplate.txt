@@ -3,15 +3,11 @@ using RealMethod;
 public class #SCRIPTNAME# : Pickup3D
 {
     // Pickup Methods
-    protected override bool CanPickUp(Collider2D Picker)
-    {
+    protected override bool CanPickUp(Collider2D Picker){
         return true;
     }
-    protected override void OnStay(Collider2D Picker)
+    protected override void OnPickUp(Collider2D Picker)
     {
 
-    }
-    protected override void OnStayPicking()
-    {
     }
 }
