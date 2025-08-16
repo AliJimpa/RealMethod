@@ -2,12 +2,6 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    [System.Serializable]
-    public class PKPrefab : PrefabCore<AudioBehaviour>
-    {
-
-    }
-
     public interface IPicker
     {
         public bool CanTake(Trigger trigger);

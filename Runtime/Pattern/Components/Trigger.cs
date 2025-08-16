@@ -2,6 +2,11 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    [System.Serializable]
+    public class TPrefab : PrefabCore<Trigger>
+    {
+        
+    }
     public abstract class Trigger : MonoBehaviour
     {
         protected enum TriggerMethods
