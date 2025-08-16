@@ -12,6 +12,8 @@ namespace RealMethod
     }
     public interface IPrimitiveStatContainer<T> : IPrimitiveStatContainer where T : System.Enum
     {
+        void ApplyBuff(IStatModifier modifier, T identity);
+        void DeclineBuff(IStatModifier modifier, T identity);
         IStat GetStat(T identity);
     }
     public interface IStatStorage : IStorage
@@ -83,7 +85,7 @@ namespace RealMethod
             return storage.Load(this);
         }
     }
-    public abstract class StatProfile<En, Sd> : StatProfileStorage , IPrimitiveStatContainer<En> where En : System.Enum where Sd : StatData
+    public abstract class StatProfile<En, Sd> : StatProfileStorage, IPrimitiveStatContainer<En> where En : System.Enum where Sd : StatData
     {
         [System.Serializable]
         private class GameStat : SerializableDictionary<En, Sd> { }
@@ -152,6 +154,11 @@ namespace RealMethod
                 }
             }
         }
+        public void ApplyBuff(IStatModifier modifier, En stat)
+        {
+            CheckStorage();
+            ((IModifiableStat)ChacterStats[stat]).AddModifier(modifier);
+        }
         public sealed override void DeclineBuff(BuffConfig config)
         {
             CheckStorage();
@@ -162,6 +169,11 @@ namespace RealMethod
                     ((IModifiableStat)stat.Value).RemoveModifier(modf);
                 }
             }
+        }
+        public void DeclineBuff(IStatModifier modifier, En stat)
+        {
+            CheckStorage();
+            ((IModifiableStat)ChacterStats[stat]).RemoveModifier(modifier);
         }
         public sealed override string[] GetStatNames()
         {
