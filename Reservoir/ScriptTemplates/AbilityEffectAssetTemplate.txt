@@ -2,7 +2,7 @@ using RealMethod;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME# : AbilityAsset
+public class #SCRIPTNAME# : AbilityEffectAsset
 {
     // AbilityAsset Methods
     protected override float GetCooldown() { return 2; }

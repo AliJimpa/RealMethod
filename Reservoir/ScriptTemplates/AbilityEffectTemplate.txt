@@ -1,7 +1,7 @@
 using RealMethod;
 using UnityEngine;
 
-private class #SCRIPTNAME# : AbilityEffect
+public class #SCRIPTNAME# : AbilityEffect
 {
     // AbilityEffect Methods
     protected override void OnInitiate(Object owner)
