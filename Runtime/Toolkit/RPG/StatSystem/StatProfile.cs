@@ -154,7 +154,7 @@ namespace RealMethod
                 }
             }
         }
-        public void ApplyBuff(IStatModifier modifier)
+         public void ApplyBuff(IStatModifier modifier, En stat)
         {
             CheckStorage();
             ((IModifiableStat)ChacterStats[stat]).AddModifier(modifier);
@@ -170,7 +170,7 @@ namespace RealMethod
                 }
             }
         }
-        public void DeclineBuff(IStatModifier modifier)
+         public void DeclineBuff(IStatModifier modifier, En stat)
         {
             CheckStorage();
             ((IModifiableStat)ChacterStats[stat]).RemoveModifier(modifier);
