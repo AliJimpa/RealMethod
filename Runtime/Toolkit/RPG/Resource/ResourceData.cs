@@ -136,6 +136,7 @@ namespace RealMethod
         public void SetAdditiveValue(float val)
         {
             additiveMaxValue = val;
+            OnChangeMaxValue?.Invoke(this);
         }
         public float AdditiveMaxValue => additiveMaxValue;
 
