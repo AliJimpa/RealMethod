@@ -30,6 +30,7 @@ namespace RealMethod
         public Despawn GameDespawn;
         public AudioManager GameAudio;
         public UIManager GameUI;
+        public ScreenManager GameScreen;
         public TaskManager GameTask;
 
         // Base Service
@@ -51,45 +52,53 @@ namespace RealMethod
         // Public Functions
         public void BringManager(IGameManager manager)
         {
-            // Brind AudioManager
-            if (manager.GetManagerClass() is AudioManager audiomanager)
+            MonoBehaviour TargetManager = manager.GetManagerClass();
+            switch (TargetManager) // Order is very important
             {
-                if (GameAudio == null)
-                {
-                    GameAudio = audiomanager;
-                }
-                else
-                {
-                    Debug.LogError($"Spawn Service already have AudioManager Cant Enter this {audiomanager}");
-                }
+                case ScreenManager screenmanager: // Bring ScreenManager
+                    if (GameScreen == null)
+                    {
+                        GameScreen = screenmanager;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Spawn Service already have {typeof(ScreenManager)} Cant Enter this {screenmanager}");
+                    }
+                    break;
+                case TaskManager taskmanager: // Bring TaskManager
+                    if (GameTask == null)
+                    {
+                        GameTask = taskmanager;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Spawn Service already have {typeof(TaskManager)} Cant Enter this {taskmanager}");
+                    }
+                    break;
+                case AudioManager audiomanager: // Brind AudioManager
+                    if (GameAudio == null)
+                    {
+                        GameAudio = audiomanager;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Spawn Service already have {typeof(AudioManager)} Cant Enter this {audiomanager}");
+                    }
+                    break;
+                case UIManager uIManager: // Brind UIManager
+                    if (GameUI == null)
+                    {
+                        GameUI = uIManager;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Spawn Service already have {typeof(UIManager)} Cant Enter this {uIManager}");
+                    }
+                    break;
+                default:
+                    Debug.LogWarning($"{TargetManager.gameObject}:Manager not define in SpawnService");
+                    break;
             }
-
-            // Brind UIManagerF
-            if (manager.GetManagerClass() is UIManager uIManager)
-            {
-                if (GameUI == null)
-                {
-                    GameUI = uIManager;
-                }
-                else
-                {
-                    Debug.LogError($"Spawn Service already have AudioManager Cant Enter this {uIManager}");
-                }
-            }
-
-            // Bring TaskManager
-            if (manager.GetManagerClass() is TaskManager taskmanager)
-            {
-                if (GameTask == null)
-                {
-                    GameTask = taskmanager;
-                }
-                else
-                {
-                    Debug.LogError($"Spawn Service already have AudioManager Cant Enter this {taskmanager}");
-                }
-            }
-
         }
 
 
@@ -200,6 +209,44 @@ namespace RealMethod
             {
                 Debug.LogWarning($" {instance}: UIManager is not available.");
                 return null;
+            }
+        }
+
+        // Screen
+        public static void Message(string message)
+        {
+            if (instance.GameScreen != null)
+            {
+                if (instance.GameScreen.Informer != null)
+                {
+                    instance.GameScreen.Informer.Popup(message);
+                }
+                else
+                {
+                    Debug.LogWarning($"ScreenMaanger need to set Informer");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: ScreenManager is not available.");
+            }
+        }
+        public static void Message(string message, float duration)
+        {
+            if (instance.GameScreen != null)
+            {
+                if (instance.GameScreen.Informer != null)
+                {
+                    instance.GameScreen.Informer.Popup(message, duration);
+                }
+                else
+                {
+                    Debug.LogWarning($"ScreenMaanger need to set Informer");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: ScreenManager is not available.");
             }
         }
 

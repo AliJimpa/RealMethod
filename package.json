@@ -1,11 +1,11 @@
 {
   "name": "com.mustard.realmethod",
-  "version": "5.0.21",
+  "version": "5.1.0",
   "displayName": "RealMethod",
-  "description": "A modern concept for making game in unity.",
+  "description": "A modern concept for making game in unity. [MUSTARD]",
   "unity": "6000.0",
   "author": {
-    "name": "Ali & maybe(Arsalan)",
+    "name": "Ali & Arsalan",
     "url": "https://alibadpa.weebly.com"
   },
   "keywords": [
@@ -16,14 +16,14 @@
   ],
   "samples": [
     {
-      "displayName": "Basic Usage",
-      "description": "How to use Mustard Utilities",
-      "path": "Samples~/Basic"
-    },
-    {
       "displayName": "Tutorial",
       "description": "Some Prefab & Config for Implement Basic Tutorial in your game",
-      "path": "Samples~/Basic"
+      "path": "Samples~/Tutorial"
+    },
+    {
+      "displayName": "PopupMessage",
+      "description": "Some Prefab & Config for Implement Basic PopupMessage in your game",
+      "path": "Samples~/PopupMessage"
     }
   ],
   "unityRelease": "44f1"
