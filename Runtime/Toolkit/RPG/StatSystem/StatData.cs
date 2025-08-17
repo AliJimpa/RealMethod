@@ -67,6 +67,10 @@ namespace RealMethod
             OnChangeValue -= handler;
         }
         // Implement IModifiableStat Interface
+        bool IModifiableStat.IsModifierValid(IStatModifier mod)
+        {
+            return modifiers.Contains(mod);
+        }
         void IModifiableStat.AddModifier(IStatModifier mod)
         {
             if (!modifiers.Contains(mod))

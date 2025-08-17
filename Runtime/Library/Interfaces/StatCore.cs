@@ -13,6 +13,7 @@ namespace RealMethod
 
     public interface IModifiableStat
     {
+        bool IsModifierValid(IStatModifier modifier);
         void AddModifier(IStatModifier modifier);
         //void UpdateModifier(IStatModifier modifier);
         void RemoveModifier(IStatModifier modifier);

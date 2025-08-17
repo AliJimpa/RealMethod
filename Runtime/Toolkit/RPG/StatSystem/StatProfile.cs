@@ -6,12 +6,14 @@ namespace RealMethod
     public interface IPrimitiveStatContainer
     {
         IStat GetStat(int index);
+        bool IsValidBuff(BuffConfig config);
         void ApplyBuff(BuffConfig config);
         void DeclineBuff(BuffConfig config);
         void InitializeResource(IResourceData resource);
     }
     public interface IPrimitiveStatContainer<T> : IPrimitiveStatContainer where T : System.Enum
     {
+        bool IsValidBuff(IStatModifier modifier, T identity);
         void ApplyBuff(IStatModifier modifier, T identity);
         void DeclineBuff(IStatModifier modifier, T identity);
         IStat GetStat(T identity);
@@ -54,6 +56,7 @@ namespace RealMethod
         public abstract IStat GetStat(int index);
         public abstract IStat GetStat(string name);
         public abstract BaseStatData GetStatData(int index);
+        public abstract bool IsValidBuff(BuffConfig config);
         public abstract void ApplyBuff(BuffConfig config);
         public abstract void DeclineBuff(BuffConfig config);
         public abstract string[] GetStatNames();
@@ -143,6 +146,21 @@ namespace RealMethod
             }
             return null;
         }
+        public sealed override bool IsValidBuff(BuffConfig config)
+        {
+            CheckStorage();
+            foreach (var stat in ChacterStats)
+            {
+                foreach (var modf in config.GetModifiers(stat.Key))
+                {
+                    if (((IModifiableStat)stat.Value).IsModifierValid(modf))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         public sealed override void ApplyBuff(BuffConfig config)
         {
             CheckStorage();
@@ -154,11 +172,6 @@ namespace RealMethod
                 }
             }
         }
-         public void ApplyBuff(IStatModifier modifier, En stat)
-        {
-            CheckStorage();
-            ((IModifiableStat)ChacterStats[stat]).AddModifier(modifier);
-        }
         public sealed override void DeclineBuff(BuffConfig config)
         {
             CheckStorage();
@@ -169,11 +182,6 @@ namespace RealMethod
                     ((IModifiableStat)stat.Value).RemoveModifier(modf);
                 }
             }
-        }
-         public void DeclineBuff(IStatModifier modifier, En stat)
-        {
-            CheckStorage();
-            ((IModifiableStat)ChacterStats[stat]).RemoveModifier(modifier);
         }
         public sealed override string[] GetStatNames()
         {
@@ -195,6 +203,21 @@ namespace RealMethod
         }
 
         // Public Functions
+        public bool IsValidBuff(IStatModifier modifier, En stat)
+        {
+            CheckStorage();
+            return ((IModifiableStat)ChacterStats[stat]).IsModifierValid(modifier);
+        }
+        public void ApplyBuff(IStatModifier modifier, En stat)
+        {
+            CheckStorage();
+            ((IModifiableStat)ChacterStats[stat]).AddModifier(modifier);
+        }
+        public void DeclineBuff(IStatModifier modifier, En stat)
+        {
+            CheckStorage();
+            ((IModifiableStat)ChacterStats[stat]).RemoveModifier(modifier);
+        }
         public En[] GetStatList()
         {
             return ChacterStats.Keys.ToArray();
