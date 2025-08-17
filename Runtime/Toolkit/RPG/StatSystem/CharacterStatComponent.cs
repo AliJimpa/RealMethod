@@ -58,6 +58,10 @@ namespace RealMethod
         {
             return Profile.GetStatData(index);
         }
+        public bool IsValidBuff(BuffConfig config)
+        {
+            return Profile.IsValidBuff(config);
+        }
         public void ApplyBuff(BuffConfig config)
         {
             Profile.ApplyBuff(config);
