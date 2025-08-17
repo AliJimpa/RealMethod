@@ -18,12 +18,12 @@
     {
       "displayName": "Tutorial",
       "description": "Some Prefab & Config for Implement Basic Tutorial in your game",
-      "path": "Samples~/Tutorial"
+      "path": "Samples~/Tutorial/"
     },
     {
       "displayName": "PopupMessage",
       "description": "Some Prefab & Config for Implement Basic PopupMessage in your game",
-      "path": "Samples~/PopupMessage"
+      "path": "Samples~/PopupMessage/"
     }
   ],
   "unityRelease": "44f1"
