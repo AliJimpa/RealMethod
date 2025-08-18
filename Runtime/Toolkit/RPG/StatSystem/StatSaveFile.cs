@@ -97,6 +97,7 @@ namespace RealMethod
             return false;
         }
 
+#if UNITY_EDITOR
         public override void OnEditorPlay()
         {
             Names.Clear();
@@ -104,5 +105,6 @@ namespace RealMethod
             Mins.Clear();
             Maxs.Clear();
         }
+#endif
     }
 }
