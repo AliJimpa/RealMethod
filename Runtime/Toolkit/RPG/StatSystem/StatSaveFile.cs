@@ -72,7 +72,6 @@ namespace RealMethod
                 if (Names.Contains(stat.NameID))
                 {
                     int targetindex = Names.IndexOf(stat.NameID);
-                    Debug.LogWarning(targetindex);
                     BaseValue[targetindex] = stat.BaseValue;
                     Mins[targetindex] = stat.MinValue;
                     Maxs[targetindex] = stat.MaxValue;
