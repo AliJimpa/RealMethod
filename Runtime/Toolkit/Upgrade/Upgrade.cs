@@ -58,7 +58,10 @@ namespace RealMethod
                 // Load Unlocked Asset
                 foreach (var id in upgradeStorage.GetUnlockItems())
                 {
-                    Items[id].Sync(true);
+                    if (Items.ContainsKey(id))
+                    {
+                        Items[id].Sync(true);
+                    }
                 }
                 // Load AvailableItems
                 string[] itemsName = upgradeStorage.GetAvailableItems();
@@ -269,7 +272,7 @@ namespace RealMethod
                 }
             }
         }
-        
+
         // Private Functions
         private void MessageBehavior(IUpgradeItem item, bool isUnlock)
         {
