@@ -93,6 +93,7 @@ namespace RealMethod
                 int targetindex = Names.IndexOf(data.NameID);
                 data.SetUpgradeValue(BaseValue[targetindex] - data.FirstValue);
                 data.SetLimitation(Mins[targetindex], Maxs[targetindex]);
+                return true;
             }
             return false;
         }
