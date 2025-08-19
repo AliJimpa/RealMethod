@@ -32,6 +32,7 @@ namespace RealMethod
         public UIManager GameUI;
         public ScreenManager GameScreen;
         public TaskManager GameTask;
+        public HapticManager GameHaptic;
 
         // Base Service
         protected override void OnStart(object Author)
@@ -73,6 +74,16 @@ namespace RealMethod
                     else
                     {
                         Debug.LogError($"Spawn Service already have {typeof(TaskManager)} Cant Enter this {taskmanager}");
+                    }
+                    break;
+                case HapticManager hapticmanager:
+                    if (GameHaptic == null)
+                    {
+                        GameHaptic = hapticmanager;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Spawn Service already have {typeof(HapticManager)} Cant Enter this {hapticmanager}");
                     }
                     break;
                 case AudioManager audiomanager: // Brind AudioManager
@@ -436,17 +447,31 @@ namespace RealMethod
         }
 
         // Effect
-        public static Effector Effect(EPrefab prefab)
+        public static EffectPlayer Effect(EPrefab prefab)
         {
             return Prefab(prefab);
         }
-        public static Effector Effect(EPrefab prefab, Vector3 location, Vector3 rotation)
+        public static EffectPlayer Effect(EPrefab prefab, Vector3 location, Vector3 rotation)
         {
             return Prefab(prefab, location, Quaternion.Euler(rotation));
         }
-        public static Effector Effect(EPrefab prefab, Transform parent)
+        public static EffectPlayer Effect(EPrefab prefab, Transform parent)
         {
             return Prefab(prefab, parent);
+        }
+
+        // Haptic
+        public static IHapticProvider Haptic(HapticConfig config)
+        {
+            if (instance.GameHaptic != null)
+            {
+                return instance.GameHaptic.Produce(config);
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: HapticManager is not available.");
+                return null;
+            }
         }
 
         // Particle
@@ -669,6 +694,18 @@ namespace RealMethod
                 return false;
             }
         }
-    }
 
+        // Haptic
+        public static bool Haptic(IHapticProvider provider, bool debug = true)
+        {
+            if (Spawn.instance.GameHaptic == null)
+            {
+                if (debug)
+                    Debug.LogWarning("HapticManager is not available.");
+                return false;
+            }
+            return Spawn.instance.GameHaptic.Demolish(provider);
+        }
+    }
 }
+

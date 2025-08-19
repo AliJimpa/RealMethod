@@ -1,21 +1,8 @@
 using RealMethod;
 using UnityEngine;
 
-public class #SCRIPTNAME# : Haptic
-{
-
-    // Setvice Method
-    protected override void OnStart(object Author)
-    {
-    }
-    protected override void OnNewWorld()
-    {
-    }
-    protected override void OnEnd(object Author)
-    {
-    }
-
-    
+public class #SCRIPTNAME# : HapticManager
+{   
     // Haptic Method
     protected override void OnPlay(HapticConfig config)
     {
@@ -26,6 +13,4 @@ public class #SCRIPTNAME# : Haptic
     protected override void OnStop(HapticConfig config)
     {
     }
-
-    
 }

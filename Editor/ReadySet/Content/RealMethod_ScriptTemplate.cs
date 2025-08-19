@@ -52,6 +52,11 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("MixerManagerTemplate.txt", "MyMixerManager.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Service/HapticManager", false, 80)]
+        public static void CreateHapticService()
+        {
+            string Path = RM_Create.Script("HapticManagerTemplate.txt", "MyHapticManager.cs");
+        }
 
 
         // Service
@@ -75,11 +80,7 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("RuleServiceTemplate.txt", "MyRuleService.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Service/HapticService", false, 80)]
-        public static void CreateHapticService()
-        {
-            string Path = RM_Create.Script("HapticServiceTemplate.txt", "MyHapticService.cs");
-        }
+        
 
 
         // Assets

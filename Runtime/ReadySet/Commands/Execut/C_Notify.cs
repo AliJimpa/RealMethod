@@ -3,8 +3,8 @@ using UnityEngine.Events;
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Command/Timer")]
-    public sealed class C_Timer : Command
+    [AddComponentMenu("RealMethod/Command/Notify")]
+    public sealed class C_Notify : Command
     {
         private enum UpdateMethod
         {
@@ -41,7 +41,7 @@ namespace RealMethod
         [Header("Events")]
         [SerializeField]
         private UnityEvent<int> Notify;
-        public System.Action<C_Timer> OnNotify;
+        public System.Action<C_Notify> OnNotify;
 
 
         private float Timer = 0;

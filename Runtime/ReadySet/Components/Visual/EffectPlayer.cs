@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.VFX;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace RealMethod
 {
-    [AddComponentMenu("RealMethod/Visual/Effector")]
-    public sealed class Effector : MonoBehaviour
+    [AddComponentMenu("RealMethod/Visual/EffectPlayer")]
+    public sealed class EffectPlayer : MonoBehaviour
     {
-        [Header("Effect")]
-        [SerializeField]
-        private bool PlayOnStart = false;
-
+        public bool IsPlaying { get; private set; }
         private ParticleSystem[] AllParticles;
         private AudioSource[] AllAudioSources;
         private VisualEffect[] AllVisualEffects;
@@ -49,12 +49,13 @@ namespace RealMethod
                 com.Initiate(this, this);
             }
         }
-        private void Start()
+        private void OnEnable()
         {
-            if (PlayOnStart)
-            {
-                Play();
-            }
+            Play();
+        }
+        private void OnDisable()
+        {
+            Pause();
         }
 #if UNITY_EDITOR
         private void OnValidate()
@@ -85,8 +86,9 @@ namespace RealMethod
             {
                 com.ExecuteCommand(this);
             }
+            IsPlaying = true;
         }
-        public void Stop()
+        public void Pause()
         {
             foreach (var part in AllParticles)
             {
@@ -100,8 +102,9 @@ namespace RealMethod
             {
                 vef.pause = false;
             }
+            IsPlaying = false;
         }
-        public void Clear()
+        public void Stop()
         {
             foreach (var part in AllParticles)
             {
@@ -115,16 +118,55 @@ namespace RealMethod
             {
                 vef.Reinit();
             }
+            IsPlaying = false;
         }
 
     }
-
-
     [System.Serializable]
-    public class EPrefab : PrefabCore<Effector>
+    public class EPrefab : PrefabCore<EffectPlayer>
     {
 
     }
 
-    
+
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(EffectPlayer), true)]
+    public class EffectPlayerEditor : Editor
+    {
+        private EffectPlayer MyPlayer;
+
+        private void OnEnable()
+        {
+            MyPlayer = (EffectPlayer)target;
+        }
+        private void OnDisable()
+        {
+
+        }
+
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            // Draw default inspector
+            DrawDefaultInspector();
+
+            // Dropdown
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Effects", EditorStyles.boldLabel);
+            GUILayout.BeginHorizontal();
+
+            GUILayout.EndHorizontal();
+            //EditorGUILayout.IntField("Count:", EffectList.GetCount());
+        }
+
+
+
+
+    }
+#endif
+
+
 }
