@@ -57,7 +57,10 @@ public sealed class PopupScreen : MonoBehaviour, IWidget, IInformer
         // Optional (prevents blocking clicks behind it):
         canvasGroup.blocksRaycasts = false;
         canvasGroup.interactable = false;
+#if TMP_PRESENT
+#else
         messageText.supportRichText = true; // make sure rich text is on
+#endif
         if (Owner is ScreenManager manager)
         {
             manager.SetInformer(this);

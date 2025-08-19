@@ -15,32 +15,11 @@ namespace RealMethod
         private VisualEffect[] AllVisualEffects;
         private ICommand[] AllExecutCommands;
 
-        /// Haptic
-        /// UI
-        /// Animation
-        /// AutoDestroy
-        /// Notify
-        /// CameraShake
-
         // Unity Methods
         private void Awake()
         {
             AllParticles = GetComponentsInChildren<ParticleSystem>();
-            foreach (var part in AllParticles)
-            {
-                if (part.isPlaying)
-                {
-                    Debug.LogWarning($"{part} autoplay is enable ");
-                }
-            }
             AllAudioSources = GetComponentsInChildren<AudioSource>();
-            foreach (var aud in AllAudioSources)
-            {
-                if (aud.playOnAwake)
-                {
-                    Debug.LogWarning($"{aud} autoplay is enable ");
-                }
-            }
             AllVisualEffects = GetComponentsInChildren<VisualEffect>();
             AllExecutCommands = GetComponents<ICommand>();
             ICommand[] CommandInitators = GetComponents<ICommand>();
@@ -57,15 +36,6 @@ namespace RealMethod
         {
             Pause();
         }
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            foreach (var aud in GetComponentsInChildren<AudioSource>())
-            {
-                aud.playOnAwake = false;
-            }
-        }
-#endif
 
         // Public Functions
         public void Play()
@@ -121,6 +91,18 @@ namespace RealMethod
             IsPlaying = false;
         }
 
+
+#if UNITY_EDITOR
+        [ContextMenu("AutoFix")]
+        private void Fix()
+        {
+            foreach (var aud in GetComponentsInChildren<AudioSource>())
+            {
+                aud.playOnAwake = false;
+            }
+        }
+#endif
+
     }
     [System.Serializable]
     public class EPrefab : PrefabCore<EffectPlayer>
@@ -135,16 +117,27 @@ namespace RealMethod
     public class EffectPlayerEditor : Editor
     {
         private EffectPlayer MyPlayer;
+        //private Vector2 scrollPos;
+        private Color prevColor;
+
+
+        private ParticleSystem[] AllParticles;
+        private AudioSource[] AllAudioSources;
+        private VisualEffect[] AllVisualEffects;
+        private ICommand[] AllExecutCommands;
 
         private void OnEnable()
         {
             MyPlayer = (EffectPlayer)target;
+            AllParticles = MyPlayer.GetComponentsInChildren<ParticleSystem>();
+            AllAudioSources = MyPlayer.GetComponentsInChildren<AudioSource>();
+            AllVisualEffects = MyPlayer.GetComponentsInChildren<VisualEffect>();
+            AllExecutCommands = MyPlayer.GetComponents<ICommand>();
         }
         private void OnDisable()
         {
 
         }
-
 
         public override void OnInspectorGUI()
         {
@@ -154,12 +147,34 @@ namespace RealMethod
             DrawDefaultInspector();
 
             // Dropdown
+            prevColor = GUI.contentColor;
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Effects", EditorStyles.boldLabel);
-            GUILayout.BeginHorizontal();
-
-            GUILayout.EndHorizontal();
-            //EditorGUILayout.IntField("Count:", EffectList.GetCount());
+            //scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(400), GUILayout.Height(150));
+            EditorGUILayout.LabelField("1.ParticleSystem", EditorStyles.boldLabel);
+            foreach (var parti in AllParticles)
+            {
+                GUI.contentColor = parti.main.playOnAwake ? Color.red : prevColor;
+                EditorGUILayout.LabelField($"{parti.gameObject.name}");
+            }
+            EditorGUILayout.LabelField("2.AudioSource", EditorStyles.boldLabel);
+            foreach (var audi in AllAudioSources)
+            {
+                GUI.contentColor = audi.playOnAwake ? Color.red : prevColor;
+                EditorGUILayout.LabelField($"{audi.gameObject.name}");
+            }
+            EditorGUILayout.LabelField("3.VisualEffect", EditorStyles.boldLabel);
+            foreach (var vis in AllVisualEffects)
+            {
+                GUI.contentColor = prevColor;
+                EditorGUILayout.LabelField($"{vis.gameObject.name}");
+            }
+            EditorGUILayout.LabelField("4.Command", EditorStyles.boldLabel);
+            foreach (var com in AllExecutCommands)
+            {
+                GUI.contentColor = prevColor;
+                EditorGUILayout.LabelField($"{com.GetType()}");
+            }
+            //EditorGUILayout.EndScrollView();
         }
 
 
