@@ -17,7 +17,7 @@ namespace RealMethod
     {
         [Header("Setting")]
         [SerializeField]
-        private bool CheckOnAwake = true;
+        private bool CheckOnStart = true;
         [Space]
         [SerializeField]
         private bool Detect_Touch = true;
@@ -34,9 +34,9 @@ namespace RealMethod
         private InputActionAsset inputAsset;
 
         // Unity Methods
-        private void Awake()
+        private void Start()
         {
-            if (CheckOnAwake)
+            if (CheckOnStart)
             {
                 // Initial check
                 CheckDevice();
