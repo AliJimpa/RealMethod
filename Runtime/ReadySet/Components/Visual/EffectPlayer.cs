@@ -34,7 +34,7 @@ namespace RealMethod
         }
         private void OnDisable()
         {
-            Pause();
+            Stop();
         }
 
         // Public Functions
