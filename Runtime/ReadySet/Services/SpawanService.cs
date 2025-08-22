@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UIElements;
@@ -33,6 +34,7 @@ namespace RealMethod
         public ScreenManager GameScreen;
         public TaskManager GameTask;
         public HapticManager GameHaptic;
+        public EnumeratorManager GameEnumerator;
 
         // Base Service
         protected override void OnStart(object Author)
@@ -54,7 +56,7 @@ namespace RealMethod
         public void BringManager(IGameManager manager)
         {
             MonoBehaviour TargetManager = manager.GetManagerClass();
-            switch (TargetManager) // Order is very important
+            switch (TargetManager) // **Order is very important**
             {
                 case ScreenManager screenmanager: // Bring ScreenManager
                     if (GameScreen == null)
@@ -74,6 +76,16 @@ namespace RealMethod
                     else
                     {
                         Debug.LogError($"Spawn Service already have {typeof(TaskManager)} Cant Enter this {taskmanager}");
+                    }
+                    break;
+                case EnumeratorManager enumeratormanager:
+                    if (GameEnumerator == null)
+                    {
+                        GameEnumerator = enumeratormanager;
+                    }
+                    else
+                    {
+                        Debug.LogError($"Spawn Service already have {typeof(EnumeratorManager)} Cant Enter this {enumeratormanager}");
                     }
                     break;
                 case HapticManager hapticmanager:
@@ -529,7 +541,7 @@ namespace RealMethod
         }
 
         // Task
-        public static bool Task(Object TaskObj, Object author)
+        public static bool Task(object TaskObj, Object author)
         {
             if (instance.GameTask != null)
             {
@@ -548,7 +560,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning($"Your Object should have {typeof(ITask)} Interfave");
+                    Debug.LogWarning($"Your Object should have {typeof(ITask)} Interface");
                     return false;
                 }
             }
@@ -556,6 +568,32 @@ namespace RealMethod
             {
                 Debug.LogWarning($" {instance}: TaskManager is not available.");
                 return false;
+            }
+        }
+
+        // Enumerator
+        public static Coroutine Coroutine(IEnumerator routine)
+        {
+            if (instance.GameEnumerator != null)
+            {
+                return instance.GameEnumerator.Run(routine);
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: EnumeratorManager is not available.");
+                return null;
+            }
+        }
+        public static ICoroutineTask CoroutineTask(IEnumerator routine)
+        {
+            if (instance.GameEnumerator != null)
+            {
+                return instance.GameEnumerator.StartTask(routine);
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: EnumeratorManager is not available.");
+                return null;
             }
         }
 
@@ -664,7 +702,7 @@ namespace RealMethod
         }
 
         // Task
-        public static bool Task(Object TaskObj, Object author, bool debug = true)
+        public static bool Task(object TaskObj, Object author, bool debug = true)
         {
             if (Spawn.instance.GameTask == null)
             {
@@ -693,6 +731,20 @@ namespace RealMethod
                     Debug.LogWarning($"Your Object should have {typeof(ITask)} Interfave");
                 return false;
             }
+        }
+
+        // Enumerator
+        public static bool Coroutine(Coroutine coroutine, bool debug = true)
+        {
+            if (Spawn.instance.GameEnumerator == null)
+            {
+                if (debug)
+                    Debug.LogWarning("TaskManager is not available.");
+                return false;
+            }
+
+            Spawn.instance.GameEnumerator.Stop(coroutine);
+            return true;
         }
 
         // Haptic

@@ -1,28 +1,23 @@
-using UnityEngine;
-
 namespace RealMethod
 {
-    public class CoroutineManager : MonoBehaviour, IGameManager
+    public class CoroutineManager : EnumeratorManager
     {
 
-
-        public MonoBehaviour GetManagerClass()
-        {
-            return this;
-        }
-        public void InitiateManager(bool AlwaysLoaded)
+        // EnumeratorManager Methods
+        protected override void InitiateManager(bool alwaysLoaded)
         {
             if (Game.TryFindService(out Spawn SpawnServ))
             {
                 SpawnServ.BringManager(this);
             }
         }
-        public void InitiateService(Service service)
+        protected override void InitiateService(Service service)
         {
             if (service is Spawn spawnservice)
             {
                 spawnservice.BringManager(this);
             }
         }
+
     }
 }
