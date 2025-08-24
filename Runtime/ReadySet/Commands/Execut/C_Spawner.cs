@@ -6,6 +6,7 @@ namespace RealMethod
     public sealed class C_Spawner : Command
     {
         [Header("Setting")]
+        [SerializeField]
         private bool AutoAttach = false;
         [SerializeField]
         private bool SelfPose = true;
@@ -32,11 +33,11 @@ namespace RealMethod
             {
                 if (Owner is MonoBehaviour Mono)
                 {
-                    GameObject target = Spawn.Prefab(PrefabAsset, Mono.transform);
+                    Transform target = Spawn.Prefab(PrefabAsset, Mono.transform);
                     if (!SelfPose)
                     {
-                        target.transform.position = SpawnPoint.position;
-                        target.transform.rotation = SpawnPoint.rotation;
+                        target.position = SpawnPoint.position;
+                        target.rotation = SpawnPoint.rotation;
                     }
                 }
                 else
