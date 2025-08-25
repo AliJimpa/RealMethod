@@ -67,6 +67,12 @@ namespace RealMethod
         }
         public void InitiateManager(bool AlwaysLoaded)
         {
+            if (!AlwaysLoaded)
+            {
+                Debug.LogWarning("HapticManager Should initiate in Game Scope");
+                return;
+            }
+
             if (Game.TryFindService(out Spawn SpawnServ))
             {
                 SpawnServ.BringManager(this);
@@ -123,6 +129,10 @@ namespace RealMethod
             }
             provider = null;
             return false;
+        }
+        public IHapticProvider GetProvider(int index)
+        {
+            return produceList[index];
         }
 
         // Abstract Methods

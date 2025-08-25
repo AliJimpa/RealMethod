@@ -121,7 +121,7 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("GameConfigTemplate.txt", "MyGameConfig.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Config/Haptic", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/Asset/Config/HapticConfig", false, 80)]
         public static void CreateHapticConfig()
         {
             string Path = RM_Create.Script("HapticConfigTemplate.txt", "MyHaptic.cs");
