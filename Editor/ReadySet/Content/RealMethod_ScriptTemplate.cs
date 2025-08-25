@@ -48,12 +48,12 @@ namespace RealMethod.Editor
             string Path = RM_Create.Script("UIManagerTemplate.txt", "MyUIManager.cs");
         }
         [MenuItem("Assets/Create/Scripting/RealMethod/Manager/MixerManager", false, 80)]
-        public static void CreateMixer()
+        public static void CreateMixerManager()
         {
             string Path = RM_Create.Script("MixerManagerTemplate.txt", "MyMixerManager.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Service/HapticManager", false, 80)]
-        public static void CreateHapticService()
+        [MenuItem("Assets/Create/Scripting/RealMethod/Manager/HapticManager", false, 80)]
+        public static void CreateHapticManager()
         {
             string Path = RM_Create.Script("HapticManagerTemplate.txt", "MyHapticManager.cs");
         }
