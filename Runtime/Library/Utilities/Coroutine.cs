@@ -95,10 +95,29 @@ namespace RealMethod
             CoroutineHandeler handle = new CoroutineHandeler();
             yield return Owner.StartCoroutine(handle.Run(coroutine));
         }
-        private static IEnumerator DelayOneFrame(System.Action callback)
+        public static IEnumerator DelayOneFrame(System.Action callback)
         {
             yield return new WaitForEndOfFrame();
             callback?.Invoke();
+        }
+        public static IEnumerator WaitForState(Animator animator, int layer, string stateName, System.Action onFinished)
+        {
+            // Wait until we actually enter the state
+            AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(layer);
+            while (!info.IsName(stateName))
+            {
+                yield return null;
+                info = animator.GetCurrentAnimatorStateInfo(layer);
+            }
+
+            // Now wait until state finishes (non-looping assumption)
+            while (info.normalizedTime < 1f)
+            {
+                yield return null;
+                info = animator.GetCurrentAnimatorStateInfo(layer);
+            }
+
+            onFinished?.Invoke();
         }
     }
 
