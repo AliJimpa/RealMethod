@@ -7,7 +7,7 @@ namespace RealMethod
         /// <summary>
         /// Executes the given action only once.
         /// </summary>
-        public void Run(System.Action action)
+        public void Do(System.Action action)
         {
             if (!hasRun)
             {
