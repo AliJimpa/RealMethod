@@ -12,9 +12,5 @@ public class #SCRIPTNAME# : UIManager
     {
         
     }
-    public override bool IsMaster()
-    {
-        return false;
-    }
 
 }
