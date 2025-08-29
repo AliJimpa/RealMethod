@@ -1,0 +1,20 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : TickManager<YOURUNIT>
+{
+
+    // TickManager Methods
+    protected override void InitiateManager(bool alwaysLoaded)
+    {
+
+    }
+    protected override void InitiateService(Service newService)
+    {
+        
+    }
+    protected override bool CheckUnit(T unit)
+    {
+        return true;
+    }
+
+}

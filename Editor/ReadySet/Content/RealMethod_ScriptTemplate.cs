@@ -57,6 +57,11 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("HapticManagerTemplate.txt", "MyHapticManager.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Manager/TickManager", false, 80)]
+        public static void CreateTickManager()
+        {
+            string Path = RM_Create.Script("TickManagerTemplate.txt", "MyTickManager.cs");
+        }
 
 
         // Service

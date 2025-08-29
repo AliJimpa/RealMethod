@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace RealMethod
@@ -11,23 +10,14 @@ namespace RealMethod
     }
 
     [AddComponentMenu("RealMethod/Manager/TaskManager")]
-    public sealed class TaskManager : MonoBehaviour, IGameManager
+    public sealed class TaskManager : TickManager<ITask>
     {
-        [Header("Setting")]
-        [SerializeField]
-        private UpdateMethod updateMethod = UpdateMethod.Update;
+        [Header("Task")]
         [SerializeField]
         private TaskAsset[] DefaultTasks;
 
-        private List<ITask> Tasks;
-        public int Count => Tasks != null ? Tasks.Count : 0;
-
-        // Implement IGameManager Interface
-        MonoBehaviour IGameManager.GetManagerClass()
-        {
-            return this;
-        }
-        void IGameManager.InitiateManager(bool AlwaysLoaded)
+        // TickManager Methods
+        protected override void InitiateManager(bool alwaysLoaded)
         {
             if (Game.TryFindService(out Spawn SpawnServ))
             {
@@ -36,65 +26,37 @@ namespace RealMethod
 
             if (DefaultTasks != null)
             {
-                Tasks = new List<ITask>(DefaultTasks.Length + 5);
-                foreach (var task in DefaultTasks)
+                for (int i = 0; i < DefaultTasks.Length; i++)
                 {
-                    Add(task, this);
+                    Add(DefaultTasks[i], this);
                 }
             }
-            else
-            {
-                Tasks = new List<ITask>(5);
-            }
-
         }
-        void IGameManager.InitiateService(Service service)
+        protected override void InitiateService(Service service)
         {
             if (service is Spawn spawnservice)
             {
                 spawnservice.BringManager(this);
             }
         }
+        protected override bool CheckUnit(ITask unit)
+        {
+            return true;
+        }
 
-        // Unity Method
-        private void LateUpdate()
-        {
-            if (updateMethod == UpdateMethod.LateUpdate)
-            {
-                UpdateTasks();
-            }
-        }
-        private void Update()
-        {
-            if (updateMethod == UpdateMethod.Update)
-            {
-                UpdateTasks();
-            }
-        }
-        private void FixedUpdate()
-        {
-            if (updateMethod == UpdateMethod.FixedUpdate)
-            {
-                UpdateTasks();
-            }
-        }
 
         // Public Functions
-        public bool IsValid(ITask task)
-        {
-            return Tasks.Contains(task);
-        }
         public void Add(ITask task, Object author)
         {
             task.Enable(author);
-            Tasks.Add(task);
+            units.Add(task);
         }
         public bool Remove(ITask task, Object author)
         {
-            if (Tasks.Contains(task))
+            if (units.Contains(task))
             {
                 task.Disable(author);
-                Tasks.Remove(task);
+                units.Remove(task);
                 return true;
             }
             else
@@ -102,21 +64,6 @@ namespace RealMethod
                 return false;
             }
         }
-        public ITask[] GetAllTasks()
-        {
-            return Tasks.ToArray();
-        }
-
-        // Private Functions
-        private void UpdateTasks()
-        {
-            float delta = Time.deltaTime;
-            foreach (var task in Tasks)
-            {
-                task.Tick(delta);
-            }
-        }
-
     }
 
     public abstract class TaskAsset : DataAsset, ITask
@@ -133,7 +80,7 @@ namespace RealMethod
         }
         void ITick.Tick(float delta)
         {
-            OnTaskUpdate();
+            OnTaskUpdate(delta);
         }
         void ITask.Disable(Object author)
         {
@@ -144,7 +91,7 @@ namespace RealMethod
 
         // Abstract Methods
         protected abstract void OnTaskEnable(Object author);
-        protected abstract void OnTaskUpdate();
+        protected abstract void OnTaskUpdate(float delta);
         protected abstract void OnTaskDisable(Object author);
 
 #if UNITY_EDITOR
@@ -189,9 +136,9 @@ namespace RealMethod
             OnInitiate();
             ((IBehaviour)this).Start();
         }
-        protected sealed override void OnTaskUpdate()
+        protected sealed override void OnTaskUpdate(float delta)
         {
-            Loop.Tick(Time.deltaTime);
+            Loop.Tick(delta);
         }
         protected sealed override void OnTaskDisable(Object author)
         {
