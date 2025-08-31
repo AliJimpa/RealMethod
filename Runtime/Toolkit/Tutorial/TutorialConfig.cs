@@ -16,7 +16,7 @@ namespace RealMethod
         private string label = "T1";
         public string Label => label;
         [SerializeField]
-        private UPrefab tutorialPrefab;
+        protected UPrefab tutorialPrefab;
         [Header("Tutorial")]
         [SerializeField]
         private string message;
@@ -38,16 +38,16 @@ namespace RealMethod
         }
 
 #if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (tutorialPrefab.IsValid())
-            {
-                if (!tutorialPrefab.HasInterface<ITutorialMessage>())
-                {
-                    Debug.LogError($"The Prefab should have class that implemented {typeof(ITutorialMessage)}");
-                }
-            }
-        }
+        // private void OnValidate()
+        // {
+        //     if (tutorialPrefab.IsValid())
+        //     {
+        //         if (!tutorialPrefab.HasInterface<ITutorialMessage>())
+        //         {
+        //             Debug.LogError($"The Prefab should have class that implemented {typeof(ITutorialMessage)}");
+        //         }
+        //     }
+        // }
 #endif
 
         // Abstract Methods
