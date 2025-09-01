@@ -45,7 +45,7 @@ namespace RealMethod
 
 
         // UI_Tutorial Methods
-        protected override void OnInitiateTutorial(Object author, Tutorial owner)
+        protected override void OnInitiateTutorial(Object author, W_Tutorial owner)
         {
             MyCanvas = owner.GetComponent<RectTransform>();
         }
