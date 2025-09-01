@@ -21,7 +21,12 @@ namespace RealMethod
                 enabled = false;
                 return;
             }
-            LoadStorage();
+        }
+
+        // Unity Methods
+        private void Awake()
+        {
+            Initiate(LoadStorage());
         }
 
         // Public Functions
@@ -82,6 +87,7 @@ namespace RealMethod
         }
 
         // Abstract Methods 
+        protected abstract void Initiate(bool isloaded);
         protected abstract void OnShownMessage(TutorialConfig config);
         protected abstract ITutorialStorage GetStorage();
         protected abstract bool LoadStorage();
