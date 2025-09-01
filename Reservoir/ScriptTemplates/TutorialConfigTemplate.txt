@@ -1,11 +1,15 @@
 using RealMethod;
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
-public class #SCRIPTNAME#  : BaseTutorialConfig
+public class #SCRIPTNAME#  : TutorialConfigCore
 {
-    // Implement BaseTutorialConfig
-    protected override ITutorialMessage PostInstantiate(ITutorialMessage provider)
+    [Header("Setting")]
+    [SerializeField]
+    protected UPrefab tutorialPrefab;
+
+    // Implement TutorialConfigCore
+    protected override UI_Tutorial InstantiateMessageObject(Transform parent)
     {
-        return provider;
+        return Instantiate(tutorialPrefab.asset, parent).GetComponent<UI_Tutorial>();
     }
 }

@@ -1,0 +1,23 @@
+using RealMethod;
+
+[AddComponentMenu("#PROJECTNAME#/UI/#SCRIPTNAME#")]
+public class #SCRIPTNAME# : UI_Tutorial
+{
+    // UI_Tutorial Methods
+    protected override void OnInitiateTutorial(Object author, Tutorial owner)
+    {
+        
+    }
+    protected override void OnStartTutorial(TutorialConfig config)
+    {
+       
+    }
+    protected override void OnUpdatePosition(Vector3 pos)
+    {
+        
+    }
+    protected override void OnEndTutorial()
+    {
+        
+    }
+}
