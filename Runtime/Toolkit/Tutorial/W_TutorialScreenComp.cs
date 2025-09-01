@@ -11,11 +11,9 @@ namespace RealMethod
 
         public override void OnInitiateWidget(Object Owner)
         {
-            print("fffff");
         }
         protected override void OnTutorialLoaded(bool hasValue)
         {
-            print("KKKKKK");
         }
         protected override void OnShownMessage(TutorialConfig config)
         {
