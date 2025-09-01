@@ -18,7 +18,7 @@ namespace RealMethod
         [SerializeField]
         private string title;
         public string Title => title;
-        [SerializeField]
+        [SerializeField, TextArea]
         private string message;
         public string Message => message;
         [SerializeField]

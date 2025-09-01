@@ -6,7 +6,7 @@ using TMPro;
 
 namespace RealMethod
 {
-    public sealed class UI_SimpleTutorial : UI_Tutorial
+    public sealed class UI_SimpleTutorial : UI_TutorialUnit
     {
         [Header("Settings")]
         [SerializeField]
@@ -45,16 +45,16 @@ namespace RealMethod
 
 
         // UI_Tutorial Methods
-        protected override void OnInitiateTutorial(Object author, W_Tutorial owner)
+        protected override void OnInitiateTutorial(Object author, IWidget owner)
         {
-            MyCanvas = owner.GetComponent<RectTransform>();
+            MyCanvas = owner.GetWidgetClass().GetComponent<RectTransform>();
         }
         protected override void OnStartTutorial(TutorialConfig config)
         {
             MyConfig = config;
             tutorialText.text = config.Message;
             textRect = tutorialText.rectTransform;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(MyCanvas, config.Position, null, out var localPoint);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(MyCanvas, config.StartPosition, null, out var localPoint);
             MyPlacement = config.Placement;
             InitializeMessageWithRectTransform(localPoint, config.Placement, config.Offset);
         }
