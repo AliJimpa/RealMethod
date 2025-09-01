@@ -46,15 +46,15 @@ namespace RealMethod
         }
         void ITutorialStorage.AddNewTutorial(TutorialConfig conf)
         {
-            TutorialMessage.Add(conf.Label);
+            TutorialMessage.Add(conf.NameID);
         }
         public bool RemoveTutorial(TutorialConfig conf)
         {
-            return TutorialMessage.Remove(conf.Label);
+            return TutorialMessage.Remove(conf.NameID);
         }
         bool ITutorialStorage.IsValidTutorial(TutorialConfig conf)
         {
-            return TutorialMessage.Contains(conf.Label);
+            return TutorialMessage.Contains(conf.NameID);
         }
         void IStorage.StorageClear()
         {

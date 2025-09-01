@@ -9,19 +9,23 @@ namespace RealMethod
         POINT_TO_LEFT,
         POINT_TO_RIGHT
     }
-    public abstract class TutorialConfigCore : ConfigAsset, ITutorialSpawner
+    public abstract class TutorialConfigCore : ConfigAsset, IItemData, ITutorialSpawner
     {
-        [Header("Base")]
+        [Header("Config")]
         [SerializeField]
         private string label = "T1";
-        public string Label => label;
         [Header("Tutorial")]
+        [SerializeField]
+        private string title;
+        public string Title => title;
         [SerializeField]
         private string message;
         public string Message => message;
         [SerializeField]
-        private Vector3 position;
-        public Vector3 Position => position;
+        private Texture2D icon;
+        [SerializeField]
+        private Vector3 startPosition;
+        public Vector3 StartPosition => startPosition;
         [SerializeField]
         private TutorialPlacement placement;
         public TutorialPlacement Placement => placement;
@@ -29,6 +33,34 @@ namespace RealMethod
         private float offset;
         public float Offset => offset;
 
+
+        // Implement IIdentifier Interface
+        public string NameID => label;
+        // Implement IItem Interface
+        public Texture2D Icon => icon;
+        public Sprite GetSpriteIcon()
+        {
+            return GetSpriteIcon(new Rect(0, 0, icon.width, icon.height),
+                   new Vector2(0.5f, 0.5f)
+               );
+        }
+        public Sprite GetSpriteIcon(Rect rect, Vector2 pivot)
+        {
+            if (icon != null)
+            {
+                return Sprite.Create(icon, rect, pivot);
+            }
+            else
+            {
+                Debug.LogWarning("ItemAsset: Icon is not assigned for item '" + label + "'.");
+                return null;
+            }
+        }
+        // Implement IItemData Interface
+        public PrimitiveAsset GetAsset()
+        {
+            return this;
+        }
         // Implement ITutorialSpawner Interface
         ITutorialMessage ITutorialSpawner.InstantiateMessage(Transform parent)
         {
@@ -36,8 +68,16 @@ namespace RealMethod
             return result.GetComponent<ITutorialMessage>();
         }
 
+
         // Abstract Methods
-        protected abstract UI_Tutorial InstantiateMessageObject(Transform parent);
+        protected abstract UI_TutorialUnit InstantiateMessageObject(Transform parent);
+
+#if UNITY_EDITOR
+        public void ChangeName(string newLabel)
+        {
+            label = newLabel;
+        }
+#endif
     }
 
 
@@ -49,9 +89,9 @@ namespace RealMethod
         protected UPrefab tutorialPrefab;
 
         // Implement TutorialConfigCore
-        protected override UI_Tutorial InstantiateMessageObject(Transform parent)
+        protected override UI_TutorialUnit InstantiateMessageObject(Transform parent)
         {
-            return Instantiate(tutorialPrefab.asset, parent).GetComponent<UI_Tutorial>();
+            return Instantiate(tutorialPrefab.asset, parent).GetComponent<UI_TutorialUnit>();
         }
 
 #if UNITY_EDITOR

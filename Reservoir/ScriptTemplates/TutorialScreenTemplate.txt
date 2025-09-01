@@ -5,11 +5,13 @@ using RealMethod;
 public class #SCRIPTNAME# : W_TutorialStorage
 {
     // TutorialStorage Methods
-    protected override void Initiate(bool isloaded)
+    public override void OnInitiateWidget(Object Owner)
+    {
+    }
+    protected override void OnTutorialLoaded(bool hasValue)
     {
     }
     protected override void OnShownMessage(TutorialConfig config)
     {
-        
     }
 }
