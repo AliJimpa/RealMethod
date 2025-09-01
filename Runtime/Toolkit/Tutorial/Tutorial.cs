@@ -2,13 +2,17 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class Tutorial : MonoBehaviour
+    public abstract class W_Tutorial : MonoBehaviour, IWidget
     {
         public System.Action<UI_Tutorial> OnMessageShow;
         protected ITutorialStorage tutorialStorage;
 
-        // Unity Methods
-        private void Awake()
+        // Implement IWidget Interface
+        public MonoBehaviour GetWidgetClass()
+        {
+            return this;
+        }
+        public void InitiateWidget(Object Owner)
         {
             tutorialStorage = GetStorage();
             if (tutorialStorage == null)
@@ -82,7 +86,7 @@ namespace RealMethod
         protected abstract ITutorialStorage GetStorage();
         protected abstract bool LoadStorage();
     }
-    public abstract class TutorialStorage : Tutorial
+    public abstract class W_TutorialStorage : W_Tutorial
     {
         [Header("Save")]
         [SerializeField]

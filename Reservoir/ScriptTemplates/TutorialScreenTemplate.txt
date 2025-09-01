@@ -1,3 +1,4 @@
+using UnityEngine;
 using RealMethod;
 
 [AddComponentMenu("#PROJECTNAME#/UI/#SCRIPTNAME#")]
@@ -6,6 +7,6 @@ public class #SCRIPTNAME# : TutorialStorage
     // TutorialStorage Methods
     protected override void OnShownMessage(TutorialConfig config)
     {
-        OnDisplay?.Invoke();
+        
     }
 }

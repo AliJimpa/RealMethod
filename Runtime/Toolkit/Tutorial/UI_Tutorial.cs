@@ -10,7 +10,7 @@ namespace RealMethod
         {
             return this as T;
         }
-        void ITutorialMessage.Initiate(Object author, Tutorial owner, TutorialConfig config)
+        void ITutorialMessage.Initiate(Object author, W_Tutorial owner, TutorialConfig config)
         {
             OnInitiateTutorial(author, owner);
             OnStartTutorial(config);
@@ -33,7 +33,7 @@ namespace RealMethod
             OnEndTutorial();
         }
 
-        protected abstract void OnInitiateTutorial(Object author, Tutorial owner);
+        protected abstract void OnInitiateTutorial(Object author, W_Tutorial owner);
         protected abstract void OnStartTutorial(TutorialConfig config);
         protected abstract void OnUpdatePosition(Vector3 pos);
         protected abstract void OnEndTutorial();

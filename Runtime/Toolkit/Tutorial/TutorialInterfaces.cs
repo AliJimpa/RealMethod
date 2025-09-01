@@ -11,7 +11,7 @@ namespace RealMethod
         delegate void Finish();
         event Finish OnFinished;
         T GetClass<T>() where T : UI_Tutorial;
-        void Initiate(Object author, Tutorial owner, TutorialConfig config);
+        void Initiate(Object author, W_Tutorial owner, TutorialConfig config);
     }
     public interface ITutorialStorage : IStorage
     {
