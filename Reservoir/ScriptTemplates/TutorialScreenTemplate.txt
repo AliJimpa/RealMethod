@@ -2,7 +2,7 @@ using UnityEngine;
 using RealMethod;
 
 [AddComponentMenu("#PROJECTNAME#/UI/#SCRIPTNAME#")]
-public class #SCRIPTNAME# : TutorialStorage
+public class #SCRIPTNAME# : W_TutorialStorage
 {
     // TutorialStorage Methods
     protected override void OnShownMessage(TutorialConfig config)
