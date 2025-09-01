@@ -1,18 +1,28 @@
 using UnityEngine;
 using UnityEngine.UI;
+#if TMP_PRESENT
+using TMPro;
+#endif
 
 namespace RealMethod
 {
-    public sealed class UI_SimpleTutorial : MonoBehaviour, ITutorialMessage
+    public sealed class UI_SimpleTutorial : UI_Tutorial
     {
-        [Header("Settings")] // to control how the background image size is slightly larger than the text component
+        [Header("Settings")]
+        [SerializeField]
+        private bool WorldSpace = false;
         [SerializeField, Tooltip("A fixed amount of height that will be added to the background image in all cases.")]
         private float heightPlus;
         [SerializeField]
         private float widthPlus;
-        [Header("Resoureces")]
+        [Header("Dependency")]
+#if TMP_PRESENT
+        [SerializeField]
+        private TMP_Text tutorialText;
+#else
         [SerializeField]
         private Text tutorialText;
+#endif
         [SerializeField]
         private RectTransform background;
         [SerializeField]
@@ -31,26 +41,47 @@ namespace RealMethod
         private RectTransform textRect;
         private RectTransform MyCanvas;
         private TutorialPlacement MyPlacement;
+        private TutorialConfig MyConfig;
 
 
-        // Implement ITutorialMessage Interface
-        public event ITutorialMessage.Finish OnFinished;
-        public MonoBehaviour GetClass()
-        {
-            return this;
-        }
-        void ITutorialMessage.Initiate(Object author, Tutorial owner, TutorialConfig config)
+        // UI_Tutorial Methods
+        protected override void OnInitiateTutorial(Object author, Tutorial owner)
         {
             MyCanvas = owner.GetComponent<RectTransform>();
+        }
+        protected override void OnStartTutorial(TutorialConfig config)
+        {
+            MyConfig = config;
             tutorialText.text = config.Message;
             textRect = tutorialText.rectTransform;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(MyCanvas, config.Position, null, out var localPoint);
             MyPlacement = config.Placement;
             InitializeMessageWithRectTransform(localPoint, config.Placement, config.Offset);
         }
-        void ITutorialMessage.SetPosition(Vector3 position, bool isWorld, TutorialPlacement direction, float bufferOffset)
+        protected override void OnUpdatePosition(Vector3 pos)
         {
-            if (isWorld)
+            SetPosition(pos, WorldSpace, MyConfig.Placement, MyConfig.Offset);
+        }
+        protected override void OnEndTutorial()
+        {
+            Destroy(gameObject);
+        }
+
+        // Unity Method
+        private void Awake()
+        {
+            background.GetComponent<Button>().onClick.AddListener(Close);
+        }
+
+        // Public Functions
+        public void SetPosition(Vector3 position, bool isWorld)
+        {
+            SetPosition(position, isWorld, MyConfig.Placement, MyConfig.Offset);
+        }
+        public void SetPosition(Vector3 position, bool isWorld, TutorialPlacement direction, float bufferOffset)
+        {
+            WorldSpace = isWorld;
+            if (WorldSpace)
             {
                 Vector2 screenPoint = Camera.main.WorldToScreenPoint(position);
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(MyCanvas, screenPoint, null, out var localPoint);
@@ -63,23 +94,6 @@ namespace RealMethod
                 MyPlacement = direction;
                 InitializeMessageWithRectTransform(localPoint, direction, bufferOffset);
             }
-        }
-
-        // Unity Method
-        private void Awake()
-        {
-            background.GetComponent<Button>().onClick.AddListener(CloseMessage);
-        }
-        private void OnDestroy()
-        {
-            OnFinished = null; // unregister the event listeners
-        }
-
-        // Public Functions
-        public void CloseMessage()
-        {
-            OnFinished?.Invoke();
-            Destroy(gameObject);
         }
 
         // Private Functions

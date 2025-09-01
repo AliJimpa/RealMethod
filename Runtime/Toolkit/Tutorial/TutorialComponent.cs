@@ -9,7 +9,7 @@ namespace RealMethod
         [Header("Events")]
         public UnityEvent OnDisplay;
         
-        protected override void OnTutorialShown(TutorialConfig config)
+        protected override void OnShownMessage(TutorialConfig config)
         {
             OnDisplay?.Invoke();
         }

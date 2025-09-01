@@ -74,7 +74,7 @@ namespace RealMethod
 
 #if UNITY_EDITOR
     [UnityEditor.CustomEditor(typeof(TutorialSaveFile))]
-    internal class UIvsGameInputHandlerEditor : UnityEditor.Editor
+    internal class TutorialSaveFileEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
@@ -90,7 +90,7 @@ namespace RealMethod
                 {
                     foreach (var item in ((TutorialSaveFile)target).TutorialMessage)
                     {
-                        UnityEditor.EditorGUILayout.LabelField("Message", item.ToString());
+                        UnityEditor.EditorGUILayout.LabelField("Message", item);
                     }
                 }
             }

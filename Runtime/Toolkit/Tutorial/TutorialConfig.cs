@@ -9,14 +9,12 @@ namespace RealMethod
         POINT_TO_LEFT,
         POINT_TO_RIGHT
     }
-    public abstract class BaseTutorialConfig : ConfigAsset, ITutorialSpawner
+    public abstract class TutorialConfigCore : ConfigAsset, ITutorialSpawner
     {
-        [Header("Setting")]
+        [Header("Base")]
         [SerializeField]
         private string label = "T1";
         public string Label => label;
-        [SerializeField]
-        protected UPrefab tutorialPrefab;
         [Header("Tutorial")]
         [SerializeField]
         private string message;
@@ -31,39 +29,43 @@ namespace RealMethod
         private float offset;
         public float Offset => offset;
 
-        ITutorialMessage ITutorialSpawner.InstantiateObject(Transform parent)
+        // Implement ITutorialSpawner Interface
+        ITutorialMessage ITutorialSpawner.InstantiateMessage(Transform parent)
         {
-
-            return PostInstantiate(Instantiate(tutorialPrefab.asset, parent).GetComponent<ITutorialMessage>());
+            var result = InstantiateMessageObject(parent);
+            return result.GetComponent<ITutorialMessage>();
         }
 
-#if UNITY_EDITOR
-        // private void OnValidate()
-        // {
-        //     if (tutorialPrefab.IsValid())
-        //     {
-        //         if (!tutorialPrefab.HasInterface<ITutorialMessage>())
-        //         {
-        //             Debug.LogError($"The Prefab should have class that implemented {typeof(ITutorialMessage)}");
-        //         }
-        //     }
-        // }
-#endif
-
         // Abstract Methods
-        protected abstract ITutorialMessage PostInstantiate(ITutorialMessage provider);
+        protected abstract UI_Tutorial InstantiateMessageObject(Transform parent);
     }
 
 
-
     [CreateAssetMenu(fileName = "Tutorial", menuName = "RealMethod/Tutorial/Config", order = 1)]
-    public class TutorialConfig : BaseTutorialConfig
+    public class TutorialConfig : TutorialConfigCore
     {
-        // Implement BaseTutorialConfig
-        protected override ITutorialMessage PostInstantiate(ITutorialMessage provider)
+        [Header("Setting")]
+        [SerializeField]
+        protected UPrefab tutorialPrefab;
+
+        // Implement TutorialConfigCore
+        protected override UI_Tutorial InstantiateMessageObject(Transform parent)
         {
-            return provider;
+            return Instantiate(tutorialPrefab.asset, parent).GetComponent<UI_Tutorial>();
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (tutorialPrefab.IsValid())
+            {
+                if (!tutorialPrefab.HasInterface<ITutorialMessage>())
+                {
+                    Debug.LogError($"The Prefab should have class that implemented {typeof(ITutorialMessage)}");
+                }
+            }
+        }
+#endif
     }
 
 

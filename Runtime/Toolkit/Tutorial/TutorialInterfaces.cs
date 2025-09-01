@@ -4,17 +4,15 @@ namespace RealMethod
 {
     public interface ITutorialSpawner
     {
-        ITutorialMessage InstantiateObject(Transform parent);
+        ITutorialMessage InstantiateMessage(Transform parent);
     }
     public interface ITutorialMessage
     {
         delegate void Finish();
         event Finish OnFinished;
-        MonoBehaviour GetClass();
+        T GetClass<T>() where T : UI_Tutorial;
         void Initiate(Object author, Tutorial owner, TutorialConfig config);
-        void SetPosition(Vector3 position, bool isWorld, TutorialPlacement placment, float bufferOffset);
     }
-
     public interface ITutorialStorage : IStorage
     {
         void AddNewTutorial(TutorialConfig conf);

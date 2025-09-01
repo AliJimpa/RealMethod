@@ -4,7 +4,7 @@ namespace RealMethod
 {
     public abstract class Tutorial : MonoBehaviour
     {
-        public System.Action<ITutorialMessage> OnTutorialShow;
+        public System.Action<UI_Tutorial> OnMessageShow;
         protected ITutorialStorage tutorialStorage;
 
         // Unity Methods
@@ -21,46 +21,46 @@ namespace RealMethod
         }
 
         // Public Functions
-        public bool IsTutorialShown(TutorialConfig config)
+        public bool IsMessageShown(TutorialConfig config)
         {
             return tutorialStorage.IsValidTutorial(config);
         }
-        public bool DisplayTutorial(TutorialConfig config, Object author, out ITutorialMessage provider)
+        public bool TryShowMessage<T>(TutorialConfig config, Object author, out T provider) where T : UI_Tutorial
         {
-            if (IsTutorialShown(config))
+            if (IsMessageShown(config))
             {
                 provider = null;
                 return false;
             }
-            provider = ShowTutorial(config, author);
+            provider = ShowMessage<T>(config, author);
             return true;
         }
-        public ITutorialMessage ShowTutorial(TutorialConfig config, Object author, ITutorialMessage.Finish callback)
+        public T ShowMessage<T>(TutorialConfig config, Object author, ITutorialMessage.Finish callback) where T : UI_Tutorial
         {
-            return ShowTutorial(config, transform, author, callback);
+            return ShowMessage<T>(config, transform, author, callback);
         }
-        public ITutorialMessage ShowTutorial(TutorialConfig config, Transform parent, Object author, ITutorialMessage.Finish callback)
+        public T ShowMessage<T>(TutorialConfig config, Transform parent, Object author, ITutorialMessage.Finish callback) where T : UI_Tutorial
         {
             ITutorialSpawner spawner = config;
-            ITutorialMessage provider = spawner.InstantiateObject(parent);
+            ITutorialMessage provider = spawner.InstantiateMessage(parent);
             provider.Initiate(author, this, config);
             provider.OnFinished += callback;
-            OnTutorialMessageShown(config, provider);
-            return provider;
+            MessageShown(config, provider);
+            return provider.GetClass<T>();
         }
-        public ITutorialMessage ShowTutorial(TutorialConfig config, Object author)
+        public T ShowMessage<T>(TutorialConfig config, Object author) where T : UI_Tutorial
         {
-            return ShowTutorial(config, transform, author);
+            return ShowMessage<T>(config, transform, author);
         }
-        public ITutorialMessage ShowTutorial(TutorialConfig config, Transform parent, Object author)
+        public T ShowMessage<T>(TutorialConfig config, Transform parent, Object author) where T : UI_Tutorial
         {
             ITutorialSpawner spawner = config;
-            ITutorialMessage provider = spawner.InstantiateObject(parent);
+            ITutorialMessage provider = spawner.InstantiateMessage(parent);
             provider.Initiate(author, this, config);
-            OnTutorialMessageShown(config, provider);
-            return provider;
+            MessageShown(config, provider);
+            return provider.GetClass<T>();
         }
-        public bool RemoveFromStorage(TutorialConfig config)
+        public bool ResetMessage(TutorialConfig config)
         {
             return tutorialStorage.RemoveTutorial(config);
         }
@@ -70,15 +70,15 @@ namespace RealMethod
         }
 
         // Private Functions
-        private void OnTutorialMessageShown(TutorialConfig config, ITutorialMessage provider)
+        private void MessageShown(TutorialConfig config, ITutorialMessage provider)
         {
             tutorialStorage.AddNewTutorial(config);
-            OnTutorialShown(config);
-            OnTutorialShow?.Invoke(provider);
+            OnShownMessage(config);
+            OnMessageShow?.Invoke(provider.GetClass<UI_Tutorial>());
         }
 
         // Abstract Methods 
-        protected abstract void OnTutorialShown(TutorialConfig config);
+        protected abstract void OnShownMessage(TutorialConfig config);
         protected abstract ITutorialStorage GetStorage();
         protected abstract bool LoadStorage();
     }
