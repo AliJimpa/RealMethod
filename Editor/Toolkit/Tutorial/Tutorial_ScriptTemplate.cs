@@ -7,7 +7,7 @@ namespace RealMethod.Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Tutorial/Screen", false, 80)]
         public static void CreateTutorialScreen()
         {
-            string Path = RM_Create.Script("TutorialScreenTemplate.txt.txt", "MyScreenTutorial.cs");
+            string Path = RM_Create.Script("TutorialScreenTemplate.txt", "MyScreenTutorial.cs");
         }
 
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Tutorial/UI", false, 80)]
