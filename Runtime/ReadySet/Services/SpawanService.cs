@@ -527,7 +527,7 @@ namespace RealMethod
             T TargetCommand = SpawnedObject.GetComponent<T>();
             if (!TargetCommand.GetComponent<ICommand>().Initiate(author, owner))
             {
-                Debug.LogWarning($"Spawn Command Breack: Initiation failed for command '{typeof(T).Name}' on '{prefab.Name}'.");
+                Debug.LogWarning($"Spawn Command Breack: Initiation failed for command '{typeof(T).Name}' on '{prefab.NameID}'.");
             }
             return TargetCommand;
         }

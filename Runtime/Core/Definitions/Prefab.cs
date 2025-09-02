@@ -5,12 +5,12 @@ using UnityEngine.VFX;
 namespace RealMethod
 {
     // Abstract Class
-    public abstract class PrefabCore
+    public abstract class PrefabCore : IIdentifier
     {
         [SerializeField]
         private GameObject PrefabAsset;  // <-- this name must match
         public GameObject asset => PrefabAsset;
-        public string Name => PrefabAsset.name;
+        public string NameID => PrefabAsset != null ? PrefabAsset.name : "Empty";
 
         // Public Functions
         public J GetSoftClass<J>() where J : Component
