@@ -119,7 +119,6 @@ namespace RealMethod
         protected Object Author { get; private set; }
 
         // Private Variable
-        private ITick Loop;
         private bool isValidated;
         private float lifetime = -1;
         private float residuary = -1;
@@ -132,13 +131,48 @@ namespace RealMethod
         {
             Author = author;
             isValidated = true;
-            Loop = this;
             OnInitiate();
             ((IBehaviour)this).Start();
         }
         protected sealed override void OnTaskUpdate(float delta)
         {
-            Loop.Tick(delta);
+            // Check Initiate
+            if (!isValidated)
+            {
+                Debug.LogError("First You Sould Validate");
+                return;
+            }
+
+            // Check Started
+            if (!islive)
+            {
+                return;
+            }
+
+            // Gate for Puse Updating Command
+            if (!CanUpdate())
+            {
+                return;
+            }
+
+            // Handel Lifetime Command
+            if (residuary > 0)
+            {
+                // Calculate Time
+                residuary -= Time.deltaTime;
+            }
+            else
+            {
+                if (!infinit)
+                {
+                    // Stop Command Teime over
+                    residuary = 0;
+                    Finish();
+                    return;
+                }
+            }
+
+            OnUpdate();
         }
         protected sealed override void OnTaskDisable(Object author)
         {
@@ -212,46 +246,6 @@ namespace RealMethod
             {
                 Debug.LogError("First You Sould Initiate Behaviour");
             }
-        }
-        void ITick.Tick(float deltaTime)
-        {
-            // Check Initiate
-            if (!isValidated)
-            {
-                Debug.LogError("First You Sould Validate");
-                return;
-            }
-
-            // Check Started
-            if (!islive)
-            {
-                return;
-            }
-
-            // Gate for Puse Updating Command
-            if (!CanUpdate())
-            {
-                return;
-            }
-
-            // Handel Lifetime Command
-            if (residuary > 0)
-            {
-                // Calculate Time
-                residuary -= Time.deltaTime;
-            }
-            else
-            {
-                if (!infinit)
-                {
-                    // Stop Command Teime over
-                    residuary = 0;
-                    Finish();
-                    return;
-                }
-            }
-
-            OnUpdate();
         }
         // Implement IBehaviourAction Interface
         public bool IsPaused => !isRunning;

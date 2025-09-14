@@ -8,19 +8,12 @@ namespace RealMethod
         [Header("Player")]
         [SerializeField]
         private bool IsPlayerInScene = true;
-        [SerializeField]
-        [ConditionalHide("IsPlayerInScene", true, false)]
-        [TagSelector]
+        [SerializeField, ConditionalHide("IsPlayerInScene", true, false), TagSelector]
         private string PlayerTag = "Player";
-        [SerializeField]
-        [ConditionalHide("IsPlayerInScene", true, true)]
+        [SerializeField, ConditionalHide("IsPlayerInScene", true, true)]
         private GameObject DefualtPlayer;
-        [SerializeField]
-        [ConditionalHide("IsPlayerInScene", true, true)]
+        [SerializeField, ConditionalHide("IsPlayerInScene", true, true)]
         private Transform SpawnPoint;
-        [Space(5)]
-        [SerializeField]
-        protected GameObject[] ExtraObject;
 
         // Private Variable
         private IGameManager[] Managers;
@@ -49,17 +42,6 @@ namespace RealMethod
             {
                 manager.InitiateManager(false);
                 CashManagers.Add(manager);
-            }
-            foreach (GameObject obj in ExtraObject) // Extera Object Manager
-            {
-                if (CheckExteraObject(obj))
-                {
-                    foreach (var manager in obj.GetComponentsInChildren<IGameManager>())
-                    {
-                        manager.InitiateManager(false);
-                        CashManagers.Add(manager);
-                    }
-                }
             }
             Managers = new IGameManager[CashManagers.Count];
             Managers = CashManagers.ToArray();
@@ -104,7 +86,25 @@ namespace RealMethod
         {
             return PlayerObject;
         }
-        public T[] GetComponentsInPlayer<T>(byte index = 0) where T : MonoBehaviour
+        public T GetPlayerComponent<T>(byte index = 0) where T : MonoBehaviour
+        {
+            return PlayerObject.GetComponent<T>();
+        }
+        public T GetPlayerClass<T>(byte index = 0) where T : class
+        {
+            return PlayerObject.GetComponent<T>();
+        }
+        public T[] GetPlayerComponents<T>(byte index = 0) where T : MonoBehaviour
+        {
+            T[] components = PlayerObject.GetComponents<T>();
+            if (components.Length > 0)
+            {
+                return components;
+            }
+            Debug.LogWarning($"No components of type {typeof(T).Name} found on {PlayerObject.name} or its children.");
+            return null;
+        }
+        public T[] GetPlayerComponentsInChilderen<T>(byte index = 0) where T : MonoBehaviour
         {
             T[] components = PlayerObject.GetComponentsInChildren<T>();
             if (components.Length > 0)
@@ -114,41 +114,9 @@ namespace RealMethod
             Debug.LogWarning($"No components of type {typeof(T).Name} found on {PlayerObject.name} or its children.");
             return null;
         }
-        public T GetComponentInPlayer<T>(byte index = 0) where T : MonoBehaviour
+        public T GetPlayerComponentsInChildren<T>(byte index = 0) where T : MonoBehaviour
         {
             return PlayerObject.GetComponentInChildren<T>();
-        }
-        public GameObject FindExteraObject(string ObjectName)
-        {
-            GameObject Result = null;
-            foreach (var obj in ExtraObject)
-            {
-                if (obj.name == ObjectName)
-                {
-                    Result = obj;
-                }
-            }
-            return Result;
-        }
-        public T GetComponentInExteraObject<T>(string ObjectName) where T : MonoBehaviour
-        {
-            GameObject TargetObject = FindExteraObject(ObjectName);
-            if (TargetObject)
-            {
-                T TargetComponent = TargetObject.GetComponent<T>();
-                if (TargetComponent)
-                {
-                    return TargetComponent;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
         }
         // Virtual Methods
         protected virtual bool InitiatePlayer(ref GameObject player)
@@ -190,18 +158,6 @@ namespace RealMethod
         {
             Debug.LogWarning($"This World Class ({TargetWorld}) Deleted");
             Destroy(TargetWorld);
-        }
-        protected virtual bool CheckExteraObject(GameObject GObj)
-        {
-            if (GObj != null)
-            {
-                return true;
-            }
-            else
-            {
-                Debug.LogWarning($"Ther ExterObject isn't valid");
-                return false;
-            }
         }
         // Private Methods
         private void NewServiceCreated(Service NewService)

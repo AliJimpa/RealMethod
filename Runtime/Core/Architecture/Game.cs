@@ -304,7 +304,7 @@ namespace RealMethod
                 Time.fixedDeltaTime = 0.02f * Time.timeScale; // Keeps physics in sync
         }
         // Private Static Functions
-        private static void InitializeGame(bool CreateInstance = true)
+        private static void InitializeGame(bool createInstance = true)
         {
             // Load Project Setting
             ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
@@ -312,7 +312,7 @@ namespace RealMethod
             if (ProjectSettings != null)
             {
                 // Initiate Game Class in Game
-                if (CreateInstance)
+                if (createInstance)
                 {
                     var emptyObject = new GameObject("RealGame");
                     Type TargetClass = ProjectSettings.GetGameInstanceClass();

@@ -11,7 +11,7 @@ namespace RealMethod
         /// <summary> Whether the Behaviour is currently started. </summary>
         bool IsStarted { get; }
     }
-    public interface IBehaviourCycle : IBehaviour , ITick
+    public interface IBehaviourCycle : IBehaviour
     {
         /// <summary> Called when the Behaviour starts with override Time. </summary>
         void Start(float overrideTime);

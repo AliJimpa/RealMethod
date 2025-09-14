@@ -20,7 +20,10 @@ namespace RealMethod
         }
 
         [Header("UI")]
-        [SerializeField] private UIMethod method = UIMethod.uGUI;
+        [SerializeField]
+        private Transform header;
+        [SerializeField]
+        private UIMethod method = UIMethod.uGUI;
         public UIMethod Method => method;
         [SerializeField, ShowInInspectorByEnum("method", 2)]
         private PanelSettings UISetting;
@@ -39,7 +42,12 @@ namespace RealMethod
         }
         void IGameManager.InitiateManager(bool alwaysLoaded)
         {
-            foreach (Transform child in transform)
+            if (header == null)
+            {
+                Debug.LogWarning($"Header is not valid! [{name}]");
+                return;
+            }
+            foreach (Transform child in header)
             {
                 if (Layers.ContainsKey(child.gameObject.name))
                 {
@@ -110,7 +118,7 @@ namespace RealMethod
                     Debug.LogError("Unkown Method!");
                     return null;
             }
-            Result.transform.SetParent(transform);
+            Result.transform.SetParent(header);
             Result.layer = 5;
             Layers.Add(name, Result);
             return Result;
@@ -207,7 +215,7 @@ namespace RealMethod
         }
         public GameObject AddLayer(string name, UPrefab Prefab, MonoBehaviour Owner)
         {
-            GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
+            GameObject SpawnedObject = Instantiate(Prefab.asset, header.position, Quaternion.identity, header);
             SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
@@ -237,7 +245,7 @@ namespace RealMethod
                 return null;
             }
 
-            GameObject SpawnedObject = Instantiate(Prefab.asset, transform.position, Quaternion.identity, transform);
+            GameObject SpawnedObject = Instantiate(Prefab.asset, header.position, Quaternion.identity, header);
             SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
             IWidget widget = SpawnedObject.GetComponent<IWidget>();
