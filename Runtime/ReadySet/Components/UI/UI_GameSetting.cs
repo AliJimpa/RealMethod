@@ -19,7 +19,7 @@ namespace RealMethod
         [Header("Setting")]
         [SerializeField]
         private FieldContainer Scaning;
-        [SerializeField]
+        [Space, SerializeField]
         private bool AutoSync = true;
         [SerializeField]
         private SelectableElement UIElements;
@@ -29,13 +29,11 @@ namespace RealMethod
 
         public bool isFileDirty => Storage.provider.IsSettingDirty;
         public SaveFile file => Storage.file;
+        public bool isInSync { get; private set; } = false;
 
         // Unity Methods
-        private void Start()
+        private void Awake()
         {
-            // Sacan all variable in save file & check
-            Scaning.Scan(Storage.file);
-
             // Binding all Element
             if (AutoSync)
             {
@@ -58,19 +56,26 @@ namespace RealMethod
                     }
                 }
             }
-
-            Storage.Load(this);
-            SyncUI();
         }
         private void OnEnable()
         {
-            if (Scaning.isStore)
-                SyncUI();
+            // Sacan all variable in save file
+            Scaning.Scan(Storage.file);
+        }
+        private void Start()
+        {
+            Storage.Load(this);
+            SyncUI();
+        }
+        private void OnDisable()
+        {
+            Scaning.Clean();
         }
 
         // Public Functions
         public void SyncFile(Selectable element)
         {
+            isInSync = true;
             string label = FindLabel(element);
             if (label == string.Empty)
             {
@@ -109,82 +114,89 @@ namespace RealMethod
                 }
             }
             Storage.provider.OnFileSynced();
+            isInSync = false;
         }
         public void SyncFile()
         {
-            foreach (var element in UIElements)
+            isInSync = true;
+            FieldInfo[] fileData = Scaning.GetFields();
+            for (int i = 0; i < fileData.Length; i++)
             {
-                foreach (FieldInfo field in Scaning.GetFields())
+                foreach (var element in UIElements)
                 {
-                    object value = field.GetValue(Storage.file);
-                    switch (value)
+                    if (element.Key == fileData[i].Name)
                     {
-                        case float f:
-                            if (element.Value is Slider slide)
-                            {
-                                if (field.Name == element.Key)
-                                    field.SetValue(Storage.file, slide.value);
-                            }
-                            break;
-                        case int i:
-                            if (element.Value is Dropdown dropdown)
-                            {
-                                if (field.Name == element.Key)
-                                    field.SetValue(Storage.file, dropdown.value);
-                            }
-                            break;
-                        case bool b:
-                            if (element.Value is Toggle toggle)
-                            {
-                                if (field.Name == element.Key)
-                                    field.SetValue(Storage.file, toggle.isOn);
-                            }
-                            break;
-                        default:
-                            Debug.Log($"Unkown field: {field.Name}, Type: {field.FieldType}, Value: {value}");
-                            break;
+                        object value = fileData[i].GetValue(Storage.file);
+                        switch (value)
+                        {
+                            case float fl:
+                                if (element.Value is Slider slide)
+                                {
+                                    fileData[i].SetValue(Storage.file, slide.value);
+                                }
+                                break;
+                            case int iin:
+                                if (element.Value is Dropdown dropdown)
+                                {
+                                    fileData[i].SetValue(Storage.file, dropdown.value);
+                                }
+                                break;
+                            case bool bo:
+                                if (element.Value is Toggle toggle)
+                                {
+                                    fileData[i].SetValue(Storage.file, toggle.isOn);
+                                }
+                                break;
+                            default:
+                                Debug.Log($"Unkown field: {fileData[i].Name}, Type: {fileData[i].FieldType}, Value: {value}");
+                                break;
+                        }
                     }
                 }
             }
             Storage.provider.OnFileSynced();
+            isInSync = false;
         }
         [ContextMenu("Sync_UI")]
         public void SyncUI()
         {
-            foreach (var element in UIElements)
+            isInSync = true;
+            FieldInfo[] fileData = Scaning.GetFields();
+            for (int i = 0; i < fileData.Length; i++)
             {
-                foreach (FieldInfo field in Scaning.GetFields())
+                foreach (var element in UIElements)
                 {
-                    object value = field.GetValue(Storage.file);
-                    switch (value)
+                    if (element.Key == fileData[i].Name)
                     {
-                        case float f:
-                            if (element.Value is Slider slide)
-                            {
-                                if (field.Name == element.Key)
-                                    slide.value = f;
-                            }
-                            break;
-                        case int i:
-                            if (element.Value is Dropdown dropdown)
-                            {
-                                if (field.Name == element.Key)
-                                    dropdown.value = i;
-                            }
-                            break;
-                        case bool b:
-                            if (element.Value is Toggle toggle)
-                            {
-                                if (field.Name == element.Key)
-                                    toggle.isOn = b;
-                            }
-                            break;
-                        default:
-                            Debug.Log($"Unkown field: {field.Name}, Type: {field.FieldType}, Value: {value}");
-                            break;
+                        object value = fileData[i].GetValue(Storage.file);
+                        switch (value)
+                        {
+                            case float fl:
+                                if (element.Value is Slider slide)
+                                {
+                                    slide.value = fl;
+                                }
+                                break;
+                            case int iin:
+                                if (element.Value is Dropdown dropdown)
+                                {
+                                    dropdown.value = iin;
+                                }
+                                break;
+                            case bool bo:
+                                if (element.Value is Toggle toggle)
+                                {
+                                    toggle.isOn = bo;
+                                }
+                                break;
+                            default:
+                                Debug.Log($"Unkown field: {fileData[i].Name}, Type: {fileData[i].FieldType}, Value: {value}");
+                                break;
+                        }
                     }
                 }
             }
+            isInSync = false;
         }
         public Selectable FindElement(string label)
         {
@@ -210,16 +222,22 @@ namespace RealMethod
         // Private Functions
         private void OnSlideChanged(float value)
         {
+            if (isInSync)
+                return;
             SyncFile();
             SendMessage("OnSettingUpdate", SendMessageOptions.DontRequireReceiver);
         }
         private void OnDropdownChanged(int value)
         {
+            if (isInSync)
+                return;
             SyncFile();
             SendMessage("OnSettingUpdate", SendMessageOptions.DontRequireReceiver);
         }
         private void OnToggleChanged(bool value)
         {
+            if (isInSync)
+                return;
             SyncFile();
             SendMessage("OnSettingUpdate", SendMessageOptions.DontRequireReceiver);
         }
