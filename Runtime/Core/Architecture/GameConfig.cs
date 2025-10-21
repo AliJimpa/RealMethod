@@ -10,7 +10,7 @@ namespace RealMethod
         private float fadeTime = 0;
         public float FadeTime => fadeTime;
 
-        public abstract void GameStarted(Game Author);
+        public abstract void Initialized(Game Author);
     }
 
 }

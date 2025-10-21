@@ -22,9 +22,6 @@ namespace RealMethod
         // Base Method
         private void Awake()
         {
-            // ForInitateGame
-            Game.IsValid(true);
-
             //Connect to Game Service
             if (Game.Service.Worldprovider.IntroduceWorld(this))
             {

@@ -13,7 +13,6 @@ namespace RealMethod
             public string Path;
             public string FolderName => System.IO.Path.GetFileName(Path);
         }
-
         [Serializable]
         public enum IdentityAsset
         {
@@ -81,6 +80,7 @@ namespace RealMethod
         };
 
 
+        // Public Functions
         public Type GetGameInstanceClass()
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())

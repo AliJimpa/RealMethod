@@ -4,22 +4,19 @@ public class #SCRIPTNAME# : Game
 {
 
     // Base Game Methods
-    protected override void GameServiceCreated()
-    {
-        
-    }
     protected override void GameInitialized()
     {
-        
     }
-    protected override void WorldSynced(World NewWorld)
+    protected override void GameStarted()
     {
-        
+    }
+    protected override void GameWorldSynced(World NewWorld)
+    {
     }
     protected override void GameClosed()
     {
-        
     }
+    
 
     
 }

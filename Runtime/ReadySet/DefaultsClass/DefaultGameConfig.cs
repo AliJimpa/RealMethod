@@ -4,9 +4,9 @@ namespace RealMethod
 {
     public sealed class DefaultGameConfig : GameConfig
     {
-        public override void GameStarted(Game Author)
+        public override void Initialized(Game Author)
         {
-            Debug.Log("DefaultGameConfig Loaded");
+            Debug.Log("DefaultConfig Loaded");
         }
     }
 }

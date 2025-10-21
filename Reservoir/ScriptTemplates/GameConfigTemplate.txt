@@ -5,7 +5,7 @@ using RealMethod;
 public class #SCRIPTNAME# : GameConfig
 {
     // Base GameSettingAsset Methods
-    public override void GameStarted(Game Author)
+    public override void Initialized(Game Author)
     {
     }
 }
