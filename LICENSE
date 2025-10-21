@@ -1,25 +1,35 @@
-MIT License
-
 Copyright (c) 2025 Ali Badpa
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-1. The above copyright notice and this permission notice shall be included in
-   all copies or substantial portions of the Software.
+    http://www.apache.org/licenses/LICENSE-2.0
 
-2. The name **Ali Badpa** and the original package name **RealMethod** must be
-   clearly mentioned in any distribution, fork, or derivative work, and may not
-   be removed or replaced under any circumstances.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+-------------------------------------------------------------
+
+✨ ADDITIONAL TERMS OF ATTRIBUTION (RealMethod Extension) ✨
+
+1. **Credit Retention**  
+   The name **Ali Badpa** and the package name **RealMethod** must remain
+   visible and credited in all copies, forks, or derivative works of this
+   software. Attribution must appear in:
+   - The source code header or README file of any distributed project, and
+   - Any public documentation or binary distribution where authorship is shown.
+
+2. **Modification Notice**  
+   Modifications are allowed, but you must clearly state that your version
+   is a modified version of the original **RealMethod** framework.
+
+3. **Prohibition of Misrepresentation**  
+   You may not misrepresent the origin of the software. Forks or derivative
+   projects must credit **RealMethod by Ali Badpa** as the original author.
+
+By using this software, you agree to comply with the Apache 2.0 License and
+the above attribution conditions.
