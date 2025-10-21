@@ -6,7 +6,7 @@ namespace RealMethod
     {
         protected override void OnStart(object Author)
         {
-            Debug.Log("DefaultGameService Started");
+            Debug.Log("DefaultService Started");
         }
         protected override void OnNewWorld()
         {
@@ -17,7 +17,7 @@ namespace RealMethod
         }
         protected override void OnEnd(object Author)
         {
-            Debug.LogError("DefaultGameService Ended [This should not happent]");
+            Debug.Log("DefaultService Ended");
         }
     }
 }

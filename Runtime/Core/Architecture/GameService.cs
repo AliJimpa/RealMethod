@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace RealMethod
 {
@@ -181,5 +184,23 @@ namespace RealMethod
             OnSceneLoading?.Invoke(false);
             IsLoading = false;
         }
+
+
+#if UNITY_EDITOR
+        // Runs when entering Play Mode in Editor
+        [InitializeOnEnterPlayMode]
+        private static void EditorPlayModeInit()
+        {
+            var assets = Resources.FindObjectsOfTypeAll<PrimitiveAsset>();
+            foreach (var asset in assets)
+            {
+                if (asset.IsProjectAsset())
+                {
+                    asset.OnEditorPlay();
+                }
+            }
+        }
+#endif
+
     }
 }
