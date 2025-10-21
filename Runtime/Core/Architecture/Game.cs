@@ -155,19 +155,18 @@ namespace RealMethod
                 return null;
             }
 
+            // Create Service
             T newService = new T();
-            Instance.GameServices.Add(newService);
-
-            Service.OnServiceCreate?.Invoke(newService);
+            newService.provider.Created(author);
             if (Instance.Managers != null)
             {
                 foreach (var manager in Instance.Managers)
                 {
-                    manager.InitiateService(newService);
+                    manager.ResolveService(newService, true);
                 }
             }
-            newService.provider.Created(author);
-
+            Service.OnServiceCreated?.Invoke(newService);
+            Instance.GameServices.Add(newService);
             return newService;
         }
         public static bool RemoveService<T>(object author) where T : Service
@@ -175,6 +174,14 @@ namespace RealMethod
             var service = Instance.GameServices.FirstOrDefault(s => s.GetType() == typeof(T));
             if (service != null)
             {
+                if (Instance.Managers != null)
+                {
+                    foreach (var manager in Instance.Managers)
+                    {
+                        manager.ResolveService(service, false);
+                    }
+                }
+                Service.OnServiceRemoved?.Invoke(service);
                 service.provider.Deleted(author);
                 Instance.GameServices.Remove(service);
                 return true;

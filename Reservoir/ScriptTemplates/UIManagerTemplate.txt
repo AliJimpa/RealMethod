@@ -8,7 +8,7 @@ public class #SCRIPTNAME# : UIManager
     {
 
     }
-    protected override void InitiateService(Service newService)
+    protected override void ResolveService(Service service, bool active)
     {
         
     }

@@ -39,7 +39,7 @@ namespace RealMethod
         }
 
         // Placeholder for initiating services, currently does nothing
-        public void InitiateService(Service service)
+        public void ResolveService(Service service, bool active)
         {
         }
 

@@ -72,7 +72,7 @@ namespace RealMethod
             //     Destroy(this);
             // }
         }
-        public void InitiateService(Service service)
+        public void ResolveService(Service service, bool active)
         {
         }
 

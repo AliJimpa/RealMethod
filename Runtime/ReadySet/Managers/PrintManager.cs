@@ -382,7 +382,7 @@ namespace RealMethod
         private List<ButtonData> Buttons = new List<ButtonData>();
 
 
-        public override void InitiateService(Service service)
+        public override void ResolveService(Service service, bool active)
         {
         }
         protected override GUIRenderer[] GetRenderSlots()

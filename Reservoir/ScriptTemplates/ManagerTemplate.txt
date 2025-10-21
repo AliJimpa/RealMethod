@@ -13,7 +13,7 @@ public class #SCRIPTNAME# : MonoBehaviour, IGameManager
     {
         throw new System.NotImplementedException();
     }
-    void IGameManager.InitiateService(Service service)
+    void IGameManager.ResolveService(Service service, bool active)
     {
         throw new System.NotImplementedException();
     }

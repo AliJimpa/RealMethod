@@ -6,7 +6,7 @@ namespace RealMethod
     {
         MonoBehaviour GetManagerClass();
         void InitiateManager(bool AlwaysLoaded);
-        void InitiateService(Service service);
+        void ResolveService(Service service, bool active);
     }
 
     public interface IService
@@ -19,7 +19,7 @@ namespace RealMethod
     public abstract class Service : IService
     {
         public IService provider => this;
-        
+
         // Implement IService Interface
         void IService.Created(object author)
         {

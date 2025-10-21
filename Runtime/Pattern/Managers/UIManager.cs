@@ -76,7 +76,7 @@ namespace RealMethod
 
             InitiateManager(alwaysLoaded);
         }
-        void IGameManager.InitiateService(Service service)
+        void IGameManager.ResolveService(Service service, bool active)
         {
             InitiateService(service);
         }

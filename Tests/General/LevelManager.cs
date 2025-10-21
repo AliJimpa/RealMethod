@@ -53,7 +53,7 @@ namespace RealMethod
             StartCoroutine(OnPlayerLocationChange());
 
         }
-        public void InitiateService(Service service)
+        public void ResolveService(Service service, bool active)
         {
             throw new System.NotImplementedException();
         }

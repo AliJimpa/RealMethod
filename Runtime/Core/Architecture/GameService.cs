@@ -16,7 +16,8 @@ namespace RealMethod
         // Game Structure
         public Action<World> OnWorldUpdate;
         public Action<World> OnAdditiveWorld;
-        public Action<Service> OnServiceCreate;
+        public Action<Service> OnServiceCreated;
+        public Action<Service> OnServiceRemoved;
         // Load Scene 
         public Action<bool> OnSceneLoading;
         public Action<float> OnSceneLoadingProcess;

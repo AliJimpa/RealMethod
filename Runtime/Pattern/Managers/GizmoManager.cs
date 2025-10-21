@@ -52,7 +52,7 @@ namespace RealMethod
 
 
 		// Abstract Methods
-		public abstract void InitiateService(Service service);
+		public abstract void ResolveService(Service service, bool active);
 		protected abstract GUIRenderer[] GetRenderSlots();
 
 

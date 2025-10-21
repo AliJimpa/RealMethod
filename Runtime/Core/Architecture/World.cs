@@ -29,7 +29,8 @@ namespace RealMethod
             if (Game.Service.Worldprovider.IntroduceWorld(this))
             {
                 Game.Service.OnAdditiveWorld += AdditiveWorld;
-                Game.Service.OnServiceCreate += NewServiceCreated;
+                Game.Service.OnServiceCreated += NotifyServiceCreated;
+                Game.Service.OnServiceRemoved += NotifyServiceRemoved;
             }
             else
             {
@@ -57,7 +58,8 @@ namespace RealMethod
         private void OnDestroy()
         {
             Game.Service.OnAdditiveWorld -= AdditiveWorld;
-            Game.Service.OnServiceCreate -= NewServiceCreated;
+            Game.Service.OnServiceCreated -= NotifyServiceCreated;
+            Game.Service.OnServiceRemoved -= NotifyServiceRemoved;
         }
         // Public Metthods
         public T GetManager<T>() where T : class
@@ -160,13 +162,23 @@ namespace RealMethod
             Destroy(TargetWorld);
         }
         // Private Methods
-        private void NewServiceCreated(Service NewService)
+        private void NotifyServiceCreated(Service NewService)
         {
             if (Managers != null)
             {
                 foreach (var manager in Managers)
                 {
-                    manager.InitiateService(NewService);
+                    manager.ResolveService(NewService, true);
+                }
+            }
+        }
+        private void NotifyServiceRemoved(Service NewService)
+        {
+            if (Managers != null)
+            {
+                foreach (var manager in Managers)
+                {
+                    manager.ResolveService(NewService, false);
                 }
             }
         }

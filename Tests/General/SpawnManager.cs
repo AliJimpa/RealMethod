@@ -54,7 +54,7 @@ namespace RealMethod
         {
             throw new System.NotImplementedException();
         }
-        public void InitiateService(Service service)
+        public void ResolveService(Service service, bool active)
         {
             throw new System.NotImplementedException();
         }

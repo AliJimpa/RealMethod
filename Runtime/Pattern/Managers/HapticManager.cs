@@ -86,7 +86,7 @@ namespace RealMethod
                 }
             }
         }
-        public void InitiateService(Service service)
+        public void ResolveService(Service service, bool active)
         {
             if (service is Spawn spawnservice)
             {

@@ -29,7 +29,7 @@ namespace RealMethod
         {
             InitiateManager(AlwaysLoaded);
         }
-        void IGameManager.InitiateService(Service service)
+        void IGameManager.ResolveService(Service service, bool active)
         {
             InitiateService(service);
         }

@@ -65,7 +65,7 @@ namespace RealMethod
             //if (GameData.GetMissionsLength() == MissionID)
             //NextLevel.gameObject.SetActive(false);
         }
-        public void InitiateService(Service service)
+        public void ResolveService(Service service, bool active)
         {
         }
 

@@ -4,7 +4,7 @@ public class #SCRIPTNAME# : DataManager
 {
 
     // Base DataManager Methods
-    protected override void InitiateService(Service service)
+    protected override void ResolveService(Service service, bool active)
     {
         throw new System.NotImplementedException();
     }
