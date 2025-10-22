@@ -6,9 +6,16 @@ namespace RealMethod
     public abstract class AbilityEffect : IAbilityEffect
     {
         // Implement IAbilityEffect interface
-        public void Initiate(Object owner)
+        void IAbilityEffect.Initiate(Object owner)
         {
-            OnInitiate(owner);
+            if (owner is AbilityAsset asset)
+            {
+                OnInitiate(asset);
+            }
+            else
+            {
+                Debug.LogError($"AbilityEffect should initiate by AbilityAsset not {owner}");
+            }
         }
         void IAbilityEffect.Apply(GameObject caster, IAbilityContext target)
         {
@@ -16,7 +23,8 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        protected abstract void OnInitiate(Object owner);
+        protected abstract void OnInitiate(AbilityAsset owner);
         protected abstract void Apply(GameObject caster, IAbilityContext target);
+
     }
 }

@@ -38,13 +38,13 @@ namespace RealMethod
         public string NameID => label;
         // Implement IItem Interface
         public Texture2D Icon => icon;
-        public Sprite GetSpriteIcon()
+        Sprite IItem.GetSpriteIcon()
         {
-            return GetSpriteIcon(new Rect(0, 0, icon.width, icon.height),
+            return ((IItem)this).GetSpriteIcon(new Rect(0, 0, icon.width, icon.height),
                    new Vector2(0.5f, 0.5f)
                );
         }
-        public Sprite GetSpriteIcon(Rect rect, Vector2 pivot)
+        Sprite IItem.GetSpriteIcon(Rect rect, Vector2 pivot)
         {
             if (icon != null)
             {

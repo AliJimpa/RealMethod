@@ -9,12 +9,7 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("AbilityAssetTemplate.txt", "MyAbility.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Ability/AbilityEffect", false, 80)]
-        public static void CreateAbilityEffect()
-        {
-            string Path = RM_Create.Script("AbilityEffectAssetTemplate.txt", "MyAbilityEffect.cs");
-        }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Ability/AbilityAction", false, 80)]
+        [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Ability/AbilityActionAsset", false, 80)]
         public static void CreateAbilityAction()
         {
             string Path = RM_Create.Script("AbilityActionAssetTemplate.txt", "MyAbilityAction.cs");

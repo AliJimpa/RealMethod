@@ -13,13 +13,13 @@ namespace RealMethod
         public Texture2D Icon => _icon;
 
         // Implement IItemData Interface
-        public Sprite GetSpriteIcon()
+        Sprite IItem.GetSpriteIcon()
         {
-            return GetSpriteIcon(new Rect(0, 0, _icon.width, _icon.height),
+            return ((IItem)this).GetSpriteIcon(new Rect(0, 0, _icon.width, _icon.height),
                     new Vector2(0.5f, 0.5f)
                 );
         }
-        public Sprite GetSpriteIcon(Rect rect, Vector2 pivot)
+        Sprite IItem.GetSpriteIcon(Rect rect, Vector2 pivot)
         {
             if (_icon != null)
             {

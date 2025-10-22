@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using UnityEngine;
 
@@ -81,6 +82,14 @@ namespace RealMethod
 			set { ((IDictionary<TKey, TValue>)m_dict)[key] = value; }
 		}
 
+		public TKey GetKey(int index)
+		{
+			return m_dict.Keys.ElementAt(index);
+		}
+		public TValue GetValue(int index)
+		{
+			return m_dict.Values.ElementAt(index);
+		}
 		public void Add(TKey key, TValue value)
 		{
 			((IDictionary<TKey, TValue>)m_dict).Add(key, value);

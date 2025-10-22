@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "AbilityResource", menuName = "RealMethod/Ability/AbilityResource", order = 0)]
-    public class AbilityResource : AbilityEffectAsset
+    public class AbilityResource : AbilityAction
     {
         [Header("Setting")]
         [SerializeField]
@@ -14,6 +15,11 @@ namespace RealMethod
         private string resourceName;
         [SerializeField, ConditionalHide("useResource", true, false)]
         private float amount;
+        [SerializeField]
+        private bool useByInput = false;
+        [Header("Debug")]
+        [SerializeField]
+        private bool showDebug = false;
 
         // AbilityEffectAsset Methods
         protected override bool Prerequisite(GameObject user)
@@ -38,6 +44,10 @@ namespace RealMethod
                     }
                     else
                     {
+                        if (showDebug)
+                        {
+                            Debug.Log($"can't find [{resourceName}] resource in {user}");
+                        }
                         return false;
                     }
                 }
@@ -54,8 +64,83 @@ namespace RealMethod
             return cooldown;
         }
 
+        // AbilityAction Methods
+        protected override void OnInitiate()
+        {
+            if (showDebug)
+            {
+                Debug.Log($"[{name}] Initiated");
+            }
+        }
+        public override void OnEnableInput()
+        {
+        }
+        public override void OnDisableInput()
+        {
+        }
+        protected override bool CheckInput(InputAction.CallbackContext context)
+        {
+            if (showDebug)
+            {
+                Debug.Log($"[{name}] Input Check=> {useByInput}");
+            }
+            return useByInput;
+        }
+
     }
+}
 
-
-
+public class DebugEffect : RealMethod.AbilityEffect
+{
+    protected override void OnInitiate(RealMethod.AbilityAsset owner)
+    {
+        Debug.Log($"DebugEffect Initiated from {owner}");
+    }
+    protected override void Apply(GameObject caster, RealMethod.IAbilityContext target) => Debug.Log($"DebugEffect Apply from {caster} to {target}");
+}
+public class AddForceEffect : RealMethod.AbilityEffect
+{
+    // Called when the effect is initialized or bound to an ability
+    protected override void OnInitiate(RealMethod.AbilityAsset owner)
+    {
+    }
+    // Called when the effect is applied
+    protected override void Apply(GameObject caster, RealMethod.IAbilityContext target)
+    {
+        // Get target's GameObject
+        GameObject targetObject = target.targetPoint.gameObject;
+        Vector3 force = -target.targetPoint.position.magnitude * Vector3.one;
+        if (targetObject != null)
+        {
+            Rigidbody rb = targetObject.GetComponent<Rigidbody>();
+            if (rb == null)
+            {
+                rb = targetObject.AddComponent<Rigidbody>();
+            }
+            rb.AddForce(force, ForceMode.Force);
+        }
+    }
+}
+public class AddImpulseEffect : RealMethod.AbilityEffect
+{
+    // Called when the effect is initialized or bound to an ability
+    protected override void OnInitiate(RealMethod.AbilityAsset owner)
+    {
+    }
+    // Called when the effect is applied
+    protected override void Apply(GameObject caster, RealMethod.IAbilityContext target)
+    {
+        // Get target's GameObject
+        GameObject targetObject = target.targetPoint.gameObject;
+        Vector3 force = -target.targetPoint.position.magnitude * Vector3.one;
+        if (targetObject != null)
+        {
+            Rigidbody rb = targetObject.GetComponent<Rigidbody>();
+            if (rb == null)
+            {
+                rb = targetObject.AddComponent<Rigidbody>();
+            }
+            rb.AddForce(force, ForceMode.Impulse);
+        }
+    }
 }

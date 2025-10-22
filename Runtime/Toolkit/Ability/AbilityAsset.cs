@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace RealMethod
 {
-    public abstract class AbilityAsset : DataAsset, IAbility, ICooldown
+    public abstract class AbilityAsset : TemplateAsset, IAbility, ICooldown
     {
         private float lastUsedTime = -Mathf.Infinity;
 
@@ -70,7 +69,7 @@ namespace RealMethod
     }
     public abstract class AbilityEffectAsset : AbilityAsset
     {
-        [System.NonSerialized]
+        [ReadOnly]
         public string[] effects;
 
         private List<object> effectsObject = new List<object>();
@@ -129,27 +128,5 @@ namespace RealMethod
             myEffects = null;
         }
 #endif
-    }
-    public abstract class AbilityAction : AbilityEffectAsset, IAbilityAction
-    {
-        private AbilityController MyController;
-
-        // Implement IAbilityInitializer Interface
-        void IAbilityAction.Initializer(AbilityController controller)
-        {
-            MyController = controller;
-            OnInitiate();
-        }
-        void IAbilityAction.UseInput(InputAction.CallbackContext context)
-        {
-            if (CheckInput(context))
-            {
-                TryUse(MyController.gameObject, MyController.GetTarget(this));
-            }
-        }
-
-        // Abstract Methods
-        protected abstract void OnInitiate();
-        protected abstract bool CheckInput(InputAction.CallbackContext context);
     }
 }

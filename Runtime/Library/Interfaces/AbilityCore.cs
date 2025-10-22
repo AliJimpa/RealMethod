@@ -18,19 +18,4 @@ namespace RealMethod
         void Initiate(Object owner);
         void Apply(GameObject caster, IAbilityContext target);
     }
-
-
-
-
-
-
-    public interface IAbility2
-    {
-        string Id { get; }
-        float Cooldown { get; }
-        bool IsOnCooldown { get; }
-
-        void Activate(GameObject caster, GameObject target);
-        void TickCooldown(float deltaTime);
-    }
 }

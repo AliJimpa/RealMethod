@@ -10,7 +10,7 @@ namespace RealMethod
         PrimitiveAsset GetAsset();
         void OnSpawned(Object spawner);
     }
-    // All Scriptable Object in RealMethod should use this
+    // PrimitiveAsset: is a ScriptableObject with some functions & IAsset interface
     public abstract class PrimitiveAsset : ScriptableObject, IAsset
     {
         // Implement IAsset Interface
@@ -53,11 +53,27 @@ namespace RealMethod
     }
 
 
-    // this Asset is basic asset in method can reset on editor begin
+    // DataAsset: is just a PrimitiveAsset
     public abstract class DataAsset : PrimitiveAsset
     {
     }
-    // This Asset Can Created in game but You can't Clone 
+    // TemplateAsset: is a PrimitiveAsset that you can't create new at runtime
+    public abstract class TemplateAsset : PrimitiveAsset
+    {
+        protected virtual void OnEnable()
+        {
+            if (!HasCloneName())
+            {
+                if (!IsProjectAsset())
+                {
+                    Debug.LogError($"TemplateAsset Can't Create New Instance at Runtime, NewFile Removed!");
+                    Destroy(this);
+                    return;
+                }
+            }
+        }
+    }
+    // FileAsset: is a PrimitiveAsset that you can't clone at runtime
     public abstract class FileAsset : PrimitiveAsset
     {
         protected virtual void OnEnable()
@@ -70,7 +86,7 @@ namespace RealMethod
             }
         }
     }
-    // This Asset Can't Create or Clone Just can created in editor
+    // UniqueAsset: is a PrimitiveAsset that you can't clone or create new at runtime
     public abstract class UniqueAsset : PrimitiveAsset
     {
         protected virtual void OnEnable()
@@ -89,7 +105,7 @@ namespace RealMethod
             }
         }
     }
-    // This Asset is a data container that all data is readonly just for use not change
+    // ConfigAsset: is a UniqueAsset that you can't decelar modifier variable or method , all of things should be readonly 
     public abstract class ConfigAsset : UniqueAsset
     {
 

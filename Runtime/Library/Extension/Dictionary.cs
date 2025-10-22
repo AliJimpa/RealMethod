@@ -6,6 +6,14 @@ namespace RealMethod
 {
     public static class Dictionary_Extension
     {
+        public static Tk GetKey<Tk, Tv>(this Dictionary<Tk, Tv> DataBase, int index)
+        {
+            return DataBase.Keys.ElementAt(index);
+        }
+        public static Tv GetValue<Tk, Tv>(this Dictionary<Tk, Tv> DataBase, int index)
+        {
+            return DataBase.Values.ElementAt(index);
+        }
         public static T Wheel<T>(this Dictionary<T, float> DataBase)
         {
             if (DataBase == null || DataBase.Count == 0)
