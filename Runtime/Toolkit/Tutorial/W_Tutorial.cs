@@ -33,9 +33,9 @@ namespace RealMethod
         {
             return this;
         }
-        void IWidget.InitiateWidget(Object Owner)
+        void IWidget.SceneInitialized(UIManager manager)
         {
-            OnInitiateWidget(Owner);
+            OnSceneInitialized(manager);
         }
 
         // Public Functions
@@ -96,7 +96,7 @@ namespace RealMethod
         }
 
         // Abstract Methods 
-        public abstract void OnInitiateWidget(Object Owner);
+        public abstract void OnSceneInitialized(UIManager manager);
         protected abstract void OnTutorialLoaded(bool hasValue);
         protected abstract void OnShownMessage(TutorialConfig config);
         protected abstract ITutorialStorage GetStorage();

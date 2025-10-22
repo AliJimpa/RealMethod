@@ -58,7 +58,7 @@ namespace RealMethod
                 IWidget LayerWidget = child.GetComponent<IWidget>();
                 if (LayerWidget != null)
                 {
-                    LayerWidget.InitiateWidget(this);
+                    LayerWidget.SceneInitialized(this);
                 }
 
                 switch (method)
@@ -134,11 +134,11 @@ namespace RealMethod
                 {
                     if (Owner != null)
                     {
-                        widget.InitiateWidget(Owner);
+                        widget.GetWidgetClass().Event_Spawn(Owner);
                     }
                     else
                     {
-                        widget.InitiateWidget(this);
+                        widget.GetWidgetClass().Event_Spawn(this);
                         Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
                     }
                 }
@@ -194,11 +194,11 @@ namespace RealMethod
                 {
                     if (Owner != null)
                     {
-                        widget.InitiateWidget(Owner);
+                         widget.GetWidgetClass().Event_Spawn(Owner);
                     }
                     else
                     {
-                        widget.InitiateWidget(this);
+                        widget.GetWidgetClass().Event_Spawn(this);
                         Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
                     }
                 }
@@ -223,11 +223,11 @@ namespace RealMethod
             {
                 if (Owner != null)
                 {
-                    widget.InitiateWidget(Owner);
+                     widget.GetWidgetClass().Event_Spawn(Owner);
                 }
                 else
                 {
-                    widget.InitiateWidget(this);
+                     widget.GetWidgetClass().Event_Spawn(this);
                     Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
                 }
             }
@@ -253,11 +253,11 @@ namespace RealMethod
             {
                 if (Owner != null)
                 {
-                    widget.InitiateWidget(Owner);
+                     widget.GetWidgetClass().Event_Spawn(Owner);
                 }
                 else
                 {
-                    widget.InitiateWidget(this);
+                     widget.GetWidgetClass().Event_Spawn(this);
                     Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
                 }
                 return widget.GetWidgetClass() as T;
@@ -648,6 +648,6 @@ namespace RealMethod
     public interface IWidget
     {
         MonoBehaviour GetWidgetClass();
-        void InitiateWidget(UnityEngine.Object Owner);
+        void SceneInitialized(UIManager manager);
     }
 }

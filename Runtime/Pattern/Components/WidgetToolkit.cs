@@ -25,7 +25,7 @@ namespace RealMethod
         {
             return this;
         }
-        void IWidget.InitiateWidget(Object Owner)
+        void IWidget.SceneInitialized(UIManager manager)
         {
             if (!enabled)
                 return;

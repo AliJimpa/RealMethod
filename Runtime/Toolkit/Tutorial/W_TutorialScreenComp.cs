@@ -9,7 +9,7 @@ namespace RealMethod
         [Header("Events")]
         public UnityEvent OnDisplay;
 
-        public override void OnInitiateWidget(Object Owner)
+        public override void OnSceneInitialized(UIManager manager)
         {
         }
         protected override void OnTutorialLoaded(bool hasValue)
