@@ -8,6 +8,7 @@ namespace RealMethod
         public int Price => price;
 
         private ChainUpgradeMapConfig MyOwner;
+        private IChainUpgrade Chain => MyOwner;
 
         // UpgradeAsset Methods
         protected override void Initiate()
@@ -27,7 +28,7 @@ namespace RealMethod
         }
         protected override void Apply()
         {
-            MyOwner.UpdateIem(this, true);
+            Chain.UpdateItem(this, true);
         }
         protected override void PayCost()
         {
@@ -43,7 +44,7 @@ namespace RealMethod
         }
         protected override void Deny()
         {
-            MyOwner.UpdateIem(this, false);
+            Chain.UpdateItem(this, false);
         }
 
 
@@ -53,8 +54,19 @@ namespace RealMethod
         }
     }
 
+
+    public interface IChainUpgrade
+    {
+        delegate void UpgradeHandler(bool status);
+        // Only declare the event — no implementation inside the interface.
+        void BindUpgrade(UpgradeHandler callback);
+        // This must call a protected method in the implementing class
+        // because interfaces cannot raise events.
+        void UpdateItem(IUpgradeItem item, bool status);
+    }
+
     [CreateAssetMenu(fileName = "ChainUpgradeMap", menuName = "RealMethod/Upgrade/ChainMap", order = 1)]
-    public class ChainUpgradeMapConfig : UpgradeMapConfig
+    public class ChainUpgradeMapConfig : UpgradeMapConfig, IChainUpgrade
     {
         [Header("Setting")]
         [SerializeField]
@@ -63,6 +75,9 @@ namespace RealMethod
         public int[] pricing;
         [SerializeField, ReadOnly]
         private ChainUpgradeAsset[] items;
+
+
+
         public IPayment payment
         {
             get
@@ -78,9 +93,6 @@ namespace RealMethod
                 }
             }
         }
-
-        [SerializeField]
-        private System.Action<bool> OnUpgrade;
 
         // UpgradeMapConfig Methods
         protected override void Initiated(Upgrade owner)
@@ -115,15 +127,19 @@ namespace RealMethod
         }
 
 
-        // Public Method
-        public void BindUpgrade(System.Action<bool> callback)
+        // Implement IChainUpgrade Interface
+        [SerializeField]
+        private  IChainUpgrade.UpgradeHandler OnUpgrade;
+        void IChainUpgrade.BindUpgrade(IChainUpgrade.UpgradeHandler callback)
         {
             OnUpgrade += callback;
         }
-        public void UpdateIem(IUpgradeItem item, bool status)
+        void IChainUpgrade.UpdateItem(IUpgradeItem item, bool status)
         {
             OnUpgrade?.Invoke(status);
         }
+
+
     }
 
 }

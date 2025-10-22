@@ -14,12 +14,10 @@ namespace RealMethod
         // Abstract Method
         public abstract IStatModifier[] GetModifiers<T>(T StateName) where T : System.Enum;
 
-#if UNITY_EDITOR
-        public void ChangeName(string NewName)
+        protected virtual void OnValidate()
         {
-            configName = NewName;
+            configName = name;
         }
-#endif
     }
     public abstract class BuffConfig<T> : BuffConfig where T : System.Enum
     {
