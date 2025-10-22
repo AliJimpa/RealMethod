@@ -10,7 +10,7 @@ namespace RealMethod
         Sprite GetSpriteIcon(Rect rect, Vector2 pivot);
     }
 
-    public interface IItemData : IItem
+    public interface IItemAsset : IItem
     {
         PrimitiveAsset GetAsset();
 #if UNITY_EDITOR

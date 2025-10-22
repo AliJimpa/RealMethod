@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class ItemAsset : DataAsset, IItemData
+    public abstract class ItemAsset : DataAsset, IItemAsset
     {
         [Header("Item")]
         [SerializeField]
@@ -31,14 +31,14 @@ namespace RealMethod
                 return null;
             }
         }
-        PrimitiveAsset IItemData.GetAsset()
+        PrimitiveAsset IItemAsset.GetAsset()
         {
             return this;
         }
 
 
 #if UNITY_EDITOR
-        public void ChangeName(string NewName)
+        void IItemAsset.ChangeName(string NewName)
         {
             itemName = NewName;
         }
