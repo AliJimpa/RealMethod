@@ -150,12 +150,9 @@ namespace RealMethod
         // Implement 
         public string NameID => configName;
 
-
-#if UNITY_EDITOR
-        public void ChangeName(string newName)
+        private void OnValidate()
         {
-            configName = newName;
+            configName = name;
         }
-#endif
     }
 }

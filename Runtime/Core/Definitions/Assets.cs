@@ -1,4 +1,3 @@
-using System.Reflection;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -6,9 +5,19 @@ using UnityEditor;
 
 namespace RealMethod
 {
-    // All Scriptable Object in RealMethod should use this
-    public abstract class PrimitiveAsset : ScriptableObject
+    public interface IAsset
     {
+        PrimitiveAsset GetAsset();
+    }
+    // All Scriptable Object in RealMethod should use this
+    public abstract class PrimitiveAsset : ScriptableObject, IAsset
+    {
+        // Implement IAsset Interface
+        PrimitiveAsset IAsset.GetAsset()
+        {
+            return this;
+        }
+
         public bool HasCloneName()
         {
             // Best-effort clone detection: relies on name
@@ -78,7 +87,7 @@ namespace RealMethod
     // This Asset is a data container that all data is readonly just for use not change
     public abstract class ConfigAsset : UniqueAsset
     {
-        
+
     }
 
 }

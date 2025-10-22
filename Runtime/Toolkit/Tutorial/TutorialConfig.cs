@@ -9,7 +9,7 @@ namespace RealMethod
         POINT_TO_LEFT,
         POINT_TO_RIGHT
     }
-    public abstract class TutorialConfigCore : ConfigAsset, IItemAsset, ITutorialSpawner
+    public abstract class TutorialConfigCore : ConfigAsset, IItem, ITutorialSpawner
     {
         [Header("Config")]
         [SerializeField]
@@ -73,7 +73,7 @@ namespace RealMethod
         protected abstract UI_TutorialUnit InstantiateMessageObject(Transform parent);
 
 #if UNITY_EDITOR
-        void IItemAsset.ChangeName(string newLabel)
+        void IItem.ChangeItemName(string newLabel)
         {
             label = newLabel;
         }
