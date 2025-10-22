@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.UIElements;
-using System;
 
 
 namespace RealMethod
@@ -28,8 +27,8 @@ namespace RealMethod
         [SerializeField, ShowInInspectorByEnum("method", 2)]
         private PanelSettings UISetting;
         // Actions 
-        public Action<CanvasGroup, bool> OnFadeIn;
-        public Action<CanvasGroup, bool> OnFadeOut;
+        public System.Action<CanvasGroup, bool> OnFadeIn;
+        public System.Action<CanvasGroup, bool> OnFadeOut;
         // Private Variable
         private Hictionary<GameObject> Layers = new Hictionary<GameObject>(5);
 
@@ -100,7 +99,7 @@ namespace RealMethod
         {
             return Layers[name];
         }
-        public GameObject CreateLayer(string name)
+        public GameObject CreateEmptyLayer(string name)
         {
             GameObject Result;
             switch (Method)
@@ -109,10 +108,10 @@ namespace RealMethod
                     Result = new GameObject(name);
                     break;
                 case UIMethod.uGUI:
-                    Result = new GameObject(name, new Type[4] { typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster), typeof(CanvasGroup) });
+                    Result = new GameObject(name, new System.Type[4] { typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster), typeof(CanvasGroup) });
                     break;
                 case UIMethod.UI_Toolkit:
-                    Result = new GameObject(name, new Type[1] { typeof(UIDocument) });
+                    Result = new GameObject(name, new System.Type[1] { typeof(UIDocument) });
                     break;
                 default:
                     Debug.LogError("Unkown Method!");
@@ -123,23 +122,22 @@ namespace RealMethod
             Layers.Add(name, Result);
             return Result;
         }
-        public T CreateLayer<T>(string name, MonoBehaviour Owner) where T : MonoBehaviour
+        public T CreateLayer<T>(string name, Object creator = null) where T : MonoBehaviour
         {
-            GameObject layer = CreateLayer(name);
+            GameObject layer = CreateEmptyLayer(name);
             if (layer)
             {
                 T TargetClass = layer.AddComponent<T>();
                 IWidget widget = TargetClass.GetComponent<IWidget>();
                 if (widget != null)
                 {
-                    if (Owner != null)
+                    if (creator != null)
                     {
-                        widget.GetWidgetClass().Event_Spawn(Owner);
+                        widget.GetWidgetClass().SendSpawnEvent(creator);
                     }
                     else
                     {
-                        widget.GetWidgetClass().Event_Spawn(this);
-                        Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
+                        widget.GetWidgetClass().SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
                     }
                 }
                 return TargetClass;
@@ -149,15 +147,11 @@ namespace RealMethod
                 return null;
             }
         }
-        public T CreateLayer<T>(string name) where T : MonoBehaviour
-        {
-            return CreateLayer<T>(name, this);
-        }
         public UIDocument CreateLayer(string name, VisualTreeAsset UIAsset)
         {
             if (Method == UIMethod.UI_Toolkit)
             {
-                GameObject layer = CreateLayer(name);
+                GameObject layer = CreateEmptyLayer(name);
                 if (layer)
                 {
                     UIDocument doc = layer.GetComponent<UIDocument>();
@@ -183,7 +177,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public T CreateLayer<T>(string name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
+        public T CreateLayer<T>(string name, VisualTreeAsset UIAsset, Object creator = null) where T : MonoBehaviour
         {
             GameObject layer = CreateLayer(name, UIAsset).gameObject;
             if (layer)
@@ -192,14 +186,13 @@ namespace RealMethod
                 IWidget widget = TargetClass.GetComponent<IWidget>();
                 if (widget != null)
                 {
-                    if (Owner != null)
+                    if (creator != null)
                     {
-                         widget.GetWidgetClass().Event_Spawn(Owner);
+                        widget.GetWidgetClass().SendSpawnEvent(creator);
                     }
                     else
                     {
-                        widget.GetWidgetClass().Event_Spawn(this);
-                        Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
+                        widget.GetWidgetClass().SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
                     }
                 }
                 return TargetClass;
@@ -209,92 +202,74 @@ namespace RealMethod
                 return null;
             }
         }
-        public T CreateLayer<T>(string name, VisualTreeAsset UIAsset) where T : MonoBehaviour
-        {
-            return CreateLayer<T>(name, UIAsset, this);
-        }
-        public GameObject AddLayer(string name, UPrefab Prefab, MonoBehaviour Owner)
+        public GameObject AddLayer(string name, UPrefab Prefab, Object spawner = null)
         {
             GameObject SpawnedObject = Instantiate(Prefab.asset, header.position, Quaternion.identity, header);
+            if (spawner != null)
+            {
+                SpawnedObject.SendSpawnEvent(spawner);
+            }
+            else
+            {
+                SpawnedObject.SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+            }
             SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
-            IWidget widget = SpawnedObject.GetComponent<IWidget>();
-            if (widget != null)
-            {
-                if (Owner != null)
-                {
-                     widget.GetWidgetClass().Event_Spawn(Owner);
-                }
-                else
-                {
-                     widget.GetWidgetClass().Event_Spawn(this);
-                    Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
-                }
-            }
             return SpawnedObject;
         }
-        public GameObject AddLayer(string name, UPrefab Prefab)
-        {
-            return AddLayer(name, Prefab, this);
-        }
-        public T AddLayer<T>(string name, UPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
+        public T AddLayer<T>(string name, UPrefab Prefab, Object spawner = null) where T : MonoBehaviour
         {
             if (!Prefab.HasInterface<IWidget>())
             {
                 Debug.LogError($"Prefab should has Widget Class Component");
                 return null;
             }
-
             GameObject SpawnedObject = Instantiate(Prefab.asset, header.position, Quaternion.identity, header);
-            SpawnedObject.name = name;
-            Layers.Add(name, SpawnedObject);
-            IWidget widget = SpawnedObject.GetComponent<IWidget>();
-            if (widget != null)
+            if (spawner != null)
             {
-                if (Owner != null)
-                {
-                     widget.GetWidgetClass().Event_Spawn(Owner);
-                }
-                else
-                {
-                     widget.GetWidgetClass().Event_Spawn(this);
-                    Debug.LogWarning("Owner is null, initiating widget with UIManager as owner.");
-                }
-                return widget.GetWidgetClass() as T;
+                SpawnedObject.SendSpawnEvent(spawner);
             }
             else
             {
-                return null;
+                SpawnedObject.SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
             }
+            SpawnedObject.name = name;
+            Layers.Add(name, SpawnedObject);
+            IWidget widget = SpawnedObject.GetComponent<IWidget>();
+            return widget.GetWidgetClass() as T;
         }
-        public T AddLayer<T>(string name, UPrefab Prefab) where T : MonoBehaviour
-        {
-            return AddLayer<T>(name, Prefab, this);
-        }
-        public bool RemoveLayer<T>(T Comp) where T : MonoBehaviour
+        public bool RemoveLayer<T>(T Comp, Object despawner = null) where T : MonoBehaviour
         {
             GameObject target = Comp.gameObject;
             string layername = Layers.Find(target);
             if (layername != string.Empty)
             {
-                return RemoveLayer(layername);
+                return RemoveLayer(layername, despawner);
             }
             else
             {
                 return false;
             }
         }
-        public bool RemoveLayer(string name)
+        public bool RemoveLayer(string name, Object despawner = null)
         {
             if (IsValid(name))
             {
                 GameObject Target = Layers[name];
 
                 if (Target != null)
+                {
+                    if (despawner != null)
+                    {
+                        Target.SendDespawnEvent(despawner);
+                    }
+                    else
+                    {
+                        Target.SendDespawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                    }
                     Destroy(Target);
-
+                }
                 Layers.Remove(name);
-
                 return true;
             }
 
@@ -420,7 +395,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool FadeIn(string name, float Duration, Action<GameObject> callback)
+        public bool FadeIn(string name, float Duration, System.Action<GameObject> callback)
         {
             if (Method == UIMethod.uGUI)
             {
@@ -480,7 +455,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool FadeOut(string name, float Duration, Action<GameObject> callback)
+        public bool FadeOut(string name, float Duration, System.Action<GameObject> callback)
         {
             if (Method == UIMethod.uGUI)
             {
@@ -593,7 +568,7 @@ namespace RealMethod
             EnableLayer(canvas.gameObject.name);
             OnFadeIn?.Invoke(canvas, false);
         }
-        private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration, Action<GameObject> callback)
+        private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration, System.Action<GameObject> callback)
         {
             float elapsedTime = 0f;
             OnFadeIn?.Invoke(canvas, true);
@@ -624,7 +599,7 @@ namespace RealMethod
             DisableLayer(canvas.gameObject.name);
             OnFadeOut?.Invoke(canvas, false);
         }
-        private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration, Action<GameObject> callback)
+        private IEnumerator FadeOut(CanvasGroup canvas, float fadeDuration, System.Action<GameObject> callback)
         {
             float elapsedTime = 0f;
             canvas.interactable = false;

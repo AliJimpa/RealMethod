@@ -49,6 +49,10 @@ namespace RealMethod
             GameDespawn = null;
             GameAudio = null;
             GameUI = null;
+            GameScreen = null;
+            GameTask = null;
+            GameHaptic = null;
+            GameEnumerator = null;
             CacheInstance = null;
         }
 
@@ -126,11 +130,11 @@ namespace RealMethod
 
 
         // UI
-        public static T Widget<T>(string Name, MonoBehaviour Owner) where T : MonoBehaviour
+        public static T Widget<T>(string Name, Object spawner = null) where T : MonoBehaviour
         {
             if (instance.GameUI != null)
             {
-                return instance.GameUI.CreateLayer<T>(Name, Owner);
+                return instance.GameUI.CreateLayer<T>(Name, spawner);
             }
             else
             {
@@ -138,11 +142,11 @@ namespace RealMethod
                 return null;
             }
         }
-        public static T Widget<T>(string Name) where T : MonoBehaviour
+        public static T Widget<T>(VisualTreeAsset UIAsset, string Name, Object spawner = null) where T : MonoBehaviour
         {
             if (instance.GameUI != null)
             {
-                return instance.GameUI.CreateLayer<T>(Name);
+                return instance.GameUI.CreateLayer<T>(Name, UIAsset, spawner);
             }
             else
             {
@@ -150,83 +154,35 @@ namespace RealMethod
                 return null;
             }
         }
-        public static UIDocument Widget(string Name, VisualTreeAsset UIAsset)
+        public static GameObject Widget(UPrefab Prefab, string Name, Object spawner = null)
+        {
+            if (instance.GameUI != null)
+            {
+                return instance.GameUI.AddLayer(Name, Prefab, spawner);
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: UIManager is not available.");
+                return null;
+            }
+        }
+        public static T Widget<T>(UPrefab Prefab, string Name, Object spawner = null) where T : MonoBehaviour
+        {
+            if (instance.GameUI != null)
+            {
+                return instance.GameUI.AddLayer<T>(Name, Prefab, spawner);
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: UIManager is not available.");
+                return null;
+            }
+        }
+        public static UIDocument UIDoc(string Name, VisualTreeAsset UIAsset)
         {
             if (instance.GameUI != null)
             {
                 return instance.GameUI.CreateLayer(Name, UIAsset);
-            }
-            else
-            {
-                Debug.LogWarning($" {instance}: UIManager is not available.");
-                return null;
-            }
-        }
-        public static T Widget<T>(string Name, VisualTreeAsset UIAsset, MonoBehaviour Owner) where T : MonoBehaviour
-        {
-            if (instance.GameUI != null)
-            {
-                return instance.GameUI.CreateLayer<T>(Name, UIAsset, Owner);
-            }
-            else
-            {
-                Debug.LogWarning($" {instance}: UIManager is not available.");
-                return null;
-            }
-        }
-        public static T Widget<T>(string Name, VisualTreeAsset UIAsset) where T : MonoBehaviour
-        {
-            if (instance.GameUI != null)
-            {
-                return instance.GameUI.CreateLayer<T>(Name, UIAsset);
-            }
-            else
-            {
-                Debug.LogWarning($" {instance}: UIManager is not available.");
-                return null;
-            }
-        }
-        public static GameObject Widget(string Name, UPrefab Prefab, MonoBehaviour Owner)
-        {
-            if (instance.GameUI != null)
-            {
-                return instance.GameUI.AddLayer(Name, Prefab, Owner);
-            }
-            else
-            {
-                Debug.LogWarning($" {instance}: UIManager is not available.");
-                return null;
-            }
-        }
-        public static GameObject Widget(string Name, UPrefab Prefab)
-        {
-            if (instance.GameUI != null)
-            {
-                return instance.GameUI.AddLayer(Name, Prefab);
-            }
-            else
-            {
-                Debug.LogWarning($" {instance}: UIManager is not available.");
-                return null;
-            }
-        }
-        public static T Widget<T>(string Name, UPrefab Prefab, MonoBehaviour Owner) where T : MonoBehaviour
-        {
-            if (instance.GameUI != null)
-            {
-                return instance.GameUI.AddLayer<T>(Name, Prefab, Owner);
-            }
-            else
-            {
-                Debug.LogWarning($" {instance}: UIManager is not available.");
-                return null;
-            }
-        }
-        public static T Widget<T>(string Name, UPrefab Prefab) where T : MonoBehaviour
-        {
-            if (instance.GameUI != null)
-            {
-                return instance.GameUI.AddLayer<T>(Name, Prefab);
             }
             else
             {
@@ -340,72 +296,261 @@ namespace RealMethod
             return Sound2D(clip, null, 1f, false, 0f, autoDestroy);
         }
 
-        // Cloning 
-        public static T Clone<T>(T original) where T : Object
+        // Clone 
+        public static T Clone<T>(T original, Object spawner = null) where T : Object
         {
-            return Object.Instantiate(original);
+            if (spawner != null)
+            {
+                var target = Object.Instantiate(original);
+                if (target is MonoBehaviour mono)
+                {
+                    mono.SendSpawnEvent(spawner);
+                }
+                else if (target is GameObject obj)
+                {
+                    obj.SendSpawnEvent(spawner);
+                }
+                else
+                {
+                    Debug.LogWarning($"Spawn Event can only be sent to MonoBehaviour or GameObject. Target type: {target.GetType()}");
+                }
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(original);
+            }
         }
-        public static T Clone<T>(T original, Transform parent) where T : Object
+        public static T Clone<T>(T original, Transform parent, Object spawner = null) where T : Object
         {
-            return Object.Instantiate(original, parent);
+            if (spawner != null)
+            {
+                var target = Object.Instantiate(original, parent);
+                if (target is MonoBehaviour mono)
+                {
+                    mono.SendSpawnEvent(spawner);
+                }
+                else if (target is GameObject obj)
+                {
+                    obj.SendSpawnEvent(spawner);
+                }
+                else
+                {
+                    Debug.LogWarning($"Spawn Event can only be sent to MonoBehaviour or GameObject. Target type: {target.GetType()}");
+                }
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(original, parent);
+            }
         }
-        public static T Clone<T>(T original, Vector3 position, Quaternion rotation) where T : Object
+        public static T Clone<T>(T original, Vector3 position, Quaternion rotation, Object spawner = null) where T : Object
         {
-            return Object.Instantiate(original, position, rotation);
+            if (spawner != null)
+            {
+                var target = Object.Instantiate(original, position, rotation);
+                if (target is MonoBehaviour mono)
+                {
+                    mono.SendSpawnEvent(spawner);
+                }
+                else if (target is GameObject obj)
+                {
+                    obj.SendSpawnEvent(spawner);
+                }
+                else
+                {
+                    Debug.LogWarning($"Spawn Event can only be sent to MonoBehaviour or GameObject. Target type: {target.GetType()}");
+                }
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(original, position, rotation);
+            }
         }
-        public static T Clone<T>(T original, Transform parent, bool worldPositionStays) where T : Object
+        public static T Clone<T>(T original, Transform parent, bool worldPositionStays, Object spawner = null) where T : Object
         {
-            return Object.Instantiate(original, parent, worldPositionStays);
+            if (spawner != null)
+            {
+                var target = Object.Instantiate(original, parent, worldPositionStays);
+                if (target is MonoBehaviour mono)
+                {
+                    mono.SendSpawnEvent(spawner);
+                }
+                else if (target is GameObject obj)
+                {
+                    obj.SendSpawnEvent(spawner);
+                }
+                else
+                {
+                    Debug.LogWarning($"Spawn Event can only be sent to MonoBehaviour or GameObject. Target type: {target.GetType()}");
+                }
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(original, parent, worldPositionStays);
+            }
         }
 
         // Prefab
-        public static GameObject Prefab(PrefabCore prefab)
+        public static GameObject Prefab(PrefabCore prefab, Object spawner = null)
         {
-            return Object.Instantiate(prefab.asset, Game.World.transform);
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab.asset, Game.World.transform);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.asset, Game.World.transform);
+            }
         }
-        public static GameObject Prefab(PrefabCore prefab, Transform parent)
+        public static GameObject Prefab(PrefabCore prefab, Transform parent, Object spawner = null)
         {
-            return Object.Instantiate(prefab.asset, parent);
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab.asset, parent);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.asset, parent);
+            }
         }
-        public static GameObject Prefab(PrefabCore prefab, Transform parent, bool instantiateInWorldSpace)
+        public static GameObject Prefab(PrefabCore prefab, Transform parent, bool instantiateInWorldSpace, Object spawner = null)
         {
-            return Object.Instantiate(prefab.asset, parent, instantiateInWorldSpace);
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab.asset, parent, instantiateInWorldSpace);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.asset, parent, instantiateInWorldSpace);
+            }
         }
-        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Vector3 rotation)
+        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Vector3 rotation, Object spawner = null)
         {
-            return Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation));
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation));
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation));
+            }
         }
-        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Quaternion rotation)
+        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Quaternion rotation, Object spawner = null)
         {
-            return Object.Instantiate(prefab.asset, position, rotation);
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab.asset, position, rotation);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.asset, position, rotation);
+            }
         }
-        public static GameObject Prefab(PrefabCore prefab, Vector3 position)
+        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Object spawner = null)
         {
-            return Object.Instantiate(prefab.asset, position, Quaternion.identity);
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab.asset, position, Quaternion.identity);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.asset, position, Quaternion.identity);
+            }
         }
-        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Vector3 rotation, Transform parent)
+        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Vector3 rotation, Transform parent, Object spawner = null)
         {
-            return Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation), parent);
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation), parent);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation), parent);
+            }
         }
-        public static GameObject Prefab(PrefabCore prefab, UnityEngine.SceneManagement.Scene scene)
+        public static GameObject Prefab(PrefabCore prefab, UnityEngine.SceneManagement.Scene scene, Object spawner = null)
         {
-            return Object.Instantiate(prefab.asset, scene) as GameObject;
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab.asset, scene) as GameObject;
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.asset, scene) as GameObject;
+            }
+
         }
-        public static T Prefab<T>(PrefabCore<T> prefab) where T : Component
+        public static T Prefab<T>(PrefabCore<T> prefab, Object spawner = null) where T : Component
         {
-            return Object.Instantiate(prefab.GetSoftClassTarget());
+            if (spawner != null)
+            {
+                T target = Object.Instantiate(prefab.GetSoftClassTarget());
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.GetSoftClassTarget());
+            }
         }
-        public static T Prefab<T>(PrefabCore<T> prefab, Transform parent) where T : Component
+        public static T Prefab<T>(PrefabCore<T> prefab, Transform parent, Object spawner = null) where T : Component
         {
-            return Object.Instantiate(prefab.GetSoftClassTarget(), parent);
+            if (spawner != null)
+            {
+                T target = Object.Instantiate(prefab.GetSoftClassTarget(), parent);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.GetSoftClassTarget(), parent);
+            }
         }
-        public static T Prefab<T>(PrefabCore<T> prefab, Vector3 position, Quaternion rotation) where T : Component
+        public static T Prefab<T>(PrefabCore<T> prefab, Vector3 position, Quaternion rotation, Object spawner = null) where T : Component
         {
-            return Object.Instantiate(prefab.GetSoftClassTarget(), position, rotation);
+            if (spawner != null)
+            {
+                T target = Object.Instantiate(prefab.GetSoftClassTarget(), position, rotation);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.GetSoftClassTarget(), position, rotation);
+            }
         }
-        public static T Prefab<T>(PrefabCore<T> prefab, Transform parent, bool worldPositionStays) where T : Component
+        public static T Prefab<T>(PrefabCore<T> prefab, Transform parent, bool worldPositionStays, Object spawner = null) where T : Component
         {
-            return Object.Instantiate(prefab.GetSoftClassTarget(), parent, worldPositionStays);
+            if (spawner != null)
+            {
+                T target = Object.Instantiate(prefab.GetSoftClassTarget(), parent, worldPositionStays);
+                target.SendSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.GetSoftClassTarget(), parent, worldPositionStays);
+            }
         }
 
         // Pool
@@ -459,17 +604,17 @@ namespace RealMethod
         }
 
         // Effect
-        public static EffectPlayer Effect(EPrefab prefab)
+        public static EffectPlayer Effect(EPrefab prefab, Object spawner = null)
         {
-            return Prefab(prefab);
+            return Prefab(prefab, spawner);
         }
-        public static EffectPlayer Effect(EPrefab prefab, Vector3 location, Vector3 rotation)
+        public static EffectPlayer Effect(EPrefab prefab, Vector3 location, Vector3 rotation, Object spawner = null)
         {
-            return Prefab(prefab, location, Quaternion.Euler(rotation));
+            return Prefab(prefab, location, Quaternion.Euler(rotation), spawner);
         }
-        public static EffectPlayer Effect(EPrefab prefab, Transform parent)
+        public static EffectPlayer Effect(EPrefab prefab, Transform parent, Object spawner = null)
         {
-            return Prefab(prefab, parent);
+            return Prefab(prefab, parent, spawner);
         }
 
         // Haptic
@@ -487,20 +632,25 @@ namespace RealMethod
         }
 
         // Particle
-        public static ParticleSystem Particle(PSPrefab prefab, Vector3 location, Vector3 rotation)
+        public static ParticleSystem Particle(PSPrefab prefab, Vector3 location, Vector3 rotation, Object spawner = null)
         {
-            return Prefab(prefab, location, Quaternion.Euler(rotation));
+            return Prefab(prefab, location, Quaternion.Euler(rotation), spawner);
         }
-        public static ParticleSystem Particle(PSPrefab prefab, Transform parent)
+        public static ParticleSystem Particle(PSPrefab prefab, Transform parent, Object spawner = null)
         {
-            return Prefab(prefab, parent);
+            return Prefab(prefab, parent, spawner);
         }
 
         // Code
-        public static T Component<T>(GameObject target) where T : MonoBehaviour
+        public static T Component<T>(GameObject target, Object spawner = null) where T : MonoBehaviour
         {
             if (target)
             {
+                var result = target.AddComponent<T>();
+                if (spawner != null)
+                {
+                    result.SendSpawnEvent(spawner);
+                }
                 return target.AddComponent<T>();
             }
             else
@@ -531,13 +681,19 @@ namespace RealMethod
             }
             return TargetCommand;
         }
-        public static T Data<T>() where T : DataAsset
+        public static T Asset<T>(Object spawner = null) where T : PrimitiveAsset
         {
-            return ScriptableObject.CreateInstance<T>();
-        }
-        public static T File<T>() where T : FileAsset
-        {
-            return FileAsset.Create<T>();
+            if (spawner != null)
+            {
+                var target = ScriptableObject.CreateInstance<T>();
+                IAsset provider = target;
+                provider.OnSpawned(spawner);
+                return target;
+            }
+            else
+            {
+                return ScriptableObject.CreateInstance<T>();
+            }
         }
 
         // Task
@@ -598,7 +754,7 @@ namespace RealMethod
         }
 
         // Other
-        public static GameObject New(string name)
+        public static GameObject Empty(string name)
         {
             return new GameObject(name);
         }
@@ -632,7 +788,7 @@ namespace RealMethod
     public sealed class Despawn
     {
         // UI
-        public static bool Widget(string Name, bool debug = true)
+        public static bool Widget(string Name, Object spawner = null, bool debug = true)
         {
             if (Spawn.instance.GameUI == null)
             {
@@ -641,9 +797,9 @@ namespace RealMethod
                 return false;
             }
 
-            return Spawn.instance.GameUI.RemoveLayer(Name);
+            return Spawn.instance.GameUI.RemoveLayer(Name, spawner);
         }
-        public static bool Widget(MonoBehaviour Comp, bool debug = true)
+        public static bool Widget(MonoBehaviour Comp, Object spawner = null, bool debug = true)
         {
             if (Spawn.instance.GameUI == null)
             {
@@ -652,14 +808,18 @@ namespace RealMethod
                 return false;
             }
 
-            return Spawn.instance.GameUI.RemoveLayer(Comp);
+            return Spawn.instance.GameUI.RemoveLayer(Comp, spawner);
         }
 
         // Prefab
-        public static bool GameObject(GameObject target, bool debug = true)
+        public static bool GameObject(GameObject target, Object spawner = null, bool debug = true)
         {
             if (target != null)
             {
+                if (spawner != null)
+                {
+                    target.SendDespawnEvent(spawner);
+                }
                 Object.Destroy(target);
                 return true;
             }

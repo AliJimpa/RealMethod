@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using System.Reflection;
 
@@ -6,6 +5,14 @@ namespace RealMethod
 {
     public static class GameObject_Extension
     {
+        public static void SendSpawnEvent(this GameObject owner, Object spawner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            owner.SendMessage("OnSpawn", spawner, option);
+        }
+        public static void SendDespawnEvent(this GameObject owner, Object despawner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            owner.SendMessage("OnDespawn", despawner, option);
+        }
         public static TComponent AddComponent<TComponent, TArgument>(this GameObject gameObject)
         where TComponent : MonoBehaviour, IInitializable
         {
@@ -29,7 +36,7 @@ namespace RealMethod
         }
         public static TComponent CopyComponent<TComponent>(this GameObject desitation, TComponent originalComponent) where TComponent : Component
         {
-            Type componentType = originalComponent.GetType();
+            System.Type componentType = originalComponent.GetType();
             Component copy = desitation.AddComponent(componentType);
             FieldInfo[] fields = componentType.GetFields();
             foreach (FieldInfo field in fields)

@@ -8,6 +8,7 @@ namespace RealMethod
     public interface IAsset
     {
         PrimitiveAsset GetAsset();
+        void OnSpawned(Object spawner);
     }
     // All Scriptable Object in RealMethod should use this
     public abstract class PrimitiveAsset : ScriptableObject, IAsset
@@ -16,6 +17,10 @@ namespace RealMethod
         PrimitiveAsset IAsset.GetAsset()
         {
             return this;
+        }
+        public virtual void OnSpawned(Object spawner)
+        {
+
         }
 
         public bool HasCloneName()
