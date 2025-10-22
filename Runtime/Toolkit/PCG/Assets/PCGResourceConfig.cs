@@ -3,6 +3,13 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public interface IPCGResource : IIdentifier
+    {
+#if UNITY_EDITOR
+        void SetData(PCGSource[] Target);
+#endif
+    }
+
     public enum PCGSourceLoadOrder
     {
         Low,
@@ -15,7 +22,6 @@ namespace RealMethod
         Middleground = 1,
         Foreground = 2
     }
-
     [Serializable]
     public struct PCGSource
     {
@@ -26,9 +32,11 @@ namespace RealMethod
         public int Count;
     }
 
+
     [CreateAssetMenu(fileName = "PCG_Resource", menuName = "RealMethod/PCG/Resource", order = 1)]
-    public class PCGResourceConfig : ConfigAsset
+    public class PCGResourceConfig : ConfigAsset, IPCGResource
     {
+        public string NameID => name;
         [SerializeField]
         private PCGSource[] Sources;
 
@@ -67,15 +75,12 @@ namespace RealMethod
         }
 
 
-
 #if UNITY_EDITOR
-        public void Set(PCGSource[] Target)
+        void IPCGResource.SetData(PCGSource[] Target)
         {
             Sources = Target;
         }
 #endif
-
-
     }
 }
 

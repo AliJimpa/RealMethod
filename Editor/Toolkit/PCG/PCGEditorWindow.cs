@@ -378,7 +378,7 @@ namespace RealMethod.Editor
                             CashTarget[i].Scale = InitiateObject[i].transform.localScale;
                         }
                     }
-                    Temporery.Set(CashTarget);
+                    ((IPCGCashAsset)Temporery).SetData(CashTarget);
                     EditorUtility.SetDirty(Temporery);
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();

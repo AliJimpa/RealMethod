@@ -124,7 +124,7 @@ namespace RealMethod.Editor
                         TargetData.Scale = new Vector3(trees[i].widthScale, trees[i].heightScale, trees[i].widthScale);
                         CashTarget[i] = TargetData;
                     }
-                    Temporery.Set(CashTarget);
+                    ((IPCGCashAsset)Temporery).SetData(CashTarget);
                     EditorUtility.SetDirty(Temporery);
                     AssetDatabase.SaveAssets();
                     AssetDatabase.Refresh();
@@ -168,8 +168,8 @@ namespace RealMethod.Editor
                         TargetData.Scale = new Vector3(trees[i].widthScale, trees[i].heightScale, trees[i].widthScale);
                         CashTarget[i] = TargetData;
                     }
-                    Temporery.Set(CashTarget);
-                    ResurcePack.Set(TerrainSource);
+                    ((IPCGCashAsset)Temporery).SetData(CashTarget);
+                    ((IPCGResource)ResurcePack).SetData(TerrainSource);
                     EditorUtility.SetDirty(Temporery);
                     EditorUtility.SetDirty(ResurcePack);
                     AssetDatabase.SaveAssets();
