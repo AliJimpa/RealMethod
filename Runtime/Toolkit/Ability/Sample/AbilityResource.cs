@@ -94,9 +94,9 @@ public class DebugEffect : RealMethod.AbilityEffect
 {
     protected override void OnInitiate(RealMethod.AbilityAsset owner)
     {
-        Debug.Log($"DebugEffect Initiated from {owner}");
+        Debug.Log($"DebugEffect Initiated from {owner.name}");
     }
-    protected override void Apply(GameObject caster, RealMethod.IAbilityContext target) => Debug.Log($"DebugEffect Apply from {caster} to {target}");
+    protected override void Apply(GameObject caster, RealMethod.IAbilityContext target) => Debug.Log($"DebugEffect Apply from {caster.name} to {target.targetPoint.gameObject.name}");
 }
 public class AddForceEffect : RealMethod.AbilityEffect
 {

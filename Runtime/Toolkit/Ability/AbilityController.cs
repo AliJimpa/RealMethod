@@ -94,6 +94,10 @@ namespace RealMethod
                 }
             }
         }
+        private void OnDestroy()
+        {
+            myActions = null;
+        }
 
         // Public Functions
         public IAbility GetAbility(int index)
