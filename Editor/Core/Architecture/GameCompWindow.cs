@@ -1,3 +1,4 @@
+using PlasticGui.WorkspaceWindow;
 using UnityEditor;
 
 namespace RealMethod
@@ -17,7 +18,11 @@ namespace RealMethod
             EditorGUILayout.Space();
             if (BaseComponent != null)
             {
-                EditorGUILayout.LabelField($"{Game.World.GetType().Name} | {Game.Service.GetType().Name} | {Game.Config.GetType().Name}");
+                if (Game.World != null)
+                {
+
+                }
+                EditorGUILayout.LabelField($"{GetWorld()} | {GetSetvice()} | {GetConfig()}");
                 EditorGUILayout.Space(0.5f);
                 string[] Data = BaseComponent.GetAllServiceNames();
                 for (int i = 0; i < Data.Length; i++)
@@ -27,5 +32,33 @@ namespace RealMethod
             }
         }
 
+
+
+
+
+        private string GetWorld()
+        {
+            return Game.World != null ? Game.World.GetType().Name : "World Not Valid";
+        }
+        private string GetSetvice()
+        {
+            return Game.Service != null ? Game.Service.GetType().Name : "GameService Not Valid";
+        }
+        private string GetConfig()
+        {
+            return Game.Config != null ? Game.Config.GetType().Name : "GameConfig Not Valid";
+        }
+
+
+
+
+
+
+
+
+
     }
+
+
+
 }
