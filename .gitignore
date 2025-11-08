@@ -73,18 +73,3 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
-
-# Ignore Unity license meta files (various casings, anywhere)
-# Root and subdirectories
-LICENSE.meta
-license.meta
-[Ll]icense.meta
-**/LICENSE.meta
-**/[Ll]icense.meta
-
-# Ignore README/Readme meta files (Unity creates .meta for README files)
-README.md.meta
-Readme.meta
-readme.meta
-**/README.md.meta
-**/[Rr]eadme.meta
