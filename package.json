@@ -1,6 +1,6 @@
 {
   "name": "com.mustard.realmethod",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "displayName": "RealMethod",
   "description": "A modern concept for making game in unity. [MUSTARD]",
   "unity": "6000.0",
@@ -14,6 +14,7 @@
     "utilities",
     "editor"
   ],
+  "documentationUrl": "https://github.com/AliJimpa/RealMethod/wiki",
   "samples": [
     {
       "displayName": "Tutorial",
