@@ -5,13 +5,13 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Essential/DefaultWorld")]
     public sealed class DefaultWorld : World
     {
-        protected override void AwakeWorld()
+        protected override void WorldBegin()
         {
-            Debug.Log("DefaultWorld Awaked");
+            Debug.Log("DefaultWorld Begin");
         }
-        protected override void DestroyWorld()
+        protected override void WorldEnd()
         {
-            Debug.Log("DefaultWorld Destroyed");
+            Debug.Log("DefaultWorld End");
         }
     }
 }

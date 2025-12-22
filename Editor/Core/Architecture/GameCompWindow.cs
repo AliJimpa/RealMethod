@@ -1,4 +1,3 @@
-using PlasticGui.WorkspaceWindow;
 using UnityEditor;
 
 namespace RealMethod
@@ -18,10 +17,6 @@ namespace RealMethod
             EditorGUILayout.Space();
             if (BaseComponent != null)
             {
-                if (Game.World != null)
-                {
-
-                }
                 EditorGUILayout.LabelField($"{GetWorld()} | {GetSetvice()} | {GetConfig()}");
                 EditorGUILayout.Space(0.5f);
                 string[] Data = BaseComponent.GetAllServiceNames();
@@ -31,10 +26,6 @@ namespace RealMethod
                 }
             }
         }
-
-
-
-
 
         private string GetWorld()
         {
@@ -48,14 +39,6 @@ namespace RealMethod
         {
             return Game.Config != null ? Game.Config.GetType().Name : "GameConfig Not Valid";
         }
-
-
-
-
-
-
-
-
 
     }
 

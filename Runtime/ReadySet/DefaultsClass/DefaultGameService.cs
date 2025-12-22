@@ -11,10 +11,6 @@ namespace RealMethod
         protected override void OnNewWorld()
         {
         }
-        protected override void OnNewAdditiveWorld(World target)
-        {
-            
-        }
         protected override void OnEnd(object Author)
         {
             Debug.Log("DefaultService Ended");
