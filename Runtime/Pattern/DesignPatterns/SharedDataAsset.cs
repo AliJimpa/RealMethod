@@ -2,7 +2,8 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class BlackboardAsset : UniqueAsset, IBlackboard
+    // SharedDataAsset is a asset that can sore data by diffrent type 
+    public abstract class SharedDataAsset : UniqueAsset, IBlackboard
     {
         [System.Serializable]
         private class BB_Vector2_Dictionary : SerializableDictionary<string, Vector2> { }
@@ -12,7 +13,7 @@ namespace RealMethod
         private class BB_Object_Dictionary : SerializableDictionary<string, Object> { }
         [System.Serializable]
         private class BB_Identity_Dictionary : SerializableDictionary<string, IIdentifier> { }
-        [Header("Blackboard")]
+        [Header("DataBase")]
         [SerializeField, ReadOnly]
         private StringBoolDictionary boolData;
         [SerializeField, ReadOnly]
@@ -149,6 +150,8 @@ namespace RealMethod
             vector2Data.Clear();
             vector3Data.Clear();
             objectData.Clear();
+            assetData.Clear();
+            idData.Clear();
         }
 #endif
 

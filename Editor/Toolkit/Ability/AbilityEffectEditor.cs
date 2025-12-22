@@ -2,10 +2,9 @@ using UnityEditor;
 using System;
 using System.Linq;
 using UnityEngine;
-using RealMethod.Editor;
 using System.Collections.Generic;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     [CustomEditor(typeof(AbilityEffectAsset), true)]
     public class AbilityEffectEditor : UnityEditor.Editor
