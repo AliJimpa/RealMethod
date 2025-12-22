@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Linq;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace RealMethod
 {
     public abstract class Game : MonoBehaviour
@@ -67,28 +71,29 @@ namespace RealMethod
             return Result;
         }
         // Private Functions
-        private void OnGameWorldReplaced(World NewWorld)
+        private void Notify_OnWorldInitiate(World NewWorld)
         {
             World = NewWorld;
             foreach (var service in GameServices)
             {
-                service.provider.WorldUpdated();
+                service.Provider.WorldUpdated();
             }
-            GameWorldSynced(World);
+            OnWorldChanged(World);
         }
-        private void OnGameQuit()
+        private void Notify_OnGameQuit()
         {
-            Application.quitting -= OnGameQuit;
+            ((IMethodSync)Service).UnbindMainWorldAdd();
+            Application.quitting -= Notify_OnGameQuit;
             if (GameServices != null)
             {
                 for (int i = 0; i < GameServices.Count; i++)
                 {
-                    GameServices[i].provider.Deleted(this);
+                    GameServices[i].Provider.Deleted(this);
                     GameServices.RemoveAt(i);
                 }
             }
-            Service.provider.Deleted(this);
-            GameClosed();
+            Service.Provider.Deleted(this);
+            OnGameClosed();
         }
         // Public Static Functions
         public static T CastInstance<T>() where T : class
@@ -126,7 +131,7 @@ namespace RealMethod
 
             // Create Service
             T newService = new T();
-            newService.provider.Created(author);
+            newService.Provider.Created(author);
             if (Instance.Managers != null)
             {
                 foreach (var manager in Instance.Managers)
@@ -134,7 +139,7 @@ namespace RealMethod
                     manager.ResolveService(newService, true);
                 }
             }
-            Service.OnServiceCreated?.Invoke(newService);
+            ((IMethodSync)Service).ServiceCreated(newService);
             Instance.GameServices.Add(newService);
             return newService;
         }
@@ -150,8 +155,8 @@ namespace RealMethod
                         manager.ResolveService(service, false);
                     }
                 }
-                Service.OnServiceRemoved?.Invoke(service);
-                service.provider.Deleted(author);
+                ((IMethodSync)Service).ServiceRemoved(service);
+                service.Provider.Deleted(author);
                 Instance.GameServices.Remove(service);
                 return true;
             }
@@ -268,109 +273,108 @@ namespace RealMethod
             if (physicSafe)
                 Time.fixedDeltaTime = 0.02f * Time.timeScale; // Keeps physics in sync
         }
+        public static void Quit()
+        {
+#if UNITY_EDITOR
+            EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+        }
 
         // Private Static Functions
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void InitializeGame()
         {
-            Game[] components = FindObjectsByType<Game>(FindObjectsSortMode.InstanceID);
-            if (components.Length > 1)
-            {
-                Debug.LogError($"Expected exactly one active 'Game' component in the scene, but found {components.Length}.");
-                return;
-            }
             // Load Project Setting
             ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
-            if (ProjectSettings != null)
+            if (ProjectSettings == null)
             {
-                // Initiate Game Class
-                if (components.Length == 0)
-                {
-                    var emptyObject = new GameObject("RealGame");
-                    Type TargetClass = ProjectSettings.GetGameInstanceClass();
-                    if (TargetClass != null)
-                    {
-                        Instance = (Game)emptyObject.AddComponent(TargetClass);
-                        if (Instance == null)
-                        {
-                            Debug.LogError($"Component of type {TargetClass} is not assignable from Game.");
-                            Instance = emptyObject.AddComponent<DefultGame>();
-                        }
-                    }
-                    else
-                    {
-                        Instance = emptyObject.AddComponent<DefultGame>();
-                    }
-                }
-                else
-                {
-                    Instance = components[0];
-                }
-                // Create Game Service
-                Type targetService = ProjectSettings.GetGameServiceClass();
-                if (targetService != null)
-                {
-                    if (typeof(Service).IsAssignableFrom(targetService))
-                    {
-                        try
-                        {
-                            Service = (GameService)Activator.CreateInstance(targetService);
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.LogError($"Failed to instantiate {targetService}: {ex.Message}");
-                            Service = new DefaultGameService();
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogError($"Type {targetService} is not assignable to Service.");
-                        Service = new DefaultGameService();
-                    }
-                }
-                else
-                {
-                    Service = new DefaultGameService();
-                }
-                Instance.GameServices = new List<Service>(3);
-                Service.OnWorldUpdate += Instance.OnGameWorldReplaced;
-                Service.provider.Created(Instance);
-                // Set Game Config 
-                if (ProjectSettings.GetGameConfig() != null)
-                {
-                    Config = ProjectSettings.GetGameConfig();
-                }
-                else
-                {
-                    Config = ScriptableObject.CreateInstance<DefaultGameConfig>();
-                }
-                Config.Initialized(Instance);
-                // Initiate GamePrefab & Managers
-                List<IGameManager> CashManagers = new List<IGameManager>(5);
-                foreach (var obj in ProjectSettings.GetGamePrefabs())
-                {
-                    if (obj != null)
-                    {
-                        GameObject newobj = Instantiate(obj);
-                        foreach (var manager in newobj.GetComponents<IGameManager>())
-                        {
-                            manager.InitiateManager(true);
-                            CashManagers.Add(manager);
-                        }
-                        DontDestroyOnLoad(newobj);
-                    }
-                }
-                Instance.Managers = CashManagers.ToArray();
-                // Unload Project Setting
-                Resources.UnloadAsset(ProjectSettings);
-                // Move Self GameObject to DontDestroy
-                DontDestroyOnLoad(Instance.gameObject);
-                Application.quitting += Instance.OnGameQuit;
+                Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
+                Quit();
+                return;
+            }
+
+            // Initiate Game Class
+            var emptyObject = new GameObject("RealGame");
+            Type TargetClass = ProjectSettings.GetGameInstanceClass();
+            if (TargetClass == null)
+            {
+                Debug.LogWarning("GameInstanceClass that was empty. DefaultGame Created");
+                Instance = emptyObject.AddComponent<DefultGame>();
+            }
+            if (typeof(Game).IsAssignableFrom(TargetClass))
+            {
+                Instance = (Game)emptyObject.AddComponent(TargetClass);
             }
             else
             {
-                Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
+                Debug.LogWarning($"Component of type {TargetClass} is not assignable from Game. DefaultGame Created");
+                Instance = emptyObject.AddComponent<DefultGame>();
             }
+
+            // Create Game Service
+            Type targetService = ProjectSettings.GetGameServiceClass();
+            if (targetService == null)
+            {
+                Debug.LogWarning($"GetGameServiceClass that was empty. DefaultGameService Created");
+                Service = new DefaultGameService();
+            }
+            if (typeof(Service).IsAssignableFrom(targetService))
+            {
+                try
+                {
+                    Service = (GameService)Activator.CreateInstance(targetService);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Failed to instantiate {targetService}: {ex.Message}. DefaultGameService Created");
+                    Service = new DefaultGameService();
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Type {targetService} is not assignable to Service. DefaultGameService Created");
+                Service = new DefaultGameService();
+            }
+            Instance.GameServices = new List<Service>(3);
+            ((IMethodSync)Service).BindMainWorldAdd(Instance.Notify_OnWorldInitiate);
+            Service.Provider.Created(Instance);
+
+            // Set Game Config 
+            if (ProjectSettings.GetGameConfig() != null)
+            {
+                Config = ProjectSettings.GetGameConfig();
+            }
+            else
+            {
+                Config = ScriptableObject.CreateInstance<DefaultGameConfig>();
+            }
+            Config.Initialized(Instance);
+
+            // Initiate GamePrefab & Managers
+            List<IGameManager> CashManagers = new List<IGameManager>(5);
+            foreach (var obj in ProjectSettings.GetGamePrefabs())
+            {
+                if (obj != null)
+                {
+                    GameObject newobj = Instantiate(obj);
+                    foreach (var manager in newobj.GetComponents<IGameManager>())
+                    {
+                        manager.InitiateManager(true);
+                        CashManagers.Add(manager);
+                    }
+                    DontDestroyOnLoad(newobj);
+                }
+            }
+            Instance.Managers = CashManagers.ToArray();
+
+            // Unload Project Setting
+            Resources.UnloadAsset(ProjectSettings);
+
+            // Move Self GameObject to DontDestroy
+            DontDestroyOnLoad(Instance.gameObject);
+            Application.quitting += Instance.Notify_OnGameQuit;
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void RuntimeBeforeSceneLoad()
@@ -392,8 +396,8 @@ namespace RealMethod
         // Abstract Methods
         protected abstract void GameInitialized();
         protected abstract void GameStarted();
-        protected abstract void GameWorldSynced(World NewWorld);
-        protected abstract void GameClosed();
+        protected abstract void OnWorldChanged(World NewWorld);
+        protected abstract void OnGameClosed();
 
     }
 }

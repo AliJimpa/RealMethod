@@ -23,14 +23,15 @@ namespace RealMethod
         private void Awake()
         {
             //Connect to Game Service
-            if (Game.Service.Worldprovider.IntroduceWorld(this))
+            IMethodSync SyncProvider = Game.Service;
+            if (SyncProvider.IntroduceWorld(this))
             {
-                Game.Service.OnAdditiveWorld += AdditiveWorld;
-                Game.Service.OnServiceCreated += NotifyServiceCreated;
-                Game.Service.OnServiceRemoved += NotifyServiceRemoved;
+                SyncProvider.BindSideWorldAdd(Notify_OnAdditiveWorldInitiate);
+                SyncProvider.BindServicesUpdated(Notify_OnServicesUpdated);
             }
             else
             {
+                enabled = false;
                 return;
             }
 
@@ -54,9 +55,9 @@ namespace RealMethod
         }
         private void OnDestroy()
         {
-            Game.Service.OnAdditiveWorld -= AdditiveWorld;
-            Game.Service.OnServiceCreated -= NotifyServiceCreated;
-            Game.Service.OnServiceRemoved -= NotifyServiceRemoved;
+            IMethodSync SyncProvider = Game.Service;
+            SyncProvider.UnbindSideWorldAdd();
+            SyncProvider.UnbindServicesUpdated();
         }
         // Public Metthods
         public T GetManager<T>() where T : class
@@ -153,29 +154,24 @@ namespace RealMethod
 
             }
         }
-        protected virtual void AdditiveWorld(World TargetWorld)
+        protected virtual void OnAdditiveWorldAdded(GameObject WorldObject)
         {
-            Debug.LogWarning($"This World Class ({TargetWorld}) Deleted");
-            Destroy(TargetWorld);
+            Destroy(WorldObject);
         }
         // Private Methods
-        private void NotifyServiceCreated(Service NewService)
+        private void Notify_OnAdditiveWorldInitiate(World TargetWorld)
         {
-            if (Managers != null)
-            {
-                foreach (var manager in Managers)
-                {
-                    manager.ResolveService(NewService, true);
-                }
-            }
+            GameObject worldObject = TargetWorld.gameObject;
+            Destroy(TargetWorld);
+            OnAdditiveWorldAdded(worldObject);
         }
-        private void NotifyServiceRemoved(Service NewService)
+        private void Notify_OnServicesUpdated(Service NewService, bool stage)
         {
             if (Managers != null)
             {
                 foreach (var manager in Managers)
                 {
-                    manager.ResolveService(NewService, false);
+                    manager.ResolveService(NewService, stage);
                 }
             }
         }

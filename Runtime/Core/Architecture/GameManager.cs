@@ -18,7 +18,7 @@ namespace RealMethod
 
     public abstract class Service : IService
     {
-        public IService provider => this;
+        public IService Provider => this;
 
         // Implement IService Interface
         void IService.Created(object author)

@@ -14,11 +14,11 @@ namespace RealMethod
         {
             Debug.Log("DefultGame Started");
         }
-        protected override void GameWorldSynced(World NewWorld)
+        protected override void OnWorldChanged(World NewWorld)
         {
             Debug.Log($"DefultGame Synced to {NewWorld}");
         }
-        protected override void GameClosed()
+        protected override void OnGameClosed()
         {
             Debug.Log("DefultGame Closed");
         }

@@ -8,19 +8,25 @@ using UnityEditor;
 
 namespace RealMethod
 {
-    public interface IWorldSync
+    public interface IMethodSync
     {
         bool IntroduceWorld(World world);
+        void BindMainWorldAdd(Action<World> func);
+        void UnbindMainWorldAdd();
+        void BindSideWorldAdd(Action<World> func);
+        void UnbindSideWorldAdd();
+        void ServiceCreated(Service service);
+        void ServiceRemoved(Service service);
+        void BindServicesUpdated(Action<Service, bool> func);
+        void UnbindServicesUpdated();
     }
 
-    public abstract class GameService : Service, IWorldSync
+    public abstract class GameService : Service, IMethodSync
     {
-        public IWorldSync Worldprovider => this;
         // Game Structure
-        public Action<World> OnWorldUpdate;
-        public Action<World> OnAdditiveWorld;
-        public Action<Service> OnServiceCreated;
-        public Action<Service> OnServiceRemoved;
+        private Action<World> MainWorldEvent;
+        private Action<World> SideWorldEvent;
+        private Action<Service, bool> ServiceEvents;
         // Load Scene 
         public Action<bool> OnSceneLoading;
         public Action<float> OnSceneLoadingProcess;
@@ -29,19 +35,65 @@ namespace RealMethod
 
         // Implement IWorldSync Interface
         // Any World in Awake time call this method
-        bool IWorldSync.IntroduceWorld(World world)
+        bool IMethodSync.IntroduceWorld(World world)
         {
             if (Game.World == null)
             {
-                OnWorldUpdate?.Invoke(world);
+                MainWorldEvent?.Invoke(world);
                 return true;
             }
             else
             {
-                OnNewAdditiveWorld(world);
-                OnAdditiveWorld?.Invoke(world);
+                SideWorldEvent?.Invoke(world);
                 return false;
             }
+        }
+        void IMethodSync.BindMainWorldAdd(Action<World> func)
+        {
+            if (MainWorldEvent != null)
+            {
+                Debug.LogWarning("BindMainWorldAdd is already binded this interface is internal didnt use in another script or your game");
+                return;
+            }
+            MainWorldEvent = func;
+        }
+        void IMethodSync.UnbindMainWorldAdd()
+        {
+            MainWorldEvent = null;
+        }
+        void IMethodSync.BindSideWorldAdd(Action<World> func)
+        {
+            if (SideWorldEvent != null)
+            {
+                Debug.LogWarning("BindSideWorldAdd is already binded this interface is internal didnt use in another script or your game");
+                return;
+            }
+            SideWorldEvent = func;
+        }
+        void IMethodSync.UnbindSideWorldAdd()
+        {
+            SideWorldEvent = null;
+        }
+        void IMethodSync.ServiceCreated(Service service)
+        {
+            ServiceEvents.Invoke(service, true);
+        }
+        void IMethodSync.ServiceRemoved(Service service)
+        {
+            ServiceEvents.Invoke(service, false);
+        }
+        void IMethodSync.BindServicesUpdated(Action<Service, bool> func)
+        {
+            if (ServiceEvents != null)
+            {
+                Debug.LogWarning("BindServicesUpdated is already binded this interface is internal didnt use in another script or your game");
+                return;
+            }
+            ServiceEvents = func;
+        }
+        void IMethodSync.UnbindServicesUpdated()
+        {
+            ServiceEvents = null;
         }
 
         // public Methods
