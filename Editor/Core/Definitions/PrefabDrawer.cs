@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System;
@@ -14,12 +13,16 @@ namespace RealMethod.Editor
 
             if (prefabGOProp == null)
             {
-                EditorGUI.LabelField(position, label.text, "Invalid Prefab Field");
+                EditorGUI.LabelField(position, label.text, "Cannot serialize generic prefab");
                 return;
             }
 
             EditorGUI.BeginProperty(position, label, property);
 
+            // Determine label text
+            // string displayLabel = prefabGOProp.objectReferenceValue != null ? label.text: $"{label.text} (Select a prefab...)";
+
+            // Draw the ObjectField for GameObject
             UnityEngine.Object newObject = EditorGUI.ObjectField(
                 position,
                 label,
@@ -28,6 +31,7 @@ namespace RealMethod.Editor
                 false
             );
 
+            // Only update if changed
             if (newObject != prefabGOProp.objectReferenceValue)
             {
                 if (newObject == null)
@@ -36,19 +40,19 @@ namespace RealMethod.Editor
                 }
                 else if (PrefabUtility.IsPartOfPrefabAsset(newObject))
                 {
-                    GameObject go = newObject as GameObject;
-
-                    // Get the actual object instance for this SerializedProperty
-                    PrefabCore targetPrefab = GetTargetObjectOfProperty(property) as PrefabCore;
+                    // Get the concrete PrefabCore instance
+                    PrefabCore targetPrefab = fieldInfo.GetValue(property.serializedObject.targetObject) as PrefabCore;
 
                     if (targetPrefab == null)
                     {
-                        EditorGUI.LabelField(position, label.text, "Invalid prefab wrapper.");
+                        Debug.LogWarning("Invalid prefab wrapper.");
                         return;
                     }
 
                     var targetClass = targetPrefab.GetTargetClass();
+                    GameObject go = newObject as GameObject;
 
+                    // Type-check: the prefab must have the required component
                     if (targetClass != null && go.GetComponent(targetClass) != null)
                     {
                         prefabGOProp.objectReferenceValue = newObject;
@@ -64,10 +68,15 @@ namespace RealMethod.Editor
                 }
             }
 
+            // --- Set GUI color to blue to indicate change ---
+            Color prevColor = GUI.color;
+            GUI.color = Color.cyan; // light blue
+            EditorGUI.ObjectField(position, label, prefabGOProp.objectReferenceValue, typeof(GameObject), false);
+            GUI.color = prevColor;
             EditorGUI.EndProperty();
         }
 
-        // Utility to get the real object from a SerializedProperty
+        // --- Utility to get the actual object instance from SerializedProperty ---
         private object GetTargetObjectOfProperty(SerializedProperty prop)
         {
             if (prop == null) return null;
@@ -114,4 +123,3 @@ namespace RealMethod.Editor
         }
     }
 }
-#endif
