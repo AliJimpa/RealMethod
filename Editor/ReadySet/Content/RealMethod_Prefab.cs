@@ -1,7 +1,7 @@
 using RealMethod.Editor;
 using UnityEditor;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     class RealMethodPrefab
     {

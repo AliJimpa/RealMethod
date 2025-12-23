@@ -5,7 +5,7 @@ namespace RealMethod
 {
     public abstract class PlayerStarter : MonoBehaviour
     {
-        [Header("Starter")]
+        [Header("Setting")]
         [SerializeField]
         private string posName = "None";
         public string PosName => posName;
@@ -76,6 +76,7 @@ namespace RealMethod
 
             WorldBegin();
         }
+
         /// <summary>
         /// Unity callback invoked when the object is being destroyed.
         /// Unbinds previously bound service callbacks to avoid dangling references.
@@ -220,6 +221,7 @@ namespace RealMethod
             {
                 GameObject player = new GameObject("Player");
                 player.tag = "Player";
+                player.transform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
                 return player;
             }
         }
@@ -247,7 +249,8 @@ namespace RealMethod
         {
             if (starters.Length > 0)
             {
-                return starters[0].transform;
+                int index = Random.Range(0, starters.Length);
+                return starters[index].transform;
             }
             else
             {

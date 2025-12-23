@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System;
@@ -84,6 +83,4 @@ namespace RealMethod.Editor
             return false;
         }
     }
-#endif
-
 }

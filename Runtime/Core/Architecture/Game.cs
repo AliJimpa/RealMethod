@@ -435,17 +435,19 @@ namespace RealMethod
         /// <param name="GameObjectName">Name of the child GameObject to find.</param>
         /// <param name="Target">New parent GameObject to assign.</param>
         /// <returns><c>true</c> if the child was found and reparented; otherwise <c>false</c>.</returns>
-        public static bool UnHoldGameObject(string GameObjectName, GameObject Target)
+        public static bool TryUnholdGameObject(string GameObjectName, out GameObject result)
         {
             Transform[] Childs = Instance.GetComponentsInChildren<Transform>();
             foreach (var item in Childs)
             {
                 if (item.gameObject.name == GameObjectName)
                 {
-                    item.SetParent(Target.transform);
+                    item.SetParent(null);
+                    result = item.gameObject;
                     return true;
                 }
             }
+            result = null;
             return false;
         }
         /// <summary>
@@ -533,8 +535,8 @@ namespace RealMethod
         /// </summary>
         private void Notify_OnGameQuit()
         {
-            ((IMethodSync)Service).UnbindMainWorldAdd();
             Application.quitting -= Notify_OnGameQuit;
+            ((IMethodSync)Service).UnbindMainWorldAdd();
             if (GameServices != null)
             {
                 for (int i = 0; i < GameServices.Count; i++)
