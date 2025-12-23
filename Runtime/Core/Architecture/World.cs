@@ -20,7 +20,7 @@ namespace RealMethod
     /// </summary>
     public abstract class World : MonoBehaviour
     {
-        [Header("Player")]
+        [Header("Setting")]
         [SerializeField]
         private Prefab DefualtPlayer;
 
