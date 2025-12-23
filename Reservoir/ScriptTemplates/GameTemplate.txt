@@ -3,18 +3,27 @@ using RealMethod;
 public class #SCRIPTNAME# : Game
 {
 
-    // Base Game Methods
+    // Game Methods
     protected override void GameInitialized()
     {
+        // Called right after Unity finishes loading the engine before any scene or subsystem is loaded.
+        // You can insure when Called that GameService , GameConfig and all Managers Initilized.
     }
     protected override void GameStarted()
     {
+        // Called after Unity finishes initializing the engine, but before the first scene is loaded.
+        // It’s guaranteed to execute before any Awake() or Start() in your scene objects.
     }
-    protected override void GameWorldSynced(World NewWorld)
+    protected override void OnWorldChanged(World NewWorld)
     {
+        // Called when each World Initialized
+        // You can insure the Game.world refrence is valid
+        // Note: if you use world in scen and load scene as additive not OpenScen that world didnt connect to Game and removed by Main World class
     }
-    protected override void GameClosed()
+    protected override void OnGameClosed()
     {
+        // Called when application start exit
+        // You can insure this called befor and object destroy in scene (yes befor)
     }
     
 

@@ -4,8 +4,9 @@ using RealMethod;
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
 public class #SCRIPTNAME# : GameConfig
 {
-    // Base GameSettingAsset Methods
+    // GameConfig Methods
     public override void Initialized(Game Author)
     {
+        // Called after load in Game by GameClass
     }
 }
