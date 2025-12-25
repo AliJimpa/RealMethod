@@ -3,12 +3,63 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    /// <summary>
+    /// Base class representing a locatioon for spawn player in scene 
+    /// some virtual function in world calls can find all of object that has this class and with these spawing to location
+    /// </summary>
     public abstract class PlayerStarter : MonoBehaviour
     {
         [Header("Setting")]
         [SerializeField]
         private string posName = "None";
         public string PosName => posName;
+        [SerializeField]
+        private float height = 2f;
+        [SerializeField]
+        private float radius = 0.5f;
+
+        private bool hasPlayer = false;
+
+        // Unity Method
+        private void Awake()
+        {
+            Destroy(gameObject);
+        }
+
+        /// <summary>
+        /// Attempts to mark this spawn point as occupied by a player.
+        /// </summary>
+        /// <returns>
+        /// True if the spawn point was successfully marked as occupied; false if it is already occupied.
+        /// </returns>
+        public bool TryStartHere()
+        {
+            if (hasPlayer)
+                return false;
+
+            hasPlayer = true;
+            return true;
+        }
+        /// <summary>
+        /// Check is player Spawn on this location.
+        /// </summary>
+        /// <returns>
+        /// True is already occupied.
+        /// </returns>
+        public bool CanStartHere()
+        {
+            return hasPlayer;
+        }
+
+
+#if UNITY_EDITOR
+        protected virtual void OnDrawGizmos()
+        {
+            RM_Draw.gizmos.Capsule(transform.position, Color.cyan, height, radius);
+            RM_Draw.gizmos.Arrow(transform.position, transform.forward, Color.red);
+            RM_Draw.gizmos.Text(PosName, transform.position + (transform.up * (height / 2)) + (Vector3.up * 0.1f), Color.black);
+        }
+#endif
     }
 
     /// <summary>
@@ -24,10 +75,8 @@ namespace RealMethod
         [SerializeField]
         private Prefab DefualtPlayer;
 
-
         private IGameManager[] Managers;
         private GameObject PlayerObject;
-
 
 
         /// <summary>
@@ -77,6 +126,7 @@ namespace RealMethod
             WorldBegin();
         }
 
+
         /// <summary>
         /// Unity callback invoked when the object is being destroyed.
         /// Unbinds previously bound service callbacks to avoid dangling references.
@@ -122,6 +172,7 @@ namespace RealMethod
             }
             return null;
         }
+
         /// <summary>
         /// Returns the primary player <see cref="GameObject"/> for this world.
         /// </summary>
@@ -250,13 +301,32 @@ namespace RealMethod
             if (starters.Length > 0)
             {
                 int index = Random.Range(0, starters.Length);
-                return starters[index].transform;
+                if (!starters[index].CanStartHere())
+                {
+                    return starters[index].transform;
+                }
+                foreach (var start in starters)
+                {
+                    if (!start.CanStartHere())
+                    {
+                        if (start.TryStartHere())
+                        {
+                            return start.transform;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
             }
-            else
-            {
-                transform.position = Vector3.zero;
-                return transform;
-            }
+
+            transform.position = Vector3.zero;
+            return transform;
         }
         /// <summary>
         /// Called when an additive world GameObject is added to this world.
