@@ -1,6 +1,6 @@
 namespace RealMethod.Editor
 {
-    public class PCGResource_UnityAsset : AssetHandeler<PCGResourceConfig, DataAsset>
+    public class PCGResource_UnityAsset : AssetProcess<PCGResourceConfig, DataAsset>
     {
         protected override void Initialized()
         {
@@ -24,7 +24,7 @@ namespace RealMethod.Editor
         }
 
     }
-    public class PCGGeneration_UnityAsset : AssetHandeler<PCGGenerationAsset, DataAsset>
+    public class PCGGeneration_UnityAsset : AssetProcess<PCGGenerationAsset, DataAsset>
     {
         protected override void Initialized()
         {
@@ -48,7 +48,7 @@ namespace RealMethod.Editor
         }
 
     }
-    public class PCGCash_UnityAsset : AssetHandeler<PCGCashAsset, DataAsset>
+    public class PCGCash_UnityAsset : AssetProcess<PCGCashAsset, DataAsset>
     {
         protected override void Initialized()
         {

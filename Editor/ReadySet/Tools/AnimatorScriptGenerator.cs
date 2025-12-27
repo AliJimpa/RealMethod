@@ -14,9 +14,9 @@ namespace RealMethod.Editor
         public static void GenerateScriptsFromAnimators()
         {
             ProjectSettingAsset TargetStorage;
-            if (ProjectSettingWindow.GetSettingStorage(out TargetStorage))
+            if (RealMethod_ProjectSetting.GetSettingStorage(out TargetStorage))
             {
-                outputFolder = TargetStorage.FindAddres(ProjectSettingAsset.IdentityAsset.AnimatorParam).Path;
+                outputFolder = TargetStorage[ProjectSettingAsset.AssetFormat.Script] + "/General/AnimatorParam";
             }
             else
             {

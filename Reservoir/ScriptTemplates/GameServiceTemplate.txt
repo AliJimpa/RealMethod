@@ -3,22 +3,8 @@ using RealMethod;
 public class #SCRIPTNAME# : GameService
 {
     // Base Service Methods
-    protected override void OnStart(object Author) { }
+    protected override void OnStart(object Author) {}
     protected override void OnNewWorld() { }
-    protected override void OnNewAdditiveWorld(World target) { }
     protected override void OnEnd(object Author) { }
 
-    // GameService Virtual Methods
-    // public override IEnumerator GetLoadScneCorotine(SceneReference TargetScene)
-    // {
-    //     return base.GetLoadScneCorotine();
-    // }
-    // public override IEnumerator GetLoadWorldCorotine(WorldSceneConfig WorldScene)
-    // {
-    //     return base.GetLoadWorldCorotine();
-    // }
-    // public override IEnumerator GetReloadSWCorotine()
-    // {
-    //     return base.GetReloadSWCorotine();
-    // }
 }

@@ -6,12 +6,17 @@ public class #SCRIPTNAME# : Service
     // Service Methods
     protected override void OnStart(object Author)
     {
+        // Called right after Construct and stored in Game
+        // Called befor any Manager Know this Service Created
     }
     protected override void OnNewWorld()
     {
+        // Called after each World Initialized
     }
     protected override void OnEnd(object Author)
     {
+        // Called befor Destroyed.
+        // Called after all Manager know this Service going to Destroyed
     }
 
 }

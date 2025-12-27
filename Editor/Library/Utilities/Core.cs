@@ -9,6 +9,7 @@ namespace RealMethod.Editor
         public const string SetttingAssetPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         public static string ScriptTemplatesPath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
         public static string PrefabTemplatePath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/Prefabs";
+        public static string Documentation => GetPackagePath("com.mustard.realmethod") + "/Documentation/Information";
 
         private static string GetPackagePath(string packageName)
         {
