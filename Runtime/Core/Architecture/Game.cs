@@ -104,7 +104,7 @@ namespace RealMethod
             }
 
             // Create Game Service
-            Type targetService = ProjectSettings.GetGameServiceClass();
+            Type targetService = ProjectSettings.GetGameServiceType();
             if (targetService == null)
             {
                 Debug.LogWarning($"GetGameServiceClass that was empty. DefaultGameService Created");
