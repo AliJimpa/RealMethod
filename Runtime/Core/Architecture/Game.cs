@@ -87,7 +87,7 @@ namespace RealMethod
 
             // Initiate Game Class
             var emptyObject = new GameObject("RealGame");
-            Type TargetClass = ProjectSettings.GetGameInstanceClass();
+            Type TargetClass = ProjectSettings.GetGameInstanceType();
             if (TargetClass == null)
             {
                 Debug.LogWarning("GameInstanceClass that was empty. DefaultGame Created");
