@@ -7,7 +7,6 @@ namespace RealMethod
     // Real Method Setting Storage
     public class ProjectSettingAsset : ScriptableObject
     {
-        private string ProjectName;
         [Serializable]
         public struct FolderAddress
         {
@@ -16,7 +15,7 @@ namespace RealMethod
             public string FolderName => System.IO.Path.GetFileName(AssetPath);
             public string GetFolderPath(ProjectSettingAsset settingAsset)
             {
-                string RootPath = settingAsset.GetStructureType() == 0 ? "Assets" : "Assets/"+Application.productName;
+                string RootPath = settingAsset.GetStructureType() == 0 ? "Assets" : "Assets/" + Application.productName;
                 return $"{RootPath}/{AssetPath}";
             }
 
@@ -45,7 +44,6 @@ namespace RealMethod
             Assets = 0,
             ProjectName = 1,
         }
-
 
         [Header("Initializer")]
         [SerializeField, ReadOnly]
@@ -169,6 +167,7 @@ namespace RealMethod
             }
             return default(FolderAddress);
         }
+
     }
 
 

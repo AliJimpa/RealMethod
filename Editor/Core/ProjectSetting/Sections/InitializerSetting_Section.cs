@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class InitializerSection : ProjectSettingSection
+    public class InitializerSetting_Section : ProjectSettingSection
     {
         private ClassType<Game> gameClass;
         private ClassType<GameService> gameService;

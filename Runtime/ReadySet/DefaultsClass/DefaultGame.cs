@@ -6,11 +6,11 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Essential/DefultGame")]
     public sealed class DefultGame : Game
     {
-        protected override void GameInitialized()
+        protected override void OnGameInitialized()
         {
             Debug.Log("DefultGame Initialized");
         }
-        protected override void GameStarted()
+        protected override void OnGameStarted()
         {
             Debug.Log("DefultGame Started");
         }

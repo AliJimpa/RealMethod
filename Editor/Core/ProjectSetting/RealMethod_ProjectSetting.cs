@@ -7,11 +7,13 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
+    // Interface for call base method in ProjectSettingSection by RealMethodSetting
     interface ISectionSetting
     {
         void FirstSelected(ProjectSettingAsset storage);
         void Draw();
     }
+
     // Abstract base class for a settings section
     public abstract class ProjectSettingSection : ISectionSetting
     {
@@ -116,8 +118,8 @@ namespace RealMethod.Editor
         private static bool candraw = true;// Flag to determine if the UI can be drawn
         private static ProjectSettingSection[] sections = new ProjectSettingSection[2] {
         // Array of sections to be rendered in the settings UI
-        new InitializerSection(),
-        new FolderSettingSection()
+        new InitializerSetting_Section(),
+        new FolderStructure_Section()
         };
 
 

@@ -102,6 +102,7 @@ namespace RealMethod
                 Debug.LogWarning($"Component of type {TargetClass} is not assignable from Game. DefaultGame Created");
                 Instance = emptyObject.AddComponent<DefultGame>();
             }
+            Instance.OnProjectSeettingLoaded(ref ProjectSettings);
 
             // Create Game Service
             Type targetService = ProjectSettings.GetGameServiceType();
@@ -168,25 +169,25 @@ namespace RealMethod
             Application.quitting += Instance.Notify_OnGameQuit;
         }
         /// <summary>
-        /// Called before any scene is loaded. Invokes <see cref="GameInitialized"/> on the active instance.
+        /// Called before any scene is loaded. Invokes <see cref="OnGameInitialized"/> on the active instance.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void RuntimeBeforeSceneLoad()
         {
             if (Instance != null)
             {
-                Instance.GameInitialized();
+                Instance.OnGameInitialized();
             }
         }
         /// <summary>
-        /// Called after a scene has finished loading. Invokes <see cref="GameStarted"/> on the active instance.
+        /// Called after a scene has finished loading. Invokes <see cref="OnGameStarted"/> on the active instance.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void RuntimeAfterSceneLoad()
         {
             if (Instance != null)
             {
-                Instance.GameStarted();
+                Instance.OnGameStarted();
             }
         }
 
@@ -517,6 +518,18 @@ namespace RealMethod
 
 
         /// <summary>
+        /// Called after GameInstance Created befor GameService , GameConfig & Managers Initilized
+        /// if you use custom PtojectSetttingAsset class you can use instances after loaded in game 
+        /// this refrence unloaded befor OnGameInitialized Called.
+        /// </summary>
+        /// <param name="setting">ProjectSettingAsset refrence</param>
+        protected virtual void OnProjectSeettingLoaded(ref ProjectSettingAsset setting)
+        {
+            // Nothing todo
+        }
+
+
+        /// <summary>
         /// Callback invoked when a new <see cref="World"/> is created or assigned.
         /// Updates the static <see cref="World"/> reference and notifies all services.
         /// </summary>
@@ -554,12 +567,12 @@ namespace RealMethod
         /// Called once when the game framework has finished initial initialization.
         /// Implement this to perform game-specific initialization logic.
         /// </summary>
-        protected abstract void GameInitialized();
+        protected abstract void OnGameInitialized();
         /// <summary>
         /// Called after the first scene has been loaded and the game has started.
         /// Implement this to perform logic that should run once the first scene is active.
         /// </summary>
-        protected abstract void GameStarted();
+        protected abstract void OnGameStarted();
         /// <summary>
         /// Called when the current <see cref="World"/> reference changes.
         /// Implement to react to world switches.

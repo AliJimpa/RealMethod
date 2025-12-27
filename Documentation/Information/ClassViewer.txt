@@ -8,6 +8,7 @@ Runtime
       ManagerContracts
       ServiceContracts
       WorldSceneConfig
+      ProjectSettingAsset -> ProjectSettingAsset Should be in Resource>RealMethod>RealMethodSetting.asset and all RealMethod setting handeled by this asset and this name.
     Attributes
       ButtonAttribute
       ColorFieldAttribute

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class FolderSettingSection : ProjectSettingSection
+    public class FolderStructure_Section : ProjectSettingSection
     {
         private ProjectSettingAsset MyStorage;
         private bool isPanelMaximize = false; // Add a toggle for minimizing the panel

@@ -1,6 +1,6 @@
 using UnityEditor;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     [CustomEditor(typeof(Game), true)]
     public class Game_Editor : UnityEditor.Editor
