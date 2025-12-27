@@ -33,7 +33,7 @@ namespace RealMethod.Editor
         private void OnEnable()
         {
             string ClassViewPath = "Assets/Realmethod/Documentation/Information/ClassViewer.txt"; // Just for Test
-                                                                                                  //string ClassViewPath = Path.Combine(RM_CoreEditor.Documentation, "ClassViewer.txt");
+            // string ClassViewPath = Path.Combine(RM_CoreEditor.Documentation, "ClassViewer.txt");
             if (!File.Exists(ClassViewPath))
             {
                 Debug.LogError($"ClassView file not found: {ClassViewPath}");
@@ -114,10 +114,10 @@ namespace RealMethod.Editor
                         endText = middleText.Substring(0, linkindex).Trim();
                         linkText = middleText.Substring(linkindex).Trim();
                     }
-                }
-                else
-                {
-                    endText = middleText;
+                    else
+                    {
+                        endText = middleText;
+                    }
                 }
 
                 ClassTreeNode node = new ClassTreeNode
