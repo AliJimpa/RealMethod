@@ -14,6 +14,12 @@ namespace RealMethod
             rotation = rot;
             scale = scl;
         }
+        public TransformData(Transform comp)
+        {
+            position = comp.position;
+            rotation = comp.rotation;
+            scale = comp.localScale;
+        }
 
         public static TransformData FromTransform(Transform t)
         {
@@ -241,7 +247,7 @@ namespace RealMethod
                 Vector3.Scale(a.scale, new Vector3(q.x, q.y, q.z))
             );
         }
-        
+
 
     }
 }

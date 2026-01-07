@@ -34,18 +34,18 @@ namespace RealMethod
     [System.Serializable]
     public class PrefabCore<T> : PrefabCore where T : Component
     {
-        // Prefab Methods
+        // PrefabCore Methods
         public override bool IsValid()
         {
             return asset != null && asset.GetComponent<T>() != null;
         }
+        public override System.Type GetTargetClass() => typeof(T); // <--- implemented
 
+        // Public Method
         public T GetSoftClassTarget()
         {
             return asset.GetComponent<T>();
         }
-
-        public override System.Type GetTargetClass() => typeof(T); // <--- implemented
     }
 
 

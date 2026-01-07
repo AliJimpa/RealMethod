@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class InitializerSection : ProjectSettingSection
+    public class InitializerSetting_Section : ProjectSettingSection
     {
         private ClassType<Game> gameClass;
         private ClassType<GameService> gameService;
@@ -15,12 +15,12 @@ namespace RealMethod.Editor
             gameClass = new ClassType<Game>();
             gameService = new ClassType<GameService>();
         }
-        protected override void FirstSelected(ProjectSettingAsset Storage)
+        protected override void BeginRender(ProjectSettingAsset Storage)
         {
             SettingAsset = Storage;
             projectSettings = new SerializedObject(Storage);
         }
-        protected override void Draw()
+        protected override void UpdateRender()
         {
             if (projectSettings == null) return;
 

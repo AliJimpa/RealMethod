@@ -2,13 +2,16 @@ using RealMethod;
 
 public class #SCRIPTNAME# : World
 {
-
     // World Methods
-    protected override void AwakeWorld()
+    protected override void WorldBegin()
     {
+        // When World Awake
+        // Called befor awake and befor any Monobehaviort in Scene (by executionorder)
+        // You can insure your world is connect to game class and all Manager Initilize & Player Selected or Spawn in Scene
     }
-    protected override void DestroyWorld()
+    protected override void WorldEnd()
     {
+        // When World Destroy 
     }
 
 }

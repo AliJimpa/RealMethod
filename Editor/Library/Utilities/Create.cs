@@ -12,7 +12,7 @@ namespace RealMethod.Editor
             if (UseProject)
             {
                 ProjectSettingAsset ProjectSetting = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(RM_CoreEditor.SetttingAssetPath);
-                templatePath = Path.Combine(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityAsset.ScriptTemplate).Path, templateFileName);
+                templatePath = Path.Combine(ProjectSetting[ProjectSettingAsset.AssetFormat.Other], templateFileName);
             }
             else
             {
@@ -63,7 +63,7 @@ namespace RealMethod.Editor
             if (UseProject)
             {
                 ProjectSettingAsset ProjectSetting = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(RM_CoreEditor.SetttingAssetPath);
-                prefabPath = Path.Combine(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityAsset.PrefabTemplate).Path, prefabName);
+                prefabPath = Path.Combine(ProjectSetting[ProjectSettingAsset.AssetFormat.Prefab], prefabName);
             }
             else
             {

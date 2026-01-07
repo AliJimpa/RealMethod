@@ -44,6 +44,7 @@ namespace RealMethod
 #endif
         }
 
+
 #if UNITY_EDITOR
         public virtual void OnEditorPlay()
         {
@@ -57,7 +58,7 @@ namespace RealMethod
     public abstract class DataAsset : PrimitiveAsset
     {
     }
-    // TemplateAsset: is a PrimitiveAsset that you can't create new at runtime
+    // TemplateAsset: is a PrimitiveAsset that you can't create new at runtime & Should Use With Clone
     public abstract class TemplateAsset : PrimitiveAsset
     {
         protected virtual void OnEnable()
@@ -72,6 +73,13 @@ namespace RealMethod
                 }
             }
         }
+
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+
+        }
+#endif
     }
     // FileAsset: is a PrimitiveAsset that you can't clone at runtime
     public abstract class FileAsset : PrimitiveAsset
@@ -104,6 +112,13 @@ namespace RealMethod
                 return;
             }
         }
+
+#if UNITY_EDITOR
+        public override void OnEditorPlay()
+        {
+
+        }
+#endif
     }
     // ConfigAsset: is a UniqueAsset that you can't decelar modifier variable or method , all of things should be readonly 
     public abstract class ConfigAsset : UniqueAsset

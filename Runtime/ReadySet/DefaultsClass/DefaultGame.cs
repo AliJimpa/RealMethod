@@ -6,19 +6,19 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Essential/DefultGame")]
     public sealed class DefultGame : Game
     {
-        protected override void GameInitialized()
+        protected override void OnGameInitialized()
         {
             Debug.Log("DefultGame Initialized");
         }
-        protected override void GameStarted()
+        protected override void OnGameStarted()
         {
             Debug.Log("DefultGame Started");
         }
-        protected override void GameWorldSynced(World NewWorld)
+        protected override void OnWorldChanged(World NewWorld)
         {
-            Debug.Log($"DefultGame Synced to {NewWorld}");
+            Debug.Log($"DefultGame.World Change to {NewWorld}");
         }
-        protected override void GameClosed()
+        protected override void OnGameClosed()
         {
             Debug.Log("DefultGame Closed");
         }

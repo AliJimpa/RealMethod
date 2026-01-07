@@ -1,10 +1,9 @@
-#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class DataAssetEditor : UnityEditor.Editor
+    public class DataAsset_Editor : UnityEditor.Editor
     {
         public static void DrawCompleteScriptableObjectEditor<T>(string name, ref T settings, ref bool foldout, ref UnityEditor.Editor editor) where T : ScriptableObject
         {
@@ -24,4 +23,3 @@ namespace RealMethod.Editor
         }
     }
 }
-#endif

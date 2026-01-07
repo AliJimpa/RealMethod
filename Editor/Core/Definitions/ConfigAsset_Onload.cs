@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using System;
@@ -8,9 +7,9 @@ using System.Linq;
 namespace RealMethod.Editor
 {
     [InitializeOnLoad]
-    public static class ConfigAssetValidator
+    public static class ConfigAsset_Onload
     {
-        static ConfigAssetValidator()
+        static ConfigAsset_Onload()
         {
             EditorApplication.delayCall += ValidateAllConfigs;
         }
@@ -84,6 +83,4 @@ namespace RealMethod.Editor
             return false;
         }
     }
-#endif
-
 }
