@@ -29,7 +29,7 @@ namespace RealMethod.Editor
             // GameInstanceClass
             gameClass.Draw(projectSettings, "GameClass", "Game Class");
 
-            // GameServiceClass
+            // GameBridgeClass
             gameBridge.Draw(projectSettings, "GameBridge", "Game Bridge");
 
             // GameSettingAsset

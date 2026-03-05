@@ -87,7 +87,7 @@ namespace RealMethod
         /// </summary>
         private void Awake()
         {
-            //Connect to Game Service
+            //Connect to Game With Bridge
             IMethodSync SyncProvider = Game.Bridge;
             if (SyncProvider.IntroduceWorld(this))
             {

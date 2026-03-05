@@ -26,7 +26,7 @@ namespace RealMethod
         /// </summary>
         public static World World { get; private set; }
         /// <summary>
-        /// The core <see cref="GameService"/> implementation used for scene/world loading and service events.
+        /// The core <see cref="GameBridge"/> implementation used for scene/world loading and service events.
         /// </summary>
         public static GameBridge Bridge { get; private set; }
         /// <summary>
@@ -104,11 +104,11 @@ namespace RealMethod
             }
             Instance.OnProjectSeettingLoaded(ref ProjectSettings);
 
-            // Create Game Service
+            // Create GameBridge
             Type targetService = ProjectSettings.GetGameBridgeType();
             if (targetService == null)
             {
-                Debug.LogWarning($"GetGameServiceClass that was empty. DefaultGameService Created");
+                Debug.LogWarning($"GetGameBridgeType that was empty. DefaultGameBridge Created");
                 Bridge = new DefaultGameBridge();
             }
             if (typeof(Service).IsAssignableFrom(targetService))
@@ -119,13 +119,13 @@ namespace RealMethod
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"Failed to instantiate {targetService}: {ex.Message}. DefaultGameService Created");
+                    Debug.LogError($"Failed to instantiate {targetService}: {ex.Message}. DefaultGameBridge Created");
                     Bridge = new DefaultGameBridge();
                 }
             }
             else
             {
-                Debug.LogWarning($"Type {targetService} is not assignable to Service. DefaultGameService Created");
+                Debug.LogWarning($"Type {targetService} is not assignable to Service. DefaultGameBridge Created");
                 Bridge = new DefaultGameBridge();
             }
             Instance.GameServices = new List<Service>(3);
@@ -518,7 +518,7 @@ namespace RealMethod
 
 
         /// <summary>
-        /// Called after GameInstance Created befor GameService , GameConfig & Managers Initilized
+        /// Called after GameInstance Created befor GameBridge , GameConfig & Managers Initilized
         /// if you use custom PtojectSetttingAsset class you can use instances after loaded in game 
         /// this refrence unloaded befor OnGameInitialized Called.
         /// </summary>
