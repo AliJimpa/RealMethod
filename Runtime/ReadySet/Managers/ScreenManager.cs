@@ -23,8 +23,8 @@ namespace RealMethod
         // UIManager Methods
         protected override void InitiateManager(bool alwaysLoaded)
         {
-            Game.Service.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
-            Game.Service.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);
+            Game.Bridge.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
+            Game.Bridge.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);
             if (Game.TryFindService(out Spawn SpawnServ))
             {
                 SpawnServ.BringManager(this);

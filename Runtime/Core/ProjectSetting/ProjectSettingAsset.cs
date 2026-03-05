@@ -49,7 +49,7 @@ namespace RealMethod
         [SerializeField, ReadOnly]
         private string GameClass = "RealMethod.DefultGame";
         [SerializeField, ReadOnly]
-        private string GameService = "RealMethod.DefaultGameService";
+        private string GameBridge = "RealMethod.DefaultGameBridge";
         [SerializeField]
         private GameConfig GameConfig;
         [SerializeField]
@@ -111,22 +111,22 @@ namespace RealMethod
                 Debug.LogError("Type is null. Cannot set GameInstanceClass.");
             }
         }
-        public Type GetGameServiceType()
+        public Type GetGameBridgeType()
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                var type = assembly.GetType(GameService);
+                var type = assembly.GetType(GameBridge);
                 if (type != null)
                     return type;
             }
             return null;
         }
-        public void SetGameServiceType(Type type)
+        public void SetGameBridgeType(Type type)
         {
             // Store fully qualified name of the type
             if (type != null)
             {
-                GameService = type.AssemblyQualifiedName;
+                GameBridge = type.AssemblyQualifiedName;
             }
             else
             {

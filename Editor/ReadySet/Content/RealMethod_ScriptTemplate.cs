@@ -15,6 +15,11 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("WorldTemplate.txt", "MyWorld.cs");
         }
+        [MenuItem("Assets/Create/Scripting/RealMethod/Essential/GameBridge", false, 80)]
+        public static void CreateGameBridgeClass()
+        {
+            string Path = RM_Create.Script("GameBridgeTemplate.txt", "MyGameBridge.cs");
+        }
 
         // Managers
         [MenuItem("Assets/Create/Scripting/RealMethod/Manager/BaseManager", false, 80)]
@@ -70,11 +75,6 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("ServiceTemplate.txt", "MyServicec.cs");
         }
-        [MenuItem("Assets/Create/Scripting/RealMethod/Service/GameService", false, 80)]
-        public static void CreateGameServiceClass()
-        {
-            string Path = RM_Create.Script("GameServiceTemplate.txt", "MyGameService.cs");
-        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Service/StateService", false, 80)]
         public static void CreateStateService()
         {
@@ -85,7 +85,7 @@ namespace RealMethod.Editor
         {
             string Path = RM_Create.Script("RuleServiceTemplate.txt", "MyRuleService.cs");
         }
-        
+
 
 
         // Assets

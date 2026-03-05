@@ -33,7 +33,7 @@ namespace RealMethod.Editor
         }
         private string GetSetvice()
         {
-            return Game.Service != null ? Game.Service.GetType().Name : "GameService Not Valid";
+            return Game.Bridge != null ? Game.Bridge.GetType().Name : "GameService Not Valid";
         }
         private string GetConfig()
         {

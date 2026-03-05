@@ -88,7 +88,7 @@ namespace RealMethod
         private void Awake()
         {
             //Connect to Game Service
-            IMethodSync SyncProvider = Game.Service;
+            IMethodSync SyncProvider = Game.Bridge;
             if (SyncProvider.IntroduceWorld(this))
             {
                 SyncProvider.BindSideWorldAdd(Notify_OnAdditiveWorldInitiate);
@@ -133,7 +133,7 @@ namespace RealMethod
         /// </summary>
         private void OnDestroy()
         {
-            IMethodSync SyncProvider = Game.Service;
+            IMethodSync SyncProvider = Game.Bridge;
             SyncProvider.UnbindSideWorldAdd();
             SyncProvider.UnbindServicesUpdated();
             WorldEnd();

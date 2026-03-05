@@ -6,14 +6,14 @@ namespace RealMethod.Editor
     public class InitializerSetting_Section : ProjectSettingSection
     {
         private ClassType<Game> gameClass;
-        private ClassType<GameService> gameService;
+        private ClassType<GameBridge> gameBridge;
         private SerializedObject projectSettings;
         private ProjectSettingAsset SettingAsset;
 
         protected override void Initialized()
         {
             gameClass = new ClassType<Game>();
-            gameService = new ClassType<GameService>();
+            gameBridge = new ClassType<GameBridge>();
         }
         protected override void BeginRender(ProjectSettingAsset Storage)
         {
@@ -30,7 +30,7 @@ namespace RealMethod.Editor
             gameClass.Draw(projectSettings, "GameClass", "Game Class");
 
             // GameServiceClass
-            gameService.Draw(projectSettings, "GameService", "Game Service");
+            gameBridge.Draw(projectSettings, "GameBridge", "Game Bridge");
 
             // GameSettingAsset
             EditorGUILayout.PropertyField(projectSettings.FindProperty("GameConfig"), new GUIContent("Game Config"));

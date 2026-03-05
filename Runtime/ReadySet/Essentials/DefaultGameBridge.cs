@@ -2,18 +2,18 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public sealed class DefaultGameService : GameService
+    public sealed class DefaultGameBridge : GameBridge
     {
         protected override void OnStart(object Author)
         {
-            Debug.Log("DefaultGameService Started");
+            Debug.Log("DefaultBridge Started");
         }
         protected override void OnNewWorld()
         {
         }
         protected override void OnEnd(object Author)
         {
-            Debug.Log("DefaultGameService Ended");
+            Debug.Log("DefaultBridge Ended");
         }
     }
 }

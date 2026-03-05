@@ -62,17 +62,18 @@ namespace RealMethod
 
 
     /// <summary>
-    /// Base class for any game services in the framework.
+    /// Base class for any gamebridge in the framework.
     /// Provides core functionality for:
     /// <list type="bullet">
     /// <item>World synchronization (main and additive worlds)</item>
     /// <item>Service lifecycle notifications (created/removed)</item>
-    /// <item>Scene and world loading with progress reporting</item>
+    /// <item>world check for single remove new version</item>
+    /// <item>Load & Unload Scene reporting</item>
     /// </list>
     /// Inherits from <see cref="Service"/> and implements <see cref="IMethodSync"/>
     /// to integrate with the game's internal world and service management system.
     /// </summary>
-    public abstract class GameService : Service, IMethodSync
+    public abstract class GameBridge : Service, IMethodSync
     {
         /// <summary>
         /// Event invoked when a scene or world starts or finishes loading.

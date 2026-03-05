@@ -28,7 +28,7 @@ namespace RealMethod
         /// <summary>
         /// The core <see cref="GameService"/> implementation used for scene/world loading and service events.
         /// </summary>
-        public static GameService Service { get; private set; }
+        public static GameBridge Bridge { get; private set; }
         /// <summary>
         /// Active game configuration instance.
         /// </summary>
@@ -105,32 +105,32 @@ namespace RealMethod
             Instance.OnProjectSeettingLoaded(ref ProjectSettings);
 
             // Create Game Service
-            Type targetService = ProjectSettings.GetGameServiceType();
+            Type targetService = ProjectSettings.GetGameBridgeType();
             if (targetService == null)
             {
                 Debug.LogWarning($"GetGameServiceClass that was empty. DefaultGameService Created");
-                Service = new DefaultGameService();
+                Bridge = new DefaultGameBridge();
             }
             if (typeof(Service).IsAssignableFrom(targetService))
             {
                 try
                 {
-                    Service = (GameService)Activator.CreateInstance(targetService);
+                    Bridge = (GameBridge)Activator.CreateInstance(targetService);
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"Failed to instantiate {targetService}: {ex.Message}. DefaultGameService Created");
-                    Service = new DefaultGameService();
+                    Bridge = new DefaultGameBridge();
                 }
             }
             else
             {
                 Debug.LogWarning($"Type {targetService} is not assignable to Service. DefaultGameService Created");
-                Service = new DefaultGameService();
+                Bridge = new DefaultGameBridge();
             }
             Instance.GameServices = new List<Service>(3);
-            ((IMethodSync)Service).BindMainWorldAdd(Instance.Notify_OnWorldInitiate);
-            ((IService)Service).Created(Instance);
+            ((IMethodSync)Bridge).BindMainWorldAdd(Instance.Notify_OnWorldInitiate);
+            ((IService)Bridge).Created(Instance);
 
             // Set Game Config 
             if (ProjectSettings.GetGameConfig() != null)
@@ -254,7 +254,7 @@ namespace RealMethod
                     manager.ResolveService(newService, true);
                 }
             }
-            ((IMethodSync)Service).ServiceCreated(newService);
+            ((IMethodSync)Bridge).ServiceCreated(newService);
             Instance.GameServices.Add(newService);
             return newService;
         }
@@ -277,7 +277,7 @@ namespace RealMethod
                         manager.ResolveService(service, false);
                     }
                 }
-                ((IMethodSync)Service).ServiceRemoved(service);
+                ((IMethodSync)Bridge).ServiceRemoved(service);
                 ((IService)service).Deleted(author);
                 Instance.GameServices.Remove(service);
                 return true;
@@ -340,7 +340,7 @@ namespace RealMethod
         {
             if (SceneManager.GetActiveScene().buildIndex != sceneIndex)
             {
-                return Instance.StartCoroutine(Service.GetLoadScneCorotine(sceneIndex));
+                return Instance.StartCoroutine(Bridge.GetLoadScneCorotine(sceneIndex));
             }
             else
             {
@@ -367,7 +367,7 @@ namespace RealMethod
         {
             if (SceneManager.GetActiveScene().name != sceneName)
             {
-                return Instance.StartCoroutine(Service.GetLoadScneCorotine(sceneName));
+                return Instance.StartCoroutine(Bridge.GetLoadScneCorotine(sceneName));
             }
             else
             {
@@ -385,7 +385,7 @@ namespace RealMethod
         {
             if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.Persistent).buildIndex)
             {
-                return Instance.StartCoroutine(Service.GetLoadWorldCorotine(WorldScene));
+                return Instance.StartCoroutine(Bridge.GetLoadWorldCorotine(WorldScene));
             }
             else
             {
@@ -399,7 +399,7 @@ namespace RealMethod
         /// <returns>A <see cref="Coroutine"/> driving the reload operation.</returns>
         public static Coroutine ReOpenScene()
         {
-            return Instance.StartCoroutine(Service.GetLoadScneCorotine(SceneManager.GetActiveScene().name)); ;
+            return Instance.StartCoroutine(Bridge.GetLoadScneCorotine(SceneManager.GetActiveScene().name)); ;
         }
         /// <summary>
         /// Finds a manager of type <typeparamref name="T"/> in the current <see cref="World"/>,
@@ -549,7 +549,7 @@ namespace RealMethod
         private void Notify_OnGameQuit()
         {
             Application.quitting -= Notify_OnGameQuit;
-            ((IMethodSync)Service).UnbindMainWorldAdd();
+            ((IMethodSync)Bridge).UnbindMainWorldAdd();
             if (GameServices != null)
             {
                 for (int i = 0; i < GameServices.Count; i++)
@@ -558,7 +558,7 @@ namespace RealMethod
                     GameServices.RemoveAt(i);
                 }
             }
-            ((IService)Service).Deleted(this);
+            ((IService)Bridge).Deleted(this);
             OnGameClosed();
         }
 

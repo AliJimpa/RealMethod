@@ -1,6 +1,6 @@
 using RealMethod;
 
-public class #SCRIPTNAME# : GameService
+public class #SCRIPTNAME# : GameBridge
 {
     // Base Service Methods
     protected override void OnStart(object Author) {}
