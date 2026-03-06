@@ -85,7 +85,7 @@ namespace RealMethod
                 return;
             }
 
-            // Initiate Game Class
+            // Initiate GameClass
             var emptyObject = new GameObject("RealGame");
             Type TargetClass = ProjectSettings.GetGameInstanceType();
             if (TargetClass == null)
@@ -103,6 +103,8 @@ namespace RealMethod
                 Instance = emptyObject.AddComponent<DefultGame>();
             }
             Instance.OnProjectSeettingLoaded(ref ProjectSettings);
+
+            Instance.OnGameOpen();
 
             // Create GameBridge
             Type targetService = ProjectSettings.GetGameBridgeType();
@@ -132,7 +134,7 @@ namespace RealMethod
             ((IMethodSync)Bridge).BindMainWorldAdd(Instance.Notify_OnWorldInitiate);
             ((IService)Bridge).Created(Instance);
 
-            // Set Game Config 
+            // Set GameConfig 
             if (ProjectSettings.GetGameConfig() != null)
             {
                 Config = ProjectSettings.GetGameConfig();
@@ -180,14 +182,14 @@ namespace RealMethod
             }
         }
         /// <summary>
-        /// Called after a scene has finished loading. Invokes <see cref="OnGameStarted"/> on the active instance.
+        /// Called after a scene has finished loading. Invokes <see cref="OnGameStart"/> on the active instance.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void RuntimeAfterSceneLoad()
         {
             if (Instance != null)
             {
-                Instance.OnGameStarted();
+                Instance.OnGameStart();
             }
         }
 
@@ -563,6 +565,7 @@ namespace RealMethod
         }
 
 
+        protected abstract void OnGameOpen();
         /// <summary>
         /// Called once when the game framework has finished initial initialization.
         /// Implement this to perform game-specific initialization logic.
@@ -572,7 +575,7 @@ namespace RealMethod
         /// Called after the first scene has been loaded and the game has started.
         /// Implement this to perform logic that should run once the first scene is active.
         /// </summary>
-        protected abstract void OnGameStarted();
+        protected abstract void OnGameStart();
         /// <summary>
         /// Called when the current <see cref="World"/> reference changes.
         /// Implement to react to world switches.
