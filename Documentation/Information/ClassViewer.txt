@@ -4,7 +4,7 @@ Runtime
       Game -> This is a <color=red>red</color> word and <color=green><b>bold green</b></color>. Go to <u><color=blue>TEST</color></link></u> https://github.com/AliJimpa/RealMethod/wiki/Assets. 
       World -> just test text <color=white> ColortTEst </color> Without link
       GameConfig
-      GameService
+      GameBridge
       ManagerContracts
       ServiceContracts
       WorldSceneConfig

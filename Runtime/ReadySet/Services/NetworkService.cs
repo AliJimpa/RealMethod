@@ -20,7 +20,7 @@ namespace RealMethod
         {
             throw new NotImplementedException();
         }
-        protected override void OnNewWorld()
+        protected override void OnWorldChanged(World Previous , World New)
         {
             throw new NotImplementedException();
         }

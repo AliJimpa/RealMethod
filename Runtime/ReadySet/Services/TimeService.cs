@@ -15,7 +15,7 @@ namespace RealMethod
             worldTime = Time.time;
             RecordTime = new Hictionary<float>(10);
         }
-        protected override void OnNewWorld()
+        protected override void OnWorldChanged(World Previous , World New)
         {
             worldTime = Time.time;
         }

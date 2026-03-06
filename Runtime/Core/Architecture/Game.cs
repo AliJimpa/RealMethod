@@ -26,7 +26,7 @@ namespace RealMethod
         /// </summary>
         public static World World { get; private set; }
         /// <summary>
-        /// The core <see cref="GameBridge"/> implementation used for scene/world loading and service events.
+        /// The core <see cref="GameBridge"/> implementation used for scene/world loading and basic events.
         /// </summary>
         public static GameBridge Bridge { get; private set; }
         /// <summary>
@@ -536,11 +536,11 @@ namespace RealMethod
         /// <param name="NewWorld">The newly initiated world instance.</param>
         private void Notify_OnWorldInitiate(World NewWorld)
         {
-            World = NewWorld;
             foreach (var service in GameServices)
             {
-                ((IService)service).WorldUpdated();
+                ((IService)service).ChangeWorld(NewWorld);
             }
+            World = NewWorld;
             OnWorldChanged(World);
         }
         /// <summary>

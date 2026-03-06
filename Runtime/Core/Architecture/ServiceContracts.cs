@@ -14,7 +14,7 @@ namespace RealMethod
         /// <summary>
         /// Called when the world or environment updates.
         /// </summary>
-        void WorldUpdated();
+        void ChangeWorld(World NewWorld);
         /// <summary>
         /// Called when the service is deleted or destroyed.
         /// </summary>
@@ -33,9 +33,9 @@ namespace RealMethod
         {
             OnStart(author);
         }
-        void IService.WorldUpdated()
+        void IService.ChangeWorld(World NewWorld)
         {
-            OnNewWorld();
+            OnWorldChanged(Game.World, NewWorld);
         }
         void IService.Deleted(object author)
         {
@@ -52,7 +52,7 @@ namespace RealMethod
         /// Called when a new world or environment is initialized.
         /// Must be implemented by derived classes.
         /// </summary>
-        protected abstract void OnNewWorld();
+        protected abstract void OnWorldChanged(World Previous, World New);
         /// <summary>
         /// Called when the service ends or is deleted.
         /// Must be implemented by derived classes.

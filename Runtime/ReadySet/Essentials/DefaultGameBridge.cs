@@ -8,7 +8,7 @@ namespace RealMethod
         {
             Debug.Log("DefaultBridge Started");
         }
-        protected override void OnNewWorld()
+        protected override void OnWorldChanged(World Previous , World New)
         {
         }
         protected override void OnEnd(object Author)

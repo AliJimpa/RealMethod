@@ -100,16 +100,7 @@ namespace RealMethod
         // Implement IMethodSync Interface
         bool IMethodSync.IntroduceWorld(World world)
         {
-            if (Game.World == null)
-            {
-                MainWorldEvent?.Invoke(world);
-                return true;
-            }
-            else
-            {
-                SideWorldEvent?.Invoke(world);
-                return false;
-            }
+            return RequestForNewWorld(world);
         }
         void IMethodSync.BindMainWorldAdd(Action<World> func)
         {
@@ -161,6 +152,28 @@ namespace RealMethod
 
 
         /// <summary>
+        /// Request for this NewWorld to set for Main World in Scene
+        /// </summary>
+        /// <param name="NewWorld">The New WorldClass Refrence in Scene
+        /// <returns>
+        /// If this request is valid return true that mean this world set as main world.
+        /// If this request false means this world import from scen that is additive and should deactive.
+        /// </returns
+        protected virtual bool RequestForNewWorld(World NewWorld)
+        {
+            // this approach world just when you destroy last world instance from scene
+            if (Game.World == null)
+            {
+                MainWorldEvent?.Invoke(NewWorld);
+                return true;
+            }
+            else
+            {
+                SideWorldEvent?.Invoke(NewWorld);
+                return false;
+            }
+        }
+        /// <summary>
         /// Starts loading a scene by name using a coroutine.
         /// </summary>
         /// <param name="sceneName">The name of the scene to load.</param>
@@ -172,7 +185,7 @@ namespace RealMethod
         {
             if (IsLoading == true)
             {
-                Debug.LogWarning($"Can't load Scene:{sceneName} The Service is in Loading");
+                Debug.LogWarning($"Can't load Scene:{sceneName} The Bridge is in loading target scene");
                 return null;
             }
             return LoadSceneAsync(sceneName);
@@ -189,7 +202,7 @@ namespace RealMethod
         {
             if (IsLoading == true)
             {
-                Debug.LogWarning($"Can't load Index:{sceneIndex} The Service is in Loading");
+                Debug.LogWarning($"Can't load Index:{sceneIndex} The Bridge is in loading target scene");
                 return null;
             }
             return LoadSceneAsync(string.Empty, sceneIndex);
@@ -206,7 +219,7 @@ namespace RealMethod
         {
             if (IsLoading == true)
             {
-                Debug.LogWarning($"Can't load World:{WorldScene} The Service is in Loading");
+                Debug.LogWarning($"Can't load World:{WorldScene} The Bridge is in loading target scene");
                 return null;
             }
             return LoadWorldAsync(WorldScene);
@@ -286,7 +299,7 @@ namespace RealMethod
             }
             while (!Load_opertation.isDone)
             {
-                OnSceneLoadingProcess?.Invoke(Clamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1));
+                OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1));
                 OnSceneLoading?.Invoke(false);
                 IsLoading = false;
                 yield return null;
@@ -305,7 +318,7 @@ namespace RealMethod
                 }
                 while (!Additive_Load_opertation.isDone)
                 {
-                    OnSceneLoadingProcess?.Invoke(Clamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1 - (i + 1)));
+                    OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1 - (i + 1)));
                     yield return null;
                 }
             }
@@ -320,27 +333,6 @@ namespace RealMethod
             //FinishLoading
             OnSceneLoading?.Invoke(false);
             IsLoading = false;
-        }
-
-
-        // Private Functions
-        private float Clamped(float value, float inMin, float inMax, float outMin, float outMax)
-        {
-            // Prevent divide by zero
-            if (Mathf.Approximately(inMax, inMin))
-            {
-                Debug.LogWarning("Input range is zero. Returning outMin.");
-                return outMin;
-            }
-
-            // Normalize the input value to 0–1 within the input range
-            float t = (value - inMin) / (inMax - inMin);
-
-            // Scale and offset to target range
-            float mappedValue = t * (outMax - outMin) + outMin;
-
-            // Clamp result to the output range
-            return Mathf.Clamp(mappedValue, Mathf.Min(outMin, outMax), Mathf.Max(outMin, outMax));
         }
 
 
