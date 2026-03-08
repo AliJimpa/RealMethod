@@ -11,7 +11,7 @@ namespace RealMethod
 
     public class PCGCashAsset : ConfigAsset, IPCGCashAsset
     {
-        public string NameID => name;
+        public FName NameID => name;
         [SerializeField]
         private PCGData[] CashData;
 

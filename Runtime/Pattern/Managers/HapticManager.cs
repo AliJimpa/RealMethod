@@ -22,7 +22,7 @@ namespace RealMethod
             private HapticManager Owner;
 
             // Implement IIdentifier Interface
-            public string NameID => Config.NameID;
+            public FName NameID => Config.NameID;
             // Implement IHapticProvider Interface
             public HapticController(HapticManager manager, HapticConfig config)
             {
@@ -148,7 +148,7 @@ namespace RealMethod
         private string configName;
 
         // Implement 
-        public string NameID => configName;
+        public FName NameID => configName;
 
         private void OnValidate()
         {

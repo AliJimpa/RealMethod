@@ -8,7 +8,7 @@ namespace RealMethod
         private float lastUsedTime = -Mathf.Infinity;
 
         // Implement IIdentifier Interface
-        string IIdentifier.NameID => name;
+        FName IIdentifier.NameID => name;
         // Implement IAbility Interface
         public bool CanUse(GameObject user)
         {

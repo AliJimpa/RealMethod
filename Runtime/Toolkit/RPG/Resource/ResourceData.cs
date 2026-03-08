@@ -44,7 +44,7 @@ namespace RealMethod
         float IResource.Value => value;
         float IResource.MaxValue => GetMaxValue(defaultMaxValue);
         // Implement IIdentifier Interface
-        public string NameID => resourceName;
+        public FName NameID => resourceName;
         void IResource.Refill()
         {
             value = provider.MaxValue;

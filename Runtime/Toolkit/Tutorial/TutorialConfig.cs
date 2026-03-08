@@ -35,7 +35,7 @@ namespace RealMethod
 
 
         // Implement IIdentifier Interface
-        public string NameID => label;
+        public FName NameID => label;
         // Implement IItem Interface
         public Texture2D Icon => icon;
         Sprite IItem.GetSpriteIcon()

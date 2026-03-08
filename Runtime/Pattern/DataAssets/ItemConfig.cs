@@ -7,7 +7,7 @@ namespace RealMethod
         [Header("Item")]
         [SerializeField]
         protected string itemName;
-        public string NameID => itemName;
+        public FName NameID => itemName;
         [SerializeField]
         protected Texture2D _icon;
         public Texture2D Icon => _icon;
