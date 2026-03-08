@@ -14,7 +14,7 @@ namespace RealMethod
                 ReplaceInputAsset(newAsset);
             }
         }
-        protected sealed override void OnWorldChanged(World Previous , World New)
+        protected sealed override void OnWorldChanging(World Previous , World New)
         {
             if (TryFindInputAsset(out InputActionAsset newAsset))
             {

@@ -5,6 +5,24 @@ namespace RealMethod
 {
     public static class GameObject_Extension
     {
+        public static void Attach(this GameObject owner, GameObject parent, bool worldPositionStays)
+        {
+            owner.transform.SetParent(parent.transform, worldPositionStays);
+            owner.SendAttachEvent(parent);
+        }
+        public static void Detach(this GameObject owner, GameObject parent)
+        {
+            owner.transform.SetParent(null);
+            owner.SendDetachEvent();
+        }
+        public static void SendAttachEvent(this GameObject owner, Object spawner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            owner.SendMessage("OnAttach", spawner, option);
+        }
+        public static void SendDetachEvent(this GameObject owner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            owner.SendMessage("OnDetach", option);
+        }
         public static void SendSpawnEvent(this GameObject owner, Object spawner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
         {
             owner.SendMessage("OnSpawn", spawner, option);

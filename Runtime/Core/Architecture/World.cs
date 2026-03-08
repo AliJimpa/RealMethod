@@ -88,15 +88,13 @@ namespace RealMethod
         private void Awake()
         {
             //Connect to Game With Bridge
-            IMethodSync SyncProvider = Game.Bridge;
+            IRelationBridge SyncProvider = Game.Bridge;
             if (SyncProvider.IntroduceWorld(this))
             {
-                SyncProvider.BindSideWorldAdd(Notify_OnAdditiveWorldInitiate);
                 SyncProvider.BindServicesUpdated(Notify_OnServicesUpdated);
             }
             else
             {
-                enabled = false;
                 return;
             }
 
@@ -124,6 +122,7 @@ namespace RealMethod
             }
 
             WorldBegin();
+            SyncProvider.WorldIsReady();
         }
 
 
@@ -133,8 +132,7 @@ namespace RealMethod
         /// </summary>
         private void OnDestroy()
         {
-            IMethodSync SyncProvider = Game.Bridge;
-            SyncProvider.UnbindSideWorldAdd();
+            IRelationBridge SyncProvider = Game.Bridge;
             SyncProvider.UnbindServicesUpdated();
             WorldEnd();
         }
@@ -328,29 +326,8 @@ namespace RealMethod
             transform.position = Vector3.zero;
             return transform;
         }
-        /// <summary>
-        /// Called when an additive world GameObject is added to this world.
-        /// Default behaviour is to destroy the provided object; override to implement custom handling.
-        /// </summary>
-        /// <param name="WorldObject">The additive world GameObject that was added.</param>
-        protected virtual void OnAdditiveWorldAdded(GameObject WorldObject)
-        {
-            Destroy(WorldObject);
-        }
 
 
-        /// <summary>
-        /// Internal callback invoked by the service when an additive world is initiated.
-        /// Extracts the world GameObject, destroys the <see cref="World"/> component instance,
-        /// and forwards the object to <see cref="OnAdditiveWorldAdded"/>.
-        /// </summary>
-        /// <param name="TargetWorld">The additive <see cref="World"/> instance that was initiated.</param>
-        private void Notify_OnAdditiveWorldInitiate(World TargetWorld)
-        {
-            GameObject worldObject = TargetWorld.gameObject;
-            Destroy(TargetWorld);
-            OnAdditiveWorldAdded(worldObject);
-        }
         /// <summary>
         /// Internal callback invoked when services are updated. Forwards the service update
         /// to all managers so they can resolve or react to the change.

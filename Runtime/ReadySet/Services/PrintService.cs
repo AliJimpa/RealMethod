@@ -38,7 +38,7 @@ namespace RealMethod
                 manager.InitiateManager(true);
             }
         }
-        protected override void OnWorldChanged(World Previous , World New)
+        protected override void OnWorldChanging(World Previous , World New)
         {
             Printer.Clear();
         }

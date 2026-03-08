@@ -11,6 +11,27 @@ using UnityEditor;
 namespace RealMethod
 {
     /// <summary>
+    /// Represents the possible outcomes of a Game process.
+    /// </summary>
+    public enum GameProcess
+    {
+        /// <summary>
+        /// The process finished successfully.
+        /// </summary>
+        Success,
+        /// <summary>
+        /// The process failed.
+        /// </summary>
+        Failure,
+        /// <summary>
+        /// The process was cancelled before completion.
+        /// </summary>
+        Cancelled
+    }
+
+
+
+    /// <summary>
     /// Core game singleton that manages the active <see cref="World"/>, registered <see cref="Service"/>s,
     /// configuration and high-level game lifecycle (initialization, start, and shutdown).
     /// Derive from this class to implement project-specific behavior for the game's lifecycle hooks.
@@ -50,10 +71,64 @@ namespace RealMethod
             }
         }
         /// <summary>
-        /// Indicates whether the game is currently paused.
-        /// Returns true when Time.timeScale is set to 0; otherwise, false.
+        /// Indicates whether a scene or world load operation is currently in progress.
         /// </summary>
-        public static bool IsPaused => Time.timeScale == 0;
+        public static bool IsPaused
+        {
+            get
+            {
+                if (Instance != null)
+                {
+                    return Instance.IsGamePaused();
+                }
+                else
+                {
+                    Debug.LogWarning("GameInstance did not called !");
+                    return false;
+                }
+            }
+        }
+        /// <summary>
+        /// Indicates whether the game is in loading stage
+        /// Return true when game in loading section for new scene
+        /// </summary>
+        public static bool IsLoading => Instance.IsGameLoading();
+        /// <summary>
+        /// Event invoked when a scene or world starts or finishes loading.
+        /// The boolean parameter is true when loading starts and false when loading ends.
+        /// </summary>
+        public static event Action<bool> OnSceneLoading
+        {
+            add { ((ILoadScneBridge)Bridge).OnSceneLoading += value; }
+            remove { ((ILoadScneBridge)Bridge).OnSceneLoading -= value; }
+        }
+        /// <summary>
+        /// Event invoked during scene or world loading to report progress.
+        /// The float parameter represents the loading progress from 0 (start) to 1 (complete).
+        /// </summary>
+        public static event Action<float> OnSceneLoadingProcess
+        {
+            add { ((ILoadScneBridge)Bridge).OnSceneLoadingProcess += value; }
+            remove { ((ILoadScneBridge)Bridge).OnSceneLoadingProcess -= value; }
+        }
+        /// <summary>
+        /// This action called every time your game ready to play after load Scene & setup RealMethod
+        /// you can enshure that your game and world do anything and player can ready to play game
+        /// when you change scene after world initiate this evet invoke again.
+        /// </summary>
+        public static event Action OnReady
+        {
+            add { ((IRelationBridge)Bridge).OnGameReady += value; }
+            remove { ((IRelationBridge)Bridge).OnGameReady -= value; }
+        }
+        /// <summary>
+        /// Invoked when the process finishes.
+        /// Process in your game take define with yourelf.
+        /// (for example: show win screen, game over UI, load next level, etc).
+        /// </summary>
+        public static event Action<GameProcess> OnCompleted;
+
+
 
 
         /// <summary>
@@ -72,6 +147,7 @@ namespace RealMethod
         /// Initializes the game singleton and core systems on subsystem registration.
         /// This sets up the <see cref="Instance"/>, game <see cref="Service"/>,
         /// configuration, prefabs and managers and registers quit callbacks.
+        /// Invoked when starting up the runtime. Called before the first scene is loaded.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void InitializeGame()
@@ -131,7 +207,7 @@ namespace RealMethod
                 Bridge = new DefaultGameBridge();
             }
             Instance.GameServices = new List<Service>(3);
-            ((IMethodSync)Bridge).BindMainWorldAdd(Instance.Notify_OnWorldInitiate);
+            ((IRelationBridge)Bridge).BindWorldCreated(Instance.Notify_OnWorldInitiate);
             ((IService)Bridge).Created(Instance);
 
             // Set GameConfig 
@@ -172,6 +248,7 @@ namespace RealMethod
         }
         /// <summary>
         /// Called before any scene is loaded. Invokes <see cref="OnGameInitialized"/> on the active instance.
+        /// Invoked when the first scene's objects are loaded into memory but before Awake has been called.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void RuntimeBeforeSceneLoad()
@@ -183,6 +260,8 @@ namespace RealMethod
         }
         /// <summary>
         /// Called after a scene has finished loading. Invokes <see cref="OnGameStart"/> on the active instance.
+        /// Right after all Awake() and OnEnable() calls but befor Start()
+        /// Invoked when the first scene's objects are loaded into memory but before Awake has been called.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void RuntimeAfterSceneLoad()
@@ -194,6 +273,13 @@ namespace RealMethod
         }
 
 
+        /// <summary>
+        /// Attempts to invoke 
+        /// </summary>
+        public static void Complete(GameProcess result)
+        {
+            OnCompleted.Invoke(result);
+        }
         /// <summary>
         /// Attempts to cast the global <see cref="Instance"/> to the specified type <typeparamref name="T"/>.
         /// Logs an error and returns <c>null</c> if the cast fails.
@@ -256,7 +342,7 @@ namespace RealMethod
                     manager.ResolveService(newService, true);
                 }
             }
-            ((IMethodSync)Bridge).ServiceCreated(newService);
+            ((IRelationBridge)Bridge).ServiceCreated(newService);
             Instance.GameServices.Add(newService);
             return newService;
         }
@@ -279,7 +365,7 @@ namespace RealMethod
                         manager.ResolveService(service, false);
                     }
                 }
-                ((IMethodSync)Bridge).ServiceRemoved(service);
+                ((IRelationBridge)Bridge).ServiceRemoved(service);
                 ((IService)service).Deleted(author);
                 Instance.GameServices.Remove(service);
                 return true;
@@ -333,7 +419,7 @@ namespace RealMethod
             return GameServices.Select(service => service.GetType().Name).ToArray();
         }
         /// <summary>
-        /// Requests a scene load by build index via the configured <see cref="Service"/>.
+        /// Requests a scene load by build index .
         /// If the requested scene is already active, a warning is logged and <c>null</c> is returned.
         /// </summary>
         /// <param name="sceneIndex">Build index of the scene to open.</param>
@@ -360,7 +446,7 @@ namespace RealMethod
             return OpenScene(scene.ScneName);
         }
         /// <summary>
-        /// Requests a scene load by name via the configured <see cref="Service"/>.
+        /// Requests a scene load by name.
         /// If the requested scene is already active, a warning is logged and <c>null</c> is returned.
         /// </summary>
         /// <param name="sceneName">Name of the scene to open.</param>
@@ -375,6 +461,49 @@ namespace RealMethod
             {
                 Debug.LogWarning("The scene is already loaded.");
                 return null;
+            }
+        }
+        /// <summary>
+        /// Requests a Add scene by build index via the configured <see cref="Service"/>.
+        /// If the requested scene is already active, a warning is logged and <c>null</c> is returned.
+        /// </summary>
+        /// <param name="sceneIndex">Build index of the scene to open.</param>
+        /// <param name="callback">callback event when scene complitly added</param>
+        public static void AddScene(int sceneIndex, Action callback)
+        {
+            if (SceneManager.GetActiveScene().buildIndex != sceneIndex)
+            {
+                Instance.StartCoroutine(Bridge.GetAddScneCorotine(sceneIndex, callback));
+            }
+            else
+            {
+                Debug.LogWarning("The scene is already loaded.");
+            }
+        }
+        /// <summary>
+        /// Requests a scene load using a <see cref="SceneReference"/>.
+        /// </summary>
+        /// <param name="scene">Reference describing the scene to load.</param>
+        /// <param name="callback">callback event when scene complitly added</param>
+        public static void AddScene(SceneReference scene, Action callback)
+        {
+            AddScene(scene.ScneName, callback);
+        }
+        /// <summary>
+        /// Requests a scene load by name.
+        /// If the requested scene is already active, a warning is logged and <c>null</c> is returned.
+        /// </summary>
+        /// <param name="sceneName">Name of the scene to open.</param>
+        /// <param name="callback">callback event when scene complitly added</param>
+        public static void AddScene(string sceneName, Action callback)
+        {
+            if (SceneManager.GetActiveScene().name != sceneName)
+            {
+                Instance.StartCoroutine(Bridge.GetAddScneCorotine(sceneName, callback));
+            }
+            else
+            {
+                Debug.LogWarning("The scene is already loaded.");
             }
         }
         /// <summary>
@@ -529,6 +658,22 @@ namespace RealMethod
         {
             // Nothing todo
         }
+        /// <summary>
+        /// Check GamePause with time or any custom override.
+        /// </summary>
+        /// <returns><c>true</c> if the timescale is 0; otherwise <c>false</c>.</returns>
+        protected virtual bool IsGamePaused()
+        {
+            return Time.timeScale == 0;
+        }
+        /// <summary>
+        /// Check GameLoading with Bridge to check loading stage.
+        /// </summary>
+        /// <returns><c>true</c> if any scne in loading stage; otherwise <c>false</c>.</returns>
+        protected virtual bool IsGameLoading()
+        {
+            return ((ILoadScneBridge)Bridge).IsLoading;
+        }
 
 
         /// <summary>
@@ -551,7 +696,7 @@ namespace RealMethod
         private void Notify_OnGameQuit()
         {
             Application.quitting -= Notify_OnGameQuit;
-            ((IMethodSync)Bridge).UnbindMainWorldAdd();
+            ((IRelationBridge)Bridge).UnbindWorldCreated();
             if (GameServices != null)
             {
                 for (int i = 0; i < GameServices.Count; i++)
@@ -565,15 +710,24 @@ namespace RealMethod
         }
 
 
+
+        /// <summary>
+        /// Called once when game opend in currect platform
+        /// Implement anything you want initiate befor realmethod initiate
+        /// Invoked when starting up the runtime. Called before the first scene is loaded.
+        /// </summary>
         protected abstract void OnGameOpen();
         /// <summary>
         /// Called once when the game framework has finished initial initialization.
         /// Implement this to perform game-specific initialization logic.
+        /// Invoked when the first scene's objects are loaded into memory but before Awake has been called.
         /// </summary>
         protected abstract void OnGameInitialized();
         /// <summary>
         /// Called after the first scene has been loaded and the game has started.
         /// Implement this to perform logic that should run once the first scene is active.
+        /// Right after all Awake() and OnEnable() calls but befor Start()
+        /// Invoked when the first scene's objects are loaded into memory but before Awake has been called.
         /// </summary>
         protected abstract void OnGameStart();
         /// <summary>

@@ -35,7 +35,7 @@ namespace RealMethod
         }
         void IService.ChangeWorld(World NewWorld)
         {
-            OnWorldChanged(Game.World, NewWorld);
+            OnWorldChanging(Game.World, NewWorld);
         }
         void IService.Deleted(object author)
         {
@@ -52,7 +52,7 @@ namespace RealMethod
         /// Called when a new world or environment is initialized.
         /// Must be implemented by derived classes.
         /// </summary>
-        protected abstract void OnWorldChanged(World Previous, World New);
+        protected abstract void OnWorldChanging(World Previous, World New);
         /// <summary>
         /// Called when the service ends or is deleted.
         /// Must be implemented by derived classes.

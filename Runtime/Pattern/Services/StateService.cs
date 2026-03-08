@@ -16,7 +16,7 @@ namespace RealMethod
         }
 
         // StateService Methods
-        protected sealed override void OnWorldChanged(World Previous , World New)
+        protected sealed override void OnWorldChanging(World Previous , World New)
         {
             if (CanResetforNewWorld(Game.World))
             {

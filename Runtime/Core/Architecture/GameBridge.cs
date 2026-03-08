@@ -8,11 +8,12 @@ using UnityEditor;
 
 namespace RealMethod
 {
+
     /// <summary>
     /// Defines synchronization hooks used internally to coordinate
-    /// worlds and services during runtime initialization.
+    /// worlds and Game during runtime initialization.
     /// </summary>
-    public interface IMethodSync
+    public interface IRelationBridge
     {
         /// <summary>
         /// Introduces a newly created world to the system.
@@ -26,19 +27,11 @@ namespace RealMethod
         /// <summary>
         /// Binds a callback invoked when the main world is added.
         /// </summary>
-        void BindMainWorldAdd(Action<World> func);
+        void BindWorldCreated(Action<World> func);
         /// <summary>
         /// Unbinds the main world added callback.
         /// </summary>
-        void UnbindMainWorldAdd();
-        /// <summary>
-        /// Binds a callback invoked when a side (additive) world is added.
-        /// </summary>
-        void BindSideWorldAdd(Action<World> func);
-        /// <summary>
-        /// Unbinds the side world added callback.
-        /// </summary>
-        void UnbindSideWorldAdd();
+        void UnbindWorldCreated();
         /// <summary>
         /// Notifies the system that a service has been created.
         /// </summary>
@@ -58,7 +51,39 @@ namespace RealMethod
         /// Unbinds the service update callback.
         /// </summary>
         void UnbindServicesUpdated();
+        /// <summary>
+        /// Called by world class to tell game the initiation is complite
+        /// </summary>
+        void WorldIsReady();
+        /// <summary>
+        /// Event invoked by World class to tell the realmethod initiation complite
+        /// Access by Game class
+        /// </summary>
+        event Action OnGameReady;
     }
+    /// <summary>
+    /// Defines all events and stat need to know for loading scnes
+    /// to make internal connection from Game to unify all game events from Game class
+    /// </summary>
+    public interface ILoadScneBridge
+    {
+        /// <summary>
+        /// Event invoked when a scene or world starts or finishes loading.
+        /// The boolean parameter is true when loading starts and false when loading ends.
+        /// </summary>
+        event Action<bool> OnSceneLoading;
+        /// <summary>
+        /// Event invoked during scene or world loading to report progress.
+        /// The float parameter represents the loading progress from 0 (start) to 1 (complete).
+        /// </summary>
+        event Action<float> OnSceneLoadingProcess;
+        /// <summary>
+        /// Indicates whether a scene or world load operation is currently in progress.
+        /// </summary>
+        bool IsLoading { get; }
+    }
+
+
 
 
     /// <summary>
@@ -70,73 +95,59 @@ namespace RealMethod
     /// <item>world check for single remove new version</item>
     /// <item>Load & Unload Scene reporting</item>
     /// </list>
-    /// Inherits from <see cref="Service"/> and implements <see cref="IMethodSync"/>
+    /// Inherits from <see cref="Service"/> and implements <see cref="IRelationBridge"/>
     /// to integrate with the game's internal world and service management system.
     /// </summary>
-    public abstract class GameBridge : Service, IMethodSync
+    public abstract class GameBridge : Service, IRelationBridge, ILoadScneBridge
     {
-        /// <summary>
-        /// Event invoked when a scene or world starts or finishes loading.
-        /// The boolean parameter is true when loading starts and false when loading ends.
-        /// </summary>
-        public event Action<bool> OnSceneLoading;
-        /// <summary>
-        /// Event invoked during scene or world loading to report progress.
-        /// The float parameter represents the loading progress from 0 (start) to 1 (complete).
-        /// </summary>
-        public event Action<float> OnSceneLoadingProcess;
-        /// <summary>
-        /// Indicates whether a scene or world load operation is currently in progress.
-        /// </summary>
-        public bool IsLoading { get; protected set; }
-
-        // Game Structure
-        private Action<World> MainWorldEvent;
-        private Action<World> SideWorldEvent;
+        // Events
+        private Action GameReadyEvent;
+        private Action<World> NewWorldEvent;
         private Action<Service, bool> ServiceEvents;
+        private Action<bool> SceneLoadingEvent;
+        private Action<float> SceneLoadingProcessEvent;
+        protected bool isLoading;
 
 
+        // Implement IRelationBridge Interface
+        event Action IRelationBridge.OnGameReady
+        {
+            add
+            {
+                GameReadyEvent += value;
+            }
 
-        // Implement IMethodSync Interface
-        bool IMethodSync.IntroduceWorld(World world)
+            remove
+            {
+                GameReadyEvent -= value;
+            }
+        }
+        bool IRelationBridge.IntroduceWorld(World world)
         {
             return RequestForNewWorld(world);
         }
-        void IMethodSync.BindMainWorldAdd(Action<World> func)
+        void IRelationBridge.BindWorldCreated(Action<World> func)
         {
-            if (MainWorldEvent != null)
+            if (NewWorldEvent != null)
             {
                 Debug.LogWarning("BindMainWorldAdd is already binded this interface is internal didnt use in another script or your game");
                 return;
             }
-            MainWorldEvent = func;
+            NewWorldEvent = func;
         }
-        void IMethodSync.UnbindMainWorldAdd()
+        void IRelationBridge.UnbindWorldCreated()
         {
-            MainWorldEvent = null;
+            NewWorldEvent = null;
         }
-        void IMethodSync.BindSideWorldAdd(Action<World> func)
-        {
-            if (SideWorldEvent != null)
-            {
-                Debug.LogWarning("BindSideWorldAdd is already binded this interface is internal didnt use in another script or your game");
-                return;
-            }
-            SideWorldEvent = func;
-        }
-        void IMethodSync.UnbindSideWorldAdd()
-        {
-            SideWorldEvent = null;
-        }
-        void IMethodSync.ServiceCreated(Service service)
+        void IRelationBridge.ServiceCreated(Service service)
         {
             ServiceEvents.Invoke(service, true);
         }
-        void IMethodSync.ServiceRemoved(Service service)
+        void IRelationBridge.ServiceRemoved(Service service)
         {
             ServiceEvents.Invoke(service, false);
         }
-        void IMethodSync.BindServicesUpdated(Action<Service, bool> func)
+        void IRelationBridge.BindServicesUpdated(Action<Service, bool> func)
         {
             if (ServiceEvents != null)
             {
@@ -145,10 +156,62 @@ namespace RealMethod
             }
             ServiceEvents = func;
         }
-        void IMethodSync.UnbindServicesUpdated()
+        void IRelationBridge.UnbindServicesUpdated()
         {
             ServiceEvents = null;
         }
+        void IRelationBridge.WorldIsReady()
+        {
+            GameReadyEvent.Invoke();
+        }
+
+        // Implement ILoadScneBridge Interface
+        event Action<bool> ILoadScneBridge.OnSceneLoading
+        {
+            add
+            {
+                SceneLoadingEvent += value;
+            }
+
+            remove
+            {
+                SceneLoadingEvent -= value;
+            }
+        }
+        event Action<float> ILoadScneBridge.OnSceneLoadingProcess
+        {
+            add
+            {
+                SceneLoadingProcessEvent += value;
+            }
+
+            remove
+            {
+                SceneLoadingProcessEvent -= value;
+            }
+        }
+        bool ILoadScneBridge.IsLoading => isLoading;
+
+
+
+        /// <summary>
+        /// Call this when you want to define new World class to game 
+        /// </summary>
+        /// <param name="world">The world instance will set as main world for game.</param>
+        protected void SetMianWorld(World world)
+        {
+            NewWorldEvent?.Invoke(world);
+        }
+        /// <summary>
+        /// Call this when you want to define new World class that created and should not be main world (probably deleted)
+        /// </summary>
+        /// <param name="world">The world instance will not set to main world for game.</param>
+        protected void SetAdditiveWorld(World world)
+        {
+            world.enabled = false;
+            OnAdditiveWorldDetected(world);
+        }
+
 
 
         /// <summary>
@@ -164,14 +227,22 @@ namespace RealMethod
             // this approach world just when you destroy last world instance from scene
             if (Game.World == null)
             {
-                MainWorldEvent?.Invoke(NewWorld);
+                SetMianWorld(NewWorld);
                 return true;
             }
             else
             {
-                SideWorldEvent?.Invoke(NewWorld);
+                SetAdditiveWorld(NewWorld);
                 return false;
             }
+        }
+        /// <summary>
+        /// Called when new scene loaded and during base world valid new world created.
+        /// </summary>
+        /// <param name="AdditiveWorld">The New WorldClass Refrence in AdditiveScene</param>
+        protected virtual void OnAdditiveWorldDetected(World AdditiveWorld)
+        {
+            Despawn.GameObject(AdditiveWorld.gameObject);
         }
         /// <summary>
         /// Starts loading a scene by name using a coroutine.
@@ -183,12 +254,29 @@ namespace RealMethod
         /// </returns>
         public virtual IEnumerator GetLoadScneCorotine(string sceneName)
         {
-            if (IsLoading == true)
+            if (isLoading == true)
             {
                 Debug.LogWarning($"Can't load Scene:{sceneName} The Bridge is in loading target scene");
                 return null;
             }
             return LoadSceneAsync(sceneName);
+        }
+        /// <summary>
+        /// Starts Adding a scene by name using a coroutine.
+        /// </summary>
+        /// <param name="sceneName">The name of the scene to load.</param>
+        /// <returns>
+        /// An IEnumerator coroutine for Adding the scene,
+        /// or null if a load operation is already in progress.
+        /// </returns>
+        public virtual IEnumerator GetAddScneCorotine(string sceneName, Action callback)
+        {
+            if (isLoading == true)
+            {
+                Debug.LogWarning($"Can't load Scene:{sceneName} The Bridge is in loading target scene");
+                return null;
+            }
+            return AddSceneAsync(callback, sceneName);
         }
         /// <summary>
         /// Starts loading a scene by build index using a coroutine.
@@ -200,12 +288,29 @@ namespace RealMethod
         /// </returns>
         public virtual IEnumerator GetLoadScneCorotine(int sceneIndex)
         {
-            if (IsLoading == true)
+            if (isLoading == true)
             {
                 Debug.LogWarning($"Can't load Index:{sceneIndex} The Bridge is in loading target scene");
                 return null;
             }
             return LoadSceneAsync(string.Empty, sceneIndex);
+        }
+        /// <summary>
+        /// Starts Adding a scene by build index using a coroutine.
+        /// </summary>
+        /// <param name="sceneIndex">The build index of the scene to load.</param>
+        /// <returns>
+        /// An IEnumerator coroutine for Adding the scene,
+        /// or null if a load operation is already in progress.
+        /// </returns>
+        public virtual IEnumerator GetAddScneCorotine(int sceneIndex, Action callback)
+        {
+            if (isLoading == true)
+            {
+                Debug.LogWarning($"Can't load Index:{sceneIndex} The Bridge is in loading target scene");
+                return null;
+            }
+            return AddSceneAsync(callback, string.Empty, sceneIndex);
         }
         /// <summary>
         /// Starts loading a world configuration using a coroutine.
@@ -217,7 +322,7 @@ namespace RealMethod
         /// </returns>
         public virtual IEnumerator GetLoadWorldCorotine(WorldSceneConfig WorldScene)
         {
-            if (IsLoading == true)
+            if (isLoading == true)
             {
                 Debug.LogWarning($"Can't load World:{WorldScene} The Bridge is in loading target scene");
                 return null;
@@ -230,8 +335,8 @@ namespace RealMethod
         private IEnumerator LoadSceneAsync(string scene, int scneIndex = -1)
         {
             //StartLoading
-            IsLoading = true;
-            OnSceneLoading?.Invoke(true);
+            isLoading = true;
+            SceneLoadingEvent?.Invoke(true);
             float fadingtime = Game.Config.FadeTime;
 
             //Fading Screen
@@ -253,16 +358,16 @@ namespace RealMethod
             if (Load_opertation == null)
             {
                 Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                OnSceneLoading?.Invoke(false);
-                IsLoading = false;
+                SceneLoadingEvent?.Invoke(false);
+                isLoading = false;
                 yield break;
             }
             while (!Load_opertation.isDone)
             {
-                OnSceneLoadingProcess?.Invoke(Load_opertation.progress);
+                SceneLoadingProcessEvent?.Invoke(Load_opertation.progress);
                 yield return null;
             }
-            OnSceneLoadingProcess?.Invoke(1);
+            SceneLoadingProcessEvent?.Invoke(1);
 
             //Fading Screen
             if (fadingtime != 0)
@@ -271,14 +376,39 @@ namespace RealMethod
             }
 
             //FinishLoading
-            OnSceneLoading?.Invoke(false);
-            IsLoading = false;
+            SceneLoadingEvent?.Invoke(false);
+            isLoading = false;
+        }
+        private IEnumerator AddSceneAsync(Action callback, string scene, int scneIndex = -1)
+        {
+            //Loading Scene
+            AsyncOperation Load_opertation;
+            if (scneIndex > -1)
+            {
+                Load_opertation = SceneManager.LoadSceneAsync(scneIndex, LoadSceneMode.Additive);
+            }
+            else
+            {
+                Load_opertation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
+            }
+            if (Load_opertation == null)
+            {
+                Debug.LogError("Failed to Add scene. AsyncOperation is null.");
+                yield break;
+            }
+            while (!Load_opertation.isDone)
+            {
+                // Processing
+                yield return null;
+            }
+            // Process = 1;
+            callback?.Invoke();
         }
         private IEnumerator LoadWorldAsync(WorldSceneConfig WS)
         {
             //StartLoading
-            IsLoading = true;
-            OnSceneLoading?.Invoke(true);
+            isLoading = true;
+            SceneLoadingEvent?.Invoke(true);
             float fadingtime = Game.Config.FadeTime;
 
             //Fading Screen
@@ -293,15 +423,15 @@ namespace RealMethod
             if (Load_opertation == null)
             {
                 Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                OnSceneLoading?.Invoke(false);
-                IsLoading = false;
+                SceneLoadingEvent?.Invoke(false);
+                isLoading = false;
                 yield break;
             }
             while (!Load_opertation.isDone)
             {
-                OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1));
-                OnSceneLoading?.Invoke(false);
-                IsLoading = false;
+                SceneLoadingProcessEvent?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1));
+                SceneLoadingEvent?.Invoke(false);
+                isLoading = false;
                 yield return null;
             }
 
@@ -312,17 +442,17 @@ namespace RealMethod
                 if (Additive_Load_opertation == null)
                 {
                     Debug.LogError("Failed to load scene. AsyncOperation is null.");
-                    OnSceneLoading?.Invoke(false);
-                    IsLoading = false;
+                    SceneLoadingEvent?.Invoke(false);
+                    isLoading = false;
                     yield break;
                 }
                 while (!Additive_Load_opertation.isDone)
                 {
-                    OnSceneLoadingProcess?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1 - (i + 1)));
+                    SceneLoadingProcessEvent?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1 - (i + 1)));
                     yield return null;
                 }
             }
-            OnSceneLoadingProcess?.Invoke(1);
+            SceneLoadingProcessEvent?.Invoke(1);
 
             //Fading Screen
             if (fadingtime != 0)
@@ -331,10 +461,10 @@ namespace RealMethod
             }
 
             //FinishLoading
-            OnSceneLoading?.Invoke(false);
-            IsLoading = false;
+            SceneLoadingEvent?.Invoke(false);
+            isLoading = false;
         }
-
+                
 
 
 #if UNITY_EDITOR

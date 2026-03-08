@@ -41,7 +41,7 @@ namespace RealMethod
         {
             GameDespawn = new Despawn();
         }
-        protected override void OnWorldChanged(World Previous , World New)
+        protected override void OnWorldChanging(World Previous , World New)
         {
         }
         protected override void OnEnd(object Author)
