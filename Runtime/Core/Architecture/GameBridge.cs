@@ -107,7 +107,7 @@ namespace RealMethod
         private Action<bool> SceneLoadingEvent;
         private Action<float> SceneLoadingProcessEvent;
         private bool isLoading;
-        protected float FadeTime { get; private set; } = 1;
+        protected float FadeTime = 0;
 
 
         // Implement IRelationBridge Interface
