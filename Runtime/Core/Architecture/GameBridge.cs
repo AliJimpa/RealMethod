@@ -106,7 +106,8 @@ namespace RealMethod
         private Action<Service, bool> ServiceEvents;
         private Action<bool> SceneLoadingEvent;
         private Action<float> SceneLoadingProcessEvent;
-        protected bool isLoading;
+        private bool isLoading;
+        protected float FadeTime { get; private set; } = 1;
 
 
         // Implement IRelationBridge Interface
@@ -162,7 +163,7 @@ namespace RealMethod
         }
         void IRelationBridge.WorldIsReady()
         {
-            GameReadyEvent.Invoke();
+            GameReadyEvent?.Invoke();
         }
 
         // Implement ILoadScneBridge Interface
@@ -191,7 +192,6 @@ namespace RealMethod
             }
         }
         bool ILoadScneBridge.IsLoading => isLoading;
-
 
 
         /// <summary>
@@ -337,7 +337,7 @@ namespace RealMethod
             //StartLoading
             isLoading = true;
             SceneLoadingEvent?.Invoke(true);
-            float fadingtime = Game.Config.FadeTime;
+            float fadingtime = FadeTime;
 
             //Fading Screen
             if (fadingtime != 0)
@@ -409,7 +409,7 @@ namespace RealMethod
             //StartLoading
             isLoading = true;
             SceneLoadingEvent?.Invoke(true);
-            float fadingtime = Game.Config.FadeTime;
+            float fadingtime = FadeTime;
 
             //Fading Screen
             if (fadingtime != 0)
@@ -464,7 +464,7 @@ namespace RealMethod
             SceneLoadingEvent?.Invoke(false);
             isLoading = false;
         }
-                
+
 
 
 #if UNITY_EDITOR

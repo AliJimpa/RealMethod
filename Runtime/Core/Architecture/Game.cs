@@ -219,7 +219,7 @@ namespace RealMethod
             {
                 Config = ScriptableObject.CreateInstance<DefaultGameConfig>();
             }
-            Config.Initialized(Instance);
+            Config.Initialized();
 
             // Initiate GamePrefab & Managers
             List<IGameManager> CashManagers = new List<IGameManager>(5);
