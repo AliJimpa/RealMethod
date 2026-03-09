@@ -20,7 +20,7 @@ namespace RealMethod.Editor
 
             EditorGUI.BeginProperty(position, label, property);
 
-            string newValue = EditorGUI.TextField(position, label, current);
+            string newValue = EditorGUI.DelayedTextField(position, label, current);
 
             if (newValue != current)
             {

@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor.Callbacks;
+#endif
+
 namespace RealMethod
 {
     /// <summary>
@@ -45,6 +49,51 @@ namespace RealMethod
             id = GetOrCreateId(value);
         }
 
+
+        /// <summary>
+        /// Called when Editor opend and restored all staring saved in editor time
+        /// </summary>
+        /// <param name="db"></param>
+        public static void OnProjectSettingLoaded(ProjectSettingAsset setting)
+        {
+            if (setting == null)
+            {
+                Debug.LogError("FName Initialize failed: ProjectSettingAsset is null.");
+                return;
+            }
+
+            lock (tableLock)
+            {
+                idToName.Clear();
+                hashToIds.Clear();
+
+                var names = setting.Names; // assume List<string> Names in the asset
+
+                if (names == null)
+                    return;
+
+                for (int i = 0; i < names.Count; i++)
+                {
+                    string value = names[i];
+
+                    if (string.IsNullOrEmpty(value))
+                        continue;
+
+                    int id = idToName.Count;
+                    idToName.Add(value);
+
+                    int hash = value.GetHashCode();
+
+                    if (!hashToIds.TryGetValue(hash, out var bucket))
+                    {
+                        bucket = new List<int>(2);
+                        hashToIds.Add(hash, bucket);
+                    }
+
+                    bucket.Add(id);
+                }
+            }
+        }
         /// <summary>
         /// Returns the ID for a string or creates a new one.
         /// </summary>
@@ -80,6 +129,16 @@ namespace RealMethod
 
                 idToName.Add(value);
                 bucket.Add(newId);
+
+#if UNITY_EDITOR
+                ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
+                if (ProjectSettings == null)
+                {
+                    Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
+                    return 0;
+                }
+                ProjectSettings.Names = idToName;
+#endif
 
                 return newId;
             }
@@ -159,6 +218,51 @@ namespace RealMethod
         {
             return id;
         }
+
+
+#if UNITY_EDITOR
+        [DidReloadScripts]
+        private static void OnScriptsReloaded()
+        {
+            ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
+            if (ProjectSettings == null)
+            {
+                Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
+            }
+
+            lock (tableLock)
+            {
+                idToName.Clear();
+                hashToIds.Clear();
+
+                var names = ProjectSettings.Names; // assume List<string> Names in the asset
+
+                if (names == null)
+                    return;
+
+                for (int i = 0; i < names.Count; i++)
+                {
+                    string value = names[i];
+
+                    if (string.IsNullOrEmpty(value))
+                        continue;
+
+                    int id = idToName.Count;
+                    idToName.Add(value);
+
+                    int hash = value.GetHashCode();
+
+                    if (!hashToIds.TryGetValue(hash, out var bucket))
+                    {
+                        bucket = new List<int>(2);
+                        hashToIds.Add(hash, bucket);
+                    }
+
+                    bucket.Add(id);
+                }
+            }
+        }
+#endif
     }
 }
 

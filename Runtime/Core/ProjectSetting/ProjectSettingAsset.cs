@@ -80,6 +80,8 @@ namespace RealMethod
         new FolderAddress { AssetType = (AssetFormat)13, AssetPath = "7_Misc"}
         };
         public IReadOnlyList<FolderAddress> ProjectStructure => projectStructure;
+        [Header("Names")]
+        public List<string> Names = new();
 
 
         // Access values
@@ -89,6 +91,11 @@ namespace RealMethod
         }
 
         // Public Functions
+        public void OnLoadedInGame()
+        {
+            // Initialize base Name store in editor
+            FName.OnProjectSettingLoaded(this);
+        }
         public Type GetGameInstanceType()
         {
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -167,6 +174,7 @@ namespace RealMethod
             }
             return default(FolderAddress);
         }
+
 
     }
 

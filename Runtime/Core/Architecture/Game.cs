@@ -160,6 +160,7 @@ namespace RealMethod
                 Quit();
                 return;
             }
+            ProjectSettings.OnLoadedInGame();
 
             // Initiate GameClass
             var emptyObject = new GameObject("RealGame");
