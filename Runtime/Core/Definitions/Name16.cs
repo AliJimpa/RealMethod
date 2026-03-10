@@ -7,8 +7,8 @@ using UnityEngine;
 namespace RealMethod
 {
     /// <summary>
-    /// Lightweight engine-style string identifier.
-    /// Stores only an integer ID while the actual strings live in a global table.
+    /// String identifier.
+    /// Store 16 character with very fast compairing
     /// </summary>
     [Serializable]
     public struct Name16
@@ -19,7 +19,7 @@ namespace RealMethod
         public ulong Name_B;
 
         /// <summary>
-        /// Creates a Name from a string.
+        /// Creates a Name16 from a string.
         /// </summary>
         public Name16(string value)
         {
