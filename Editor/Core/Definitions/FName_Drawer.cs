@@ -27,7 +27,14 @@ namespace RealMethod.Editor
                 idProp.intValue = FName.GetOrCreateId(newValue);
             }
 
-            EditorGUI.EndProperty();
+
+
+            // --- Set GUI color to blue to indicate change ---
+            // Color prevColor = GUI.color;
+            // GUI.color = Color.gray; // light blue
+            // EditorGUI.TextField(position, label, current);
+            // GUI.color = prevColor;
+            // EditorGUI.EndProperty();
         }
     }
 

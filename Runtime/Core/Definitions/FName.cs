@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 #if UNITY_EDITOR
+using UnityEditor;
 using UnityEditor.Callbacks;
 #endif
 
@@ -19,27 +21,39 @@ namespace RealMethod
         /// Maximum allowed characters for a name.
         /// </summary>
         public const int MaxLength = 1024;
-
         /// <summary>
         /// Internal identifier referencing the global name table.
         /// </summary>
         [SerializeField]
         private int id;
-
         /// <summary>
         /// Stores strings by ID.
         /// </summary>
         private static readonly List<string> idToName = new List<string>(256);
-
         /// <summary>
         /// Hash → list of IDs (collision bucket).
         /// </summary>
         private static readonly Dictionary<int, List<int>> hashToIds = new Dictionary<int, List<int>>(256);
-
         /// <summary>
         /// Lock for thread-safe name registration.
         /// </summary>
         private static readonly object tableLock = new object();
+#if UNITY_EDITOR
+        private static bool editorInitialized = false;
+        private static ProjectSettingAsset _settings;
+        private static ProjectSettingAsset ProjectSettings
+        {
+            get
+            {
+                if (editorInitialized && _settings == null && !Application.isPlaying)
+                {
+                    _settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>("Assets/RealMethod/RealMethodSetting.asset");
+                }
+                return _settings;
+            }
+        }
+#endif
+
 
         /// <summary>
         /// Creates a Name from a string.
@@ -50,10 +64,12 @@ namespace RealMethod
         }
 
 
+        ////////// Static Functions
         /// <summary>
-        /// Called when Editor opend and restored all staring saved in editor time
+        /// Called at runtime during game load projectsetting
+        /// The projectsetting after load call these function with self refrence 
         /// </summary>
-        /// <param name="db"></param>
+        /// <param name="setting">ProjectSetting instance loaded at runtime</param>
         public static void OnProjectSettingLoaded(ProjectSettingAsset setting)
         {
             if (setting == null)
@@ -131,19 +147,18 @@ namespace RealMethod
                 bucket.Add(newId);
 
 #if UNITY_EDITOR
-                ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
-                if (ProjectSettings == null)
+                if (ProjectSettings != null)
                 {
-                    Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
-                    return 0;
+                    ProjectSettings.Names = idToName;
                 }
-                ProjectSettings.Names = idToName;
+                else
+                {
+                    Debug.LogWarning("ProjectSettingAsset'NamesTable can't update, ProjectSettingAsset is not valid!");
+                }
 #endif
-
                 return newId;
             }
         }
-
         /// <summary>
         /// Returns the string for an ID.
         /// </summary>
@@ -155,6 +170,21 @@ namespace RealMethod
             return idToName[id];
         }
 
+
+
+        ////////// Functions 
+        /// <summary>
+        /// Checks equality with another Name.
+        /// </summary>
+        public bool Equals(FName other)
+        {
+            return id == other.id;
+        }
+
+
+
+
+        ////////// Overrides 
         /// <summary>
         /// Converts Name to string.
         /// </summary>
@@ -162,7 +192,24 @@ namespace RealMethod
         {
             return GetString(id);
         }
+        /// <summary>
+        /// Checks equality with an object.
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            return obj is FName other && Equals(other);
+        }
+        /// <summary>
+        /// Hash code of the Name.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return id;
+        }
 
+
+
+        ////////// Operators 
         /// <summary>
         /// Implicit conversion from string.
         /// </summary>
@@ -195,39 +242,25 @@ namespace RealMethod
             return a.id != b.id;
         }
 
-        /// <summary>
-        /// Checks equality with another Name.
-        /// </summary>
-        public bool Equals(FName other)
-        {
-            return id == other.id;
-        }
 
-        /// <summary>
-        /// Checks equality with an object.
-        /// </summary>
-        public override bool Equals(object obj)
-        {
-            return obj is FName other && Equals(other);
-        }
-
-        /// <summary>
-        /// Hash code of the Name.
-        /// </summary>
-        public override int GetHashCode()
-        {
-            return id;
-        }
 
 
 #if UNITY_EDITOR
+        [InitializeOnLoadMethod]
+        private static void MarkEditorReady()
+        {
+            editorInitialized = true;
+            _settings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
+        }
         [DidReloadScripts]
         private static void OnScriptsReloaded()
         {
-            ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
+            editorInitialized = true;
+
             if (ProjectSettings == null)
             {
-                Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
+                Debug.LogWarning("Static NamesTable can't update, ProjectSettingAsset is not valid!");
+                return;
             }
 
             lock (tableLock)
