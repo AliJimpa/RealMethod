@@ -54,12 +54,14 @@ namespace RealMethod.Editor
         {
             return "Initializer";
         }
+        protected override SectionType GetSectionType()
+        {
+            return SectionType.Runtime;
+        }
         protected override void Fix(int Id)
         {
             throw new System.NotImplementedException();
         }
-
-
 
 
     }

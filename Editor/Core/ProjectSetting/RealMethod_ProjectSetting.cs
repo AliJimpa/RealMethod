@@ -12,11 +12,17 @@ namespace RealMethod.Editor
     {
         void FirstSelected(ProjectSettingAsset storage);
         void Draw();
+        bool IsRuntime();
     }
 
     // Abstract base class for a settings section
     public abstract class ProjectSettingSection : ISectionSetting
     {
+        protected enum SectionType
+        {
+            Runtime,
+            Editor,
+        }
         protected class ClassType<T>
         {
             private List<Type> TypeList;
@@ -81,12 +87,17 @@ namespace RealMethod.Editor
                 }
             }
         }
+        bool ISectionSetting.IsRuntime()
+        {
+            return GetSectionType() == SectionType.Runtime;
+        }
 
         // Abstract Method
         protected abstract void Initialized();
         protected abstract void BeginRender(ProjectSettingAsset Storage);
         protected abstract void UpdateRender();
         protected abstract string GetTitle();
+        protected abstract SectionType GetSectionType();
         protected abstract void Fix(int Id);
 
         // Protected Function
@@ -109,14 +120,15 @@ namespace RealMethod.Editor
             }
             UpdateRender();
         }
+
+
     }
 
     // Project Setting
     public static class RealMethod_ProjectSetting
     {
-        private const string settingsPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         private static bool candraw = true;// Flag to determine if the UI can be drawn
-        private static ProjectSettingSection[] sections = new ProjectSettingSection[2] {
+        private static List<ProjectSettingSection> sections = new List<ProjectSettingSection>(3) {
         // Array of sections to be rendered in the settings UI
         new InitializerSetting_Section(),
         new FolderStructure_Section()
@@ -127,9 +139,9 @@ namespace RealMethod.Editor
         // Create a SettingsProvider for Unity's Project Settings
         public static SettingsProvider CreateSettingsProvider()
         {
-            var provider = new SettingsProvider("Project/Real Method", SettingsScope.Project)
+            var provider = new SettingsProvider("Project/RealMethod", SettingsScope.Project)
             {
-                label = "Real Method",
+                label = "RealMethod",
 
                 // Called when the settings tab is first selected
                 activateHandler = (searchContext, rootElement) =>
@@ -139,7 +151,7 @@ namespace RealMethod.Editor
                     // Attempt to load the settings asset
                     if (!GetSettingStorage(out TargetStorage))
                     {
-                        if (Directory.Exists(Path.GetDirectoryName(settingsPath)))
+                        if (Directory.Exists(Path.GetDirectoryName(RM_CoreEditor.SetttingAssetPath)))
                         {
                             TargetStorage = CreateSettingStorage();
                         }
@@ -149,32 +161,48 @@ namespace RealMethod.Editor
                         }
                     }
 
-                    // Initialize each section with the loaded settings
-                    foreach (var item in sections)
-                    {
-                        ISectionSetting ptovider = item;
-                        if (TargetStorage != null)
-                            ptovider.FirstSelected(TargetStorage);
-                    }
+                    // Initialize Main section with the loaded settings
+                    ((ISectionSetting)sections[0]).FirstSelected(TargetStorage);
+                    ((ISectionSetting)sections[1]).FirstSelected(TargetStorage);
                 },
+
 
                 // Called to draw the UI elements
                 guiHandler = (searchContext) =>
                 {
                     if (candraw)
                     {
+                        EditorGUILayout.Space();
+                        EditorGUILayout.LabelField("Runtime", EditorStyles.whiteBoldLabel);
+                        GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
                         // Render each section
                         foreach (var item in sections)
                         {
                             ISectionSetting ptovider = item;
-                            ptovider.Draw();
-                            // Add a separator line
-                            GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+                            if (ptovider.IsRuntime())
+                            {
+                                ptovider.Draw();
+                                EditorGUILayout.Space(1);
+                            }
+                        }
+                        EditorGUILayout.Space();
+                        EditorGUILayout.LabelField("Editor", EditorStyles.whiteBoldLabel);
+                        GUILayout.Box("", GUILayout.ExpandWidth(true), GUILayout.Height(1));
+                        foreach (var item in sections)
+                        {
+                            ISectionSetting ptovider = item;
+                            if (!ptovider.IsRuntime())
+                            {
+
+                                ptovider.Draw();
+                                EditorGUILayout.Space(1);
+
+                            }
                         }
                     }
                     else
                     {
-                        EditorGUILayout.HelpBox($"The Address is not valid {Path.GetDirectoryName(settingsPath)}", MessageType.Error);
+                        EditorGUILayout.HelpBox($"The Address is not valid {Path.GetDirectoryName(RM_CoreEditor.SetttingAssetPath)}", MessageType.Error);
                         if (GUILayout.Button("Fix"))
                         {
                             if (!Directory.Exists("Assets/Resources"))
@@ -205,16 +233,41 @@ namespace RealMethod.Editor
         public static bool GetSettingStorage(out ProjectSettingAsset settings)
         {
             // Attempt to load the settings asset from the specified path
-            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(settingsPath);
+            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(RM_CoreEditor.SetttingAssetPath);
+            AddExteraSections(settings);
             return settings != null;
         }
         private static ProjectSettingAsset CreateSettingStorage()
         {
             // Create a new settings asset at the specified path
             ProjectSettingAsset settings = ScriptableObject.CreateInstance<ProjectSettingAsset>();
-            AssetDatabase.CreateAsset(settings, settingsPath);
+            AssetDatabase.CreateAsset(settings, RM_CoreEditor.SetttingAssetPath);
             AssetDatabase.SaveAssets();
+            AddExteraSections(settings);
             return settings;
+        }
+        private static void AddExteraSections(ProjectSettingAsset settings)
+        {
+            Type[] sectiontypes = settings.GetExteraSections();
+            foreach (var item in sectiontypes)
+            {
+                if (item != null)
+                {
+                    if (typeof(ProjectSettingSection).IsAssignableFrom(item))
+                    {
+                        try
+                        {
+                            ProjectSettingSection TargetSection = (ProjectSettingSection)Activator.CreateInstance(item);
+                            ((ISectionSetting)TargetSection).FirstSelected(settings);
+                            sections.Add(TargetSection);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"Failed to instantiate {item}: {ex.Message}. DefaultGameBridge Created");
+                        }
+                    }
+                }
+            }
         }
     }
 }

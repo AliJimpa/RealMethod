@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// #if UNITY_EDITOR
+// namespace RealMethod.Editor;
+// #endif
+
 namespace RealMethod
 {
     // Real Method Setting Storage
@@ -176,6 +180,14 @@ namespace RealMethod
         }
 
 
+
+
+#if UNITY_EDITOR
+        public virtual Type[] GetExteraSections()
+        {
+            return null;
+        }
+#endif
     }
 
 

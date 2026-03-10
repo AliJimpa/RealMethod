@@ -86,14 +86,19 @@ namespace RealMethod.Editor
                 EditorGUILayout.EndHorizontal(); // End horizontal layout
             }
         }
-
         protected override string GetTitle()
         {
             return "FolderStructure";
         }
+        protected override SectionType GetSectionType()
+        {
+            return SectionType.Editor;
+        }
         protected override void Fix(int Id)
         {
         }
+        
+        
         private void CreateFolder(string parentFolder, string newFolderName)
         {
             string folderPath = System.IO.Path.Combine(parentFolder, newFolderName).Replace("\\", "/");
