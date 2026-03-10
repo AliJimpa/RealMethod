@@ -2,6 +2,6 @@ namespace RealMethod
 {
     public interface IIdentifier
     {
-        FName NameID { get; }
+        Name16 NameID { get; }
     }
 }

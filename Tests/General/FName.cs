@@ -1,15 +1,16 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-
+using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Callbacks;
 #endif
 
+
 namespace RealMethod
 {
+
     /// <summary>
     /// Lightweight engine-style string identifier.
     /// Stores only an integer ID while the actual strings live in a global table.
@@ -297,8 +298,5 @@ namespace RealMethod
         }
 #endif
     }
+
 }
-
-
-
-

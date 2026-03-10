@@ -10,7 +10,7 @@ namespace RealMethod
         [SerializeField]
         private GameObject PrefabAsset;  // <-- this name must match
         public GameObject asset => PrefabAsset;
-        public FName NameID => PrefabAsset != null ? PrefabAsset.name : "Empty";
+        public Name16 NameID => PrefabAsset != null ? PrefabAsset.name : "Empty";
 
         // Public Functions
         public J GetSoftClass<J>() where J : Component

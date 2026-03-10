@@ -9,7 +9,7 @@ namespace RealMethod
         [SerializeField]
         private string configName;
         // Implement IIdentifier Interface
-        public FName NameID => configName;
+        public Name16 NameID => configName;
 
         // Abstract Method
         public abstract IStatModifier[] GetModifiers<T>(T StateName) where T : System.Enum;

@@ -94,7 +94,7 @@ namespace RealMethod
         public void OnLoadedInGame()
         {
             // Initialize base Name store in editor
-            FName.OnProjectSettingLoaded(this);
+            ///Name16.OnProjectSettingLoaded(this);
         }
         public Type GetGameInstanceType()
         {

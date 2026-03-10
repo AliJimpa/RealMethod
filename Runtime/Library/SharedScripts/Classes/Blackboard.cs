@@ -30,7 +30,7 @@ namespace RealMethod
             public int Index { get; private set; }
             public bool IsValid => Type != ValueType.None;
 
-            public ValuePointer(FName Vname, ValueType Vtype, int Vindex = -1)
+            public ValuePointer(Name16 Vname, ValueType Vtype, int Vindex = -1)
             {
                 if (Vtype != ValueType.None)
                 {
@@ -112,11 +112,11 @@ namespace RealMethod
             Component = new Component[size];
         }
 
-        public bool HasValue<T>(FName VariableName)
+        public bool HasValue<T>(Name16 VariableName)
         {
             return TryFindPointer<T>(VariableName, out ValuePointer outher);
         }
-        public T GetValue<T>(FName VariableName)
+        public T GetValue<T>(Name16 VariableName)
         {
             if (TryFindPointer<T>(VariableName, out ValuePointer item))
             {
@@ -143,7 +143,7 @@ namespace RealMethod
             Debug.LogWarning($"Variable '{VariableName}' not found.");
             return default;
         }
-        public void SetValue<T>(FName VariableName, T value)
+        public void SetValue<T>(Name16 VariableName, T value)
         {
             if (TryFindPointer<T>(VariableName, out ValuePointer item))
             {
@@ -154,7 +154,7 @@ namespace RealMethod
                 CreateValue(VariableName, value);
             }
         }
-        public bool CreateValue<T>(FName VariableName, T DefaultValue)
+        public bool CreateValue<T>(Name16 VariableName, T DefaultValue)
         {
             ValueType TargetType = ConvertType<T>();
             int TypeIndex = GetLengthByType(TargetType);
@@ -176,7 +176,7 @@ namespace RealMethod
                 return false;
             }
         }
-        public bool RemoveValue<T>(FName VariableName)
+        public bool RemoveValue<T>(Name16 VariableName)
         {
             if (TryFindPointer<T>(VariableName, out ValuePointer item))
             {
@@ -204,7 +204,7 @@ namespace RealMethod
             SetSize(MaxSize);
         }
 
-        private bool TryFindPointer<T>(FName VariableName, out ValuePointer pointer)
+        private bool TryFindPointer<T>(Name16 VariableName, out ValuePointer pointer)
         {
             Hash128 TargetName = Hash128.Compute(VariableName);
             ValueType TargetType = ConvertType<T>();

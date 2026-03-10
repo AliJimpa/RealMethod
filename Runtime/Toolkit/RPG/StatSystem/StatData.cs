@@ -53,7 +53,7 @@ namespace RealMethod
 
 
         // Implement IStat Interface
-        public FName NameID => GetStatName();
+        public Name16 NameID => GetStatName();
         public float BaseValue => baseValue.GetMergeValue();
         public float Value => GetFinalValue();
         public float MinValue => minValue;
