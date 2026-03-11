@@ -1,264 +1,355 @@
-using UnityEngine;
-using UnityEditor;
+using System;
 using System.Collections.Generic;
-using System.IO;
+using UnityEditor;
+using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    [System.Serializable]
-    public class ClassTreeNode
+    class FieldModule
     {
-        public string name;
-        public string toturial; // text after ->
-        public string link; // text afeter https
-        public List<ClassTreeNode> children = new List<ClassTreeNode>();
+        private MonoScript MyScript;
+        private List<FieldModule> MyChilds = new List<FieldModule>();
+        private string MyName = string.Empty;
+
+
+
+        public string Title
+        {
+            get
+            {
+                if (MyName == string.Empty)
+                {
+                    return MyScript.name;
+                }
+                else
+                {
+                    return MyName;
+                }
+            }
+        }
+        public MonoScript ScriptFile => MyScript;
+        public Type Class => MyScript.GetClass();
+        public bool IsExpand { get; private set; } = false;
+
+
+
+        public FieldModule(string Name)
+        {
+            MyName = Name;
+        }
+        public FieldModule(MonoScript script)
+        {
+            MyScript = script;
+        }
+
+
+        public void Draw()
+        {
+            if (MyChilds.Count == 0)
+            {
+                EditorGUILayout.LabelField(Title);
+            }
+            else
+            {
+                IsExpand = EditorGUILayout.Foldout(IsExpand, Title, true);
+                if (IsExpand)
+                {
+                    EditorGUI.indentLevel++;
+                    foreach (var child in MyChilds)
+                    {
+                        child.Draw();
+                    }
+                    EditorGUI.indentLevel--;
+                }
+            }
+        }
+        public void AddChild(MonoScript script)
+        {
+            FieldModule NewChildField = new FieldModule(script);
+            Type NewType = script.GetClass();
+            if (NewType == null)
+            {
+                MyChilds.Add(NewChildField);
+                return;
+            }
+            Type NewParentType = NewType.BaseType;
+            if (NewParentType == null)
+            {
+                MyChilds.Add(NewChildField);
+                return;
+            }
+
+
+
+            // find parent from this child
+            foreach (var child in MyChilds)
+            {
+                Type ChildType = child.Class;
+                if (ChildType != null)
+                {
+                    if (NewParentType == ChildType)
+                    {
+                        child.AddChild(NewChildField.ScriptFile);
+                        return;
+                    }
+                }
+            }
+
+            // Find Child from This Field Child
+            List<int> RemoveIndex = new List<int>();
+            for (int i = 0; i < MyChilds.Count; i++)
+            {
+                FieldModule child = MyChilds[i];
+                Type ChildType = child.Class;
+                if (ChildType != null)
+                {
+                    Type ChildParentType = ChildType.BaseType;
+                    if (ChildParentType != null)
+                    {
+                        if (NewType == ChildParentType)
+                        {
+                            RemoveIndex.Add(i);
+                            NewChildField.AddChild(child.ScriptFile);
+                        }
+                    }
+                }
+            }
+
+
+            MyChilds.Add(NewChildField);
+
+            foreach (var Index in RemoveIndex)
+            {
+                if (MyChilds.IsValidIndex(Index))
+                {
+                    MyChilds.RemoveAt(Index);
+                }
+                else
+                {
+                    Debug.LogWarning($"[{Title}] Remove Index is not valid, TargetIndex={Index} , Count={MyChilds.Count}");
+                }
+            }
+        }
     }
+
 
     public class ClassViewerWindow : EditorWindow
     {
-        private List<ClassTreeNode> rootNodes = new List<ClassTreeNode>();
-        private Dictionary<ClassTreeNode, bool> foldoutStates = new Dictionary<ClassTreeNode, bool>();
+        private class ComboBox<T> : EditorProperty<T> where T : Enum
+        {
+            public ComboBox(string Name, UnityEngine.Object other) : base(Name, other)
+            {
+            }
 
-        private TextAsset textFile;
-        private Vector2 scrollPos;
-        private string searchQuery = "";
+            protected override byte UpdateRender()
+            {
+                CashValue = (T)EditorGUILayout.EnumPopup(CurrentValue, GUI.skin.FindStyle("ToolbarPopup"), GUILayout.Width(120));
+                if (EqualityComparer<T>.Default.Equals(CashValue, CurrentValue))
+                {
+                    return 0; // No change
+                }
+                else
+                {
+                    SetValue(CashValue);
+                    return 1; // Changed
+                }
+            }
+            protected override void FixError(int Id)
+            {
+
+            }
+
+        }
+        private enum FilterType
+        {
+            All,
+            MonoBehaviour,
+            ScriptableObject,
+            Editor
+        }
+
+        private Vector2 scroll;
+        private MonoScript[] ProjectScripts;
+        private Dictionary<string, FieldModule> NameSpaces = new Dictionary<string, FieldModule>();
+
+        private string search = "";
+        private ComboBox<FilterType> filter;
+        private bool TEST;
+
 
         [MenuItem("Tools/RealMethod/ClassViewer")]
         public static void Open()
         {
-            GetWindow<ClassViewerWindow>("ClassViewer");
-        }
 
-        // Unity Methods
+            GetWindow<ClassViewerWindow>("Class Viewer");
+        }
         private void OnEnable()
         {
-            string ClassViewPath = "Assets/Realmethod/Documentation/Information/ClassViewer.txt"; // Just for Test
-            // string ClassViewPath = Path.Combine(RM_CoreEditor.Documentation, "ClassViewer.txt");
-            if (!File.Exists(ClassViewPath))
+            filter = new ComboBox<FilterType>("Filter", this);
+            ProjectScripts = LoadScripts();
+            foreach (var script in ProjectScripts)
             {
-                Debug.LogError($"ClassView file not found: {ClassViewPath}");
-                Close();
-            }
-            string ClassFile = File.ReadAllText(ClassViewPath);
-            LoadFromText(ClassFile);
-        }
-        private void OnGUI()
-        {
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Collaps"))
-            {
-                foreach (var node in rootNodes)
+                if (script != null)
                 {
-                    FoldLine(node, false);
-                }
-            }
-            if (GUILayout.Button("Expanded"))
-            {
-                foreach (var node in rootNodes)
-                {
-                    FoldLine(node, true);
-                }
-            }
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.Space();
-            searchQuery = EditorGUILayout.TextField("Search", searchQuery);
-
-            EditorGUILayout.Space();
-
-            // 🔽 Scroll View
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-
-            foreach (var node in rootNodes)
-            {
-                DrawNodeWithSearch(node, 0);
-            }
-
-            EditorGUILayout.EndScrollView();
-            // 🔼 Scroll View
-        }
-
-        private void LoadFromText(string text)
-        {
-            rootNodes.Clear();
-            foldoutStates.Clear();
-
-            string[] lines = text.Split('\n');
-            Stack<ClassTreeNode> stack = new Stack<ClassTreeNode>();
-
-            foreach (string rawLine in lines)
-            {
-                if (string.IsNullOrWhiteSpace(rawLine))
-                    continue;
-
-                int indent = CountIndent(rawLine);
-                string trimmed = rawLine.Trim();
-
-                string nodeName = trimmed;
-                string endText = null;
-                string linkText = null;
-
-                // 🔹 Parse "-> End Text"
-                string middleText = null;
-                int arrowIndex = trimmed.IndexOf("->");
-                if (arrowIndex >= 0)
-                {
-                    nodeName = trimmed.Substring(0, arrowIndex).Trim();
-                    middleText = trimmed.Substring(arrowIndex + 2).Trim();
-                }
-
-                if (middleText != null)
-                {
-                    int linkindex = middleText.IndexOf("https");
-                    if (linkindex >= 0)
+                    Type ScriptType = script.GetClass();
+                    if (ScriptType != null)
                     {
-                        endText = middleText.Substring(0, linkindex).Trim();
-                        linkText = middleText.Substring(linkindex).Trim();
+                        if (ScriptType.Namespace != null)
+                        {
+                            if (NameSpaces.TryGetValue(ScriptType.Namespace, out FieldModule Field))
+                            {
+                                Field.AddChild(script);
+                            }
+                            else
+                            {
+                                FieldModule NewField = new FieldModule(ScriptType.Namespace);
+                                NameSpaces.Add(ScriptType.Namespace, NewField);
+                                NewField.AddChild(script);
+                            }
+                        }
+                        else
+                        {
+                            if (NameSpaces.TryGetValue("NonSpace", out FieldModule Field))
+                            {
+                                Field.AddChild(script);
+                            }
+                            else
+                            {
+                                FieldModule NewField = new FieldModule("NonSpace");
+                                NameSpaces.Add("NonSpace", NewField);
+                                NewField.AddChild(script);
+                            }
+                        }
                     }
                     else
                     {
-                        endText = middleText;
+                        if (NameSpaces.TryGetValue("NoType", out FieldModule Field))
+                        {
+                            Field.AddChild(script);
+                        }
+                        else
+                        {
+                            FieldModule NewField = new FieldModule("NoType");
+                            NameSpaces.Add("NoType", NewField);
+                            NewField.AddChild(script);
+                        }
                     }
-                }
 
-                ClassTreeNode node = new ClassTreeNode
-                {
-                    name = nodeName,
-                    toturial = endText,
-                    link = linkText
-                };
-
-                if (indent == 0)
-                {
-                    rootNodes.Add(node);
-                    stack.Clear();
-                    stack.Push(node);
-                }
-                else
-                {
-                    while (stack.Count > indent)
-                        stack.Pop();
-
-                    stack.Peek().children.Add(node);
-                    stack.Push(node);
                 }
             }
         }
-        private int CountIndent(string line)
+        private void OnGUI()
         {
-            int spaces = 0;
-            foreach (char c in line)
-            {
-                if (c == ' ')
-                    spaces++;
-                else
-                    break;
-            }
-            return spaces / 2; // 2 spaces = 1 level
+            DrawToolbar();
+            scroll = EditorGUILayout.BeginScrollView(scroll);
+            DrawList();
+            EditorGUILayout.EndScrollView();
         }
 
-        private bool DrawNodeWithSearch(ClassTreeNode node, int indent)
+        private void DrawToolbar()
         {
-            // Check if node matches search
-            bool nodeMatches = string.IsNullOrEmpty(searchQuery) ||
-                               node.name.ToLower().Contains(searchQuery.ToLower()) ||
-                               node.toturial?.ToLower().Contains(searchQuery.ToLower()) == true;
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            // Check if any child matches
-            bool anyChildMatches = false;
-            foreach (var child in node.children)
+            search = GUILayout.TextField(
+                search,
+                GUI.skin.FindStyle("ToolbarSearchTextField"),
+                GUILayout.ExpandWidth(true)
+            );
+
+            if (GUILayout.Button(
+                GUIContent.none,
+                GUI.skin.FindStyle("ToolbarSearchCancelButton")))
             {
-                if (NodeOrChildrenMatchSearch(child))
-                {
-                    anyChildMatches = true;
-                    break;
-                }
+                search = "";
+                GUI.FocusControl(null);
+            }
+            filter.Render();
+            if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(70)))
+            {
+                search = "";
+                LoadScripts();
             }
 
-            // If nothing matches, skip
-            if (!nodeMatches && !anyChildMatches)
-                return false;
+            EditorGUILayout.EndHorizontal();
+        }
+        private void DrawList()
+        {
+            foreach (var item in NameSpaces)
+            {
+                item.Value.Draw();
+            }
+        }
+        private void DrawScriptList(ref MonoScript[] Scripts)
+        {
+            foreach (var script in Scripts)
+            {
+                if (!PassSearch(script)) continue;
+                if (!PassFilter(script)) continue;
 
-            // Draw parent node
-            if (!foldoutStates.ContainsKey(node))
-                foldoutStates[node] = true;
+                DrawScript(script);
+            }
+        }
+
+
+
+        private bool PassSearch(MonoScript script)
+        {
+            if (string.IsNullOrEmpty(search)) return true;
+
+            return script.name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+        private bool PassFilter(MonoScript script)
+        {
+            Type type = script.GetClass();
+            if (type == null) return false;
+
+            return filter.GetValue() switch
+            {
+                FilterType.MonoBehaviour => type.IsSubclassOf(typeof(MonoBehaviour)),
+                FilterType.ScriptableObject => type.IsSubclassOf(typeof(ScriptableObject)),
+                FilterType.Editor => type.IsSubclassOf(typeof(UnityEditor.Editor)),
+                _ => true
+            };
+        }
+        private void DrawScript(MonoScript script)
+        {
+            Type type = script.GetClass();
+            string namespaceName = type?.Namespace ?? "No Namespace";
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Space(indent * 20);
-            foldoutStates[node] =
-                EditorGUILayout.Foldout(foldoutStates[node], node.name, true);
+
+            if (GUILayout.Button(script.name, EditorStyles.label, GUILayout.Width(250)))
+            {
+                AssetDatabase.OpenAsset(script);
+            }
+
+            GUILayout.Label(namespaceName);
+
             EditorGUILayout.EndHorizontal();
-
-            // Show endText as link if expanded
-            if (foldoutStates[node] && !string.IsNullOrEmpty(node.toturial))
-            {
-                EditorGUILayout.BeginHorizontal();
-                GUILayout.Space(indent * 20);
-                EditorGUILayout.BeginVertical("box");
-                GUIStyle richLabel = new GUIStyle(EditorStyles.wordWrappedLabel);
-                richLabel.richText = true;
-                GUILayout.Label(node.toturial, richLabel);
-                //GUILayout.Label(node.toturial, new GUIStyle(EditorStyles.wordWrappedLabel));
-                if (!string.IsNullOrEmpty(node.link))
-                {
-                    if (GUILayout.Button("Link", EditorStyles.linkLabel))
-                    {
-                        OnEndTextClicked(node);
-                    }
-                }
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.EndHorizontal();
-            }
-
-
-
-            // Draw children recursively only if expanded
-            if (foldoutStates[node])
-            {
-                foreach (var child in node.children)
-                {
-                    DrawNodeWithSearch(child, indent + 1);
-                }
-            }
-
-            return true;
         }
-        // Helper: check recursively if a node or any child matches search
-        private bool NodeOrChildrenMatchSearch(ClassTreeNode node)
+        private MonoScript[] LoadScripts()
         {
-            bool match = string.IsNullOrEmpty(searchQuery) ||
-                         node.name.ToLower().Contains(searchQuery.ToLower()) ||
-                         node.toturial?.ToLower().Contains(searchQuery.ToLower()) == true;
+            List<MonoScript> scripts = new List<MonoScript>();
 
-            if (match)
-                return true;
+            string[] guids = AssetDatabase.FindAssets("t:MonoScript");
 
-            foreach (var child in node.children)
+            foreach (string guid in guids)
             {
-                if (NodeOrChildrenMatchSearch(child))
-                    return true;
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                MonoScript script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
+
+                scripts.Add(script);
             }
 
-            return false;
+            scripts.Sort((a, b) => a.name.CompareTo(b.name));
+
+            return scripts.ToArray();
         }
-        private void FoldLine(ClassTreeNode node, bool result)
-        {
-            foldoutStates[node] = result;
-            if (foldoutStates[node])
-            {
-                foreach (var child in node.children)
-                    FoldLine(child, result);
-            }
-        }
-        private void OnEndTextClicked(ClassTreeNode node)
-        {
-            if (EditorUtility.DisplayDialog("OpenLink", node.link, "Open", "Cancel"))
-            {
-                // 3️⃣ OR open URL (if endText is a URL)
-                Application.OpenURL(node.link);
-            }
-            // 2️⃣ OR ping asset
-            // EditorGUIUtility.PingObject(yourObject);
-        }
+
+
+
+
+
 
     }
 }
