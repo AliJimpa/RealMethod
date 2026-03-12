@@ -7,10 +7,9 @@ namespace RealMethod.Editor
 {
     class FieldModule
     {
-        private MonoScript MyScript;
+        private MonoScript MyScript = null;
         private List<FieldModule> MyChilds = new List<FieldModule>();
         private string MyName = string.Empty;
-
 
 
         public string Title
@@ -27,11 +26,9 @@ namespace RealMethod.Editor
                 }
             }
         }
+        public bool HasFile => MyScript != null;
         public MonoScript ScriptFile => MyScript;
-        public Type Class => MyScript.GetClass();
         public bool IsExpand { get; private set; } = false;
-
-
 
         public FieldModule(string Name)
         {
@@ -45,90 +42,145 @@ namespace RealMethod.Editor
 
         public void Draw()
         {
+            EditorGUILayout.BeginHorizontal();
+            DrawField();
+            EditorGUILayout.EndHorizontal();
+            if (IsExpand)
+            {
+                EditorGUI.indentLevel++;
+                foreach (var child in MyChilds)
+                {
+                    child.Draw();
+                }
+                EditorGUI.indentLevel--;
+            }
+        }
+        public void AddChild(FieldModule ChildModule)
+        {
+            if (ChildModule == null)
+            {
+                Print("ChildModule is not valid!");
+                return;
+            }
+            MyChilds.Add(ChildModule);
+        }
+        public void AddChild(MonoScript File)
+        {
+            Type NewType = File.GetClass();
+            if (NewType == null || NewType.Namespace == null)
+            {
+                Print($"MonoScript does't have have any 'MainClass'or'NameSpace' for Child[{File.name}]");
+                return;
+            }
+
+            FieldModule NewModule = new FieldModule(File);
+            FieldModule ParentField = TraverseHierarchy(File.GetClass(), true);
+
+            if (ParentField.TryFindField(NewModule.Title, out FieldModule result))
+            {
+                if (!result.HasFile)
+                {
+                    result.SetFileScript(File);
+                }
+            }
+            else
+            {
+                ParentField.AddChild(NewModule);
+            }
+
+        }
+        public void Expand()
+        {
+            IsExpand = true;
+        }
+
+        private void DrawField()
+        {
+            Color old = GUI.color;
+            if (!HasFile)
+            {
+                GUI.color = new Color(0.9f, 0.9f, 0.9f);
+            }
+
+            // Write Name as Label or Foldout
             if (MyChilds.Count == 0)
             {
                 EditorGUILayout.LabelField(Title);
+                IsExpand = false;
             }
             else
             {
                 IsExpand = EditorGUILayout.Foldout(IsExpand, Title, true);
-                if (IsExpand)
+            }
+
+            // Add Button
+            if (MyScript != null)
+            {
+                if (GUILayout.Button("OpenFile", EditorStyles.label))
                 {
-                    EditorGUI.indentLevel++;
-                    foreach (var child in MyChilds)
-                    {
-                        child.Draw();
-                    }
-                    EditorGUI.indentLevel--;
+                    AssetDatabase.OpenAsset(MyScript);
                 }
             }
+
+            GUI.color = old;
         }
-        public void AddChild(MonoScript script)
+        private FieldModule TraverseHierarchy(Type Target, bool ReturnParent = false)
         {
-            FieldModule NewChildField = new FieldModule(script);
-            Type NewType = script.GetClass();
-            if (NewType == null)
+            FieldModule ParentField = null;
+            Type ParentChildType = Target.BaseType;
+            if (ParentChildType != null)
             {
-                MyChilds.Add(NewChildField);
-                return;
+                if (ParentChildType.Namespace == Target.Namespace)
+                {
+                    //Recursive
+                    ParentField = TraverseHierarchy(ParentChildType);
+                }
             }
-            Type NewParentType = NewType.BaseType;
-            if (NewParentType == null)
+            if (ParentField == null)
             {
-                MyChilds.Add(NewChildField);
-                return;
+                ParentField = GetOrCreateField(Target.Namespace);
             }
-
-
-
-            // find parent from this child
+            return ReturnParent ? ParentField : ParentField.GetOrCreateField(Target.Name);
+        }
+        private void SetFileScript(MonoScript File)
+        {
+            MyScript = File;
+        }
+        private FieldModule GetOrCreateField(string title)
+        {
+            FieldModule Result = FindField(title);
+            if (Result == null)
+            {
+                Result = new FieldModule(title);
+                MyChilds.Add(Result);
+            }
+            return Result;
+        }
+        private FieldModule FindField(string title)
+        {
             foreach (var child in MyChilds)
             {
-                Type ChildType = child.Class;
-                if (ChildType != null)
-                {
-                    if (NewParentType == ChildType)
-                    {
-                        child.AddChild(NewChildField.ScriptFile);
-                        return;
-                    }
-                }
+                if (child.Title == title)
+                { return child; }
             }
-
-            // Find Child from This Field Child
-            List<int> RemoveIndex = new List<int>();
-            for (int i = 0; i < MyChilds.Count; i++)
+            return null;
+        }
+        private bool TryFindField(string title, out FieldModule module)
+        {
+            foreach (var child in MyChilds)
             {
-                FieldModule child = MyChilds[i];
-                Type ChildType = child.Class;
-                if (ChildType != null)
+                if (child.Title == title)
                 {
-                    Type ChildParentType = ChildType.BaseType;
-                    if (ChildParentType != null)
-                    {
-                        if (NewType == ChildParentType)
-                        {
-                            RemoveIndex.Add(i);
-                            NewChildField.AddChild(child.ScriptFile);
-                        }
-                    }
+                    module = child;
+                    return true;
                 }
             }
-
-
-            MyChilds.Add(NewChildField);
-
-            foreach (var Index in RemoveIndex)
-            {
-                if (MyChilds.IsValidIndex(Index))
-                {
-                    MyChilds.RemoveAt(Index);
-                }
-                else
-                {
-                    Debug.LogWarning($"[{Title}] Remove Index is not valid, TargetIndex={Index} , Count={MyChilds.Count}");
-                }
-            }
+            module = null;
+            return false;
+        }
+        private void Print(string message)
+        {
+            Debug.Log($"[{Title}]: {message}");
         }
     }
 
@@ -170,81 +222,51 @@ namespace RealMethod.Editor
 
         private Vector2 scroll;
         private MonoScript[] ProjectScripts;
-        private Dictionary<string, FieldModule> NameSpaces = new Dictionary<string, FieldModule>();
-
-        private string search = "";
+        private FieldModule Root;
+        private string search = string.Empty;
         private ComboBox<FilterType> filter;
-        private bool TEST;
+        public bool IsSearching
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(search))
+                    return true;
+
+                if (filter.GetValue() != FilterType.All)
+                    return true;
+
+                return false;
+            }
+        }
 
 
         [MenuItem("Tools/RealMethod/ClassViewer")]
         public static void Open()
         {
-
             GetWindow<ClassViewerWindow>("Class Viewer");
         }
         private void OnEnable()
         {
             filter = new ComboBox<FilterType>("Filter", this);
             ProjectScripts = LoadScripts();
-            foreach (var script in ProjectScripts)
-            {
-                if (script != null)
-                {
-                    Type ScriptType = script.GetClass();
-                    if (ScriptType != null)
-                    {
-                        if (ScriptType.Namespace != null)
-                        {
-                            if (NameSpaces.TryGetValue(ScriptType.Namespace, out FieldModule Field))
-                            {
-                                Field.AddChild(script);
-                            }
-                            else
-                            {
-                                FieldModule NewField = new FieldModule(ScriptType.Namespace);
-                                NameSpaces.Add(ScriptType.Namespace, NewField);
-                                NewField.AddChild(script);
-                            }
-                        }
-                        else
-                        {
-                            if (NameSpaces.TryGetValue("NonSpace", out FieldModule Field))
-                            {
-                                Field.AddChild(script);
-                            }
-                            else
-                            {
-                                FieldModule NewField = new FieldModule("NonSpace");
-                                NameSpaces.Add("NonSpace", NewField);
-                                NewField.AddChild(script);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (NameSpaces.TryGetValue("NoType", out FieldModule Field))
-                        {
-                            Field.AddChild(script);
-                        }
-                        else
-                        {
-                            FieldModule NewField = new FieldModule("NoType");
-                            NameSpaces.Add("NoType", NewField);
-                            NewField.AddChild(script);
-                        }
-                    }
-
-                }
-            }
+            Preper();
         }
         private void OnGUI()
         {
             DrawToolbar();
             scroll = EditorGUILayout.BeginScrollView(scroll);
-            DrawList();
+            if (IsSearching)
+            {
+                DrawScriptList();
+            }
+            else
+            {
+                Root.Draw();
+            }
             EditorGUILayout.EndScrollView();
         }
+
+
 
         private void DrawToolbar()
         {
@@ -263,25 +285,23 @@ namespace RealMethod.Editor
                 search = "";
                 GUI.FocusControl(null);
             }
+
             filter.Render();
+
             if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(70)))
             {
                 search = "";
-                LoadScripts();
+                filter.SetValue(FilterType.All);
+                Root = null;
+                ProjectScripts = LoadScripts();
+                Preper();
             }
 
             EditorGUILayout.EndHorizontal();
         }
-        private void DrawList()
+        private void DrawScriptList()
         {
-            foreach (var item in NameSpaces)
-            {
-                item.Value.Draw();
-            }
-        }
-        private void DrawScriptList(ref MonoScript[] Scripts)
-        {
-            foreach (var script in Scripts)
+            foreach (var script in ProjectScripts)
             {
                 if (!PassSearch(script)) continue;
                 if (!PassFilter(script)) continue;
@@ -289,9 +309,22 @@ namespace RealMethod.Editor
                 DrawScript(script);
             }
         }
+        void DrawScript(MonoScript script)
+        {
+            Type type = script.GetClass();
+            string namespaceName = type?.Namespace ?? "No Namespace";
 
+            EditorGUILayout.BeginHorizontal();
 
+            GUILayout.Label($"{script.name}({namespaceName})", GUILayout.Width(200));
 
+            if (GUILayout.Button("OpenFile", EditorStyles.label))
+            {
+                AssetDatabase.OpenAsset(script);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
         private bool PassSearch(MonoScript script)
         {
             if (string.IsNullOrEmpty(search)) return true;
@@ -311,22 +344,6 @@ namespace RealMethod.Editor
                 _ => true
             };
         }
-        private void DrawScript(MonoScript script)
-        {
-            Type type = script.GetClass();
-            string namespaceName = type?.Namespace ?? "No Namespace";
-
-            EditorGUILayout.BeginHorizontal();
-
-            if (GUILayout.Button(script.name, EditorStyles.label, GUILayout.Width(250)))
-            {
-                AssetDatabase.OpenAsset(script);
-            }
-
-            GUILayout.Label(namespaceName);
-
-            EditorGUILayout.EndHorizontal();
-        }
         private MonoScript[] LoadScripts()
         {
             List<MonoScript> scripts = new List<MonoScript>();
@@ -345,11 +362,39 @@ namespace RealMethod.Editor
 
             return scripts.ToArray();
         }
+        private void Preper()
+        {
+            Root = new FieldModule("Root");
+            FieldModule NoneNamespace = new FieldModule("Global (No Namespace)");
+            FieldModule NoneClass = new FieldModule("No Type");
+            Root.AddChild(NoneNamespace);
+            Root.AddChild(NoneClass);
 
+            foreach (var script in ProjectScripts)
+            {
+                if (script != null)
+                {
+                    Type ScriptType = script.GetClass();
+                    if (ScriptType != null)
+                    {
+                        if (ScriptType.Namespace != null)
+                        {
+                            Root.AddChild(script);
+                        }
+                        else
+                        {
+                            NoneNamespace.AddChild(new FieldModule(script));
+                        }
+                    }
+                    else
+                    {
+                        NoneClass.AddChild(new FieldModule(script));
+                    }
 
+                }
+            }
 
-
-
-
+            Root.Expand();
+        }
     }
 }
