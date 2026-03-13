@@ -105,7 +105,7 @@ namespace RealMethod.Editor
             // Write Name as Label or Foldout
             if (MyChilds.Count == 0)
             {
-                EditorGUILayout.LabelField(Title);
+                EditorGUILayout.LabelField(Title, GUILayout.Width(300));
                 IsExpand = false;
             }
             else
@@ -316,7 +316,7 @@ namespace RealMethod.Editor
 
             EditorGUILayout.BeginHorizontal();
 
-            GUILayout.Label($"{script.name}({namespaceName})", GUILayout.Width(200));
+            GUILayout.Label($"{script.name}({namespaceName})", GUILayout.Width(300));
 
             if (GUILayout.Button("OpenFile", EditorStyles.label))
             {
