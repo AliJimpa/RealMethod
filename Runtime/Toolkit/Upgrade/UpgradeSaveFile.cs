@@ -21,16 +21,16 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
             {
-                RM_PlayerPrefs.SetArray("UnlockItems", UnlockItems.ToArray());
-                RM_PlayerPrefs.SetArray("AvailableItems", AvailableItems.ToArray());
+                RM_Save.SetArray("UnlockItems", UnlockItems.ToArray());
+                RM_Save.SetArray("AvailableItems", AvailableItems.ToArray());
             }
         }
         protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
             {
-                UnlockItems = RM_PlayerPrefs.GetArray<string>("UnlockItems").ToList();
-                AvailableItems = RM_PlayerPrefs.GetArray<string>("AvailableItems").ToList();
+                UnlockItems = RM_Save.GetArray<string>("UnlockItems").ToList();
+                AvailableItems = RM_Save.GetArray<string>("AvailableItems").ToList();
             }
         }
         protected override void OnDeleted()

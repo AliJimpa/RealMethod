@@ -10,7 +10,6 @@ namespace RealMethod.Editor
         {
             return ParseSingleLine(csvLine).ToArray();
         }
-
         public static List<string[]> ParseCSV(string csvText)
         {
             List<string[]> rows = new List<string[]>();
@@ -24,7 +23,6 @@ namespace RealMethod.Editor
 
             return rows;
         }
-
         public static string[] ParseCSVToFlatArray(string csvText)
         {
             List<string> cells = new List<string>();
@@ -37,7 +35,6 @@ namespace RealMethod.Editor
 
             return cells.ToArray();
         }
-
         // This method parses a single line of CSV text and returns a list of strings.
         private static List<string> ParseSingleLine(string csvLine)
         {

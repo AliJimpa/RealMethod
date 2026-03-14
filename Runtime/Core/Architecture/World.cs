@@ -55,9 +55,9 @@ namespace RealMethod
 #if UNITY_EDITOR
         protected virtual void OnDrawGizmos()
         {
-            RM_Draw.gizmos.Capsule(transform.position, Color.cyan, height, radius);
-            RM_Draw.gizmos.Arrow(transform.position, transform.forward, Color.red);
-            RM_Draw.gizmos.Text(PosName, transform.position + (transform.up * (height / 2)) + (Vector3.up * 0.1f), Color.black);
+            RM_Gizmos.Capsule(transform.position, Color.cyan, height, radius);
+            RM_Gizmos.Arrow(transform.position, transform.forward, Color.red);
+            RM_Gizmos.Text(PosName, transform.position + (transform.up * (height / 2)) + (Vector3.up * 0.1f), Color.black);
         }
 #endif
     }

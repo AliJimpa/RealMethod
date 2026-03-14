@@ -14,7 +14,7 @@ namespace RealMethod
                 Debug.LogWarning("For Use PlayAndNotify you need to a MonoBehaviour for running Cortine for Finish Callback");
                 return null;
             }
-            return runner.StartCoroutine(RM_Coroutine.WaitForState(animator, layer, stateName, onFinished));
+            return runner.StartCoroutine(RM_Animation.WaitForState(animator, layer, stateName, onFinished));
         }
 
         /// <summary>

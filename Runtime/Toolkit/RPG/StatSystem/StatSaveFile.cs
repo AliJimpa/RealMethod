@@ -26,20 +26,20 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
             {
-                RM_PlayerPrefs.SetArray("StatName", Names.ToArray());
-                RM_PlayerPrefs.SetArray("StatBaseValue", BaseValue.ToArray());
-                RM_PlayerPrefs.SetArray("StatMin", Mins.ToArray());
-                RM_PlayerPrefs.SetArray("StatMax", Maxs.ToArray());
+                RM_Save.SetArray("StatName", Names.ToArray());
+                RM_Save.SetArray("StatBaseValue", BaseValue.ToArray());
+                RM_Save.SetArray("StatMin", Mins.ToArray());
+                RM_Save.SetArray("StatMax", Maxs.ToArray());
             }
         }
         protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
             {
-                Names = RM_PlayerPrefs.GetArray<string>("StatName").ToList();
-                BaseValue = RM_PlayerPrefs.GetArray<float>("StatBaseValue").ToList();
-                Mins = RM_PlayerPrefs.GetArray<float>("StatMin").ToList();
-                Maxs = RM_PlayerPrefs.GetArray<float>("StatMax").ToList();
+                Names = RM_Save.GetArray<string>("StatName").ToList();
+                BaseValue = RM_Save.GetArray<float>("StatBaseValue").ToList();
+                Mins = RM_Save.GetArray<float>("StatMin").ToList();
+                Maxs = RM_Save.GetArray<float>("StatMax").ToList();
             }
         }
         protected override void OnDeleted()

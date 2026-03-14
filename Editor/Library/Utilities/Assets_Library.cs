@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class RM_Assets
+    public static class RM_Asset
     {
-        public static string GetSelectedAssetPath()
+        public static string GetSelectedAssetDirectory()
         {
             string path = AssetDatabase.GetAssetPath(Selection.activeObject);
             if (string.IsNullOrEmpty(path)) return "Assets";

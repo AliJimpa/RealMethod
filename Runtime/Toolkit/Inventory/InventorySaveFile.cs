@@ -30,18 +30,18 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
             {
-                RM_PlayerPrefs.SetArray("ItemsName", ItemsName.ToArray());
-                RM_PlayerPrefs.SetArray("ItemsQuantity", ItemsQuantity.ToArray());
-                RM_PlayerPrefs.SetArray("ItemsCapacity", ItemsCapacity.ToArray());
+                RM_Save.SetArray("ItemsName", ItemsName.ToArray());
+                RM_Save.SetArray("ItemsQuantity", ItemsQuantity.ToArray());
+                RM_Save.SetArray("ItemsCapacity", ItemsCapacity.ToArray());
             }
         }
         protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
             {
-                ItemsName = RM_PlayerPrefs.GetArray<string>("ItemsName").ToList();
-                ItemsQuantity = RM_PlayerPrefs.GetArray<int>("ItemsQuantity").ToList();
-                ItemsCapacity = RM_PlayerPrefs.GetArray<int>("ItemsCapacity").ToList();
+                ItemsName = RM_Save.GetArray<string>("ItemsName").ToList();
+                ItemsQuantity = RM_Save.GetArray<int>("ItemsQuantity").ToList();
+                ItemsCapacity = RM_Save.GetArray<int>("ItemsCapacity").ToList();
             }
         }
         protected override void OnDeleted()

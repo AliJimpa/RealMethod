@@ -301,7 +301,7 @@ namespace RealMethod.Editor
         }
 
 
-        [MenuItem("Tools/RealMethod/ClassViewer")]
+        [MenuItem("Tools/RealMethod/Viewer/ClassViewer")]
         public static void Open()
         {
             GetWindow<ClassViewerWindow>("Class Viewer");

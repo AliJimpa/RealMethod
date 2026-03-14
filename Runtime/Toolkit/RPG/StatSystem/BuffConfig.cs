@@ -59,7 +59,7 @@ namespace RealMethod
             int targetindex = System.Convert.ToInt32(StateName);
             foreach (var modif in presets)
             {
-                if (RM_Core.enume.AreEnumValuesEqual(modif.Stat, StateName))
+                if (RM_Enum.AreEnumValuesEqual(modif.Stat, StateName))
                 {
                     Result.Add(modif);
                 }

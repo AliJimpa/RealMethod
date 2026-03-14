@@ -22,12 +22,12 @@ namespace RealMethod
         protected override void OnSaved()
         {
             if (UsePlayerPrefs)
-                RM_PlayerPrefs.SetArray("Tutorial", TutorialMessage.ToArray());
+                RM_Save.SetArray("Tutorial", TutorialMessage.ToArray());
         }
         protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
-                TutorialMessage = RM_PlayerPrefs.GetArray<string>("Tutorial").ToHashSet();
+                TutorialMessage = RM_Save.GetArray<string>("Tutorial").ToHashSet();
         }
         protected override void OnDeleted()
         {

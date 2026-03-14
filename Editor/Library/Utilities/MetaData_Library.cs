@@ -9,7 +9,7 @@ namespace RealMethod.Editor
     {
         private static string GetMetaFilePath(string assetPath) => assetPath + ".meta";
 
-        // 🔹 Automatically determines the mode (Text in Editor, Binary in Play Mode)
+        //Automatically determines the mode (Text in Editor, Binary in Play Mode)
         private static bool UseBinaryMode
         {
             get
@@ -18,7 +18,7 @@ namespace RealMethod.Editor
             }
         }
 
-        // 🔹 Save metadata (Auto-Switch)
+        //Save metadata (Auto-Switch)
         public static void SaveCustomMetadata(string assetPath, string key, string value)
         {
             string metaFilePath = GetMetaFilePath(assetPath);
@@ -35,7 +35,7 @@ namespace RealMethod.Editor
                 SaveTextMetadata(metaFilePath, key, value);
         }
 
-        // 🔹 Load metadata (Auto-Switch)
+        //Load metadata (Auto-Switch)
         public static string LoadCustomMetadata(string assetPath, string key)
         {
             string metaFilePath = GetMetaFilePath(assetPath);
@@ -48,14 +48,14 @@ namespace RealMethod.Editor
             return UseBinaryMode ? LoadBinaryMetadata(metaFilePath, key) : LoadTextMetadata(metaFilePath, key);
         }
 
-        // 🔹 Check if metadata exists
+        //Check if metadata exists
         public static bool HasMetadata(string assetPath, string key)
         {
             string metaFilePath = GetMetaFilePath(assetPath);
             return File.Exists(metaFilePath) && File.ReadAllText(metaFilePath).Contains($"{key}:");
         }
 
-        // 🔹 Delete metadata entry
+        //Delete metadata entry
         public static void DeleteMetadata(string assetPath, string key)
         {
             string metaFilePath = GetMetaFilePath(assetPath);
@@ -65,7 +65,7 @@ namespace RealMethod.Editor
             File.WriteAllLines(metaFilePath, Array.FindAll(lines, line => !line.StartsWith($"{key}:")));
         }
 
-        // 🔹 Save Text Metadata
+        //Save Text Metadata
         private static void SaveTextMetadata(string metaFilePath, string key, string value)
         {
             string[] lines = File.ReadAllLines(metaFilePath);
@@ -85,7 +85,7 @@ namespace RealMethod.Editor
             else File.WriteAllLines(metaFilePath, lines);
         }
 
-        // 🔹 Load Text Metadata
+        //Load Text Metadata
         private static string LoadTextMetadata(string metaFilePath, string key)
         {
             foreach (string line in File.ReadAllLines(metaFilePath))
@@ -96,7 +96,7 @@ namespace RealMethod.Editor
             return null;
         }
 
-        // 🔹 Save Binary Metadata
+        //Save Binary Metadata
         private static void SaveBinaryMetadata(string metaFilePath, string key, string value)
         {
             using (BinaryWriter writer = new BinaryWriter(File.Open(metaFilePath, FileMode.Append)))
@@ -106,7 +106,7 @@ namespace RealMethod.Editor
             }
         }
 
-        // 🔹 Load Binary Metadata
+        //Load Binary Metadata
         private static string LoadBinaryMetadata(string metaFilePath, string key)
         {
             using (BinaryReader reader = new BinaryReader(File.Open(metaFilePath, FileMode.Open)))

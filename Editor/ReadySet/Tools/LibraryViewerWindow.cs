@@ -8,11 +8,11 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class LibraryWindow : EditorWindow
+    public class LibraryViewerWindow : EditorWindow
     {
         private class FieldModule
         {
-            private Vector2 scroll;
+            //private Vector2 scroll;
             private MonoScript File;
 
 
@@ -54,13 +54,11 @@ namespace RealMethod.Editor
                 EditorGUILayout.EndHorizontal();
                 if (IsExpand)
                 {
-                    EditorGUI.indentLevel++;
                     //EditorGUI.BeginDisabledGroup(true);
-                    scroll = EditorGUILayout.BeginScrollView(scroll, GUILayout.Height(120));
+                    //scroll = EditorGUILayout.BeginScrollView(scroll, GUILayout.Height(800));
                     EditorGUILayout.TextArea(GetMethodBody(File, TargetMethod));
-                    EditorGUILayout.EndScrollView();
+                    //EditorGUILayout.EndScrollView();
                     //EditorGUI.EndDisabledGroup();
-                    EditorGUI.indentLevel--;
                 }
 
             }
@@ -139,10 +137,10 @@ namespace RealMethod.Editor
         private string search = string.Empty;
 
 
-        [MenuItem("Tools/RealMethod/LibraryWindow")]
+        [MenuItem("Tools/RealMethod/Viewer/LibraryViewer")]
         public static void Open()
         {
-            GetWindow<LibraryWindow>("Library Window");
+            GetWindow<LibraryViewerWindow>("LibraryViewer");
         }
         private void OnEnable()
         {
@@ -174,12 +172,6 @@ namespace RealMethod.Editor
         {
             Fields.Clear();
 
-            BindingFlags flags =
-            BindingFlags.Public |
-            BindingFlags.NonPublic |
-            BindingFlags.Instance |
-            BindingFlags.Static |
-            BindingFlags.DeclaredOnly;
 
             foreach (var script in Scripts)
             {
@@ -189,24 +181,36 @@ namespace RealMethod.Editor
 
                 if (mainType.IsAbstract && mainType.IsSealed)
                 {
+                    DrawField(script,mainType);
                     Type[] nestedTypes = mainType.GetNestedTypes(BindingFlags.Public);
                     foreach (var classtype in nestedTypes)
                     {
-                        foreach (var method in classtype.GetMethods(flags))
-                        {
-                            if (method.IsSpecialName) continue;
-
-                            if (!method.IsPublic) continue;
-
-                            if (!method.IsStatic) continue;
-
-                            if (method.IsDefined(typeof(System.Runtime.CompilerServices.ExtensionAttribute), false)) continue;
-
-                            Fields.Add(new FieldModule(script, method));
-                        }
+                        DrawField(script,classtype);
                     }
                 }
 
+            }
+        }
+        private void DrawField(MonoScript script, Type mainType)
+        {
+            BindingFlags flags =
+            BindingFlags.Public |
+            BindingFlags.NonPublic |
+            BindingFlags.Instance |
+            BindingFlags.Static |
+            BindingFlags.DeclaredOnly;
+
+            foreach (var method in mainType.GetMethods(flags))
+            {
+                if (method.IsSpecialName) continue;
+
+                if (!method.IsPublic) continue;
+
+                if (!method.IsStatic) continue;
+
+                if (method.IsDefined(typeof(System.Runtime.CompilerServices.ExtensionAttribute), false)) continue;
+
+                Fields.Add(new FieldModule(script, method));
             }
         }
         private void DrawToolbar()

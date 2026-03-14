@@ -151,7 +151,7 @@ namespace RealMethod.Editor
                     // Attempt to load the settings asset
                     if (!GetSettingStorage(out TargetStorage))
                     {
-                        if (Directory.Exists(Path.GetDirectoryName(RM_CoreEditor.SetttingAssetPath)))
+                        if (Directory.Exists(Path.GetDirectoryName(RM_Editor.SetttingAssetPath)))
                         {
                             TargetStorage = CreateSettingStorage();
                         }
@@ -202,7 +202,7 @@ namespace RealMethod.Editor
                     }
                     else
                     {
-                        EditorGUILayout.HelpBox($"The Address is not valid {Path.GetDirectoryName(RM_CoreEditor.SetttingAssetPath)}", MessageType.Error);
+                        EditorGUILayout.HelpBox($"The Address is not valid {Path.GetDirectoryName(RM_Editor.SetttingAssetPath)}", MessageType.Error);
                         if (GUILayout.Button("Fix"))
                         {
                             if (!Directory.Exists("Assets/Resources"))
@@ -233,7 +233,7 @@ namespace RealMethod.Editor
         public static bool GetSettingStorage(out ProjectSettingAsset settings)
         {
             // Attempt to load the settings asset from the specified path
-            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(RM_CoreEditor.SetttingAssetPath);
+            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(RM_Editor.SetttingAssetPath);
             AddExteraSections(settings);
             return settings != null;
         }
@@ -241,7 +241,7 @@ namespace RealMethod.Editor
         {
             // Create a new settings asset at the specified path
             ProjectSettingAsset settings = ScriptableObject.CreateInstance<ProjectSettingAsset>();
-            AssetDatabase.CreateAsset(settings, RM_CoreEditor.SetttingAssetPath);
+            AssetDatabase.CreateAsset(settings, RM_Editor.SetttingAssetPath);
             AssetDatabase.SaveAssets();
             AddExteraSections(settings);
             return settings;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public static class RM_PlayerPrefs
+    public static class RM_Save
     {
         // Boolean
         public static void SetBool(string key, bool value)
