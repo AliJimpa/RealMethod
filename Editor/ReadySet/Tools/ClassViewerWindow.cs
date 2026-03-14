@@ -24,7 +24,15 @@ namespace RealMethod.Editor
                 {
                     if (MyScript != null)
                     {
-                        return MyScript.GetClass().Name;
+                        Type targetclass = MyScript.GetClass();
+                        if (targetclass != null)
+                        {
+                            return MyScript.GetClass().Name;
+                        }
+                        else
+                        {
+                            return MyScript.name;
+                        }
                     }
                     else
                     {
@@ -107,6 +115,10 @@ namespace RealMethod.Editor
             public void Expand()
             {
                 IsExpand = true;
+                for (int i = 2; i < MyChilds.Count; i++)
+                {
+                    MyChilds[i].SortChild();
+                }
             }
 
 
@@ -213,6 +225,19 @@ namespace RealMethod.Editor
                 module = null;
                 return false;
             }
+            private void SortChild()
+            {
+                int fixedCount = 2;
+
+                var sortablePart = MyChilds.GetRange(fixedCount, MyChilds.Count - fixedCount);
+
+                sortablePart.Sort((a, b) => string.Compare(a.Title, b.Title, StringComparison.OrdinalIgnoreCase));
+
+                for (int i = 0; i < sortablePart.Count; i++)
+                {
+                    MyChilds[fixedCount + i] = sortablePart[i];
+                }
+            }
             private void Print(string message)
             {
                 Debug.Log($"[{Title}]: {message}");
@@ -275,7 +300,6 @@ namespace RealMethod.Editor
             ScriptableObject,
             Editor
         }
-
 
 
         private Vector2 scroll;
