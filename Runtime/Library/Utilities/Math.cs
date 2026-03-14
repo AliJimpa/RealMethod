@@ -7,9 +7,7 @@ namespace RealMethod
     {
         public static Vector3 TwoD => new Vector3(1, 0, 1);
 
-        public class Map
-        {
-            /// <summary>
+        /// <summary>
             /// Maps a float value from one range to another and clamps the result to the output range.
             /// </summary>
             /// <param name="value">The input value to map.</param>
@@ -52,7 +50,6 @@ namespace RealMethod
 
                 return isAboveMin && isBelowMax;
             }
-        }
 
         public class Interpolate
         {

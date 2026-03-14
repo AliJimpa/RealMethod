@@ -331,6 +331,29 @@ namespace RealMethod
         }
 
 
+
+        private float RemapClamped(float value, float inMin, float inMax, float outMin, float outMax)
+        {
+            // Prevent divide by zero
+            if (Mathf.Approximately(inMax, inMin))
+            {
+                Debug.LogWarning("Input range is zero. Returning outMin.");
+                return outMin;
+            }
+
+            // Normalize the input value to 0–1 within the input range
+            float t = (value - inMin) / (inMax - inMin);
+
+            // Scale and offset to target range
+            float mappedValue = t * (outMax - outMin) + outMin;
+
+            // Clamp result to the output range
+            return Mathf.Clamp(mappedValue, Mathf.Min(outMin, outMax), Mathf.Max(outMin, outMax));
+        }
+
+
+
+
         // Corotine
         private IEnumerator LoadSceneAsync(string scene, int scneIndex = -1)
         {
@@ -429,7 +452,7 @@ namespace RealMethod
             }
             while (!Load_opertation.isDone)
             {
-                SceneLoadingProcessEvent?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1));
+                SceneLoadingProcessEvent?.Invoke(RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1));
                 SceneLoadingEvent?.Invoke(false);
                 isLoading = false;
                 yield return null;
@@ -448,7 +471,7 @@ namespace RealMethod
                 }
                 while (!Additive_Load_opertation.isDone)
                 {
-                    SceneLoadingProcessEvent?.Invoke(RM_Math.Map.RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1 - (i + 1)));
+                    SceneLoadingProcessEvent?.Invoke(RemapClamped(Load_opertation.progress, 0, 1, 0, 1 / WS.Count + 1 - (i + 1)));
                     yield return null;
                 }
             }
