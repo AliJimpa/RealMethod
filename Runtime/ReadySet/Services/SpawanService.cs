@@ -41,7 +41,7 @@ namespace RealMethod
         {
             GameDespawn = new Despawn();
         }
-        protected override void OnWorldChanging(World Previous , World New)
+        protected override void OnWorldChanging(World Previous, World New)
         {
         }
         protected override void OnEnd(object Author)
@@ -660,9 +660,9 @@ namespace RealMethod
             }
 
         }
-        public static T Class<T>() where T : Object, new()
+        public static T Class<T>(System.Type classType)
         {
-            return new T();
+            return (T)System.Activator.CreateInstance(classType);
         }
 
         // Realmethod
