@@ -662,6 +662,11 @@ namespace RealMethod
         }
         public static T Class<T>(System.Type classType)
         {
+            if (classType == null)
+            {
+                Debug.LogWarning($" {instance}: ClassType is not valid!");
+                return default;
+            }
             return (T)System.Activator.CreateInstance(classType);
         }
 
