@@ -9,9 +9,10 @@ namespace RealMethod.Editor
     // This class is used to create custom editor properties that can be rendered in the Unity Editor.
     public abstract class EditorProperty
     {
-        protected Object Owner;
-        public string PropertyName { get; private set; }
         private ErrorAction PropertyError = null;
+
+        public Object Owner { get; private set; }
+        public string PropertyName { get; private set; }
 
         public EditorProperty(string _Name, Object _Owner)
         {
@@ -66,6 +67,53 @@ namespace RealMethod.Editor
         public void SetValue(T NewValue)
         {
             CurrentValue = NewValue;
+        }
+
+        // Operators
+        public static implicit operator T(EditorProperty<T> property)
+        {
+            return property != null ? property.CurrentValue : default;
+        }
+        public static bool operator ==(EditorProperty<T> a, EditorProperty<T> b)
+        {
+            if (ReferenceEquals(a, b))
+                return true;
+
+            if (a is null || b is null)
+                return false;
+
+            return EqualityComparer<T>.Default.Equals(a.CurrentValue, b.CurrentValue);
+        }
+        public static bool operator !=(EditorProperty<T> a, EditorProperty<T> b)
+        {
+            return !(a == b);
+        }
+        public static bool operator ==(EditorProperty<T> a, T b)
+        {
+            if (a is null)
+                return false;
+
+            return EqualityComparer<T>.Default.Equals(a.CurrentValue, b);
+        }
+        public static bool operator !=(EditorProperty<T> a, T b)
+        {
+            return !(a == b);
+        }
+
+        // Overrides
+        public override bool Equals(object obj)
+        {
+            if (obj is EditorProperty<T> other)
+                return EqualityComparer<T>.Default.Equals(CurrentValue, other.CurrentValue);
+
+            if (obj is T value)
+                return EqualityComparer<T>.Default.Equals(CurrentValue, value);
+
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return CurrentValue?.GetHashCode() ?? 0;
         }
 
     }
