@@ -381,9 +381,9 @@ namespace RealMethod.Editor
             throw new System.NotImplementedException();
         }
     }
-    public class EP_ScriptableObject<T> : EditorProperty<T> where T : ScriptableObject
+    public class EP_Asset<T> : EditorProperty<T> where T : PrimitiveAsset
     {
-        public EP_ScriptableObject(string Name, Object other) : base(Name, other)
+        public EP_Asset(string Name, Object other) : base(Name, other)
         {
             CurrentValue = null;
             CashValue = null;
@@ -407,9 +407,9 @@ namespace RealMethod.Editor
         }
 
     }
-    public class EP_Class<T> : EditorProperty<T> where T : class
+    public class EP_Variable<T> : EditorProperty<T> where T : class
     {
-        public EP_Class(string Name, Object other) : base(Name, other)
+        public EP_Variable(string Name, Object other) : base(Name, other)
         {
         }
 
@@ -664,9 +664,9 @@ namespace RealMethod.Editor
 
     }
     /// Sample EP_Storeable
-    public class EPS_ScriptableObjectList<T> : EP_StoreableList<T> where T : ScriptableObject
+    public class EPS_AssetList<T> : EP_StoreableList<T> where T : PrimitiveAsset
     {
-        public EPS_ScriptableObjectList(UnityEditor.Editor other, string Name) : base(other, Name)
+        public EPS_AssetList(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -763,9 +763,6 @@ namespace RealMethod.Editor
             return AssetDatabase.GetAssetPath(Target);
         }
 
-
-
-
     }
     public class EPS_Enum<T> : EP_Storeable<T> where T : System.Enum
     {
@@ -818,9 +815,9 @@ namespace RealMethod.Editor
         {
         }
     }
-    public class EPS_ScriptableObject<T> : EP_Storeable<T> where T : ScriptableObject
+    public class EPS_Asset<T> : EP_Storeable<T> where T : PrimitiveAsset
     {
-        public EPS_ScriptableObject(UnityEditor.Editor other, string Name) : base(other, Name)
+        public EPS_Asset(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 

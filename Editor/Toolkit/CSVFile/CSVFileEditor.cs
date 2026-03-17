@@ -10,7 +10,7 @@ namespace RealMethod.Editor
     [CustomEditor(typeof(TextAsset))]
     public class CSVFileEditor : UnityEditor.Editor
     {
-        class CustomList<T> : EPS_ScriptableObjectList<T> where T : ScriptableObject
+        class CustomList<T> : EPS_AssetList<T> where T : PrimitiveAsset
         {
             Color originalColor = GUI.backgroundColor;
 
@@ -52,7 +52,7 @@ namespace RealMethod.Editor
         private string assetPath;
         private EPS_Enum<CSVReadType> ReadStyle;
         private SheetViewer TabelGUI;
-        private CustomList<ScriptableObject> ObjectsPart;
+        private CustomList<PrimitiveAsset> ObjectsPart;
         private EPS_Date LastUpdate;
         private EPS_Enum<SheetType> OnlineSheetType;
         private EPS_string SheetID;
@@ -74,7 +74,7 @@ namespace RealMethod.Editor
                 // Load the file content
                 TabelGUI = new SheetViewer(textAsset);
                 ReadStyle = new EPS_Enum<CSVReadType>(this, "ReadType");
-                ObjectsPart = new CustomList<ScriptableObject>(this, "SObjects");
+                ObjectsPart = new CustomList<PrimitiveAsset>(this, "SObjects");
                 LastUpdate = new EPS_Date(this, "LastUpdate");
                 SheetID = new EPS_string(this, "SheetID");
                 OnlineSheetType = new EPS_Enum<SheetType>(this, "SheetType");

@@ -7,9 +7,9 @@ using System.Linq;
 namespace RealMethod.Editor
 {
     [InitializeOnLoad]
-    public static class ConfigAsset_Onload
+    public static class ConfigAsset_InitializeOnLoad
     {
-        static ConfigAsset_Onload()
+        static ConfigAsset_InitializeOnLoad()
         {
             EditorApplication.delayCall += ValidateAllConfigs;
         }

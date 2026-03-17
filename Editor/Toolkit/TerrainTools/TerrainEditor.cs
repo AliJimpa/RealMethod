@@ -71,7 +71,7 @@ namespace RealMethod.Editor
     // If You Remove PCG Kit Just Remove ExportTreeData from this code.
     public class ExportTreeData : Object
     {
-        private EP_ScriptableObject<PCGCashAsset> CashFile;
+        private EP_Asset<PCGCashAsset> CashFile;
         private EP_String CashAddress;
         private ProjectSettingAsset ProjectSetting;
         private Terrain OwnerTerrain;
@@ -92,7 +92,7 @@ namespace RealMethod.Editor
                 return;
             }
 
-            CashFile = new EP_ScriptableObject<PCGCashAsset>("Cash", editor);
+            CashFile = new EP_Asset<PCGCashAsset>("Cash", editor);
             CashAddress = new EP_String("Address", editor);
             CashAddress.SetValue(ProjectSetting[ProjectSettingAsset.AssetFormat.ScriptableObject] + "/TerrainCash.asset");
         }
