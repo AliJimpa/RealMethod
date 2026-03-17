@@ -4,11 +4,6 @@ namespace RealMethod
 {
     public sealed class DefaultGameConfig : GameConfig
     {
-        public override void Initialized()
-        {
-            Debug.Log("DefaultConfig Loaded");
-        }
-
         protected override void OnEnable()
         {
             if (HasCloneName())
@@ -17,6 +12,7 @@ namespace RealMethod
                 Destroy(this);
                 return;
             }
+            Debug.Log("DefaultConfig Loaded");
         }
     }
 }
