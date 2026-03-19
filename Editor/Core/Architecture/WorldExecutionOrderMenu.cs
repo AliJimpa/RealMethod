@@ -6,8 +6,7 @@ using System.Linq;
 
 namespace RealMethod.Editor
 {
-    //[InitializeOnLoad]
-    public static class WorldExecutionOrder_Tools
+    public static class WorldExecutionOrderMenu
     {
         [MenuItem("Tools/RealMethod/Core/ExecutionOrder" , priority = -1001)]
         static void ApplyExecutionOrder()

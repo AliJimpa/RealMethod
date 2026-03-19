@@ -138,7 +138,7 @@ namespace RealMethod
         /// <summary>
         /// List of runtime-registered <see cref="Service"/> instances owned by the game.
         /// </summary>
-        private List<Service> GameServices;
+        private List<Service> Services;
 
 
 
@@ -160,31 +160,30 @@ namespace RealMethod
                 Quit();
                 return;
             }
-            ProjectSettings.OnLoadedInGame();
 
             // Initiate GameClass
-            var emptyObject = new GameObject("RealGame");
-            Type TargetClass = ProjectSettings.GetGameInstanceType();
+            var RealObject = new GameObject("RealMethod");
+            Type TargetClass = ProjectSettings.GetGameType();
             if (TargetClass == null)
             {
                 Debug.LogWarning("GameInstanceClass that was empty. DefaultGame Created");
-                Instance = emptyObject.AddComponent<DefultGame>();
+                Instance = RealObject.AddComponent<DefultGame>();
             }
             if (typeof(Game).IsAssignableFrom(TargetClass))
             {
-                Instance = (Game)emptyObject.AddComponent(TargetClass);
+                Instance = (Game)RealObject.AddComponent(TargetClass);
             }
             else
             {
                 Debug.LogWarning($"Component of type {TargetClass} is not assignable from Game. DefaultGame Created");
-                Instance = emptyObject.AddComponent<DefultGame>();
+                Instance = RealObject.AddComponent<DefultGame>();
             }
             Instance.OnProjectSeettingLoaded(ref ProjectSettings);
 
             Instance.OnGameOpen();
 
             // Create GameBridge
-            Type targetService = ProjectSettings.GetGameBridgeType();
+            Type targetService = ProjectSettings.GetBridgeType();
             if (targetService == null)
             {
                 Debug.LogWarning($"GetGameBridgeType that was empty. DefaultGameBridge Created");
@@ -207,36 +206,87 @@ namespace RealMethod
                 Debug.LogWarning($"Type {targetService} is not assignable to Service. DefaultGameBridge Created");
                 Bridge = new DefaultGameBridge();
             }
-            Instance.GameServices = new List<Service>(3);
+            Instance.Services = new List<Service>(3);
             ((IRelationBridge)Bridge).BindWorldCreated(Instance.Notify_OnWorldInitiate);
             ((IService)Bridge).Created(Instance);
 
             // Set GameConfig 
-            if (ProjectSettings.GetGameConfig() != null)
+            if (ProjectSettings.GetGameConfigAsset() != null)
             {
-                Config = ProjectSettings.GetGameConfig();
+                Config = ProjectSettings.GetGameConfigAsset();
             }
             else
             {
                 Config = ScriptableObject.CreateInstance<DefaultGameConfig>();
             }
-            Config.Initialized();
 
             // Initiate GamePrefab & Managers
-            List<IGameManager> CashManagers = new List<IGameManager>(5);
-            foreach (var obj in ProjectSettings.GetGamePrefabs())
+            HashSet<IGameManager> CashManagers = new HashSet<IGameManager>();
+
+            if (ProjectSettings.GetPrefab_1() != null)
             {
-                if (obj != null)
+                GameObject newobj = Instantiate(ProjectSettings.GetPrefab_1());
+                newobj.name = "GameScope(Runtime)";
+                foreach (var manager in newobj.GetComponents<IGameManager>())
                 {
-                    GameObject newobj = Instantiate(obj);
-                    foreach (var manager in newobj.GetComponents<IGameManager>())
+                    if (!CashManagers.Contains(manager))
                     {
                         manager.InitiateManager(true);
                         CashManagers.Add(manager);
                     }
-                    DontDestroyOnLoad(newobj);
+                    else
+                    {
+                        Debug.LogError($"You should not use a manager {manager} twice");
+                        throw new NotImplementedException();
+                    }
+
                 }
+                newobj.transform.SetParent(RealObject.transform);
             }
+#if UNITY_EDITOR
+            if (ProjectSettings.GetPrefab_2() != null)
+            {
+                GameObject newobj = Instantiate(ProjectSettings.GetPrefab_2());
+                newobj.name = "GameScope(Editor)";
+                foreach (var manager in newobj.GetComponents<IGameManager>())
+                {
+                    if (!CashManagers.Contains(manager))
+                    {
+                        manager.InitiateManager(true);
+                        CashManagers.Add(manager);
+                    }
+                    else
+                    {
+                        Debug.LogError($"You should not use a manager {manager} twice");
+                        throw new NotImplementedException();
+                    }
+
+                }
+                newobj.transform.SetParent(RealObject.transform);
+            }
+#endif
+#if UNITY_SERVER
+            if (ProjectSettings.GetPrefab_3() != null)
+            {
+                GameObject newobj = Instantiate(ProjectSettings.GetPrefab_3());
+                newobj.name = "GameScope(Server)";
+                foreach (var manager in newobj.GetComponents<IGameManager>())
+                {
+                    if (!CashManagers.Contains(manager))
+                    {
+                        manager.InitiateManager(true);
+                        CashManagers.Add(manager);
+                    }
+                    else
+                    {
+                        Debug.LogError($"You should not use a manager {manager} twice");
+                        throw new NotImplementedException();
+                    }
+
+                }
+                newobj.transform.SetParent(RealObject.transform);
+            }
+#endif
             Instance.Managers = CashManagers.ToArray();
 
             // Unload Project Setting
@@ -244,7 +294,7 @@ namespace RealMethod
             ProjectSettings = null;
 
             // Move Self GameObject to DontDestroy
-            DontDestroyOnLoad(Instance.gameObject);
+            DontDestroyOnLoad(RealObject);
             Application.quitting += Instance.Notify_OnGameQuit;
         }
         /// <summary>
@@ -326,8 +376,15 @@ namespace RealMethod
         /// <returns>The newly created service instance, or <c>null</c> if a service of the same type already exists.</returns>
         public static T AddService<T>(object author) where T : Service, new()
         {
+            // Check if you game not initialized
+            if (Instance.Services == null)
+            {
+                Debug.LogWarning($"Game doesn't initialized !");
+                return null;
+            }
+
             // Check if a service of this type already exists
-            if (Instance.GameServices.Any(s => s.GetType() == typeof(T)))
+            if (Instance.Services.Any(s => s.GetType() == typeof(T)))
             {
                 Debug.LogWarning($"Service of type {typeof(T).Name} already exists.");
                 return null;
@@ -344,7 +401,7 @@ namespace RealMethod
                 }
             }
             ((IRelationBridge)Bridge).ServiceCreated(newService);
-            Instance.GameServices.Add(newService);
+            Instance.Services.Add(newService);
             return newService;
         }
         /// <summary>
@@ -356,7 +413,7 @@ namespace RealMethod
         /// <returns><c>true</c> if a service was found and removed; otherwise <c>false</c>.</returns>
         public static bool RemoveService<T>(object author) where T : Service
         {
-            var service = Instance.GameServices.FirstOrDefault(s => s.GetType() == typeof(T));
+            var service = Instance.Services.FirstOrDefault(s => s.GetType() == typeof(T));
             if (service != null)
             {
                 if (Instance.Managers != null)
@@ -368,7 +425,7 @@ namespace RealMethod
                 }
                 ((IRelationBridge)Bridge).ServiceRemoved(service);
                 ((IService)service).Deleted(author);
-                Instance.GameServices.Remove(service);
+                Instance.Services.Remove(service);
                 return true;
             }
 
@@ -382,7 +439,7 @@ namespace RealMethod
         /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
         public static T GetService<T>() where T : Service
         {
-            return Instance.GameServices.OfType<T>().FirstOrDefault();
+            return Instance.Services.OfType<T>().FirstOrDefault();
         }
         /// <summary>
         /// Retrieves a service by its concrete <see cref="Type"/>.
@@ -398,7 +455,7 @@ namespace RealMethod
                 return null;
             }
 
-            return Instance.GameServices.FirstOrDefault(s => s.GetType() == type);
+            return Instance.Services.FirstOrDefault(s => s.GetType() == type);
         }
         /// <summary>
         /// Attempts to find a service of type <typeparamref name="T"/>.
@@ -408,7 +465,7 @@ namespace RealMethod
         /// <returns><c>true</c> if the service was found; otherwise <c>false</c>.</returns>
         public static bool TryFindService<T>(out T service) where T : Service
         {
-            service = Instance.GameServices.OfType<T>().FirstOrDefault();
+            service = Instance.Services.OfType<T>().FirstOrDefault();
             return service != null;
         }
         /// <summary>
@@ -417,7 +474,7 @@ namespace RealMethod
         /// <returns>Array of service type names.</returns>
         public string[] GetAllServiceNames()
         {
-            return GameServices.Select(service => service.GetType().Name).ToArray();
+            return Services.Select(service => service.GetType().Name).ToArray();
         }
         /// <summary>
         /// Requests a scene load by build index .
@@ -684,7 +741,7 @@ namespace RealMethod
         /// <param name="NewWorld">The newly initiated world instance.</param>
         private void Notify_OnWorldInitiate(World NewWorld)
         {
-            foreach (var service in GameServices)
+            foreach (var service in Services)
             {
                 ((IService)service).ChangeWorld(NewWorld);
             }
@@ -698,12 +755,12 @@ namespace RealMethod
         {
             Application.quitting -= Notify_OnGameQuit;
             ((IRelationBridge)Bridge).UnbindWorldCreated();
-            if (GameServices != null)
+            if (Services != null)
             {
-                for (int i = 0; i < GameServices.Count; i++)
+                for (int i = 0; i < Services.Count; i++)
                 {
-                    ((IService)GameServices[i]).Deleted(this);
-                    GameServices.RemoveAt(i);
+                    ((IService)Services[i]).Deleted(this);
+                    Services.RemoveAt(i);
                 }
             }
             ((IService)Bridge).Deleted(this);

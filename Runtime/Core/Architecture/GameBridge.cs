@@ -142,7 +142,7 @@ namespace RealMethod
         }
         void IRelationBridge.ServiceCreated(Service service)
         {
-            ServiceEvents.Invoke(service, true);
+            ServiceEvents?.Invoke(service, true);
         }
         void IRelationBridge.ServiceRemoved(Service service)
         {

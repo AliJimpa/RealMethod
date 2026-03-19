@@ -3,7 +3,7 @@ using UnityEditor;
 namespace RealMethod.Editor
 {
     [CustomEditor(typeof(Game), true)]
-    public class Game_Editor : UnityEditor.Editor
+    public class GameEditor : UnityEditor.Editor
     {
         private Game BaseComponent;
 

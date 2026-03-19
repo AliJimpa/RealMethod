@@ -51,17 +51,25 @@ namespace RealMethod
 
         [Header("Initializer")]
         [SerializeField, ReadOnly]
-        private string GameClass = "RealMethod.DefultGame";
+        public string GameClass = string.Empty; // <-- this name must match
         [SerializeField, ReadOnly]
-        private string GameBridge = "RealMethod.DefaultGameBridge";
+        private string GameBridge = string.Empty; // <-- this name must match
         [SerializeField]
-        private GameConfig GameConfig;
+        private GameConfig GameConfig; // <-- this name must match
         [SerializeField]
-        private GameObject GamePrefab_1;
+        private GameObject GamePrefab_1; // <-- this name must match
+#if UNITY_EDITOR
         [SerializeField]
-        private GameObject GamePrefab_2;
+        private GameObject GamePrefab_2; // <-- this name must match
+#endif
+#if UNITY_SERVER
         [SerializeField]
-        private GameObject GamePrefab_3;
+        private GameObject GamePrefab_3; // <-- this name must match
+#endif
+
+
+
+
         [Header("FolderStructure")]
         [SerializeField, ReadOnly]
         private FolderStructureType structureType;
@@ -94,69 +102,70 @@ namespace RealMethod
             get => GetFolderAddressByType(type).GetFolderPath(this);
         }
 
-        // Public Functions
-        public void OnLoadedInGame()
+        // Unity Methods
+        protected virtual void OnEnable()
         {
-            // Initialize base Name store in editor
-            ///Name16.OnProjectSettingLoaded(this);
+            if (string.IsNullOrEmpty(GameClass))
+                GameClass = typeof(DefultGame).AssemblyQualifiedName;
+            if (string.IsNullOrEmpty(GameBridge))
+                GameBridge = typeof(DefaultGameBridge).AssemblyQualifiedName;
         }
-        public Type GetGameInstanceType()
+        protected virtual void Reset()
         {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                var type = assembly.GetType(GameClass);
-                if (type != null)
-                    return type;
-            }
-            return null;
+            if (string.IsNullOrEmpty(GameClass))
+                GameClass = typeof(DefultGame).AssemblyQualifiedName;
+            if (string.IsNullOrEmpty(GameBridge))
+                GameBridge = typeof(DefaultGameBridge).AssemblyQualifiedName;
         }
-        public void SetGameInstanceType(Type type)
-        {
-            // Store fully qualified name of the type
-            if (type != null)
-            {
-                GameClass = type.AssemblyQualifiedName;
-            }
-            else
-            {
-                Debug.LogError("Type is null. Cannot set GameInstanceClass.");
-            }
-        }
-        public Type GetGameBridgeType()
-        {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                var type = assembly.GetType(GameBridge);
-                if (type != null)
-                    return type;
-            }
-            return null;
-        }
-        public void SetGameBridgeType(Type type)
-        {
-            // Store fully qualified name of the type
-            if (type != null)
-            {
-                GameBridge = type.AssemblyQualifiedName;
-            }
-            else
-            {
-                Debug.LogError("Type is null. Cannot set GameInstanceClass.");
-            }
 
+
+
+        // Public Functions
+        public Type GetGameType()
+        {
+            return Type.GetType(GameClass);
         }
-        public GameConfig GetGameConfig()
+        public Type GetBridgeType()
+        {
+            return Type.GetType(GameBridge);
+        }
+        public GameConfig GetGameConfigAsset()
         {
             return GameConfig;
         }
-        public GameObject[] GetGamePrefabs()
+        public GameObject GetPrefab_1()
         {
-            return new GameObject[3] {
-                                GamePrefab_1,
-                                GamePrefab_2,
-                                GamePrefab_3,
-                            };
+            return GamePrefab_1;
         }
+
+
+
+
+
+
+
+
+
+#if UNITY_EDITOR
+        public GameObject GetPrefab_2()
+        {
+            return GamePrefab_2;
+        }
+#endif
+
+#if UNITY_SERVER
+      public GameObject GetPrefab_3()
+        {
+            return GamePrefab_3;
+        }
+#endif
+
+
+
+
+
+
+
         public int GetStructureType()
         {
             return (int)structureType;
@@ -181,13 +190,6 @@ namespace RealMethod
 
 
 
-
-#if UNITY_EDITOR
-        public virtual Type[] GetExteraSections()
-        {
-            return null;
-        }
-#endif
     }
 
 

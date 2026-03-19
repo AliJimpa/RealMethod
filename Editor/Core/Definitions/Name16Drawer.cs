@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RealMethod.Editor
 {
     [CustomPropertyDrawer(typeof(Name16))]
-    public class Name16_Drawer : PropertyDrawer
+    public class Name16Drawer : PropertyDrawer
     {
         const int MaxLength = 16;
         static readonly Color Tint = new Color(1f, 0.82f, 0.9f); // very light pink

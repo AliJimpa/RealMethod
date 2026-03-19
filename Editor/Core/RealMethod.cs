@@ -4,13 +4,19 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public static class RM_Editor
+    public static class RealMethod
     {
         public const string SetttingAssetPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         public static string ScriptTemplatesPath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
         public static string PrefabTemplatePath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/Prefabs";
         public static string Documentation => GetPackagePath("com.mustard.realmethod") + "/Documentation/Information";
 
+        public static bool GetSettingStorage(out ProjectSettingAsset settings)
+        {
+            // Attempt to load the settings asset from the specified path
+            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(RealMethod.SetttingAssetPath);
+            return settings != null;
+        }
         private static string GetPackagePath(string packageName)
         {
             string[] guids = AssetDatabase.FindAssets("package", new[] { "Packages/" + packageName });

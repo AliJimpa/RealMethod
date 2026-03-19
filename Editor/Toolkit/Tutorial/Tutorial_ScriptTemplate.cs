@@ -7,19 +7,19 @@ namespace RealMethod.Editor
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Tutorial/ScreenWidget", false, 80)]
         public static void CreateTutorialScreen()
         {
-            string Path = RM_Editor.CreateScriptTemplate("TutorialScreenTemplate.txt", "MyTutorialScreen.cs");
+            string Path = RealMethod.CreateScriptTemplate("TutorialScreenTemplate.txt", "MyTutorialScreen.cs");
         }
 
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Tutorial/UIunit", false, 80)]
         public static void CreateTutorialMessage()
         {
-            string Path = RM_Editor.CreateScriptTemplate("TutorialUnitTemplate.txt", "MyTutorialUnit.cs");
+            string Path = RealMethod.CreateScriptTemplate("TutorialUnitTemplate.txt", "MyTutorialUnit.cs");
         }
 
         [MenuItem("Assets/Create/Scripting/RealMethod/Toolkit/Tutorial/Config", false, 80)]
         public static void CreateTutorialConfig()
         {
-            string Path = RM_Editor.CreateScriptTemplate("TutorialConfigTemplate.txt", "MyTutorialConfig.cs");
+            string Path = RealMethod.CreateScriptTemplate("TutorialConfigTemplate.txt", "MyTutorialConfig.cs");
         }
     }
 }
