@@ -1,429 +1,217 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace RealMethod
 {
+	public interface IPrint : IIdentifier
+	{
+		void Update(string Message);
+		void Update(Color Color);
+		void Update(Vector2 Offcet);
+	}
 
-    [Serializable]
-    public class LogData
-    {
-        public string message;
-        public float duration;
-        public float x, y;
-        public int size;
-        public Color TextColor;
-        public LogType messagetype;
-        public Vector2 position => new Vector2(x, y);
+	[Serializable]
+	public class LogData : IDraw, IPrint
+	{
+		private PrintManager MyOwner;
+		[SerializeField]
+		private string MyMessage;
+		private int MySize => MyOwner.PrintSize;
+		private float StartTime;
+		private Vector2 Offcet = Vector2.zero;
+		private Color MyColor = Color.green;
 
-        public LogData(string Message)
-        {
-            message = Message;
-            duration = 2f;
-            x = -1;
-            y = -1;
-            size = 1;
-            TextColor = Color.black;
-            messagetype = LogType.Log;
-        }
+		public bool IsStatic { get; private set; } = false;
+		[field: SerializeField]
+		public LogType Type { get; private set; }
+		public float Duration => IsStatic == false ? GetDuration(Type) : 0;
+		public bool IsFinished => IsStatic == false ? !(Time.time - StartTime <= Duration) : false;
+		public Color Color => IsStatic == false ? GetColor(Type) : MyColor;
 
-        public LogData(string Message, LogType type)
-        {
-            message = Message;
-            duration = 2f;
-            x = -1;
-            y = -1;
-            size = 1;
-            TextColor = GetColor(type);
-            messagetype = type;
-        }
-        public LogData(string Message, bool Console)
-        {
-            message = Message;
-            duration = 2f;
-            x = -1;
-            y = -1;
-            size = 1;
-            TextColor = Color.cyan;
-            messagetype = LogType.Log;
-        }
+		public LogData(string Message, LogType Type)
+		{
+			MyMessage = Message;
+			this.Type = Type;
+		}
+		public LogData(Vector2 offcet)
+		{
+			Offcet = offcet;
+			IsStatic = true;
+		}
 
-        public LogData(string Message, float Duration)
-        {
-            message = Message;
-            duration = Duration;
-            x = -1;
-            y = -1;
-            size = 1;
-            TextColor = Color.cyan;
-            messagetype = LogType.Log;
-        }
-        public LogData(string Message, float Duration, LogType type)
-        {
-            message = Message;
-            duration = Duration;
-            x = -1;
-            y = -1;
-            size = 1;
-            TextColor = GetColor(type);
-            messagetype = type;
-        }
-        public LogData(string Message, float Duration, bool Console)
-        {
-            message = Message;
-            duration = Duration;
-            x = -1;
-            y = -1;
-            size = 1;
-            TextColor = Color.cyan;
-            messagetype = LogType.Exception;
-        }
+		// Implement IIdentifier Interface
+		Name16 IIdentifier.NameID => GetHashCode().ToString();
+		// Implement IGUIDrawer Interface
+		bool IDraw.Start(IGameManager Manager)
+		{
+			if (Manager.GetManagerClass() is PrintManager target)
+			{
+				MyOwner = target;
+				StartTime = Time.time;
+				return true;
+			}
+			else
+			{
+				Debug.LogWarning($"LogData can't created the start manager should be {typeof(PrintManager)}");
+				return false;
+			}
+		}
+		bool IDraw.CanDraw()
+		{
+			if (IsStatic)
+				return true;
+			return !IsFinished;
+		}
+		void IDraw.Draw(Vector2 Pivot, int Index)
+		{
+			int w = Screen.width * MySize;
+			int h = Screen.height * MySize;
+			float Xpos = Pivot.x + Offcet.x;
+			float Ypos = Pivot.y + Offcet.y + (Index * MyOwner.PrintSpace);
 
-        public LogData(string Message, float Duration, Color TargetColor)
-        {
-            message = Message;
-            duration = Duration;
-            x = -1;
-            y = -1;
-            size = 1;
-            TextColor = TargetColor;
-            messagetype = LogType.Log;
-        }
+			GUIStyle style = new GUIStyle();
+			Rect rect = new Rect(Xpos, Ypos, w, h * 2 / 100);
+			style.alignment = TextAnchor.UpperLeft;
+			style.fontSize = h * 2 / 100;
+			style.normal.textColor = Color;
+			GUI.Label(rect, MyMessage, style);
+		}
+		void IDraw.End()
+		{
 
-        public LogData(string Message, Color TargetColor)
-        {
-            message = Message;
-            duration = 2f;
-            x = -1;
-            y = -1;
-            size = 1;
-            TextColor = TargetColor;
-            messagetype = LogType.Log;
-        }
+		}
+		// Implement IPrint Interface
+		void IPrint.Update(string message)
+		{
+			MyMessage = message;
+		}
+		void IPrint.Update(Color color)
+		{
+			MyColor = color;
+		}
+		void IPrint.Update(Vector2 offcet)
+		{
+			Offcet = offcet;
+		}
 
-        public LogData(string Message, float Duration, float X, float Y)
-        {
-            message = Message;
-            duration = Duration;
-            x = X;
-            y = Y;
-            size = 1;
-            TextColor = Color.cyan;
-            messagetype = LogType.Log;
-        }
-        public LogData(string Message, float Duration, float X, float Y, Color TargetColor)
-        {
-            message = Message;
-            duration = Duration;
-            x = X;
-            y = Y;
-            size = 1;
-            TextColor = TargetColor;
-            messagetype = LogType.Log;
-        }
-
-        public LogData(string Message, float X, float Y)
-        {
-            message = Message;
-            duration = 2f;
-            x = X;
-            y = Y;
-            size = 1;
-            TextColor = Color.cyan;
-            messagetype = LogType.Log;
-        }
-
-        public LogData(string Message, float Duration, float X, float Y, int Size)
-        {
-            message = Message;
-            duration = Duration;
-            x = X;
-            y = Y;
-            size = Size;
-            TextColor = Color.cyan;
-            messagetype = LogType.Log;
-        }
-
-        public LogData(string Message, float X, float Y, int Size, bool Console, LogType type)
-        {
-            message = Message;
-            duration = 2f;
-            x = X;
-            y = Y;
-            size = Size > 0 ? Size : 1;
-            TextColor = Color.cyan;
-            messagetype = type;
-        }
-
-        public LogData(string Message, float Duration, float X, float Y, int Size, Color TargetColor)
-        {
-            message = Message;
-            duration = Duration;
-            x = X;
-            y = Y;
-            size = Size > 0 ? Size : 1;
-            TextColor = TargetColor;
-            messagetype = LogType.Log;
-        }
-        public LogData(string Message, float Duration, float X, float Y, int Size, LogType type)
-        {
-            message = Message;
-            duration = Duration;
-            x = X;
-            y = Y;
-            size = Size > 0 ? Size : 1;
-            TextColor = GetColor(type);
-            messagetype = type;
-        }
+		private float GetDuration(LogType type)
+		{
+			switch (type)
+			{
+				case LogType.Log:
+					return 3;
+				case LogType.Warning:
+					return 5;
+				case LogType.Error:
+					return 8;
+				case LogType.Assert:
+					return 12;
+				case LogType.Exception:
+					return 15;
+				default:
+					return 0;
+			}
+		}
+		private Color GetColor(LogType type)
+		{
+			switch (type)
+			{
+				case LogType.Log:
+					return Color.cyan;
+				case LogType.Warning:
+					return Color.yellow;
+				case LogType.Error:
+					return Color.red;
+				case LogType.Assert:
+					return Color.white;
+				case LogType.Exception:
+					return Color.blue;
+				default:
+					return Color.black;
+			}
+		}
 
 
-        private Color GetColor(LogType type)
-        {
-            switch (type)
-            {
-                case LogType.Log:
-                    return Color.cyan;
-                case LogType.Warning:
-                    return Color.yellow;
-                case LogType.Error:
-                    return Color.red;
-                case LogType.Assert:
-                    return Color.black;
-                case LogType.Exception:
-                    return Color.white;
-                default:
-                    return Color.blue;
-            }
-        }
-    }
-    [Serializable]
-    public class ButtonData
-    {
-        [SerializeField] string Name = "Button";
-        [SerializeField] string Description = "This is a tooltip for the button";
-
-        [SerializeField] object TargetObject;
-        [SerializeField] string MethodName;
-        bool IsFunctionMethod = false;
-        [SerializeField] object[] MethodParametr;
-
-        public ButtonData(string name, string description, object targetObject, string methodName, object[] methodParametr)
-        {
-            Name = name;
-            Description = description;
-            TargetObject = targetObject;
-            MethodName = methodName;
-            IsFunctionMethod = true;
-            MethodParametr = methodParametr;
-        }
-
-        public ButtonData(string name, string description, object targetObject, string methodName)
-        {
-            Name = name;
-            Description = description;
-            TargetObject = targetObject;
-            MethodName = methodName;
-        }
-
-        public ButtonData(string name, object targetObject, string methodName)
-        {
-            Name = name;
-            TargetObject = targetObject;
-            MethodName = methodName;
-        }
-
-        public bool ButtonPressed()
-        {
-            bool Result;
-            if (IsFunctionMethod)
-            {
-                Type type = TargetObject.GetType();
-                MethodInfo method = type.GetMethod(MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-                if (method != null)
-                {
-                    method.Invoke(TargetObject, MethodParametr);
-                    Result = true;
-                }
-                else
-                {
-                    Print.LogWarning("Method " + MethodName + " not found on " + TargetObject);
-                    Result = false;
-                }
-            }
-            else
-            {
-                // Get the type of the target object
-                Type type = TargetObject.GetType();
-
-                // Find the method with the specified name
-                MethodInfo method = type.GetMethod(MethodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-                if (method != null)
-                {
-                    // Invoke the method on the target object
-                    method.Invoke(TargetObject, null);
-                    Result = true;
-                }
-                else
-                {
-                    Print.LogWarning("Method " + MethodName + " not found on " + TargetObject);
-                    Result = false;
-                }
-            }
-
-            return Result;
-        }
-        public string GetName()
-        {
-            return Name;
-        }
-        public string GetDescription()
-        {
-            return Description;
-        }
-
-    }
-
-    [AddComponentMenu("RealMethod/Manager/PrintManager")]
-    public sealed class PrintManager : GizmoManager
-    {
-        private class LogRender : GUIRenderer
-        {
-            private PrintManager MyOWner;
-            public override void Start(GizmoManager Manager)
-            {
-                MyOWner = Manager as PrintManager;
-            }
-            public override bool CanRender()
-            {
-                return MyOWner.Logs.Count > 0;
-            }
-            public override void Draw()
-            {
-                for (int i = 0; i < MyOWner.Logs.Count; i++)
-                {
-                    DrawLog(MyOWner.Logs[i], i);
-                }
-            }
-
-            private void DrawLog(LogData log, int index)
-            {
-                int w = Screen.width * log.size;
-                int h = Screen.height * log.size;
-                float Xpos = log.position.x > 0 ? log.position.x : MyOWner.DefualtPosition.x;
-                float Ypos = log.position.y > 0 ? log.position.y : MyOWner.DefualtPosition.y + (index * MyOWner.PrintSpace);
-
-                GUIStyle style = new GUIStyle();
-                Rect rect = new Rect(Xpos, Ypos, w, h * 2 / 100);
-                style.alignment = TextAnchor.UpperLeft;
-                style.fontSize = h * 2 / 100;
-                style.normal.textColor = log.TextColor;
-                GUI.Label(rect, log.message, style);
-            }
-        }
-        private class ButtonRender : GUIRenderer
-        {
-            private PrintManager MyOWner;
-
-            public override void Start(GizmoManager Manager)
-            {
-                MyOWner = Manager as PrintManager;
-            }
-            public override bool CanRender()
-            {
-                return MyOWner.Buttons.Count > 0;
-            }
-            public override void Draw()
-            {
-                RectOffset padding = GUI.skin.button.padding;
-                RectOffset margin = GUI.skin.button.margin;
-
-                // TODO: The height calculation should be done more correctly.
-                Rect viewRect = new Rect(0, 0, MyOWner.ButtonSize.x,
-                    ((MyOWner.ButtonSize.y + (padding.vertical + margin.vertical)) * MyOWner.Buttons.Count) - MyOWner.ButtonSize.y);
+	}
 
 
-                MyOWner.ScrollPosition = GUI.BeginScrollView(
-                    position: new Rect(Screen.width - MyOWner.ButtonSize.x - MyOWner.ButtonMargin, 10, MyOWner.ButtonSize.x + MyOWner.ButtonMargin, Screen.height - 10),
-                    scrollPosition: MyOWner.ScrollPosition,
-                    viewRect: viewRect,
-                    alwaysShowHorizontal: false,
-                    alwaysShowVertical: false
-                );
+	[AddComponentMenu("RealMethod/Manager/PrintManager")]
+	public sealed class PrintManager : GUIManager<LogData>
+	{
+		[Header("Printer")]
+		[SerializeField]
+		private float printSpace = 20;
+		public float PrintSpace => printSpace;
+		[SerializeField]
+		private int printSize = 1;
+		public int PrintSize => printSize;
 
-                for (int i = 0; i < MyOWner.Buttons.Count; i++)
-                {
-                    if (GUI.Button(new Rect(0, 50 * i, MyOWner.ButtonSize.x, MyOWner.ButtonSize.y), MyOWner.Buttons[i].GetName()))
-                    {
-                        MyOWner.Buttons[i].ButtonPressed();
-                    }
-                }
-                GUI.EndScrollView();
-            }
-        }
+		[SerializeField, ReadOnly]
+		private List<LogData> StaticData = new List<LogData>(10);
 
 
-        [Header("Log")]
-        public float PrintSpace = 20;
-        [Header("Button")]
-        [SerializeField]
-        private Vector2 ScrollPosition = Vector2.zero;
-        [SerializeField]
-        private Vector2 ButtonSize = new Vector2(200, 40);
-        [SerializeField]
-        private float ButtonMargin = 20;
-        [Header("Advance")]
-        [SerializeField, ReadOnly]
-        private List<LogData> Logs = new List<LogData>();
-        [SerializeField, ReadOnly]
-        private List<ButtonData> Buttons = new List<ButtonData>();
+		// GUIManager Methods
+		public override void InitiateManager(bool AlwaysLoaded)
+		{
+		}
+		public override void ResolveService(Service service, bool active)
+		{
+		}
 
+		public void Print(string Message, LogType Type)
+		{
+			Add(new LogData(Message, Type));
+		}
+		public IPrint PrintStatic(Vector2 offcet)
+		{
+			var Result = new LogData(offcet);
+			((IDraw)Result).Start(this);
+			StaticData.Add(Result);
+			return Result;
+		}
+		public bool RemoveStatic(IPrint ptinter)
+		{
+			IIdentifier ID = ptinter;
+			for (int i = 0; i < StaticData.Count; i++)
+			{
+				if (StaticData[i] == ID)
+				{
+					((IDraw)StaticData[i]).End();
+					StaticData.RemoveAt(i);
+					return true;
+				}
+			}
+			return false;
+		}
+		public void SetSize(int newSize)
+		{
+			printSize = newSize;
+		}
 
-        public override void ResolveService(Service service, bool active)
-        {
-        }
-        protected override GUIRenderer[] GetRenderSlots()
-        {
-            return new GUIRenderer[2] { new LogRender(), new ButtonRender() };
-        }
+		protected override void PreDraw()
+		{
+			base.PreDraw();
+			foreach (var item in StaticData)
+			{
+				if (item is IDraw Drawer)
+				{
+					Drawer.Draw(Pivot, 0);
+				}
+			}
 
-        public void Add(LogData Log)
-        {
-            if (Log.duration > 0)
-            {
-                StartCoroutine(RemoveLog(Log));
-            }
-            Logs.Add(Log);
-        }
-        public void Add(ButtonData Button)
-        {
-            Buttons.Add(Button);
-        }
-        public void Clear()
-        {
-            Logs.Clear();
-            Buttons.Clear();
-        }
-
-
-        // Enumerators
-        private IEnumerator RemoveLog(LogData log)
-        {
-            yield return new WaitForSeconds(log.duration);
-            Logs.Remove(log);
-        }
-
-    }
-
-
+		}
+		protected override void PostDraw()
+		{
+			base.PostDraw();
+			for (int i = 0; i < DrawList.Count; i++)
+			{
+				if (DrawList[i].IsFinished)
+				{
+					DrawList.Remove(DrawList[i]);
+				}
+			}
+		}
+	}
 }
-
-
-
-
-
-
 

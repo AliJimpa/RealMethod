@@ -16,6 +16,7 @@ namespace RealMethod
         }
         protected override void OnGameStart()
         {
+            AddService<DebugService>(this);
             Debug.Log("DefultGame Started");
         }
         protected override void OnWorldChanged(World NewWorld)

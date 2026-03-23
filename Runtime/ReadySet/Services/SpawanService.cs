@@ -35,6 +35,8 @@ namespace RealMethod
         public TaskManager GameTask;
         public HapticManager GameHaptic;
         public EnumeratorManager GameEnumerator;
+        public PrintManager GamePrint => Game.FindManager<PrintManager>();
+        public DebugManager GameDebug => Game.FindManager<DebugManager>();
 
         // Base Service
         protected override void OnStart(object Author)
@@ -758,6 +760,32 @@ namespace RealMethod
             }
         }
 
+        // Debug
+        public static IPrint Printer(Vector2 offcet)
+        {
+            if (instance.GamePrint != null)
+            {
+                return instance.GamePrint.PrintStatic(offcet);
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: PrintManager is not available.");
+                return null;
+            }
+        }
+        public static IButton Button(Name16 Name, System.Action Callback)
+        {
+            if (instance.GameDebug != null)
+            {
+                return instance.GameDebug.AddButton(Name, Callback);
+            }
+            else
+            {
+                Debug.LogWarning($" {instance}: DebugManager is not available.");
+                return null;
+            }
+        }
+
         // Other
         public static GameObject Empty(string name)
         {
@@ -923,6 +951,30 @@ namespace RealMethod
             }
             return Spawn.instance.GameHaptic.Demolish(provider);
         }
+
+        // Debug
+        public static bool Printer(IPrint printer, bool debug = true)
+        {
+            if (Spawn.instance.GamePrint == null)
+            {
+                if (debug)
+                    Debug.LogWarning("Despawn PrintManager is not available.");
+                return false;
+            }
+            return Spawn.instance.GamePrint.RemoveStatic(printer);
+        }
+        public static bool Button(IButton button, bool debug = true)
+        {
+            if (Spawn.instance.GameDebug == null)
+            {
+                if (debug)
+                    Debug.LogWarning("Despawn DebugManager is not available.");
+                return false;
+            }
+            return Spawn.instance.GameDebug.Remove(button);
+        }
+
+
     }
 }
 
