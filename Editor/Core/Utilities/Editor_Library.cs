@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public static class RealMethod
+    public static class RM_Editor
     {
         public const string SetttingAssetPath = "Assets/Resources/RealMethod/RealMethodSetting.asset";
         public static string ScriptTemplatesPath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
