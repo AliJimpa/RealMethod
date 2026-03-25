@@ -16,7 +16,7 @@ namespace RealMethod.Editor
             ProjectSettingAsset TargetStorage;
             if (RealMethod.GetSettingStorage(out TargetStorage))
             {
-                outputFolder = TargetStorage[ProjectSettingAsset.AssetFormat.Script] + "/General/AnimatorParam";
+                outputFolder = TargetStorage.GetFolderPathByType(ProjectSettingAsset.AssetFormat.Script) + "/General/AnimatorParam";
             }
             else
             {

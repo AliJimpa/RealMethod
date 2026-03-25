@@ -107,7 +107,7 @@ namespace RealMethod.Editor
             Cash = new EP_Asset<PCGCashAsset>("Cash", this);
             SelectedData = new EP_List<GD_Class>("Data", this);
             CashAddress = new EP_String("Address", this);
-            CashAddress.SetValue(ProjectSetting[ProjectSettingAsset.AssetFormat.ScriptableObject] + "/PCGCashAsset.asset");
+            CashAddress.SetValue(ProjectSetting.GetFolderPathByType(ProjectSettingAsset.AssetFormat.ScriptableObject) + "/PCGCashAsset.asset");
             PrefabAddress = new EP_String("Address", this);
             PrefabAddress.SetValue(ProjectSetting.GetFolderAddressByType(ProjectSettingAsset.AssetFormat.Prefab).AssetPath + "/PCG.prefab");
             ExportType = new EP_Enum<PCGExportType>("ExportType", this);

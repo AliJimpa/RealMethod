@@ -29,8 +29,6 @@ namespace RealMethod
         Cancelled
     }
 
-
-
     /// <summary>
     /// Core game singleton that manages the active <see cref="World"/>, registered <see cref="Service"/>s,
     /// configuration and high-level game lifecycle (initialization, start, and shutdown).
@@ -70,6 +68,10 @@ namespace RealMethod
                 return World.GetPlayerObject();
             }
         }
+        /// <summary>
+        /// Reperesent Game State that youser can define state in ProjectSetting
+        /// </summary>
+        public static SettingEnum State { get; private set; } = 0;
         /// <summary>
         /// Indicates whether a scene or world load operation is currently in progress.
         /// </summary>
@@ -127,6 +129,10 @@ namespace RealMethod
         /// (for example: show win screen, game over UI, load next level, etc).
         /// </summary>
         public static event Action<GameProcess> OnCompleted;
+        /// <summary>
+        /// Invoked when game state changed.
+        /// </summary>
+        public static event Action<int> OnStateChanged;
 
 
 
@@ -660,6 +666,22 @@ namespace RealMethod
                 Time.fixedDeltaTime = 0.02f * Time.timeScale; // Keeps physics in sync
         }
         /// <summary>
+        /// Sets the GameState to new state you want. 
+        /// </summary>
+        /// <param name="NewState">Target State you want to cahgne</param>
+        /// <param name="author">the refrence from who want to change the gamestate</param>
+        /// <returns></returns>
+        public static bool SetState(int NewState, object author)
+        {
+            if (Instance.CanChangeState(State, NewState, author))
+            {
+                State = NewState;
+                OnStateChanged?.Invoke(State);
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
         /// Quits the application. In the Unity Editor this stops play mode instead.
         /// </summary>
         public static void Quit()
@@ -883,6 +905,17 @@ namespace RealMethod
         protected virtual bool IsGameLoading()
         {
             return ((ILoadScneBridge)Bridge).IsLoading;
+        }
+        /// <summary>
+        /// Check for changing state from A to B by author.
+        /// </summary>
+        /// <param name="A">Current state</param>
+        /// <param name="B">Target state</param>
+        /// <param name="author">this object want to change state</param>
+        /// <returns></returns>
+        protected virtual bool CanChangeState(int A, int B, object author)
+        {
+            return true;
         }
 
 

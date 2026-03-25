@@ -18,14 +18,9 @@ namespace RealMethod.Editor
         }
         protected override void UpdateRender()
         {
-            string[] structureType = System.Enum.GetNames(typeof(ProjectSettingAsset.FolderStructureType));
-            MyStorage.SetStructureType(EditorGUILayout.Popup("StructureType", MyStorage.GetStructureType(), structureType));
-            if (MyStorage.GetStructureType() == 1)
+            if (!AssetDatabase.IsValidFolder("Assets/" + Application.productName))
             {
-                if (!AssetDatabase.IsValidFolder("Assets/" + Application.productName))
-                {
-                    AssetDatabase.CreateFolder("Assets", Application.productName);
-                }
+                AssetDatabase.CreateFolder("Assets", Application.productName);
             }
 
             // Add a toggle button for minimizing or expanding the panel
@@ -33,7 +28,7 @@ namespace RealMethod.Editor
             isPanelMaximize = EditorGUILayout.Foldout(isPanelMaximize, "Folder List", true, EditorStyles.foldoutHeader);
             if (GUILayout.Button("Create All", GUILayout.Width(80)))
             {
-                foreach (var address in MyStorage.ProjectStructure)
+                foreach (var address in MyStorage.FolderStructure)
                 {
                     if (AssetDatabase.IsValidFolder(address.AssetPath))
                     {
@@ -57,26 +52,26 @@ namespace RealMethod.Editor
             }
 
             // Render the folder list
-            for (int i = 0; i < MyStorage.ProjectStructure.Count; i++)
+            for (int i = 0; i < MyStorage.FolderStructure.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal(); // Start horizontal layout
 
 
                 // Display the folder path as a text field
-                MyStorage.SetFolderAddressPath(i, EditorGUILayout.TextField($"{i + 1}.{MyStorage.ProjectStructure[i].AssetType}", MyStorage.ProjectStructure[i].AssetPath));
+                MyStorage.SetFolderAddressPath(i, EditorGUILayout.TextField($"{i + 1}.{MyStorage.FolderStructure[i].AssetType}", MyStorage.FolderStructure[i].AssetPath));
 
-                string ButtonName = AssetDatabase.IsValidFolder(MyStorage.ProjectStructure[i].AssetPath) ? "Check" : "Create";
+                string ButtonName = AssetDatabase.IsValidFolder(MyStorage.FolderStructure[i].AssetPath) ? "Check" : "Create";
                 // Add a button next to the text field
                 if (GUILayout.Button(ButtonName, GUILayout.Width(60)))
                 {
                     // Check if the folder exists
-                    if (AssetDatabase.IsValidFolder(MyStorage.ProjectStructure[i].AssetPath))
+                    if (AssetDatabase.IsValidFolder(MyStorage.FolderStructure[i].AssetPath))
                     {
-                        Debug.Log($"Folder exists: {MyStorage.ProjectStructure[i]}");
+                        Debug.Log($"Folder exists: {MyStorage.FolderStructure[i]}");
                     }
                     else
                     {
-                        string folderpath = MyStorage.ProjectStructure[i].GetFolderPath(MyStorage);
+                        string folderpath = MyStorage.FolderStructure[i].GetFolderPath(MyStorage);
                         string FolderAddress = string.Join("/", folderpath.Split('/')[..^1]); // Remove the last segment of the path
                         string folderName = System.IO.Path.GetFileName(folderpath); // Get the last segment of the path
                         CreateFolder(FolderAddress, folderName); // Create the folder
@@ -97,8 +92,8 @@ namespace RealMethod.Editor
         protected override void Fix(int Id)
         {
         }
-        
-        
+
+
         private void CreateFolder(string parentFolder, string newFolderName)
         {
             string folderPath = System.IO.Path.Combine(parentFolder, newFolderName).Replace("\\", "/");

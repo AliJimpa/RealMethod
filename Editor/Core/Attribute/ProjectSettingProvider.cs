@@ -91,7 +91,9 @@ namespace RealMethod.Editor
             if (isReady)
             {
                 // Render the section's content
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 UpdateRender();
+                EditorGUILayout.EndVertical();
             }
             else
             {
@@ -148,10 +150,11 @@ namespace RealMethod.Editor
     public static class ProjectSettingProvider
     {
         private static bool candraw = true;// Flag to determine if the UI can be drawn
-        private static List<ProjectSettingSection> sections = new List<ProjectSettingSection>(2) {
+        private static List<ProjectSettingSection> sections = new List<ProjectSettingSection>(3) {
         // Array of sections to be rendered in the settings UI
         new InitializerSetting_Section(),
-        new FolderStructure_Section()
+        new FolderStructure_Section(),
+        new GameStatus_Section(),
         };
 
 

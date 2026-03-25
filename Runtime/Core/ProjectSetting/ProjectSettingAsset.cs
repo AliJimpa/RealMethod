@@ -1,29 +1,13 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
-
-// #if UNITY_EDITOR
-// namespace RealMethod.Editor;
-// #endif
 
 namespace RealMethod
 {
     // Real Method Setting Storage
     public class ProjectSettingAsset : ScriptableObject
     {
-        [Serializable]
-        public struct FolderAddress
-        {
-            public AssetFormat AssetType;
-            public string AssetPath;
-            public string FolderName => System.IO.Path.GetFileName(AssetPath);
-            public string GetFolderPath(ProjectSettingAsset settingAsset)
-            {
-                string RootPath = settingAsset.GetStructureType() == 0 ? "Assets" : "Assets/" + Application.productName;
-                return $"{RootPath}/{AssetPath}";
-            }
-
-        }
         [Serializable]
         public enum AssetFormat
         {
@@ -43,11 +27,19 @@ namespace RealMethod
             Other = 13
         }
         [Serializable]
-        public enum FolderStructureType
+        public struct FolderAddress
         {
-            Assets = 0,
-            ProjectName = 1,
+            public AssetFormat AssetType;
+            public string AssetPath;
+            public string FolderName => System.IO.Path.GetFileName(AssetPath);
+            public string GetFolderPath(ProjectSettingAsset settingAsset)
+            {
+                string RootPath = "Assets/" + Application.productName;
+                return $"{RootPath}/{AssetPath}";
+            }
+
         }
+
 
         [Header("Initializer")]
         [SerializeField, ReadOnly]
@@ -58,23 +50,21 @@ namespace RealMethod
         private GameConfig GameConfig; // <-- this name must match
         [SerializeField]
         private GameObject GamePrefab_1; // <-- this name must match
+
 #if UNITY_EDITOR
         [SerializeField]
         private GameObject GamePrefab_2; // <-- this name must match
 #endif
-#if UNITY_SERVER
+
+#if UNITY_SERVER || UNITY_EDITOR
         [SerializeField]
         private GameObject GamePrefab_3; // <-- this name must match
 #endif
 
-
-
-
+#if UNITY_EDITOR
         [Header("FolderStructure")]
         [SerializeField, ReadOnly]
-        private FolderStructureType structureType;
-        [SerializeField, ReadOnly]
-        private FolderAddress[] projectStructure = new FolderAddress[14]
+        private FolderAddress[] folderStructure = new FolderAddress[14]
         {
         new FolderAddress { AssetType = 0, AssetPath = "1_Scenes"},
         new FolderAddress { AssetType = (AssetFormat)1, AssetPath = "2_Scripts" },
@@ -91,16 +81,12 @@ namespace RealMethod
         new FolderAddress { AssetType = (AssetFormat)12, AssetPath = "10_Animation"},
         new FolderAddress { AssetType = (AssetFormat)13, AssetPath = "7_Misc"}
         };
-        public IReadOnlyList<FolderAddress> ProjectStructure => projectStructure;
-        [Header("Names")]
-        public List<string> Names = new();
+        public IReadOnlyList<FolderAddress> FolderStructure => folderStructure;
+        [Header("GameStatus")]
+        [SerializeField]
+        private string[] Status;
+#endif
 
-
-        // Access values
-        public string this[AssetFormat type]
-        {
-            get => GetFolderAddressByType(type).GetFolderPath(this);
-        }
 
         // Unity Methods
         protected virtual void OnEnable()
@@ -109,6 +95,8 @@ namespace RealMethod
                 GameClass = typeof(DefultGame).AssemblyQualifiedName;
             if (string.IsNullOrEmpty(GameBridge))
                 GameBridge = typeof(DefaultGameBridge).AssemblyQualifiedName;
+            if (Status == null || Status.Length == 0)
+                Status = new string[4] { "Menu", "Playing", "Pause", "GameOver" };
         }
         protected virtual void Reset()
         {
@@ -116,6 +104,8 @@ namespace RealMethod
                 GameClass = typeof(DefultGame).AssemblyQualifiedName;
             if (string.IsNullOrEmpty(GameBridge))
                 GameBridge = typeof(DefaultGameBridge).AssemblyQualifiedName;
+            if (Status == null || Status.Length == 0)
+                Status = new string[4] { "Menu", "Playing", "Pause", "GameOver" };
         }
 
 
@@ -138,56 +128,44 @@ namespace RealMethod
             return GamePrefab_1;
         }
 
-
-
-
-
-
-
-
-
 #if UNITY_EDITOR
         public GameObject GetPrefab_2()
         {
             return GamePrefab_2;
         }
-#endif
-
-#if UNITY_SERVER
-      public GameObject GetPrefab_3()
-        {
-            return GamePrefab_3;
-        }
-#endif
-
-
-
-
-
-
-
-        public int GetStructureType()
-        {
-            return (int)structureType;
-        }
-        public void SetStructureType(int type)
-        {
-            structureType = (FolderStructureType)type;
-        }
-        public FolderAddress GetFolderAddressByIndex(int index) => projectStructure[index];
-        public void SetFolderAddressPath(int index, string value) => projectStructure[index].AssetPath = value;
         public FolderAddress GetFolderAddressByType(AssetFormat identity)
         {
-            foreach (var PS in projectStructure)
+            foreach (var PS in folderStructure)
             {
                 if (PS.AssetType == identity)
                 {
                     return PS;
                 }
             }
-            return default(FolderAddress);
+            return default;
         }
+        public string GetFolderPathByType(AssetFormat identity)
+        {
+            return GetFolderAddressByType(identity).GetFolderPath(this);
+        }
+        public FolderAddress GetFolderAddressByIndex(int index) => folderStructure[index];
+        public void SetFolderAddressPath(int index, string value) => folderStructure[index].AssetPath = value;
+        public string[] GetStatus() => Status;
+        public void SetStatus(string[] NewStatus)
+        {
+            if (NewStatus != null)
+            {
+                Status = NewStatus;
+            }
+        }
+#endif
 
+#if UNITY_SERVER || UNITY_EDITOR
+        public GameObject GetPrefab_3()
+        {
+            return GamePrefab_3;
+        }
+#endif
 
 
     }

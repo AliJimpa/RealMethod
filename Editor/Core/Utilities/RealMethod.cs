@@ -14,7 +14,7 @@ namespace RealMethod.Editor
         public static bool GetSettingStorage(out ProjectSettingAsset settings)
         {
             // Attempt to load the settings asset from the specified path
-            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(RealMethod.SetttingAssetPath);
+            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(SetttingAssetPath);
             return settings != null;
         }
         private static string GetPackagePath(string packageName)
@@ -45,7 +45,7 @@ namespace RealMethod.Editor
             if (UseProject)
             {
                 ProjectSettingAsset ProjectSetting = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(SetttingAssetPath);
-                templatePath = Path.Combine(ProjectSetting[ProjectSettingAsset.AssetFormat.Other], templateFileName);
+                templatePath = Path.Combine(ProjectSetting.GetFolderPathByType(ProjectSettingAsset.AssetFormat.Other), templateFileName);
             }
             else
             {
@@ -96,7 +96,7 @@ namespace RealMethod.Editor
             if (UseProject)
             {
                 ProjectSettingAsset ProjectSetting = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(SetttingAssetPath);
-                prefabPath = Path.Combine(ProjectSetting[ProjectSettingAsset.AssetFormat.Prefab], prefabName);
+                prefabPath = Path.Combine(ProjectSetting.GetFolderPathByType(ProjectSettingAsset.AssetFormat.Prefab), prefabName);
             }
             else
             {
