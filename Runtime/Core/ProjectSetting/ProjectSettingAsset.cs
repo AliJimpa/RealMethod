@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace RealMethod
@@ -43,7 +42,7 @@ namespace RealMethod
 
         [Header("Initializer")]
         [SerializeField, ReadOnly]
-        public string GameClass = string.Empty; // <-- this name must match
+        private string GameClass = string.Empty; // <-- this name must match
         [SerializeField, ReadOnly]
         private string GameBridge = string.Empty; // <-- this name must match
         [SerializeField]
@@ -82,9 +81,11 @@ namespace RealMethod
         new FolderAddress { AssetType = (AssetFormat)13, AssetPath = "7_Misc"}
         };
         public IReadOnlyList<FolderAddress> FolderStructure => folderStructure;
+#endif
+
+#if UNITY_EDITOR
         [Header("GameStatus")]
-        [SerializeField]
-        private string[] Status;
+        public List<string> Status = new List<string>(4) { "Menu", "Playing", "Pause", "GameOver" };
 #endif
 
 
@@ -95,8 +96,6 @@ namespace RealMethod
                 GameClass = typeof(DefultGame).AssemblyQualifiedName;
             if (string.IsNullOrEmpty(GameBridge))
                 GameBridge = typeof(DefaultGameBridge).AssemblyQualifiedName;
-            if (Status == null || Status.Length == 0)
-                Status = new string[4] { "Menu", "Playing", "Pause", "GameOver" };
         }
         protected virtual void Reset()
         {
@@ -104,8 +103,6 @@ namespace RealMethod
                 GameClass = typeof(DefultGame).AssemblyQualifiedName;
             if (string.IsNullOrEmpty(GameBridge))
                 GameBridge = typeof(DefaultGameBridge).AssemblyQualifiedName;
-            if (Status == null || Status.Length == 0)
-                Status = new string[4] { "Menu", "Playing", "Pause", "GameOver" };
         }
 
 
@@ -150,14 +147,6 @@ namespace RealMethod
         }
         public FolderAddress GetFolderAddressByIndex(int index) => folderStructure[index];
         public void SetFolderAddressPath(int index, string value) => folderStructure[index].AssetPath = value;
-        public string[] GetStatus() => Status;
-        public void SetStatus(string[] NewStatus)
-        {
-            if (NewStatus != null)
-            {
-                Status = NewStatus;
-            }
-        }
 #endif
 
 #if UNITY_SERVER || UNITY_EDITOR

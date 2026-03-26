@@ -11,7 +11,7 @@ namespace RealMethod.Editor
         public static string PrefabTemplatePath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/Prefabs";
         public static string Documentation => GetPackagePath("com.mustard.realmethod") + "/Documentation/Information";
 
-        public static bool GetSettingStorage(out ProjectSettingAsset settings)
+        public static bool TryGetSettingAsset(out ProjectSettingAsset settings)
         {
             // Attempt to load the settings asset from the specified path
             settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(SetttingAssetPath);

@@ -172,7 +172,7 @@ namespace RealMethod.Editor
                     ProjectSettingAsset TargetStorage = null;
 
                     // Attempt to load the settings asset
-                    if (!RM_Editor.GetSettingStorage(out TargetStorage))
+                    if (!RM_Editor.TryGetSettingAsset(out TargetStorage))
                     {
                         if (Directory.Exists(Path.GetDirectoryName(RM_Editor.SetttingAssetPath)))
                         {

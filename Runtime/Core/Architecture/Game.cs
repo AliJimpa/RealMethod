@@ -175,14 +175,17 @@ namespace RealMethod
                 Debug.LogWarning("GameInstanceClass that was empty. DefaultGame Created");
                 Instance = RealObject.AddComponent<DefultGame>();
             }
-            if (typeof(Game).IsAssignableFrom(TargetClass))
-            {
-                Instance = (Game)RealObject.AddComponent(TargetClass);
-            }
             else
             {
-                Debug.LogWarning($"Component of type {TargetClass} is not assignable from Game. DefaultGame Created");
-                Instance = RealObject.AddComponent<DefultGame>();
+                if (typeof(Game).IsAssignableFrom(TargetClass))
+                {
+                    Instance = (Game)RealObject.AddComponent(TargetClass);
+                }
+                else
+                {
+                    Debug.LogWarning($"Component of type {TargetClass} is not assignable from Game. DefaultGame Created");
+                    Instance = RealObject.AddComponent<DefultGame>();
+                }
             }
             Instance.OnProjectSeettingLoaded(ref ProjectSettings);
 
