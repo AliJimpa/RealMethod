@@ -91,7 +91,7 @@ namespace RealMethod
         // Implement TutorialConfigCore
         protected override UI_TutorialUnit InstantiateMessageObject(Transform parent)
         {
-            return Instantiate(tutorialPrefab.asset, parent).GetComponent<UI_TutorialUnit>();
+            return Instantiate<GameObject>(tutorialPrefab, parent).GetComponent<UI_TutorialUnit>();
         }
 
 #if UNITY_EDITOR

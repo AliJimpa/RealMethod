@@ -88,7 +88,7 @@ namespace RealMethod
                 Debug.LogWarning($"Layer '{layerName}' already exists. Use a different name.");
                 return;
             }
-            AudioSource source = Instantiate(prefab.asset, transform).GetComponent<AudioSource>();
+            AudioSource source = Instantiate<GameObject>(prefab, transform).GetComponent<AudioSource>();
             Layers.Add(layerName, source);
         }
         public void CreateLayer(AudioClip clip)

@@ -9,7 +9,6 @@ namespace RealMethod
     {
         [SerializeField]
         protected GameObject PrefabAsset;  // <-- this name must match
-        public GameObject asset => PrefabAsset;
 
         // Implement IIdentidier Interface
         public Name16 NameID => PrefabAsset != null ? PrefabAsset.name : "Empty";
@@ -27,6 +26,9 @@ namespace RealMethod
         {
             return PrefabAsset.GetComponent<T>() != null;
         }
+
+        // Override Functions
+        public override int GetHashCode() => PrefabAsset != null ? PrefabAsset.GetHashCode() : 0;
 
         // Operator
         public static implicit operator GameObject(PrefabCore prefab)

@@ -402,104 +402,104 @@ namespace RealMethod
         {
             if (spawner != null)
             {
-                GameObject target = Object.Instantiate(prefab.asset, Game.World.transform);
+                GameObject target = Object.Instantiate<GameObject>(prefab, Game.World.transform);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.asset, Game.World.transform);
+                return Object.Instantiate<GameObject>(prefab, Game.World.transform);
             }
         }
         public static GameObject Prefab(PrefabCore prefab, Transform parent, Object spawner = null)
         {
             if (spawner != null)
             {
-                GameObject target = Object.Instantiate(prefab.asset, parent);
+                GameObject target = Object.Instantiate<GameObject>(prefab, parent);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.asset, parent);
+                return Object.Instantiate<GameObject>(prefab, parent);
             }
         }
         public static GameObject Prefab(PrefabCore prefab, Transform parent, bool instantiateInWorldSpace, Object spawner = null)
         {
             if (spawner != null)
             {
-                GameObject target = Object.Instantiate(prefab.asset, parent, instantiateInWorldSpace);
+                GameObject target = Object.Instantiate<GameObject>(prefab, parent, instantiateInWorldSpace);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.asset, parent, instantiateInWorldSpace);
+                return Object.Instantiate<GameObject>(prefab, parent, instantiateInWorldSpace);
             }
         }
         public static GameObject Prefab(PrefabCore prefab, Vector3 position, Vector3 rotation, Object spawner = null)
         {
             if (spawner != null)
             {
-                GameObject target = Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation));
+                GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation));
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation));
+                return Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation));
             }
         }
         public static GameObject Prefab(PrefabCore prefab, Vector3 position, Quaternion rotation, Object spawner = null)
         {
             if (spawner != null)
             {
-                GameObject target = Object.Instantiate(prefab.asset, position, rotation);
+                GameObject target = Object.Instantiate<GameObject>(prefab, position, rotation);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.asset, position, rotation);
+                return Object.Instantiate<GameObject>(prefab, position, rotation);
             }
         }
         public static GameObject Prefab(PrefabCore prefab, Vector3 position, Object spawner = null)
         {
             if (spawner != null)
             {
-                GameObject target = Object.Instantiate(prefab.asset, position, Quaternion.identity);
+                GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.identity);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.asset, position, Quaternion.identity);
+                return Object.Instantiate<GameObject>(prefab, position, Quaternion.identity);
             }
         }
         public static GameObject Prefab(PrefabCore prefab, Vector3 position, Vector3 rotation, Transform parent, Object spawner = null)
         {
             if (spawner != null)
             {
-                GameObject target = Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation), parent);
+                GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation), parent);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.asset, position, Quaternion.Euler(rotation), parent);
+                return Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation), parent);
             }
         }
         public static GameObject Prefab(PrefabCore prefab, UnityEngine.SceneManagement.Scene scene, Object spawner = null)
         {
             if (spawner != null)
             {
-                GameObject target = Object.Instantiate(prefab.asset, scene) as GameObject;
+                GameObject target = Object.Instantiate(prefab, scene) as GameObject;
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.asset, scene) as GameObject;
+                return Object.Instantiate(prefab, scene) as GameObject;
             }
 
         }
@@ -681,7 +681,7 @@ namespace RealMethod
                 Debug.LogWarning($" {instance}: Owner or Author is not available.");
                 return null;
             }
-            GameObject SpawnedObject = Object.Instantiate(prefab.asset, owner.transform);
+            GameObject SpawnedObject = Object.Instantiate<GameObject>(prefab, owner.transform);
             T TargetCommand = SpawnedObject.GetComponent<T>();
             if (!TargetCommand.GetComponent<ICommand>().Initiate(author, owner))
             {

@@ -204,7 +204,7 @@ namespace RealMethod
         }
         public GameObject AddLayer(string name, UPrefab Prefab, Object spawner = null)
         {
-            GameObject SpawnedObject = Instantiate(Prefab.asset, header.position, Quaternion.identity, header);
+            GameObject SpawnedObject = Instantiate<GameObject>(Prefab, header.position, Quaternion.identity, header);
             if (spawner != null)
             {
                 SpawnedObject.SendSpawnEvent(spawner);
@@ -224,7 +224,7 @@ namespace RealMethod
                 Debug.LogError($"Prefab should has Widget Class Component");
                 return null;
             }
-            GameObject SpawnedObject = Instantiate(Prefab.asset, header.position, Quaternion.identity, header);
+            GameObject SpawnedObject = Instantiate<GameObject>(Prefab, header.position, Quaternion.identity, header);
             if (spawner != null)
             {
                 SpawnedObject.SendSpawnEvent(spawner);

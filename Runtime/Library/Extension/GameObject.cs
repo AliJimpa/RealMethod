@@ -69,6 +69,18 @@ namespace RealMethod
         }
 
 #if UNITY_EDITOR
+        public static bool IsInScene(this GameObject obj)
+        {
+            return PrefabUtility.GetPrefabAssetType(obj) == PrefabAssetType.NotAPrefab
+                   && obj.scene.IsValid();
+        }
+#else
+        public static bool IsInScene(this GameObject obj)
+        {
+            return obj.scene.IsValid() && obj.scene.name != null;
+        }
+#endif
+#if UNITY_EDITOR
         public static bool IsPrefabAsset(this GameObject obj)
         {
             return PrefabUtility.GetPrefabAssetType(obj) != PrefabAssetType.NotAPrefab
@@ -78,12 +90,10 @@ namespace RealMethod
         {
             return PrefabUtility.GetPrefabInstanceStatus(obj) == PrefabInstanceStatus.Connected;
         }
-        public static bool IsSceneObject(this GameObject obj)
-        {
-            return PrefabUtility.GetPrefabAssetType(obj) == PrefabAssetType.NotAPrefab
-                   && obj.scene.IsValid();
-        }
 #endif
+
+
+
 
     }
 }
