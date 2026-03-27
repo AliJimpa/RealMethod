@@ -85,6 +85,7 @@ namespace RealMethod
 
 #if UNITY_EDITOR
         [Header("GameStatus")]
+        [ReadOnly]
         public List<string> Status = new List<string>(4) { "Menu", "Playing", "Pause", "GameOver" };
 #endif
 

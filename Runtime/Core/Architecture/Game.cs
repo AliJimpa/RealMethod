@@ -198,22 +198,25 @@ namespace RealMethod
                 Debug.LogWarning($"GetGameBridgeType that was empty. DefaultGameBridge Created");
                 Bridge = new DefaultGameBridge();
             }
-            if (typeof(Service).IsAssignableFrom(targetService))
-            {
-                try
-                {
-                    Bridge = (GameBridge)Activator.CreateInstance(targetService);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"Failed to instantiate {targetService}: {ex.Message}. DefaultGameBridge Created");
-                    Bridge = new DefaultGameBridge();
-                }
-            }
             else
             {
-                Debug.LogWarning($"Type {targetService} is not assignable to Service. DefaultGameBridge Created");
-                Bridge = new DefaultGameBridge();
+                if (typeof(GameBridge).IsAssignableFrom(targetService))
+                {
+                    try
+                    {
+                        Bridge = (GameBridge)Activator.CreateInstance(targetService);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"Failed to instantiate {targetService}: {ex.Message}. DefaultGameBridge Created");
+                        Bridge = new DefaultGameBridge();
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Type {targetService} is not assignable to GameBridge. DefaultGameBridge Created");
+                    Bridge = new DefaultGameBridge();
+                }
             }
             Instance.Services = new List<Service>(3);
             ((IRelationBridge)Bridge).BindWorldCreated(Instance.Notify_OnWorldInitiate);

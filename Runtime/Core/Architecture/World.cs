@@ -108,7 +108,7 @@ namespace RealMethod
             Managers = new IGameManager[CashManagers.Count];
             Managers = CashManagers.ToArray();
 
-            //Find Player or Create newone
+            // Find Player or Create newone
             var scneplayer = GetPlayerInScene();
             if (scneplayer == null)
             {
@@ -121,11 +121,31 @@ namespace RealMethod
                 PlayerObject = scneplayer;
             }
 
+            // Reset Location of World
+            transform.position = Vector3.zero;
+            transform.rotation = Quaternion.identity;
+
             WorldBegin();
             SyncProvider.WorldIsReady();
         }
-
-
+#if UNITY_EDITOR
+        /// <summary>
+        /// Called EveryFrame to Insure World position
+        /// </summary>
+        private void LateUpdate()
+        {
+            if (transform.position != Vector3.zero)
+            {
+                Debug.LogError("World position should not be changed!");
+                transform.position = Vector3.zero;
+            }
+            if (transform.rotation != Quaternion.identity)
+            {
+                Debug.LogError("World rotation should not be changed!");
+                transform.rotation = Quaternion.identity;
+            }
+        }
+#endif
         /// <summary>
         /// Unity callback invoked when the object is being destroyed.
         /// Unbinds previously bound service callbacks to avoid dangling references.

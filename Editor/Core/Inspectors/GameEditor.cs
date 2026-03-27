@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEditor;
 
 namespace RealMethod.Editor
@@ -17,12 +18,15 @@ namespace RealMethod.Editor
             EditorGUILayout.Space();
             if (BaseComponent != null)
             {
-                EditorGUILayout.LabelField($"{GetWorld()} | {GetSetvice()} | {GetConfig()}");
+                EditorGUILayout.LabelField($"GameStat: {Game.State}");
+                EditorGUILayout.LabelField($"{GetWorld()} | {GetBrgidge()} | {GetConfig()}");
                 EditorGUILayout.Space(0.5f);
-                string[] Data = BaseComponent.GetAllServiceNames();
-                for (int i = 0; i < Data.Length; i++)
+                string[] Services = BaseComponent.GetAllServiceNames();
+                string[] Managers = BaseComponent.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray();
+                string[] WorldManagers = Game.World.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray();
+                for (int i = 0; i < Services.Length; i++)
                 {
-                    EditorGUILayout.LabelField($"{i + 1}. {Data[i]}");
+                    EditorGUILayout.LabelField($"{i + 1}. {Services[i]}");
                 }
             }
         }
@@ -31,7 +35,7 @@ namespace RealMethod.Editor
         {
             return Game.World != null ? Game.World.GetType().Name : "World Not Valid";
         }
-        private string GetSetvice()
+        private string GetBrgidge()
         {
             return Game.Bridge != null ? Game.Bridge.GetType().Name : "GameBridge Not Valid";
         }
