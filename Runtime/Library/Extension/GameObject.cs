@@ -1,6 +1,10 @@
 using UnityEngine;
 using System.Reflection;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace RealMethod
 {
     public static class GameObject_Extension
@@ -63,5 +67,23 @@ namespace RealMethod
             }
             return copy as TComponent;
         }
+
+#if UNITY_EDITOR
+        public static bool IsPrefabAsset(this GameObject obj)
+        {
+            return PrefabUtility.GetPrefabAssetType(obj) != PrefabAssetType.NotAPrefab
+                   && PrefabUtility.GetPrefabInstanceStatus(obj) == PrefabInstanceStatus.NotAPrefab;
+        }
+        public static bool IsPrefabInstance(this GameObject obj)
+        {
+            return PrefabUtility.GetPrefabInstanceStatus(obj) == PrefabInstanceStatus.Connected;
+        }
+        public static bool IsSceneObject(this GameObject obj)
+        {
+            return PrefabUtility.GetPrefabAssetType(obj) == PrefabAssetType.NotAPrefab
+                   && obj.scene.IsValid();
+        }
+#endif
+
     }
 }

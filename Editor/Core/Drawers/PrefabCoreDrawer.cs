@@ -49,7 +49,7 @@ namespace RealMethod.Editor
                         return;
                     }
 
-                    var targetClass = targetPrefab.GetTargetClass();
+                    var targetClass = targetPrefab.GetMainType();
                     GameObject go = newObject as GameObject;
 
                     // Type-check: the prefab must have the required component

@@ -282,7 +282,7 @@ namespace RealMethod
         {
             if (playerPrefab.IsValid())
             {
-                Transform player = Instantiate(playerPrefab.GetSoftClassTarget(), spawnPoint.position, spawnPoint.rotation);
+                Transform player = Instantiate(playerPrefab.GetMainComponent(), spawnPoint.position, spawnPoint.rotation);
                 player.SendMessage("OnSpawn", this, SendMessageOptions.DontRequireReceiver);
                 return player.gameObject;
             }

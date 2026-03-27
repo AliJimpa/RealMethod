@@ -160,6 +160,7 @@ namespace RealMethod
         {
             if (instance.GameUI != null)
             {
+                //if(Prefab)
                 return instance.GameUI.AddLayer(Name, Prefab, spawner);
             }
             else
@@ -506,52 +507,52 @@ namespace RealMethod
         {
             if (spawner != null)
             {
-                T target = Object.Instantiate(prefab.GetSoftClassTarget());
+                T target = Object.Instantiate(prefab.GetMainComponent());
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.GetSoftClassTarget());
+                return Object.Instantiate(prefab.GetMainComponent());
             }
         }
         public static T Prefab<T>(PrefabCore<T> prefab, Transform parent, Object spawner = null) where T : Component
         {
             if (spawner != null)
             {
-                T target = Object.Instantiate(prefab.GetSoftClassTarget(), parent);
+                T target = Object.Instantiate(prefab.GetMainComponent(), parent);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.GetSoftClassTarget(), parent);
+                return Object.Instantiate(prefab.GetMainComponent(), parent);
             }
         }
         public static T Prefab<T>(PrefabCore<T> prefab, Vector3 position, Quaternion rotation, Object spawner = null) where T : Component
         {
             if (spawner != null)
             {
-                T target = Object.Instantiate(prefab.GetSoftClassTarget(), position, rotation);
+                T target = Object.Instantiate(prefab.GetMainComponent(), position, rotation);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.GetSoftClassTarget(), position, rotation);
+                return Object.Instantiate(prefab.GetMainComponent(), position, rotation);
             }
         }
         public static T Prefab<T>(PrefabCore<T> prefab, Transform parent, bool worldPositionStays, Object spawner = null) where T : Component
         {
             if (spawner != null)
             {
-                T target = Object.Instantiate(prefab.GetSoftClassTarget(), parent, worldPositionStays);
+                T target = Object.Instantiate(prefab.GetMainComponent(), parent, worldPositionStays);
                 target.SendSpawnEvent(spawner);
                 return target;
             }
             else
             {
-                return Object.Instantiate(prefab.GetSoftClassTarget(), parent, worldPositionStays);
+                return Object.Instantiate(prefab.GetMainComponent(), parent, worldPositionStays);
             }
         }
 

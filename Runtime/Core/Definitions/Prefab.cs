@@ -8,16 +8,18 @@ namespace RealMethod
     public abstract class PrefabCore : IIdentifier
     {
         [SerializeField]
-        private GameObject PrefabAsset;  // <-- this name must match
+        protected GameObject PrefabAsset;  // <-- this name must match
         public GameObject asset => PrefabAsset;
+
+        // Implement IIdentidier Interface
         public Name16 NameID => PrefabAsset != null ? PrefabAsset.name : "Empty";
 
         // Public Functions
-        public J GetSoftClass<J>() where J : Component
+        public J GetSoftComponent<J>() where J : Component
         {
             return PrefabAsset.GetComponent<J>();
         }
-        public J[] GetAllSoftClass<J>() where J : Component
+        public J[] GetSoftComponentsInChildren<J>() where J : Component
         {
             return PrefabAsset.GetComponentsInChildren<J>();
         }
@@ -26,9 +28,15 @@ namespace RealMethod
             return PrefabAsset.GetComponent<T>() != null;
         }
 
+        // Operator
+        public static implicit operator GameObject(PrefabCore prefab)
+        {
+            return prefab.PrefabAsset;
+        }
+
         // Abstract Methods
         public abstract bool IsValid();
-        public abstract System.Type GetTargetClass(); // <--- added
+        public abstract System.Type GetMainType(); // <--- added
     }
     // Prefab Class
     [System.Serializable]
@@ -37,14 +45,14 @@ namespace RealMethod
         // PrefabCore Methods
         public override bool IsValid()
         {
-            return asset != null && asset.GetComponent<T>() != null;
+            return PrefabAsset != null && PrefabAsset.GetComponent<T>() != null;
         }
-        public override System.Type GetTargetClass() => typeof(T); // <--- implemented
+        public override System.Type GetMainType() => typeof(T); // <--- implemented
 
         // Public Method
-        public T GetSoftClassTarget()
+        public T GetMainComponent()
         {
-            return asset.GetComponent<T>();
+            return PrefabAsset.GetComponent<T>();
         }
     }
 
