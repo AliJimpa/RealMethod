@@ -9,14 +9,18 @@ namespace RealMethod
     /// </summary>
     public abstract class PlayerStarter : MonoBehaviour
     {
-        [Header("Setting")]
+        [Header("Details")]
         [SerializeField]
         private string posName = "None";
         public string PosName => posName;
+
+#if UNITY_EDITOR
+        [Header("Debug")]
         [SerializeField]
         private float height = 2f;
         [SerializeField]
         private float radius = 0.5f;
+#endif
 
         private bool hasPlayer = false;
 
@@ -55,7 +59,11 @@ namespace RealMethod
 #if UNITY_EDITOR
         protected virtual void OnDrawGizmos()
         {
-            RM_Gizmos.Capsule(transform.position, Color.cyan, height, radius);
+            bool blocked = Physics.CheckCapsule(transform.position, transform.position + Vector3.up * height, radius);
+
+            Color c = blocked ? Color.red : Color.cyan;
+
+            RM_Gizmos.Capsule(transform.position, c, height, radius);
             RM_Gizmos.Arrow(transform.position, transform.forward, Color.red);
             RM_Gizmos.Text(PosName, transform.position + (transform.up * (height / 2)) + (Vector3.up * 0.1f), Color.black);
         }

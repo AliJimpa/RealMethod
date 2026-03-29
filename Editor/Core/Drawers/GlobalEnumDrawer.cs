@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    [CustomPropertyDrawer(typeof(SettingEnum))]
-    public class SettingEnumDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(GlobalEnum))]
+    public class GlobalEnumDrawer : PropertyDrawer
     {
         private SerializedProperty MyParam = null;
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

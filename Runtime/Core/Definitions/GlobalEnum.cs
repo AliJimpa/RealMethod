@@ -14,58 +14,58 @@ namespace RealMethod
     /// inside ProjectSettingsAsset that just compile in editor.
     /// </summary>
     [Serializable]
-    public struct SettingEnum
+    public struct GlobalEnum
     {
         [SerializeField]
         private int Value; // <-- this name must match
 
-        public SettingEnum(int index = 0)
+        public GlobalEnum(int index = 0)
         {
             Value = index;
         }
-        public SettingEnum(byte index = 0)
+        public GlobalEnum(byte index = 0)
         {
             Value = index;
         }
 
 
-        public static implicit operator SettingEnum(int val)
+        public static implicit operator GlobalEnum(int val)
         {
-            return new SettingEnum(val);
+            return new GlobalEnum(val);
         }
-        public static implicit operator int(SettingEnum status)
+        public static implicit operator int(GlobalEnum status)
         {
             return status.Value;
         }
-        public static implicit operator SettingEnum(byte val)
+        public static implicit operator GlobalEnum(byte val)
         {
-            return new SettingEnum(val);
+            return new GlobalEnum(val);
         }
-        public static implicit operator byte(SettingEnum status)
+        public static implicit operator byte(GlobalEnum status)
         {
             return (byte)status.Value;
         }
-        public static bool operator ==(SettingEnum a, SettingEnum b)
+        public static bool operator ==(GlobalEnum a, GlobalEnum b)
         {
             return a.Value == b.Value;
         }
-        public static bool operator !=(SettingEnum a, SettingEnum b)
+        public static bool operator !=(GlobalEnum a, GlobalEnum b)
         {
             return a.Value != b.Value;
         }
-        public static bool operator <(SettingEnum a, SettingEnum b)
+        public static bool operator <(GlobalEnum a, GlobalEnum b)
         {
             return a.Value < b.Value;
         }
-        public static bool operator >(SettingEnum a, SettingEnum b)
+        public static bool operator >(GlobalEnum a, GlobalEnum b)
         {
             return a.Value > b.Value;
         }
-        public static bool operator <=(SettingEnum a, SettingEnum b)
+        public static bool operator <=(GlobalEnum a, GlobalEnum b)
         {
             return a.Value <= b.Value;
         }
-        public static bool operator >=(SettingEnum a, SettingEnum b)
+        public static bool operator >=(GlobalEnum a, GlobalEnum b)
         {
             return a.Value >= b.Value;
         }
@@ -74,7 +74,7 @@ namespace RealMethod
 
         public override bool Equals(object obj)
         {
-            return obj is SettingEnum other && other.Value == Value;
+            return obj is GlobalEnum other && other.Value == Value;
         }
         public override int GetHashCode()
         {

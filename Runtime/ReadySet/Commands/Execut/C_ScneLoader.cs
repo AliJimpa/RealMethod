@@ -22,7 +22,7 @@ namespace RealMethod
         [SerializeField, ShowInInspectorByEnum("method", 1)]
         private string sceneName;
         [SerializeField, ShowInInspectorByEnum("method", 2)]
-        private SceneReference sceneAsset;
+        private SceneAsset sceneAsset;
         [SerializeField, ShowInInspectorByEnum("method", 3)]
         private WorldSceneConfig worldAsset;
         [Header("Setting")]

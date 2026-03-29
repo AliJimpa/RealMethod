@@ -71,7 +71,7 @@ namespace RealMethod
         /// <summary>
         /// Reperesent Game State that youser can define state in ProjectSetting
         /// </summary>
-        public static SettingEnum State { get; private set; } = 0;
+        public static GlobalEnum State { get; private set; } = 0;
         /// <summary>
         /// Indicates whether a scene or world load operation is currently in progress.
         /// </summary>
@@ -511,7 +511,7 @@ namespace RealMethod
         /// </summary>
         /// <param name="scene">Reference describing the scene to load.</param>
         /// <returns>A <see cref="Coroutine"/> driving the load operation, or <c>null</c> if not started.</returns>
-        public static Coroutine OpenScene(SceneReference scene)
+        public static Coroutine OpenScene(SceneAsset scene)
         {
             return OpenScene(scene.ScneName);
         }
@@ -555,7 +555,7 @@ namespace RealMethod
         /// </summary>
         /// <param name="scene">Reference describing the scene to load.</param>
         /// <param name="callback">callback event when scene complitly added</param>
-        public static void AddScene(SceneReference scene, Action callback)
+        public static void AddScene(SceneAsset scene, Action callback)
         {
             AddScene(scene.ScneName, callback);
         }

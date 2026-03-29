@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -24,7 +23,7 @@ namespace RealMethod
         public GameObject UI;
         public Animator playerStatusAnimator;
         public GameObject MissionPassUI;
-        public SceneReference HomeScene;
+        public SceneAsset HomeScene;
         [Header("Events")]
         public UnityEvent<MissionManager> OnMissionCompleted;
 

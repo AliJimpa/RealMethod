@@ -189,6 +189,7 @@ namespace RealMethod
 			printSize = newSize;
 		}
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 		protected override void PreDraw()
 		{
 			base.PreDraw();
@@ -212,6 +213,7 @@ namespace RealMethod
 				}
 			}
 		}
+#endif
 	}
 }
 

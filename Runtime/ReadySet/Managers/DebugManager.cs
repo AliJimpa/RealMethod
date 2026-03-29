@@ -92,8 +92,10 @@ namespace RealMethod
         [SerializeField]
         private Vector2 buttonSize = new Vector2(200, 40);
         public Vector2 ButtonSize => buttonSize;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         [SerializeField]
         private float buttonMargin = 20;
+#endif
 
         // GUIManager Methods
         public override void InitiateManager(bool AlwaysLoaded)
@@ -119,6 +121,7 @@ namespace RealMethod
             return DrawList.Remove(result);
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         protected override void PreDraw()
         {
             base.PreDraw();
@@ -139,6 +142,7 @@ namespace RealMethod
             base.PostDraw();
             GUI.EndScrollView();
         }
+#endif
 
     }
 }

@@ -19,16 +19,16 @@ namespace RealMethod
       /// The persistent scene that is always loaded and acts as the base scene.
       /// </summary>
       [SerializeField]
-      private SceneReference persistent;
+      private SceneAsset persistent;
       /// <summary>
       /// Public getter for the persistent scene.
       /// </summary>
-      public SceneReference Persistent => persistent;
+      public SceneAsset Persistent => persistent;
       /// <summary>
       /// Array of additive layer scenes that can be loaded alongside the persistent scene.
       /// </summary>
       [SerializeField]
-      private SceneReference[] Layers;
+      private SceneAsset[] Layers;
       /// <summary>
       /// Gets the number of additive layer scenes.
       /// </summary>
@@ -37,8 +37,8 @@ namespace RealMethod
       /// Indexer to access additive layer scenes by index.
       /// </summary>
       /// <param name="index">Index of the layer scene.</param>
-      /// <returns>The <see cref="SceneReference"/> at the specified index.</returns>
-      public SceneReference this[int index] => Layers[index];
+      /// <returns>The <see cref="SceneAsset"/> at the specified index.</returns>
+      public SceneAsset this[int index] => Layers[index];
 
 
 
