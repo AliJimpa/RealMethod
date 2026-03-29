@@ -1,29 +1,14 @@
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
 using UnityEngine;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
-
-    public class DropdownAttribute : PropertyAttribute
-    {
-        public string[] options;
-
-        public DropdownAttribute(params string[] options)
-        {
-            this.options = options;
-        }
-    }
-
-#if UNITY_EDITOR
-
-    [CustomPropertyDrawer(typeof(DropdownAttribute))]
-    public class DropdownDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(DropdownFromStringsAttribute))]
+    public class DropdownFromStringsDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            DropdownAttribute dropdownAttribute = (DropdownAttribute)attribute;
+            DropdownFromStringsAttribute dropdownAttribute = (DropdownFromStringsAttribute)attribute;
 
             if (property.propertyType == SerializedPropertyType.String)
             {
@@ -43,13 +28,4 @@ namespace RealMethod
             }
         }
     }
-
-#endif
 }
-
-// ----Use
-// [Dropdown("Option1", "Option2", "Option3")]
-// public string selectedOption;
-
-// [Dropdown("Option1", "Option2", "Option3")]
-// public int selectedOptionIndex;

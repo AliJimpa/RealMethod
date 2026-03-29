@@ -238,7 +238,6 @@ namespace RealMethod.Editor
         }
 
 
-
         private static ProjectSettingAsset CreateSettingStorage()
         {
             // Create a new settings asset at the specified path
