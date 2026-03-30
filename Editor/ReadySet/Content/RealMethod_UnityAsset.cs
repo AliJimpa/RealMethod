@@ -26,7 +26,7 @@ namespace RealMethod.Editor
             TableViewerWindow.OpenWindow(asset);
         }
     }
-    public class WorldScene_UnityAsset : AssetProcess<WorldSceneConfig, DataAsset>
+    public class WorldAsset_UnityAsset : AssetProcess<WorldAsset, DataAsset>
     {
         protected override void Initialized()
         {
@@ -44,7 +44,7 @@ namespace RealMethod.Editor
         {
             return "Icons/Core/WorldSceneAsset";
         }
-        protected override void DoubleClick(WorldSceneConfig asset)
+        protected override void DoubleClick(WorldAsset asset)
         {
             asset.OnAssetClick();
         }
@@ -69,7 +69,7 @@ namespace RealMethod.Editor
         }
         protected override void DoubleClick(MonoScript asset)
         {
-            
+
         }
     }
 

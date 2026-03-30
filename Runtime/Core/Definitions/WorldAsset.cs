@@ -4,15 +4,14 @@ using UnityEngine;
 using UnityEditor.SceneManagement;
 #endif
 
-
 namespace RealMethod
 {
    /// <summary>
    /// ScriptableObject for configuring a world scene setup in Unity.
    /// Allows specifying a persistent scene and multiple additive layers.
    /// </summary>
-   [CreateAssetMenu(fileName = "WorldScene", menuName = "Scene/WorldScene", order = 1)]
-   public class WorldSceneConfig : ConfigAsset
+   [CreateAssetMenu(fileName = "WorldAsset", menuName = "Scene/World", order = 1)]
+   public class WorldAsset : UniqueAsset
    {
       [Header("Scenes")]
       /// <summary>

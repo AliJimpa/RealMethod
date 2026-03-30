@@ -582,7 +582,7 @@ namespace RealMethod
         /// </summary>
         /// <param name="WorldScene">World scene configuration to load.</param>
         /// <returns>A <see cref="Coroutine"/> driving the world load operation, or <c>null</c> if not started.</returns>
-        public static Coroutine OpenWorld(WorldSceneConfig WorldScene)
+        public static Coroutine OpenWorld(WorldAsset WorldScene)
         {
             if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.Persistent).buildIndex)
             {

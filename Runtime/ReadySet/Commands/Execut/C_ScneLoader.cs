@@ -24,7 +24,7 @@ namespace RealMethod
         [SerializeField, ConditionalShowByEnum("method", 2)]
         private SceneAsset sceneAsset;
         [SerializeField, ConditionalShowByEnum("method", 3)]
-        private WorldSceneConfig worldAsset;
+        private WorldAsset worldAsset;
         [Header("Setting")]
         [SerializeField, ConditionalShowByEnum("method", 0, 1)]
         private bool IsAsync = false;

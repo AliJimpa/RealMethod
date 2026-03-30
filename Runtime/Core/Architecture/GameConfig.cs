@@ -1,6 +1,3 @@
-
-using UnityEngine;
-
 namespace RealMethod
 {
     /// <summary>
@@ -9,6 +6,4 @@ namespace RealMethod
     public abstract class GameConfig : ConfigAsset
     {
     }
-
-
 }

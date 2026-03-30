@@ -1,4 +1,3 @@
-
 namespace RealMethod
 {
     /// <summary>

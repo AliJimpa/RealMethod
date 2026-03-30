@@ -7,7 +7,7 @@ namespace RealMethod.Editor
     {
         private static AssetProcess[] AssetList = new AssetProcess[5]
         {
-            new WorldScene_UnityAsset(),
+            new WorldAsset_UnityAsset(),
             new Table_UnityAsset(),
             new PCGResource_UnityAsset(),
             new PCGGeneration_UnityAsset(),

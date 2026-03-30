@@ -315,12 +315,12 @@ namespace RealMethod
         /// <summary>
         /// Starts loading a world configuration using a coroutine.
         /// </summary>
-        /// <param name="WorldScene">The world scene configuration to load.</param>
+        /// <param name="WorldScene">The worldAsset to load.</param>
         /// <returns>
         /// An IEnumerator coroutine for loading the world,
         /// or null if a load operation is already in progress.
         /// </returns>
-        public virtual IEnumerator GetLoadWorldCorotine(WorldSceneConfig WorldScene)
+        public virtual IEnumerator GetLoadWorldCorotine(WorldAsset WorldScene)
         {
             if (isLoading == true)
             {
@@ -427,7 +427,7 @@ namespace RealMethod
             // Process = 1;
             callback?.Invoke();
         }
-        private IEnumerator LoadWorldAsync(WorldSceneConfig WS)
+        private IEnumerator LoadWorldAsync(WorldAsset WS)
         {
             //StartLoading
             isLoading = true;
