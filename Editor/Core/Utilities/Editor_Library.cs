@@ -124,6 +124,15 @@ namespace RealMethod.Editor
                 return null;
             }
         }
+        public static string GetScenePathByName(string name)
+        {
+            foreach (var scene in EditorBuildSettings.scenes)
+            {
+                if (scene.path.Contains(name))
+                    return scene.path;
+            }
+            return null;
+        }
 
 
     }

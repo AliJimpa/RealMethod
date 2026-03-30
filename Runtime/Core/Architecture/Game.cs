@@ -6,6 +6,7 @@ using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
 #endif
 
 namespace RealMethod
@@ -508,12 +509,25 @@ namespace RealMethod
         }
         /// <summary>
         /// Requests a scene load using a <see cref="SceneReference"/>.
+        /// Note: this method work in [Editor].
         /// </summary>
         /// <param name="scene">Reference describing the scene to load.</param>
         /// <returns>A <see cref="Coroutine"/> driving the load operation, or <c>null</c> if not started.</returns>
         public static Coroutine OpenScene(SceneAsset scene)
         {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                EditorSceneManager.OpenScene(scene.ScenePath, OpenSceneMode.Single);
+                return null;
+            }
+            else
+            {
+                return OpenScene(scene.ScneName);
+            }
+#else
             return OpenScene(scene.ScneName);
+#endif
         }
         /// <summary>
         /// Requests a scene load by name.
@@ -552,12 +566,24 @@ namespace RealMethod
         }
         /// <summary>
         /// Requests a scene load using a <see cref="SceneReference"/>.
+        /// Note: this method work in [Editor].
         /// </summary>
         /// <param name="scene">Reference describing the scene to load.</param>
         /// <param name="callback">callback event when scene complitly added</param>
         public static void AddScene(SceneAsset scene, Action callback)
         {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                EditorSceneManager.OpenScene(scene.ScenePath, OpenSceneMode.Additive);
+            }
+            else
+            {
+                AddScene(scene.ScneName, callback);
+            }
+#else
             AddScene(scene.ScneName, callback);
+#endif
         }
         /// <summary>
         /// Requests a scene load by name.
@@ -579,11 +605,31 @@ namespace RealMethod
         /// <summary>
         /// Loads a multi-scene world configuration using the provided <see cref="WorldSceneConfig"/>.
         /// If the persistent scene for the world is already loaded, a warning is logged and <c>null</c> is returned.
+        /// Note: this method work in [Editor].
         /// </summary>
         /// <param name="WorldScene">World scene configuration to load.</param>
         /// <returns>A <see cref="Coroutine"/> driving the world load operation, or <c>null</c> if not started.</returns>
         public static Coroutine OpenWorld(WorldAsset WorldScene)
         {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                WorldScene.OnAssetClick();
+                return null;
+            }
+            else
+            {
+                if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.Persistent).buildIndex)
+                {
+                    return Instance.StartCoroutine(Bridge.GetLoadWorldCorotine(WorldScene));
+                }
+                else
+                {
+                    Debug.LogWarning("The Persistent Scene is already loaded.");
+                    return null;
+                }
+            }
+#else
             if (SceneManager.GetActiveScene().buildIndex != SceneManager.GetSceneByPath(WorldScene.Persistent).buildIndex)
             {
                 return Instance.StartCoroutine(Bridge.GetLoadWorldCorotine(WorldScene));
@@ -593,6 +639,8 @@ namespace RealMethod
                 Debug.LogWarning("The Persistent Scene is already loaded.");
                 return null;
             }
+#endif
+
         }
         /// <summary>
         /// Reloads the currently active scene via the configured <see cref="Service"/>.

@@ -15,7 +15,7 @@ namespace RealMethod
         public string PosName => posName;
 
 #if UNITY_EDITOR
-        [Header("Debug")]
+        [Header("Gizmo")]
         [SerializeField]
         private float height = 2f;
         [SerializeField]
