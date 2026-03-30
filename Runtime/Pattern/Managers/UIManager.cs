@@ -10,11 +10,11 @@ namespace RealMethod
     {
         public enum UIMethod
         {
-            [EnumDescription("IMGUI (Legacy - Editor Only)")]
+            [DescriptionEnum("IMGUI (Legacy - Editor Only)")]
             IMGUI,
-            [EnumDescription("uGUI - Canvas-based UI for runtime")]
+            [DescriptionEnum("uGUI - Canvas-based UI for runtime")]
             uGUI,
-            [EnumDescription("UI Toolkit - Modern retained UI system")]
+            [DescriptionEnum("UI Toolkit - Modern retained UI system")]
             UI_Toolkit
         }
 
@@ -24,7 +24,7 @@ namespace RealMethod
         [SerializeField]
         private UIMethod method = UIMethod.uGUI;
         public UIMethod Method => method;
-        [SerializeField, ShowInInspectorByEnum("method", 2)]
+        [SerializeField, ConditionalShowByEnum("method", 2)]
         private PanelSettings UISetting;
         // Actions 
         public System.Action<CanvasGroup, bool> OnFadeIn;

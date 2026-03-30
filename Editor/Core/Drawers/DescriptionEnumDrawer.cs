@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    [CustomPropertyDrawer(typeof(EnumDescriptionAttribute))]
-    public class EnumDescriptionDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(DescriptionEnumAttribute))]
+    public class DescriptionEnumDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -43,7 +43,7 @@ namespace RealMethod.Editor
             for (int i = 0; i < names.Length; i++)
             {
                 var field = enumType.GetField(names[i]);
-                var descriptionAttribute = Attribute.GetCustomAttribute(field, typeof(EnumDescriptionAttribute)) as EnumDescriptionAttribute;
+                var descriptionAttribute = Attribute.GetCustomAttribute(field, typeof(DescriptionEnumAttribute)) as DescriptionEnumAttribute;
                 descriptions[i] = descriptionAttribute != null ? descriptionAttribute.Description : names[i];
             }
 

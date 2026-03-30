@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    [CustomPropertyDrawer(typeof(DropdownFromStringsAttribute))]
-    public class DropdownFromStringsDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(DropdownAttribute))]
+    public class DropdownDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            DropdownFromStringsAttribute dropdownAttribute = (DropdownFromStringsAttribute)attribute;
+            DropdownAttribute dropdownAttribute = (DropdownAttribute)attribute;
 
             if (property.propertyType == SerializedPropertyType.String)
             {

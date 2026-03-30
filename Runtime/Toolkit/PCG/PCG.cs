@@ -17,9 +17,9 @@ namespace RealMethod
         private PCGType Type;
         [SerializeField]
         private PCGResourceConfig Resource;
-        [SerializeField, ShowInInspectorByEnum("Type", 1)]
+        [SerializeField, ConditionalShowByEnum("Type", 1)]
         private PCGGenerationAsset Generation;
-        [SerializeField, ShowInInspectorByEnum("Type", 0)]
+        [SerializeField, ConditionalShowByEnum("Type", 0)]
         private PCGCashAsset CashFile;
         [Header("Load")]
         [SerializeField]

@@ -12,11 +12,11 @@ namespace RealMethod
     /// public int selectedOptionIndex;
     /// </code>
     /// </summary>
-    public class DropdownFromStringsAttribute : PropertyAttribute
+    public class DropdownAttribute : PropertyAttribute
     {
         public string[] options;
 
-        public DropdownFromStringsAttribute(params string[] options)
+        public DropdownAttribute(params string[] options)
         {
             this.options = options;
         }

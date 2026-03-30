@@ -10,9 +10,9 @@ namespace RealMethod
     /// public ScriptableObject TEST;
     /// </code>
     /// </summary>
-    public class ExpandableAttribute : PropertyAttribute
+    public class AssetInlinAttribute : PropertyAttribute
     {
-        public ExpandableAttribute()
+        public AssetInlinAttribute()
         {
         }
     }

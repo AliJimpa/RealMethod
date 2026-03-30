@@ -1,33 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
 using UnityEngine;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
-    public class ListToPopupAttribute : PropertyAttribute
-    {
-        public Type myType;
-        public string propertyName;
-
-        public ListToPopupAttribute(Type _myType, string _propertyName)
-        {
-            myType = _myType;
-            propertyName = _propertyName;
-        }
-    }
-
-#if UNITY_EDITOR
-
-    [CustomPropertyDrawer(typeof(ListToPopupAttribute))]
-    public class ListToPopupDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(PopupListAttribute))]
+    public class PopupListDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            ListToPopupAttribute atb = attribute as ListToPopupAttribute;
+            PopupListAttribute atb = attribute as PopupListAttribute;
             List<string> stringList = null;
 
             // Get the field using reflection
@@ -57,10 +40,4 @@ namespace RealMethod
             }
         }
     }
-
-#endif
 }
-// ------------Use
-// [ListToPopup(typeof(ExampleClass), "options")]
-// public string selectedOption;
-// public static List<string> options = new List<string> { "Option1", "Option2", "Option3" };

@@ -18,10 +18,10 @@ namespace RealMethod
     /// </code>
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class EnumDescriptionAttribute : PropertyAttribute
+    public class DescriptionEnumAttribute : PropertyAttribute
     {
         public string Description { get; }
-        public EnumDescriptionAttribute(string description)
+        public DescriptionEnumAttribute(string description)
         {
             Description = description;
         }

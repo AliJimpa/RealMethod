@@ -24,17 +24,17 @@ namespace RealMethod
         [Header("Behavior")]
         [SerializeField] private SaveMethod Format;
         public SaveMethod format => Format;
-        [SerializeField, HideInInspectorByEnum("Format", 0)]
+        [SerializeField, ConditionalHideByEnum("Format", 0)]
         private bool CustomPath = false;
         [SerializeField, ConditionalHide("CustomPath", true, false)]
         private string FilePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        [SerializeField, ShowInInspectorByEnum("Format", 0, 1)]
+        [SerializeField, ConditionalShowByEnum("Format", 0, 1)]
         private bool PublicField = true;
-        [SerializeField, ShowInInspectorByEnum("Format", 0, 1)]
+        [SerializeField, ConditionalShowByEnum("Format", 0, 1)]
         private bool ProtectedField = false;
-        [SerializeField, ShowInInspectorByEnum("Format", 0, 1)]
+        [SerializeField, ConditionalShowByEnum("Format", 0, 1)]
         private bool PrivateField = false;
-        [SerializeField, ShowInInspectorByEnum("Format", 0, 1)]
+        [SerializeField, ConditionalShowByEnum("Format", 0, 1)]
         private bool SerializeField = false;
 
 

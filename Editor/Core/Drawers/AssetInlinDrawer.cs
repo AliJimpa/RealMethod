@@ -8,8 +8,8 @@ namespace RealMethod.Editor
     /// <summary>
     /// Draws the property field for any field marked with ExpandableAttribute.
     /// </summary>
-    [CustomPropertyDrawer(typeof(ExpandableAttribute), true)]
-    public class ExpandableDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(AssetInlinAttribute), true)]
+    public class AssetInlinDrawer : PropertyDrawer
     {
         // Style Setup
         // Use the following area to change the style of the expandable ScriptableObject drawers;
