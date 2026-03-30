@@ -11,7 +11,7 @@ namespace RealMethod
         private AudioMixer Mixer;
         public AudioMixer mixer => Mixer;
         [SerializeField]
-        private StringFloatDictionary Parameter;
+        private Map<string, float> Parameter;
 
         // Operators
         public float this[string name]

@@ -83,7 +83,7 @@ namespace RealMethod
     public abstract class ResourceData<T> : ResourceData, IResourceData where T : System.Enum
     {
         [System.Serializable]
-        private class StatRatio : SerializableDictionary<T, float> { }
+        private class StatRatio : Map<T, float> { }
         // Variable
         [SerializeField, ReadOnly]
         private float additiveMaxValue = 0;

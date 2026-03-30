@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
+
     public static class Dictionary_Extension
     {
         public static Tk GetKey<Tk, Tv>(this Dictionary<Tk, Tv> DataBase, int index)
@@ -42,7 +43,7 @@ namespace RealMethod
             // Fallback (should rarely happen due to floating point errors)
             return DataBase.Keys.Last();
         }
-        public static T Wheel<T>(this SerializableDictionary<T, float> DataBase)
+        public static T Wheel<T>(this Map<T, float> DataBase)
         {
             if (DataBase == null || DataBase.Count == 0)
                 throw new System.ArgumentException("Database is null or empty");

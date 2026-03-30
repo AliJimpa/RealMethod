@@ -39,7 +39,7 @@ namespace RealMethod
     public abstract class AbilityController : MonoBehaviour
     {
         [System.Serializable]
-        private class InputAbility : SerializableDictionary<InputActionReference, AbilityAsset> { }
+        private class InputAbility : Map<InputActionReference, AbilityAsset> { }
 
         [Header("Setting")]
         [SerializeField]

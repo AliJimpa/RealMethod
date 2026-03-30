@@ -91,7 +91,7 @@ namespace RealMethod
     public abstract class StatProfile<En, Sd> : StatProfileStorage, IPrimitiveStatContainer<En> where En : System.Enum where Sd : StatData
     {
         [System.Serializable]
-        private class GameStat : SerializableDictionary<En, Sd> { }
+        private class GameStat : Map<En, Sd> { }
         [Header("Definition")]
         [SerializeField]
         private GameStat ChacterStats;

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace RealMethod
 {
     [Serializable]
-    public class SelectableElement : SerializableDictionary<string, Selectable> { }
+    public class SelectableElement : Map<string, Selectable> { }
     public interface ISettingStorage : IStorage
     {
         bool IsSettingDirty { get; }
