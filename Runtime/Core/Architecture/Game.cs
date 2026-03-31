@@ -675,8 +675,10 @@ namespace RealMethod
         /// Parents the provided <paramref name="Target"/> GameObject to the game root instance.
         /// </summary>
         /// <param name="Target">The GameObject to hold under the game root.</param>
-        public static void HoldGameObject(GameObject Target)
+        /// <param name="TargetName">The GameObject name change to new Name for searching.</param>
+        public static void HoldGameObject(GameObject Target, Name16 TargetName)
         {
+            Target.name = TargetName;
             Target.transform.SetParent(Instance.transform);
         }
         /// <summary>
@@ -685,14 +687,15 @@ namespace RealMethod
         /// <param name="GameObjectName">Name of the child GameObject to find.</param>
         /// <param name="Target">New parent GameObject to assign.</param>
         /// <returns><c>true</c> if the child was found and reparented; otherwise <c>false</c>.</returns>
-        public static bool TryUnholdGameObject(string GameObjectName, out GameObject result)
+        public static bool TryUnholdGameObject(Name16 GameObjectName, out GameObject result)
         {
+            string TargetName = GameObjectName.ToString();
             Transform[] Childs = Instance.GetComponentsInChildren<Transform>();
             foreach (var item in Childs)
             {
-                if (item.gameObject.name == GameObjectName)
+                if (item.gameObject.name == TargetName)
                 {
-                    item.SetParent(null);
+                    item.SetParent(World.transform);
                     result = item.gameObject;
                     return true;
                 }
