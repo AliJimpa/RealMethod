@@ -168,7 +168,7 @@ namespace RealMethod
                     var requestInterface = MyRequest as ICommand;
                     if (requestInterface != null)
                     {
-                        if (!requestInterface.Initiate(this, this))
+                        if (!requestInterface.Initiate(this))
                         {
                             Debug.LogWarning($"{this.name}> ICommandInitiator.Initiate failed for {MyRequest.GetType().Name}");
                         }
@@ -205,7 +205,7 @@ namespace RealMethod
                     var requestInterface = MyRequest as ICommand;
                     if (requestInterface != null)
                     {
-                        if (!requestInterface.Initiate(this, this))
+                        if (!requestInterface.Initiate(this))
                         {
                             Debug.LogWarning($"{this.name}> ICommandInitiator.Initiate failed for {MyRequest.GetType().Name}");
                         }
@@ -242,7 +242,7 @@ namespace RealMethod
                     var requestInterface = MyRequest as ICommand;
                     if (requestInterface != null)
                     {
-                        if (!requestInterface.Initiate(this, this))
+                        if (!requestInterface.Initiate(this))
                         {
                             Debug.LogWarning($"{this.name}> ICommandInitiator.Initiate failed for {MyRequest.GetType().Name}");
                         }
@@ -279,7 +279,7 @@ namespace RealMethod
                     var requestInterface = MyRequest as ICommand;
                     if (requestInterface != null)
                     {
-                        if (!requestInterface.Initiate(this, this))
+                        if (!requestInterface.Initiate(this))
                         {
                             Debug.LogWarning($"{this.name}> ICommandInitiator.Initiate failed for {MyRequest.GetType().Name}");
                         }

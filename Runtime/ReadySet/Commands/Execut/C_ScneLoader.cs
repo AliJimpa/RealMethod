@@ -36,15 +36,15 @@ namespace RealMethod
 
 
         // ExecutCommand Methods
-        protected override bool OnInitiate(UnityEngine.Object author, UnityEngine.Object owner)
+        protected override bool OnInitiate(UnityEngine.Object owner)
         {
             return true;
         }
-        protected override bool CanExecute(object Owner)
+        protected override bool CanExecute(object Executer)
         {
             return enabled;
         }
-        protected override void Execute(object Owner)
+        protected override void Execute(object Executer)
         {
             switch (method)
             {

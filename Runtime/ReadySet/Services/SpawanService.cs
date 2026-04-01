@@ -674,16 +674,16 @@ namespace RealMethod
         }
 
         // Realmethod
-        public static T Command<T>(CPrefab prefab, MonoBehaviour owner, Object author) where T : Command
+        public static T Command<T>(CPrefab prefab, MonoBehaviour owner) where T : Command
         {
-            if (owner == null || author == null)
+            if (owner == null)
             {
                 Debug.LogWarning($" {instance}: Owner or Author is not available.");
                 return null;
             }
             GameObject SpawnedObject = Object.Instantiate<GameObject>(prefab, owner.transform);
             T TargetCommand = SpawnedObject.GetComponent<T>();
-            if (!TargetCommand.GetComponent<ICommand>().Initiate(author, owner))
+            if (!TargetCommand.GetComponent<ICommand>().Initiate(owner))
             {
                 Debug.LogWarning($"Spawn Command Breack: Initiation failed for command '{typeof(T).Name}' on '{prefab.NameID}'.");
             }

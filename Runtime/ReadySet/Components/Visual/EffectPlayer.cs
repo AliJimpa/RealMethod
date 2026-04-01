@@ -25,7 +25,7 @@ namespace RealMethod
             ICommand[] CommandInitators = GetComponents<ICommand>();
             foreach (var com in CommandInitators)
             {
-                com.Initiate(this, this);
+                com.Initiate(this);
             }
         }
         private void OnEnable()

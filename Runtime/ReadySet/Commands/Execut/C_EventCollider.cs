@@ -9,23 +9,23 @@ namespace RealMethod
         public UnityEvent<Collider> OnTrigger;
 
         // ExecutCommand Methods
-        protected override bool OnInitiate(Object author, Object owner)
+        protected override bool OnInitiate(Object owner)
         {
             return true;
         }
-        protected override bool CanExecute(object Owner)
+        protected override bool CanExecute(object Executer)
         {
             return enabled;
         }
-        protected override void Execute(object Owner)
+        protected override void Execute(object Executer)
         {
-            if (Owner is Collider col)
+            if (Executer is Collider col)
             {
                 OnTrigger?.Invoke(col);
             }
             else
             {
-                Debug.LogError("EventCollider_com.Execute: Owner is not a Collider. Event not invoked.");
+                Debug.LogError("EventCollider_com.Execute: Executer is not a Collider. Event not invoked.");
             }
         }
     }

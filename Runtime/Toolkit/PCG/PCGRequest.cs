@@ -14,7 +14,7 @@ namespace RealMethod
         private PCGGenerationAsset Owner;
 
         // Implement ICommand Interface
-        bool ICommand.Initiate(Object author, Object owner)
+        bool ICommand.Initiate(Object owner)
         {
             if (owner is PCGGenerationAsset result)
             {

@@ -37,7 +37,7 @@ namespace RealMethod
 
 
         // ExecutCommand Methods
-        protected override bool OnInitiate(UnityEngine.Object author, UnityEngine.Object owner)
+        protected override bool OnInitiate(UnityEngine.Object owner)
         {
             if (HealthyObject)
                 HealthyObject.SetActive(true);
@@ -45,19 +45,19 @@ namespace RealMethod
                 DamagedObject.SetActive(false);
             return true;
         }
-        protected override bool CanExecute(object Owner)
+        protected override bool CanExecute(object Executer)
         {
             return enabled;
         }
-        protected override void Execute(object Owner)
+        protected override void Execute(object Executer)
         {
-            if (Owner is Collider col)
+            if (Executer is Collider col)
             {
                 Fracture(col);
                 return;
             }
 
-            if (Owner is Transform trans)
+            if (Executer is Transform trans)
             {
                 Fracture(trans);
             }
