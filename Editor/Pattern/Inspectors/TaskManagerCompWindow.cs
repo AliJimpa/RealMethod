@@ -22,7 +22,7 @@ namespace RealMethod
             {
                 if (BaseComponent.Count > 0)
                 {
-                    ITask[] tasks = BaseComponent.GetAllTasks();
+                    ITask[] tasks = BaseComponent.GetAllUnits();
                     foreach (var task in tasks)
                     {
                         EditorGUILayout.LabelField($"{task}");

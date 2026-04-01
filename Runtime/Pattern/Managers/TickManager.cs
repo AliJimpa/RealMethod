@@ -34,21 +34,21 @@ namespace RealMethod
         {
             if (updateMethod == UpdateMethod.LateUpdate)
             {
-                callUnits();
+                CallUnits();
             }
         }
         private void Update()
         {
             if (updateMethod == UpdateMethod.Update)
             {
-                callUnits();
+                CallUnits();
             }
         }
         private void FixedUpdate()
         {
             if (updateMethod == UpdateMethod.FixedUpdate)
             {
-                callUnits();
+                CallUnits();
             }
         }
 
@@ -57,13 +57,13 @@ namespace RealMethod
         {
             return units.Contains(unit);
         }
-        public T[] GetAllTasks()
+        public T[] GetAllUnits()
         {
             return units.ToArray();
         }
 
         // Private Functions
-        private void callUnits()
+        private void CallUnits()
         {
             float delta = Time.deltaTime;
             for (int i = 0; i < units.Count; i++)
