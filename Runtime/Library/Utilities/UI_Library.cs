@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -22,5 +23,6 @@ namespace RealMethod
             // Check if we hit any UI elements
             return results.Count > 0;
         }
+
     }
 }
