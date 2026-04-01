@@ -16,7 +16,7 @@ namespace RealMethod.Editor
         /// Holds the current error state for this property.
         /// If not null, the property will render an error instead of its normal UI.
         /// </summary>
-        private ErrorAction PropertyError = null;
+        private ErrorAction PropertyError;
 
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace RealMethod.Editor
         /// </returns>
         public byte Render()
         {
-            if (PropertyError == null)
+            if (!PropertyError.IsValid)
             {
                 return UpdateRender();
             }
@@ -75,7 +75,7 @@ namespace RealMethod.Editor
         /// <param name="id">Identifier used to determine which fix action to apply.</param>
         protected void Error(string message, int id)
         {
-            PropertyError = new ErrorAction(message, id, FixError);
+            PropertyError.Create(message, id, FixError);
         }
 
 
