@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class ErrorAction
+    public struct ErrorAction
     {
         public string ErrorMessage { get; private set; }
         private Action<int> OnFixed;
-        private int ID = 0;
+        private int ID;
 
         public ErrorAction(string message, int id, Action<int> callback)
         {
