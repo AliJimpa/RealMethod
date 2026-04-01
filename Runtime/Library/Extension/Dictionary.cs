@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace RealMethod
 {
-
     public static class Dictionary_Extension
     {
         public static Tk GetKey<Tk, Tv>(this Dictionary<Tk, Tv> DataBase, int index)

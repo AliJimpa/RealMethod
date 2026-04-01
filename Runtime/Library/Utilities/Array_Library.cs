@@ -1,0 +1,18 @@
+using System;
+
+namespace RealMethod
+{
+    public static class RM_Array
+    {
+        public static T[] Append<T>(T[] a, T[] b)
+        {
+            if (a == null) return b;
+            if (b == null) return a;
+
+            T[] result = new T[a.Length + b.Length];
+            Array.Copy(a, result, a.Length);
+            Array.Copy(b, 0, result, a.Length, b.Length);
+            return result;
+        }
+    }
+}

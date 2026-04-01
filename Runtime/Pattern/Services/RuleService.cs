@@ -13,11 +13,11 @@ namespace RealMethod
             Rules = new Hictionary<Observer<bool>>(5);
         }
 
-        protected override void OnWorldChanging(World Previous , World New)
+        protected override void OnWorldChanging(World Previous, World New)
         {
-            foreach (var item in Rules.GetValues())
+            foreach (var item in Rules)
             {
-                item.Check();
+                item.Value.Check();
             }
         }
 
@@ -37,9 +37,9 @@ namespace RealMethod
         }
         public void UpdateRules()
         {
-            foreach (Observer<bool> item in Rules.GetValues())
+            foreach (var item in Rules)
             {
-                item.Check();
+                item.Value.Check();
             }
         }
         public bool InEffect(string rule)

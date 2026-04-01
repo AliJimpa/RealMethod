@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RealMethod
@@ -111,7 +112,7 @@ namespace RealMethod
 
         // Private Variable
         private Hictionary<InventoryItemProperty> Items;
-        public int Count => Items.IsValid() ? Items.Count : 0;
+        public int Count => Items.IsValid ? Items.Count : 0;
         protected IInventoryStorage inventoryStorage { get; private set; }
 
 
@@ -351,7 +352,7 @@ namespace RealMethod
         public T[] CopyItemsByClass<T>() where T : IInventoryItem
         {
             List<T> Result = new List<T>();
-            foreach (var pack in Items.GetValues())
+            foreach (var pack in Items.Values)
             {
                 if (pack.provider is T finditem)
                 {
@@ -369,9 +370,9 @@ namespace RealMethod
         // Protected Functions
         protected InventoryItemProperty[] GetCopyItemsProperty()
         {
-            var values = Items.GetValues();
+            var values = Items.Values;
             var copy = new InventoryItemProperty[Items.Count];
-            values.CopyTo(copy, 0);
+            values.ToArray().CopyTo(copy, 0);
             return copy;
         }
 

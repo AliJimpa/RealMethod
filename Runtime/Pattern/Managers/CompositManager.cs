@@ -223,7 +223,7 @@ namespace RealMethod
         }
         public AudioBehaviour[] GetLayers()
         {
-            return Layers.GetValues().ToArray();
+            return Layers.Values.ToArray();
         }
 
         // Protected Functions

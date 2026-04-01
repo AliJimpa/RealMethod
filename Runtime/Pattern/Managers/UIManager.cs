@@ -528,9 +528,9 @@ namespace RealMethod
         {
             T Reslut = null;
             IWidget TargetWidget;
-            foreach (var Lay in Layers.GetValues())
+            foreach (var Lay in Layers)
             {
-                TargetWidget = Lay.GetComponent<IWidget>();
+                TargetWidget = Lay.Value.GetComponent<IWidget>();
                 if (TargetWidget == null)
                 {
                     continue;
