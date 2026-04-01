@@ -1,10 +1,6 @@
 using System;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 namespace RealMethod
 {
     /// <summary>
@@ -85,7 +81,7 @@ namespace RealMethod
 #if UNITY_EDITOR
         public override string ToString()
         {
-            var ProjectSettings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>("Assets/Resources/RealMethod/RealMethodSetting.asset");
+            var ProjectSettings = ProjectSettingAsset.Loaded();
             if (ProjectSettings)
             {
                 var names = ProjectSettings.Status;

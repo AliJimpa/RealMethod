@@ -39,6 +39,7 @@ namespace RealMethod
 
         }
 
+        public static string Path = "Assets/Resources/RealMethod/RealMethodSetting.asset";
 
         [Header("Initializer")]
         [SerializeField, ReadOnly]
@@ -127,6 +128,10 @@ namespace RealMethod
         }
 
 #if UNITY_EDITOR
+        public static ProjectSettingAsset Loaded()
+        {
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(Path);
+        }
         public GameObject GetPrefab_2()
         {
             return GamePrefab_2;
