@@ -1,28 +1,21 @@
 
+using UnityEngine;
+
 namespace RealMethod
 {
-    public interface IFactoryEditorAccess
-    {
-
-    }
-    public interface IFactoryAction
-    {
-        void Initiate();
-        void Execute();
-    }
-
     public struct FactoryProduct : IFactoryAction
     {
-        public void Initiate()
+        // Implement ICommand Interface
+        bool ICommand.Initiate(Object owner)
         {
             throw new System.NotImplementedException();
         }
-        public void Execute()
+        void ICommand.ExecuteCommand(object Executer)
         {
             throw new System.NotImplementedException();
         }
     }
-    
+
     public abstract class FactoryAsset : DataAsset
     {
 
