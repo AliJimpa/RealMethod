@@ -13,7 +13,7 @@ namespace RealMethod
     {
         private Dictionary<Hash128, T> list;
         private static int GlobalIdCounter;
-        private int InstanceId;
+        public int ID { get; private set; }
 
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace RealMethod
 
         public NameTable(int prewarm = 10)
         {
-            InstanceId = ++GlobalIdCounter;
+            ID = ++GlobalIdCounter;
             list = new Dictionary<Hash128, T>(prewarm);
         }
 
