@@ -6,14 +6,14 @@ namespace RealMethod
     {
         private float serviceTime;
         private float worldTime;
-        private Hictionary<float> RecordTime;
+        private NameTable<float> RecordTime;
 
         // Service Methods
         protected override void OnStart(object Author)
         {
             serviceTime = Time.time;
             worldTime = Time.time;
-            RecordTime = new Hictionary<float>(10);
+            RecordTime = new NameTable<float>(10);
         }
         protected override void OnWorldChanging(World Previous , World New)
         {

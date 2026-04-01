@@ -6,11 +6,11 @@ namespace RealMethod
     {
         public Action<string> OnAddedRule;
         public Action<string> OnFinishRule;
-        private Hictionary<Observer<bool>> Rules;
+        private NameTable<Observer<bool>> Rules;
 
         public RuleService()
         {
-            Rules = new Hictionary<Observer<bool>>(5);
+            Rules = new NameTable<Observer<bool>>(5);
         }
 
         protected override void OnWorldChanging(World Previous, World New)

@@ -111,7 +111,7 @@ namespace RealMethod
         public System.Action OnItemRemoved;
 
         // Private Variable
-        private Hictionary<InventoryItemProperty> Items;
+        private NameTable<InventoryItemProperty> Items;
         public int Count => Items.IsValid ? Items.Count : 0;
         protected IInventoryStorage inventoryStorage { get; private set; }
 
@@ -137,7 +137,7 @@ namespace RealMethod
             if (LoadStorage())
             {
                 InventoryItemProperty[] cacheItems = inventoryStorage.GetItems();
-                Items = new Hictionary<InventoryItemProperty>(cacheItems.Length);
+                Items = new NameTable<InventoryItemProperty>(cacheItems.Length);
                 foreach (var data in cacheItems)
                 {
                     Items.Add(data.Name, data);
@@ -147,7 +147,7 @@ namespace RealMethod
             {
                 if (DefaultItem != null)
                 {
-                    Items = new Hictionary<InventoryItemProperty>(DefaultItem.Length);
+                    Items = new NameTable<InventoryItemProperty>(DefaultItem.Length);
                     foreach (var itemAsset in DefaultItem)
                     {
                         if (itemAsset is IInventoryItem item)
@@ -163,7 +163,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Items = new Hictionary<InventoryItemProperty>(5);
+                    Items = new NameTable<InventoryItemProperty>(5);
                 }
             }
         }

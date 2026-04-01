@@ -8,7 +8,7 @@ namespace RealMethod
     /// Lightweight engine-style string identifier.
     /// Stores only an integer ID while the actual strings live in a global table.
     /// </summary>
-    public struct TName : IEquatable<TName>
+    public struct UniqueName : IEquatable<UniqueName>
     {
         /// <summary>
         /// Maximum allowed characters for a name.
@@ -35,7 +35,7 @@ namespace RealMethod
         /// <summary>
         /// Creates a Name from a string.
         /// </summary>
-        public TName(string value)
+        public UniqueName(string value)
         {
             id = GetOrCreateId(value);
         }
@@ -98,7 +98,7 @@ namespace RealMethod
         /// <summary>
         /// Checks equality with another Name.
         /// </summary>
-        public bool Equals(TName other)
+        public bool Equals(UniqueName other)
         {
             return id == other.id;
         }
@@ -119,7 +119,7 @@ namespace RealMethod
         /// </summary>
         public override bool Equals(object obj)
         {
-            return obj is TName other && Equals(other);
+            return obj is UniqueName other && Equals(other);
         }
         /// <summary>
         /// Hash code of the Name.
@@ -135,15 +135,15 @@ namespace RealMethod
         /// <summary>
         /// Implicit conversion from string.
         /// </summary>
-        public static implicit operator TName(string value)
+        public static implicit operator UniqueName(string value)
         {
-            return new TName(value);
+            return new UniqueName(value);
         }
 
         /// <summary>
         /// Implicit conversion to string.
         /// </summary>
-        public static implicit operator string(TName name)
+        public static implicit operator string(UniqueName name)
         {
             return GetString(name.id);
         }
@@ -151,7 +151,7 @@ namespace RealMethod
         /// <summary>
         /// Equality operator.
         /// </summary>
-        public static bool operator ==(TName a, TName b)
+        public static bool operator ==(UniqueName a, UniqueName b)
         {
             return a.id == b.id;
         }
@@ -159,7 +159,7 @@ namespace RealMethod
         /// <summary>
         /// Inequality operator.
         /// </summary>
-        public static bool operator !=(TName a, TName b)
+        public static bool operator !=(UniqueName a, UniqueName b)
         {
             return a.id != b.id;
         }

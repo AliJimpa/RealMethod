@@ -35,7 +35,7 @@ namespace RealMethod
         [SerializeField]
         private AudioMixerGroup DefaultGroup;
 
-        private Hictionary<AudioBehaviour> Layers = new Hictionary<AudioBehaviour>(5);
+        private NameTable<AudioBehaviour> Layers = new NameTable<AudioBehaviour>(5);
         public int LayerCount => Layers.Count;
 
         // Public Functions

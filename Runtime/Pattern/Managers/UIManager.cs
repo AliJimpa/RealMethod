@@ -30,7 +30,7 @@ namespace RealMethod
         public System.Action<CanvasGroup, bool> OnFadeIn;
         public System.Action<CanvasGroup, bool> OnFadeOut;
         // Private Variable
-        private Hictionary<GameObject> Layers = new Hictionary<GameObject>(5);
+        private NameTable<GameObject> Layers = new NameTable<GameObject>(5);
 
 
 

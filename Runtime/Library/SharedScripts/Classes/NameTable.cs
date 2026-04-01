@@ -9,7 +9,7 @@ namespace RealMethod
     /// A dictionary keyed by string but internally hashes each key using <see cref="Hash128"/>.
     /// Provides stable lookups and near-zero collision risk.
     /// </summary>
-    public class Hictionary<T> : IEnumerable<KeyValuePair<Hash128, T>>
+    public class NameTable<T> : IEnumerable<KeyValuePair<Hash128, T>>
     {
         private Dictionary<Hash128, T> list;
         private static int GlobalIdCounter;
@@ -47,7 +47,7 @@ namespace RealMethod
         public bool IsReadOnly => false;
 
 
-        public Hictionary(int prewarm = 10)
+        public NameTable(int prewarm = 10)
         {
             InstanceId = ++GlobalIdCounter;
             list = new Dictionary<Hash128, T>(prewarm);

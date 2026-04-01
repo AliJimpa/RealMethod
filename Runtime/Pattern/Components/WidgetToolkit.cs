@@ -12,7 +12,7 @@ namespace RealMethod
 
         public UIDocument Design { get; private set; }
         public VisualElement Canvas => Design.rootVisualElement;
-        protected Hictionary<VisualElement> Pages;
+        protected NameTable<VisualElement> Pages;
 
 
         public VisualElement this[string Name]
@@ -32,7 +32,7 @@ namespace RealMethod
 
             Design = GetComponent<UIDocument>();
 
-            Pages = new Hictionary<VisualElement>();
+            Pages = new NameTable<VisualElement>();
             List<VisualElement> allElement = Canvas.Query<VisualElement>().ToList();
             foreach (var ElmName in PageNames)
             {
