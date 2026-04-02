@@ -146,21 +146,38 @@ namespace RealMethod
             SyncProvider.WorldIsReady();
         }
 #if UNITY_EDITOR
-        /// <summary>
-        /// Called EveryFrame to Insure World position
-        /// </summary>
+        private void OnEnable()
+        {
+
+        }
+        private void OnDisable()
+        {
+            if (gameObject.activeSelf == true && enabled == false)
+            {
+                Debug.LogWarning($"You can't Disable {GetType().Name} Component");
+                enabled = true;
+            }
+        }
         private void LateUpdate()
         {
             if (transform.position != Vector3.zero)
             {
-                Debug.LogError("World position should not be changed!");
+                Debug.LogWarning($"{gameObject.name} position should not be changed!");
                 transform.position = Vector3.zero;
             }
             if (transform.rotation != Quaternion.identity)
             {
-                Debug.LogError("World rotation should not be changed!");
+                Debug.LogWarning($"{gameObject.name} rotation should not be changed!");
                 transform.rotation = Quaternion.identity;
             }
+        }
+        private void Update()
+        {
+
+        }
+        private void FixedUpdate()
+        {
+
         }
 #endif
         /// <summary>

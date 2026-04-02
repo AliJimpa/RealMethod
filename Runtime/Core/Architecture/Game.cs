@@ -391,7 +391,7 @@ namespace RealMethod
         public static T AddService<T>(object author) where T : Service, new()
         {
             // Check if you game not initialized
-            if (!IsGameInitialized)
+            if (Bridge == null)
             {
                 Debug.LogWarning($"Game doesn't initialized !");
                 return null;
@@ -1047,6 +1047,58 @@ namespace RealMethod
             ((IService)Bridge).Deleted(this);
             OnGameClosed();
         }
+
+#if UNITY_EDITOR
+        private void Awake()
+        {
+
+        }
+        private void OnEnable()
+        {
+
+        }
+        private void Start()
+        {
+
+        }
+        private void OnDisable()
+        {
+            if (!EditorApplication.isPlayingOrWillChangePlaymode)
+                return; // Ignore disable caused by editor closing play mode
+
+            if (gameObject.activeSelf == false)
+            {
+                Debug.LogWarning($"You can't Deactive {gameObject.name} GameObject");
+                gameObject.SetActive(true);
+            }
+            if (enabled == false)
+            {
+                Debug.LogWarning($"You can't Disable {GetType().Name} Component");
+                enabled = true;
+            }
+        }
+        private void LateUpdate()
+        {
+            if (transform.position != Vector3.zero)
+            {
+                Debug.LogWarning($"{gameObject.name} position should not be changed!");
+                transform.position = Vector3.zero;
+            }
+            if (transform.rotation != Quaternion.identity)
+            {
+                Debug.LogWarning($"{gameObject.name} rotation should not be changed!");
+                transform.rotation = Quaternion.identity;
+            }
+        }
+        private void Update()
+        {
+
+        }
+        private void FixedUpdate()
+        {
+
+        }
+#endif
 
 
 
