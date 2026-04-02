@@ -159,11 +159,6 @@ namespace RealMethod
         }
         private void OnDisable()
         {
-            if (gameObject.activeSelf == true && enabled == false)
-            {
-                Debug.LogWarning($"You can't Disable {GetType().Name} Component");
-                enabled = true;
-            }
         }
         private void LateUpdate()
         {

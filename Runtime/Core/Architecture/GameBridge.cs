@@ -323,7 +323,7 @@ namespace RealMethod
         /// <param name="AdditiveWorld">The New WorldClass Refrence in AdditiveScene</param>
         protected virtual void OnAdditiveWorldDetected(World AdditiveWorld)
         {
-            Despawn.GameObject(AdditiveWorld.gameObject);
+            UnityEngine.Object.Destroy(AdditiveWorld.gameObject);
         }
         /// <summary>
         /// Starts loading a scene by name using a coroutine.

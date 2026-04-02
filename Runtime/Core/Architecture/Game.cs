@@ -1051,7 +1051,11 @@ namespace RealMethod
 #if UNITY_EDITOR
         private void Awake()
         {
-
+            if (Instance != null)
+            {
+                Debug.LogError($"This [{this}] component should not be added manually to the scene.");
+                Destroy(this);
+            }
         }
         private void OnEnable()
         {

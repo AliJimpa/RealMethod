@@ -23,7 +23,7 @@ namespace RealMethod.Editor
                 EditorGUILayout.Space(0.5f);
                 string[] Services = BaseComponent.GetAllServiceNames();
                 string[] Managers = BaseComponent.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray();
-                string[] WorldManagers = Game.World.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray();
+                string[] WorldManagers = Game.World ? Game.World.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray() : new string[0];
                 for (int i = 0; i < Services.Length; i++)
                 {
                     EditorGUILayout.LabelField($"{i + 1}. {Services[i]}");
