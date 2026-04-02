@@ -210,7 +210,8 @@ namespace RealMethod
                 return;
             }
             Shareds.Add(obj);
-            obj.transform.SetParent(Game.World.transform);
+            if (obj.gameObject.activeInHierarchy && Game.World.gameObject.activeInHierarchy)
+                obj.transform.SetParent(Game.World.transform);
         }
         /// <summary>
         /// Removes a GameObject from the shared objects collection when it is no longer needed or should no longer be shared.
@@ -224,7 +225,8 @@ namespace RealMethod
                 return;
             }
             Shareds.Remove(obj);
-            obj.transform.SetParent(null);
+            if (obj.gameObject.activeInHierarchy)
+                obj.transform.SetParent(null);
         }
         /// <summary>
         /// Check is GameObject is in Shared List
