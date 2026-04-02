@@ -177,6 +177,15 @@ namespace RealMethod
         {
             return Game.Bridge.IsSharedObject(obj);
         }
+        /// <summary>
+        /// Check if GameObject was lives in DontDestroyOnload scene
+        /// </summary>
+        /// <param name="obj">The GameObject to check.</param>
+        /// <returns>True if the GameObject is in DontDestroyOnload scene, false otherwise.</returns>
+        public static bool IsDontDestroyOnLoad(this GameObject obj)
+        {
+            return obj.scene.name == "DontDestroyOnLoad";
+        }
 
 
 #if UNITY_EDITOR

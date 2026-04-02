@@ -108,10 +108,19 @@ namespace RealMethod
 
             // Get All Managers
             List<IGameManager> CashManagers = new List<IGameManager>(10);
-            foreach (var manager in GetComponentsInChildren<IGameManager>()) // Self Mangers
+            foreach (var manager in GetComponents<IGameManager>())
             {
-                manager.InitiateManager(false);
-                CashManagers.Add(manager);
+                if (!CashManagers.Contains(manager))
+                {
+                    manager.InitiateManager(true);
+                    CashManagers.Add(manager);
+                }
+                else
+                {
+                    Debug.LogError($"You should not use a manager {manager} twice");
+                    throw new System.NotImplementedException();
+                }
+
             }
             Managers = new IGameManager[CashManagers.Count];
             Managers = CashManagers.ToArray();
