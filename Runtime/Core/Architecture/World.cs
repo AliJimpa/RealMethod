@@ -80,8 +80,11 @@ namespace RealMethod
     public abstract class World : MonoBehaviour
     {
         [Header("Setting")]
+        [SerializeField, Tooltip("Clears all registered services on Awake.")]
+        private bool clearServices;
         [SerializeField]
         private Prefab DefualtPlayer;
+
 
         private IGameManager[] Managers;
         private GameObject PlayerObject;
@@ -99,6 +102,10 @@ namespace RealMethod
             IRelationBridge SyncProvider = Game.Bridge;
             if (SyncProvider.IntroduceWorld(this))
             {
+                if (clearServices)
+                {
+                    Game.ClearService();
+                }
                 SyncProvider.BindServicesUpdated(Notify_OnServicesUpdated);
             }
             else
