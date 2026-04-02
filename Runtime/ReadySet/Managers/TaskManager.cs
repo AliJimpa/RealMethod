@@ -19,7 +19,7 @@ namespace RealMethod
         // TickManager Methods
         protected override void InitiateManager(bool alwaysLoaded)
         {
-            if (Game.TryFindService(out Spawn SpawnServ))
+            if (Game.TryGetService(out Spawn SpawnServ))
             {
                 SpawnServ.BringManager(this);
             }

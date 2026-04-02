@@ -23,7 +23,7 @@ namespace RealMethod
                 return;
             }
 
-            if (CanBringtoSpawn() && Game.TryFindService(out Spawn SpawnServ))
+            if (CanBringtoSpawn() && Game.TryGetService(out Spawn SpawnServ))
             {
                 SpawnServ.BringManager(this);
             }

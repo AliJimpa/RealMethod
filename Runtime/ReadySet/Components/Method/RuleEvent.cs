@@ -19,7 +19,7 @@ namespace RealMethod
 
         private void Awake()
         {
-            if (Game.TryFindService(out ruleServ))
+            if (Game.TryGetService(out ruleServ))
             {
                 if (ruleServ.IsValid(Rule))
                 {

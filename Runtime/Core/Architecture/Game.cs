@@ -91,6 +91,7 @@ namespace RealMethod
                 }
             }
         }
+        public static bool IsGameInitialized { get; private set; } = false;
         /// <summary>
         /// Indicates whether the game is in loading stage
         /// Return true when game in loading section for new scene
@@ -145,7 +146,7 @@ namespace RealMethod
         /// <summary>
         /// List of runtime-registered <see cref="Service"/> instances owned by the game.
         /// </summary>
-        private List<Service> Services;
+        private readonly Dictionary<Type, IService> Services = new();
 
 
 
@@ -219,7 +220,6 @@ namespace RealMethod
                     Bridge = new DefaultGameBridge();
                 }
             }
-            Instance.Services = new List<Service>(3);
             ((IRelationBridge)Bridge).BindWorldCreated(Instance.Notify_OnWorldInitiate);
             ((IService)Bridge).Created(Instance);
 
@@ -319,6 +319,7 @@ namespace RealMethod
         {
             if (Instance != null)
             {
+                IsGameInitialized = true;
                 Instance.OnGameInitialized();
             }
         }
@@ -390,22 +391,16 @@ namespace RealMethod
         public static T AddService<T>(object author) where T : Service, new()
         {
             // Check if you game not initialized
-            if (Instance.Services == null)
+            if (!IsGameInitialized)
             {
                 Debug.LogWarning($"Game doesn't initialized !");
                 return null;
             }
 
-            // Check if a service of this type already exists
-            if (Instance.Services.Any(s => s.GetType() == typeof(T)))
-            {
-                Debug.LogWarning($"Service of type {typeof(T).Name} already exists.");
-                return null;
-            }
-
             // Create Service
             T newService = new T();
-            ((IService)newService).Created(author);
+            if (!RegisterService(newService, author))
+                return null;
             if (Instance.Managers != null)
             {
                 foreach (var manager in Instance.Managers)
@@ -414,11 +409,40 @@ namespace RealMethod
                 }
             }
             ((IRelationBridge)Bridge).ServiceCreated(newService);
-            Instance.Services.Add(newService);
             return newService;
         }
         /// <summary>
-        /// Removes the first service instance of type <typeparamref name="T"/> if present.
+        /// Register new instance (<typeparamref name="T"/>) that include 'IService' interface .
+        /// New Service instance register to the game if one des not already exist
+        /// </summary>
+        /// <typeparam name="T">Any Type can inplement 'IService' interface</typeparam>
+        /// <param name="service">Any Instance can inplement 'IService' interface </param>
+        /// <param name="author">The object responsible for creating the service (used for provider callbacks).</param>
+        /// <returns>The newly created service instance, or <c>null</c> if a service of the same type already exists.</returns>
+        public static bool RegisterService<T>(T service, object author)
+        {
+            if (service is IService provider)
+            {
+                Type TypeService = typeof(T);
+
+                if (Instance.Services.ContainsKey(TypeService))
+                {
+                    Debug.LogError($"Service {TypeService} already registered.");
+                    return false;
+                }
+
+                provider.Created(author);
+                Instance.Services[TypeService] = provider;
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"The class '{service.GetType().Name}' must implement the IService interface.");
+                return false;
+            }
+        }
+        /// <summary>
+        /// Removes the service instance of type <typeparamref name="T"/> if present.
         /// Managers and the global service system will be notified of the removal.
         /// </summary>
         /// <typeparam name="T">Service type to remove.</typeparam>
@@ -426,19 +450,23 @@ namespace RealMethod
         /// <returns><c>true</c> if a service was found and removed; otherwise <c>false</c>.</returns>
         public static bool RemoveService<T>(object author) where T : Service
         {
-            var service = Instance.Services.FirstOrDefault(s => s.GetType() == typeof(T));
-            if (service != null)
+            Type TypeService = typeof(T);
+            var provider = Instance.Services[TypeService];
+            if (provider != null)
             {
-                if (Instance.Managers != null)
+                if (provider.GetServiceClass() is Service service)
                 {
-                    foreach (var manager in Instance.Managers)
+                    if (Instance.Managers != null)
                     {
-                        manager.ResolveService(service, false);
+                        foreach (var manager in Instance.Managers)
+                        {
+                            manager.ResolveService(service, false);
+                        }
                     }
+                    ((IRelationBridge)Bridge).ServiceRemoved(service);
                 }
-                ((IRelationBridge)Bridge).ServiceRemoved(service);
-                ((IService)service).Deleted(author);
-                Instance.Services.Remove(service);
+                provider.Deleted(author);
+                Unregister<T>();
                 return true;
             }
 
@@ -446,29 +474,27 @@ namespace RealMethod
             return false;
         }
         /// <summary>
-        /// Retrieves the first service instance of type <typeparamref name="T"/> if available.
+        /// Remove service instance 
+        /// </summary>
+        /// <typeparam name="T">The object type that implement 'IService'</typeparam>
+        public static void Unregister<T>()
+        {
+            Instance.Services.Remove(typeof(T));
+        }
+        /// <summary>
+        /// Retrieves the service instance of type <typeparamref name="T"/> if available.
         /// </summary>
         /// <typeparam name="T">Service type to retrieve.</typeparam>
         /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
-        public static T GetService<T>() where T : Service
+        public static T GetService<T>()
         {
-            return Instance.Services.OfType<T>().FirstOrDefault();
-        }
-        /// <summary>
-        /// Retrieves a service by its concrete <see cref="Type"/>.
-        /// Returns <c>null</c> and logs an error if the provided type is not a <see cref="Service"/>.
-        /// </summary>
-        /// <param name="type">Concrete service type to look up.</param>
-        /// <returns>The matching service instance, or <c>null</c> if not found or invalid type.</returns>
-        public static Service GetService(Type type)
-        {
-            if (!typeof(Service).IsAssignableFrom(type))
-            {
-                Debug.LogError($"Type {type.Name} is not a valid Service.");
-                return null;
-            }
+            Type TypeService = typeof(T);
 
-            return Instance.Services.FirstOrDefault(s => s.GetType() == type);
+            if (Instance.Services.TryGetValue(TypeService, out var provider))
+                return (T)provider.GetServiceClass();
+
+            Debug.LogError($"Service {TypeService} not found.");
+            return default;
         }
         /// <summary>
         /// Attempts to find a service of type <typeparamref name="T"/>.
@@ -476,10 +502,23 @@ namespace RealMethod
         /// <typeparam name="T">Service type to find.</typeparam>
         /// <param name="service">Out parameter that receives the service if found.</param>
         /// <returns><c>true</c> if the service was found; otherwise <c>false</c>.</returns>
-        public static bool TryFindService<T>(out T service) where T : Service
+        public static bool TryGetService<T>(out T service) where T : Service
         {
-            service = Instance.Services.OfType<T>().FirstOrDefault();
-            return service != null;
+            if (Instance.Services.TryGetValue(typeof(T), out var provider))
+            {
+                service = (T)provider.GetServiceClass();
+                return true;
+            }
+
+            service = default;
+            return false;
+        }
+        /// <summary>
+        ///  Clear all services in Game
+        /// </summary>
+        public static void ClearService()
+        {
+            Instance.Services.Clear();
         }
         /// <summary>
         /// Returns the type names of all registered game services.
@@ -985,7 +1024,7 @@ namespace RealMethod
         {
             foreach (var service in Services)
             {
-                ((IService)service).ChangeWorld(NewWorld);
+                service.Value.ChangeWorld(NewWorld);
             }
             World = NewWorld;
             OnWorldChanged(World);
@@ -999,11 +1038,11 @@ namespace RealMethod
             ((IRelationBridge)Bridge).UnbindWorldCreated();
             if (Services != null)
             {
-                for (int i = 0; i < Services.Count; i++)
+                foreach (var service in Services)
                 {
-                    ((IService)Services[i]).Deleted(this);
-                    Services.RemoveAt(i);
+                    service.Value.Deleted(this);
                 }
+                ClearService();
             }
             ((IService)Bridge).Deleted(this);
             OnGameClosed();

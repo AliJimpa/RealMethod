@@ -18,7 +18,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    if (Game.TryFindService(out Spawn CacheInstance))
+                    if (Game.TryGetService(out Spawn CacheInstance))
                     {
                         return CacheInstance;
                     }

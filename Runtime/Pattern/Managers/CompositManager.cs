@@ -369,7 +369,7 @@ namespace RealMethod
             InitiateLayers();
             OnInitiate(AlwaysLoaded);
             InitiateMusicStates();
-            if (Game.TryFindService(out stateService))
+            if (Game.TryGetService(out stateService))
             {
                 stateService.OnStateUpdate += OnStateChanged;
                 if (RunFirstState)

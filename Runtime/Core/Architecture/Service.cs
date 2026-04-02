@@ -6,6 +6,13 @@ namespace RealMethod
     public interface IService
     {
         /// <summary>
+        /// Returns the object instance that implements this service.
+        /// </summary>
+        /// <returns>
+        /// The object associated with this service.
+        /// </returns>
+        object GetServiceClass();
+        /// <summary>
         /// Called when the service is created.
         /// </summary>
         /// <param name="author">The object responsible for creating the service.</param>
@@ -28,6 +35,10 @@ namespace RealMethod
     public abstract class Service : IService
     {
         // Implement IService Interface
+        object IService.GetServiceClass()
+        {
+            return this;
+        }
         void IService.Created(object author)
         {
             OnStart(author);
