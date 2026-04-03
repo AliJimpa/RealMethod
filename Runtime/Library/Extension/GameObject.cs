@@ -13,77 +13,60 @@ namespace RealMethod
     public static class GameObject_Extension
     {
         /// <summary>
+        /// Applies damage to the target GameObject using two fallback methods:
+        /// 1) If the object implements <see cref="IDamageable"/>, damage is applied directly through <c>TakeDamage</c>.
+        /// 2) Otherwise, a Unity <c>SendMessage</c> call is made using <c>GameMessages.ApplyDamage</c>.
+        /// 
+        /// This allows all GameObjects to receive damage regardless of whether they use the interface 
+        /// or the older SendMessage-based system.
+        /// </summary>
+        /// <param name="target">The GameObject that should receive damage.</param>
+        /// <param name="hitdata">The damage payload containing values such as damage amount and hit details.</param>
+        public static void ApplyDamage(this GameObject target, HitData hitdata)
+        {
+            IDamageable provider = target.GetComponent<IDamageable>();
+            if (provider != null)
+            {
+                provider.TakeDamage(hitdata.damage);
+            }
+            else
+            {
+                target.SendMessage(GameMessage.ApplyDamage, hitdata, SendMessageOptions.RequireReceiver);
+            }
+        }
+        /// <summary>
         /// Attaches this GameObject to a specified parent GameObject, optionally preserving world position.
         /// Also sends an "OnAttach" message to the owner GameObject.
         /// </summary>
-        /// <param name="owner">The GameObject to attach.</param>
+        /// <param name="target">The GameObject to attach.</param>
         /// <param name="parent">The GameObject to attach to.</param>
         /// <param name="worldPositionStays">If true, the parent-relative position, rotation, and scale are modified so that the last local transformation is equal to the world transformation.</param>
-        public static void Attach(this GameObject owner, GameObject parent, bool worldPositionStays)
+        public static void Attach(this GameObject target, GameObject parent, bool worldPositionStays)
         {
-            owner.transform.SetParent(parent.transform, worldPositionStays);
-            owner.SendAttachEvent(parent);
+            target.transform.SetParent(parent.transform, worldPositionStays);
+            target.SendMessage(GameMessage.Attach, parent, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Detaches this GameObject from its current parent and sends an "OnDetach" message.
         /// </summary>
-        /// <param name="owner">The GameObject to detach.</param>
+        /// <param name="target">The GameObject to detach.</param>
         /// <param name="parent">The parent GameObject it was attached to (primarily for context, not used in the current implementation).</param>
-        public static void Detach(this GameObject owner, GameObject parent)
+        public static void Detach(this GameObject target, GameObject parent)
         {
-            owner.transform.SetParent(null);
-            owner.SendDetachEvent();
-        }
-        /// <summary>
-        /// Sends an "OnAttach" message to the owner GameObject.
-        /// </summary>
-        /// <param name="owner">The GameObject to send the message to.</param>
-        /// <param name="spawner">The object that triggered the attach event (passed as parameter to the message).</param>
-        /// <param name="option">Specifies whether the message must be received, or if it is optional.</param>
-        public static void SendAttachEvent(this GameObject owner, Object spawner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
-        {
-            owner.SendMessage("OnAttach", spawner, option);
-        }
-        /// <summary>
-        /// Sends an "OnDetach" message to the owner GameObject.
-        /// </summary>
-        /// <param name="owner">The GameObject to send the message to.</param>
-        /// <param name="option">Specifies whether the message must be received, or if it is optional.</param>
-        public static void SendDetachEvent(this GameObject owner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
-        {
-            owner.SendMessage("OnDetach", option);
-        }
-        /// <summary>
-        /// Sends an "OnSpawn" message to the owner GameObject.
-        /// </summary>
-        /// <param name="owner">The GameObject to send the message to.</param>
-        /// <param name="spawner">The object that triggered the spawn event (passed as parameter to the message).</param>
-        /// <param name="option">Specifies whether the message must be received, or if it is optional.</param>
-        public static void SendSpawnEvent(this GameObject owner, Object spawner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
-        {
-            owner.SendMessage("OnSpawn", spawner, option);
-        }
-        /// <summary>
-        /// Sends an "OnDespawn" message to the owner GameObject.
-        /// </summary>
-        /// <param name="owner">The GameObject to send the message to.</param>
-        /// <param name="despawner">The object that triggered the despawn event (passed as parameter to the message).</param>
-        /// <param name="option">Specifies whether the message must be received, or if it is optional.</param>
-        public static void SendDespawnEvent(this GameObject owner, Object despawner, SendMessageOptions option = SendMessageOptions.RequireReceiver)
-        {
-            owner.SendMessage("OnDespawn", despawner, option);
+            target.transform.SetParent(null);
+            target.SendMessage(GameMessage.Detach, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Adds a new component of type TComponent to the GameObject and initializes it without arguments.
         /// </summary>
         /// <typeparam name="TComponent">The type of the component to add, must inherit from MonoBehaviour and IInitializable.</typeparam>
         /// <typeparam name="TArgument">This type parameter is unused in this overload.</typeparam>
-        /// <param name="gameObject">The GameObject to add the component to.</param>
+        /// <param name="target">The GameObject to add the component to.</param>
         /// <returns>The newly added and initialized component.</returns>
-        public static TComponent AddComponent<TComponent, TArgument>(this GameObject gameObject)
+        public static TComponent AddComponent<TComponent, TArgument>(this GameObject target)
         where TComponent : MonoBehaviour, IInitializable
         {
-            var component = gameObject.AddComponent<TComponent>();
+            var component = target.AddComponent<TComponent>();
             component.Initialize();
             return component;
         }
@@ -92,13 +75,13 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="TComponent">The type of the component to add, must inherit from MonoBehaviour and IInitializableWithArgument.</typeparam>
         /// <typeparam name="TArgument">The type of the argument used for initialization.</typeparam>
-        /// <param name="gameObject">The GameObject to add the component to.</param>
+        /// <param name="target">The GameObject to add the component to.</param>
         /// <param name="argument">The argument to pass to the component's Initialize method.</param>
         /// <returns>The newly added and initialized component.</returns>
-        public static TComponent AddComponent<TComponent, TArgument>(this GameObject gameObject, TArgument argument)
+        public static TComponent AddComponent<TComponent, TArgument>(this GameObject target, TArgument argument)
         where TComponent : MonoBehaviour, IInitializableWithArgument<TArgument>
         {
-            var component = gameObject.AddComponent<TComponent>();
+            var component = target.AddComponent<TComponent>();
             component.Initialize(argument);
             return component;
         }
@@ -108,14 +91,14 @@ namespace RealMethod
         /// <typeparam name="TComponent">The type of the component to add, must inherit from MonoBehaviour and IInitializableWithTwoArgument.</typeparam>
         /// <typeparam name="TArgumentA">The type of the first argument used for initialization.</typeparam>
         /// <typeparam name="TArgumentB">The type of the second argument used for initialization.</typeparam>
-        /// <param name="gameObject">The GameObject to add the component to.</param>
+        /// <param name="target">The GameObject to add the component to.</param>
         /// <param name="argumentA">The first argument to pass to the component's Initialize method.</param>
         /// <param name="argumentB">The second argument to pass to the component's Initialize method.</param>
         /// <returns>The newly added and initialized component.</returns>
-        public static TComponent AddComponent<TComponent, TArgumentA, TArgumentB>(this GameObject gameObject, TArgumentA argumentA, TArgumentB argumentB)
+        public static TComponent AddComponent<TComponent, TArgumentA, TArgumentB>(this GameObject target, TArgumentA argumentA, TArgumentB argumentB)
         where TComponent : MonoBehaviour, IInitializableWithTwoArgument<TArgumentA, TArgumentB>
         {
-            var component = gameObject.AddComponent<TComponent>();
+            var component = target.AddComponent<TComponent>();
             component.Initialize(argumentA, argumentB);
             return component;
         }
@@ -159,6 +142,7 @@ namespace RealMethod
         public static void Share(this GameObject obj)
         {
             Game.Bridge.AddSharedObject(obj);
+            obj.SendMessage(GameMessage.Share, true, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Unregisters the GameObject from the shared object system.
@@ -167,6 +151,7 @@ namespace RealMethod
         public static void Unshare(this GameObject obj)
         {
             Game.Bridge.RemoveSharedObject(obj);
+            obj.SendMessage(GameMessage.Share, false, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Checks if the GameObject is currently registered in the shared object system.
