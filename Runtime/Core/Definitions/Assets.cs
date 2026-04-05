@@ -8,17 +8,28 @@ namespace RealMethod
     public interface IAsset
     {
         PrimitiveAsset GetAsset();
-        void OnSpawned(Object spawner);
     }
     // PrimitiveAsset: is a ScriptableObject with some functions & IAsset interface
-    public abstract class PrimitiveAsset : ScriptableObject, IAsset
+    public abstract class PrimitiveAsset : ScriptableObject, IAsset, ISpawn, ISpawnWithAuthor
     {
         // Implement IAsset Interface
         PrimitiveAsset IAsset.GetAsset()
         {
             return this;
         }
-        public virtual void OnSpawned(Object spawner)
+        // Implement ISpawn interface
+        void ISpawn.OnSpawn()
+        {
+            OnSpawn(null);
+        }
+        // Implement ISpawnWithAuthor interface
+        void ISpawnWithAuthor.OnSpawn(Object author)
+        {
+            OnSpawn(author);
+        }
+
+
+        protected virtual void OnSpawn(Object spawner)
         {
 
         }

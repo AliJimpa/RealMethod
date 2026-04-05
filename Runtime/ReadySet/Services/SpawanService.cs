@@ -691,17 +691,23 @@ namespace RealMethod
         }
         public static T Asset<T>(Object spawner = null) where T : PrimitiveAsset
         {
+            var target = ScriptableObject.CreateInstance<T>();
             if (spawner != null)
             {
-                var target = ScriptableObject.CreateInstance<T>();
-                IAsset provider = target;
-                provider.OnSpawned(spawner);
-                return target;
+                if (target is ISpawnWithAuthor provider)
+                {
+                    provider.OnSpawn(spawner);
+                }
+
             }
             else
             {
-                return ScriptableObject.CreateInstance<T>();
+                if (target is ISpawn provider)
+                {
+                    provider.OnSpawn();
+                }
             }
+            return target;
         }
 
         // Task

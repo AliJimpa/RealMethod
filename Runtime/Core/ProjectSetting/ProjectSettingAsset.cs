@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     // Real Method Setting Storage
-    public class ProjectSettingAsset : ScriptableObject
+    public class ProjectSettingAsset : PrimitiveAsset
     {
         [Serializable]
         public enum AssetFormat
