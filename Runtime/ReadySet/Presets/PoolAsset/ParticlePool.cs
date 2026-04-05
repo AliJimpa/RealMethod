@@ -14,7 +14,8 @@ namespace RealMethod
 
 
         //Actions
-        public Action<ParticleSystem> OnSpawn;
+        public event Action<ParticleSystem> OnSpawned;
+        
 
         // Private Variable
         private byte UseCacheData = 0; //0:NoCashing 1:CachePosition 2:CachePosition&Rotation 3:CacheTransform 
@@ -48,7 +49,7 @@ namespace RealMethod
         public ParticleSystem Spawn()
         {
             ParticleSystem result = Request();
-            OnSpawn?.Invoke(result);
+            OnSpawned?.Invoke(result);
             return result;
         }
 

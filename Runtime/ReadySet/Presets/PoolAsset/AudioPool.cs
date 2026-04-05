@@ -6,7 +6,7 @@ using UnityEngine.Audio;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "AudioPool", menuName = "RealMethod/Pool/AudioPool", order = 1)]
-    public sealed class AudioPool : PoolAsset<AudioSource> , IPoolSpawner<AudioSource>
+    public sealed class AudioPool : PoolAsset<AudioSource>, IPoolSpawner<AudioSource>
     {
         [Header("Setting")]
         [SerializeField]
@@ -21,7 +21,7 @@ namespace RealMethod
         private float rolloffDistanceMax = 100f;
 
         //Actions
-        public Action<AudioSource> OnSpawn;
+        public event Action<AudioSource> OnSpawned;
 
 
         // Private Variable
@@ -87,7 +87,7 @@ namespace RealMethod
         public AudioSource Spawn()
         {
             AudioSource result = Request();
-            OnSpawn?.Invoke(result);
+            OnSpawned?.Invoke(result);
             return result;
         }
 
