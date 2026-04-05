@@ -12,6 +12,18 @@ namespace RealMethod
     /// </summary>
     public static class GameObject_Extension
     {
+        public static void Death(this GameObject target)
+        {
+            IDamageable provider = target.GetComponent<IDamageable>();
+            if (provider != null)
+            {
+                provider.Die();
+            }
+            else
+            {
+                target.SendMessage(GameMessage.Die, SendMessageOptions.RequireReceiver);
+            }
+        }
         /// <summary>
         /// Applies damage to the target GameObject using two fallback methods:
         /// 1) If the object implements <see cref="IDamageable"/>, damage is applied directly through <c>TakeDamage</c>.
@@ -27,7 +39,7 @@ namespace RealMethod
             IDamageable provider = target.GetComponent<IDamageable>();
             if (provider != null)
             {
-                provider.TakeDamage(hitdata.damage);
+                provider.TakeDamage(hitdata);
             }
             else
             {
@@ -57,6 +69,72 @@ namespace RealMethod
             target.SendMessage(GameMessage.Detach, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
+        /// Sends an "OnSpawn" message to the owner GameObject.
+        /// </summary>
+        /// <param name="owner">The GameObject to send the message to.</param>
+        /// <param name="spawner">The object that triggered the spawn event (passed as parameter to the message).</param>
+        /// <param name="option">Specifies whether the message must be received, or if it is optional.</param>
+        public static void InvokeSpawnEvent(this GameObject owner, Object spawner = null, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            if (spawner != null)
+            {
+                ISpawnWithAuthor provider = owner.GetComponent<ISpawnWithAuthor>();
+                if (provider != null)
+                {
+                    provider.OnSpawn(spawner);
+                }
+                else
+                {
+                    owner.SendMessage(GameMessage.Spawn, spawner, option);
+                }
+            }
+            else
+            {
+                ISpawn provider = owner.GetComponent<ISpawn>();
+                if (provider != null)
+                {
+                    provider.OnSpawn();
+                }
+                else
+                {
+                    owner.SendMessage(GameMessage.Spawn, option);
+                }
+            }
+        }
+        /// <summary>
+        /// Sends an "OnDespawn" message to the owner GameObject.
+        /// </summary>
+        /// <param name="owner">The GameObject to send the message to.</param>
+        /// <param name="despawner">The object that triggered the despawn event (passed as parameter to the message).</param>
+        /// <param name="option">Specifies whether the message must be received, or if it is optional.</param>
+        public static void InvokeDespawnEvent(this GameObject owner, Object despawner = null, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            if (despawner != null)
+            {
+                IDespawnWithAuthor provider = owner.GetComponent<IDespawnWithAuthor>();
+                if (provider != null)
+                {
+                    provider.OnDespawn(despawner);
+                }
+                else
+                {
+                    owner.SendMessage(GameMessage.Despawn, despawner, option);
+                }
+            }
+            else
+            {
+                IDespawn provider = owner.GetComponent<IDespawn>();
+                if (provider != null)
+                {
+                    provider.OnDespawn();
+                }
+                else
+                {
+                    owner.SendMessage(GameMessage.Despawn, option);
+                }
+            }
+        }
+        /// <summary>
         /// Adds a new component of type TComponent to the GameObject and initializes it without arguments.
         /// </summary>
         /// <typeparam name="TComponent">The type of the component to add, must inherit from MonoBehaviour and IInitializable.</typeparam>
@@ -64,10 +142,10 @@ namespace RealMethod
         /// <param name="target">The GameObject to add the component to.</param>
         /// <returns>The newly added and initialized component.</returns>
         public static TComponent AddComponent<TComponent, TArgument>(this GameObject target)
-        where TComponent : MonoBehaviour, IInitializable
+        where TComponent : MonoBehaviour, ISpawn
         {
             var component = target.AddComponent<TComponent>();
-            component.Initialize();
+            component.OnSpawn();
             return component;
         }
         /// <summary>
@@ -79,10 +157,10 @@ namespace RealMethod
         /// <param name="argument">The argument to pass to the component's Initialize method.</param>
         /// <returns>The newly added and initialized component.</returns>
         public static TComponent AddComponent<TComponent, TArgument>(this GameObject target, TArgument argument)
-        where TComponent : MonoBehaviour, IInitializableWithArgument<TArgument>
+        where TComponent : MonoBehaviour, ISpawnWithArgument<TArgument>
         {
             var component = target.AddComponent<TComponent>();
-            component.Initialize(argument);
+            component.OnSpawn(argument);
             return component;
         }
         /// <summary>
@@ -96,10 +174,10 @@ namespace RealMethod
         /// <param name="argumentB">The second argument to pass to the component's Initialize method.</param>
         /// <returns>The newly added and initialized component.</returns>
         public static TComponent AddComponent<TComponent, TArgumentA, TArgumentB>(this GameObject target, TArgumentA argumentA, TArgumentB argumentB)
-        where TComponent : MonoBehaviour, IInitializableWithTwoArgument<TArgumentA, TArgumentB>
+        where TComponent : MonoBehaviour, ISpawnWithTwoArgument<TArgumentA, TArgumentB>
         {
             var component = target.AddComponent<TComponent>();
-            component.Initialize(argumentA, argumentB);
+            component.OnSpawn(argumentA, argumentB);
             return component;
         }
         /// <summary>
@@ -171,6 +249,19 @@ namespace RealMethod
         {
             return obj.scene.name == "DontDestroyOnLoad";
         }
+        /// <summary>
+        /// Set layer on object and children
+        /// </summary>
+        /// <param name="target">GameObject Target</param>
+        /// <param name="layer">the layer you want to set that</param>
+        public static void SetLayerRecursively(this GameObject target, int layer)
+        {
+            foreach (Transform t in target.GetComponentsInChildren<Transform>(true))
+            {
+                t.gameObject.layer = layer;
+            }
+        }
+
 
 
 #if UNITY_EDITOR

@@ -133,11 +133,11 @@ namespace RealMethod
                 {
                     if (creator != null)
                     {
-                        widget.GetWidgetClass().SendSpawnEvent(creator);
+                        widget.GetWidgetClass().InvokeSpawnEvent(creator);
                     }
                     else
                     {
-                        widget.GetWidgetClass().SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                        widget.GetWidgetClass().InvokeSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
                     }
                 }
                 return TargetClass;
@@ -188,11 +188,11 @@ namespace RealMethod
                 {
                     if (creator != null)
                     {
-                        widget.GetWidgetClass().SendSpawnEvent(creator);
+                        widget.GetWidgetClass().InvokeSpawnEvent(creator);
                     }
                     else
                     {
-                        widget.GetWidgetClass().SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                        widget.GetWidgetClass().InvokeSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
                     }
                 }
                 return TargetClass;
@@ -207,11 +207,11 @@ namespace RealMethod
             GameObject SpawnedObject = Instantiate<GameObject>(Prefab, header.position, Quaternion.identity, header);
             if (spawner != null)
             {
-                SpawnedObject.SendSpawnEvent(spawner);
+                SpawnedObject.InvokeSpawnEvent(spawner);
             }
             else
             {
-                SpawnedObject.SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                SpawnedObject.InvokeSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
             }
             SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
@@ -227,11 +227,11 @@ namespace RealMethod
             GameObject SpawnedObject = Instantiate<GameObject>(Prefab, header.position, Quaternion.identity, header);
             if (spawner != null)
             {
-                SpawnedObject.SendSpawnEvent(spawner);
+                SpawnedObject.InvokeSpawnEvent(spawner);
             }
             else
             {
-                SpawnedObject.SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                SpawnedObject.InvokeSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
             }
             SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
@@ -261,11 +261,11 @@ namespace RealMethod
                 {
                     if (despawner != null)
                     {
-                        Target.SendDespawnEvent(despawner);
+                        Target.InvokeDespawnEvent(despawner);
                     }
                     else
                     {
-                        Target.SendDespawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                        Target.InvokeDespawnEvent(this, SendMessageOptions.DontRequireReceiver);
                     }
                     Destroy(Target);
                 }

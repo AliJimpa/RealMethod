@@ -307,11 +307,11 @@ namespace RealMethod
                 var target = Object.Instantiate(original);
                 if (target is MonoBehaviour mono)
                 {
-                    mono.SendSpawnEvent(spawner);
+                    mono.InvokeSpawnEvent(spawner);
                 }
                 else if (target is GameObject obj)
                 {
-                    obj.SendSpawnEvent(spawner);
+                    obj.InvokeSpawnEvent(spawner);
                 }
                 else
                 {
@@ -331,11 +331,11 @@ namespace RealMethod
                 var target = Object.Instantiate(original, parent);
                 if (target is MonoBehaviour mono)
                 {
-                    mono.SendSpawnEvent(spawner);
+                    mono.InvokeSpawnEvent(spawner);
                 }
                 else if (target is GameObject obj)
                 {
-                    obj.SendSpawnEvent(spawner);
+                    obj.InvokeSpawnEvent(spawner);
                 }
                 else
                 {
@@ -355,11 +355,11 @@ namespace RealMethod
                 var target = Object.Instantiate(original, position, rotation);
                 if (target is MonoBehaviour mono)
                 {
-                    mono.SendSpawnEvent(spawner);
+                    mono.InvokeSpawnEvent(spawner);
                 }
                 else if (target is GameObject obj)
                 {
-                    obj.SendSpawnEvent(spawner);
+                    obj.InvokeSpawnEvent(spawner);
                 }
                 else
                 {
@@ -379,11 +379,11 @@ namespace RealMethod
                 var target = Object.Instantiate(original, parent, worldPositionStays);
                 if (target is MonoBehaviour mono)
                 {
-                    mono.SendSpawnEvent(spawner);
+                    mono.InvokeSpawnEvent(spawner);
                 }
                 else if (target is GameObject obj)
                 {
-                    obj.SendSpawnEvent(spawner);
+                    obj.InvokeSpawnEvent(spawner);
                 }
                 else
                 {
@@ -403,7 +403,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 GameObject target = Object.Instantiate<GameObject>(prefab, Game.World.transform);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -416,7 +416,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 GameObject target = Object.Instantiate<GameObject>(prefab, parent);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -429,7 +429,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 GameObject target = Object.Instantiate<GameObject>(prefab, parent, instantiateInWorldSpace);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -442,7 +442,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation));
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -455,7 +455,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 GameObject target = Object.Instantiate<GameObject>(prefab, position, rotation);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -468,7 +468,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.identity);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -481,7 +481,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation), parent);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -494,7 +494,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 GameObject target = Object.Instantiate(prefab, scene) as GameObject;
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -508,7 +508,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 T target = Object.Instantiate(prefab.GetMainComponent());
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -521,7 +521,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 T target = Object.Instantiate(prefab.GetMainComponent(), parent);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -534,7 +534,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 T target = Object.Instantiate(prefab.GetMainComponent(), position, rotation);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -547,7 +547,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 T target = Object.Instantiate(prefab.GetMainComponent(), parent, worldPositionStays);
-                target.SendSpawnEvent(spawner);
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -652,7 +652,7 @@ namespace RealMethod
                 var result = target.AddComponent<T>();
                 if (spawner != null)
                 {
-                    result.SendSpawnEvent(spawner);
+                    result.InvokeSpawnEvent(spawner);
                 }
                 return target.AddComponent<T>();
             }
@@ -852,7 +852,7 @@ namespace RealMethod
             {
                 if (spawner != null)
                 {
-                    target.SendDespawnEvent(spawner);
+                    target.InvokeDespawnEvent(spawner);
                 }
                 Object.Destroy(target);
                 return true;

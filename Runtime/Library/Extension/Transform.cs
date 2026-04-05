@@ -22,5 +22,15 @@ namespace RealMethod
             Debug.LogError($"Not find any socket with {socketname} name");
             return trans;
         }
+        /// <summary>
+        /// Reset transform quickly
+        /// </summary>
+        /// <param name="t">Target terasform</param>
+        public static void Reset(this Transform t)
+        {
+            t.localPosition = Vector3.zero;
+            t.localRotation = Quaternion.identity;
+            t.localScale = Vector3.one;
+        }
     }
 }

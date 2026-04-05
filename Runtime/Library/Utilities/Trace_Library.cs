@@ -36,7 +36,6 @@ namespace RealMethod
             Debug.DrawRay(Start, Direction * debuglength, debugcolor);
             return Result;
         }
-
         public static bool Line(Vector3 Start, Vector3 Direction, float Length, LayerMask Layer, QueryTriggerInteraction TriggerInteraction, out RaycastHit HitResult)
         {
             bool Result;
@@ -46,7 +45,6 @@ namespace RealMethod
             Debug.DrawRay(Start, Direction * debuglength, debugcolor);
             return Result;
         }
-
         public static bool Line(Vector3 Start, Vector3 Direction, float Length, LayerMask Layer, out RaycastHit HitResult)
         {
             bool Result;
@@ -56,7 +54,6 @@ namespace RealMethod
             Debug.DrawRay(Start, Direction * debuglength, debugcolor);
             return Result;
         }
-
         public static bool Line(Vector3 Start, Vector3 Direction, float Length, out RaycastHit HitResult)
         {
             bool Result;

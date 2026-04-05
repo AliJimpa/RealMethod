@@ -1,17 +1,34 @@
+using UnityEngine;
+
 namespace RealMethod
 {
-    public interface IInitializable
+
+    public interface ISpawn
     {
-        void Initialize();
+        void OnSpawn();
     }
-    public interface IInitializableWithArgument<TArgument>
+    public interface ISpawnWithAuthor
     {
-        void Initialize(TArgument argument);
+        void OnSpawn(Object author);
     }
-    public interface IInitializableWithTwoArgument<TArgumentA, TArgumentB>
+    public interface ISpawnWithArgument<TArgument>
     {
-        void Initialize(TArgumentA argumentA, TArgumentB argumentB);
+        void OnSpawn(TArgument argument);
     }
+    public interface ISpawnWithTwoArgument<TArgumentA, TArgumentB>
+    {
+        void OnSpawn(TArgumentA argumentA, TArgumentB argumentB);
+    }
+    public interface IDespawn
+    {
+        void OnDespawn();
+    }
+    public interface IDespawnWithAuthor
+    {
+        void OnDespawn(Object author);
+    }
+
+
 
 }
 
