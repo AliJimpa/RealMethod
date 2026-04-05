@@ -47,13 +47,27 @@ namespace RealMethod
             }
         }
         /// <summary>
+        /// Attaches this GameObject to a specified Socket transform, optionally preserving world position.
+        /// Also sends an "OnAttach" message to the owner GameObject.
+        /// </summary>
+        /// <param name="target">The GameObject to attach.</param>
+        /// <param name="parent">The Transform to get Socket from that.</param>
+        /// <param name="socketname">The Socket name to attach to</param>
+        /// <param name="worldPositionStays">If true, the parent-relative position, rotation, and scale are modified so that the last local transformation is equal to the world transformation.</param>
+        public static void Attach(this GameObject target, Transform parent, Name16 socketname, bool worldPositionStays = true)
+        {
+            Transform MySocket = parent.GetSocket(socketname);
+            MySocket.SetParent(parent.transform, worldPositionStays);
+            target.SendMessage(GameMessage.Attach, parent, SendMessageOptions.DontRequireReceiver);
+        }
+        /// <summary>
         /// Attaches this GameObject to a specified parent GameObject, optionally preserving world position.
         /// Also sends an "OnAttach" message to the owner GameObject.
         /// </summary>
         /// <param name="target">The GameObject to attach.</param>
         /// <param name="parent">The GameObject to attach to.</param>
         /// <param name="worldPositionStays">If true, the parent-relative position, rotation, and scale are modified so that the last local transformation is equal to the world transformation.</param>
-        public static void Attach(this GameObject target, GameObject parent, bool worldPositionStays)
+        public static void Attach(this GameObject target, GameObject parent, bool worldPositionStays = true)
         {
             target.transform.SetParent(parent.transform, worldPositionStays);
             target.SendMessage(GameMessage.Attach, parent, SendMessageOptions.DontRequireReceiver);

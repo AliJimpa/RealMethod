@@ -10,7 +10,7 @@ namespace RealMethod
             trans.rotation = newtransform.rotation;
             trans.localScale = newtransform.localScale;
         }
-        public static Transform FindSocket(this Transform trans, Name16 socketname)
+        public static Transform GetSocket(this Transform trans, Name16 socketname)
         {
             foreach (var item in trans.GetComponentsInChildren<Transform>())
             {
