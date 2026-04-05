@@ -4,11 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 namespace RealMethod
 {
 
@@ -85,8 +80,6 @@ namespace RealMethod
         /// </summary>
         bool IsLoading { get; }
     }
-
-
 
 
     /// <summary>
@@ -571,23 +564,6 @@ namespace RealMethod
             SceneLoadingEvent?.Invoke(false);
             isLoading = false;
         }
-
-
-
-#if UNITY_EDITOR
-        [InitializeOnEnterPlayMode] // Runs when entering Play Mode in Editor
-        private static void EditorPlayModeInit()
-        {
-            var assets = Resources.FindObjectsOfTypeAll<PrimitiveAsset>();
-            foreach (var asset in assets)
-            {
-                if (asset.IsProjectAsset())
-                {
-                    asset.OnEditorPlay();
-                }
-            }
-        }
-#endif
 
 
     }

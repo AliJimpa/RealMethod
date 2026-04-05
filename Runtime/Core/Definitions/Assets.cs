@@ -57,6 +57,19 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR
+        [InitializeOnEnterPlayMode] // Runs when entering Play Mode in Editor
+        private static void EditorPlayModeInit()
+        {
+            var assets = Resources.FindObjectsOfTypeAll<PrimitiveAsset>();
+            foreach (var asset in assets)
+            {
+                if (asset.IsProjectAsset())
+                {
+                    asset.OnEditorPlay();
+                }
+            }
+        }
+
         public virtual void OnEditorPlay()
         {
             Debug.Log($"[{GetType()}]  -> {name} OnEditorPlay called.");
