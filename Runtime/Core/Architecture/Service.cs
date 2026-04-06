@@ -20,7 +20,7 @@ namespace RealMethod
         /// <summary>
         /// Called when the world or environment updates.
         /// </summary>
-        void ChangeWorld(World NewWorld);
+        void ChangingWorld(World NewWorld);
         /// <summary>
         /// Called when the service is deleted or destroyed.
         /// </summary>
@@ -43,7 +43,7 @@ namespace RealMethod
         {
             OnStart(author);
         }
-        void IService.ChangeWorld(World NewWorld)
+        void IService.ChangingWorld(World NewWorld)
         {
             OnWorldChanging(Game.World, NewWorld);
         }

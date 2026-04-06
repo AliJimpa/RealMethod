@@ -1024,7 +1024,7 @@ namespace RealMethod
         {
             foreach (var service in Services)
             {
-                service.Value.ChangeWorld(NewWorld);
+                service.Value.ChangingWorld(NewWorld);
             }
             World = NewWorld;
             OnWorldChanged(World);
