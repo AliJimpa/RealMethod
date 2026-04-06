@@ -44,7 +44,7 @@ namespace RealMethod.Editor
         }
         protected override string GetTitle()
         {
-            return "CompileRules";
+            return "CompileGuard";
         }
         protected override SectionType GetSectionType()
         {

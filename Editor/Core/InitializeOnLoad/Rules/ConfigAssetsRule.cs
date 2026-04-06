@@ -12,9 +12,9 @@ namespace RealMethod.Editor
         protected override void Initilized()
         {
         }
-        public override RuleMode GetRuleMode()
+        public override RuleExecutionMode GetRuleMode()
         {
-            return RuleMode.EditorApplication;
+            return RuleExecutionMode.EditorStartup;
         }
         public override Type GetBaseType()
         {

@@ -6,13 +6,35 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
+    /// <summary>
+    /// Base class for creating custom compile-time or editor-time validation rules.
+    /// Rules are instantiated by CompileGuard and triggered automatically depending
+    /// on the selected <see cref="RuleExecutionMode"/>.
+    /// </summary>
     public abstract class CompileRule
     {
-        public enum RuleMode
+        /// <summary>
+        /// Defines when a <see cref="CompileRule"/> should be executed by <see cref="CompileGuard"/>.
+        /// This controls which editor event triggers the rule validation.
+        /// </summary>
+        public enum RuleExecutionMode
         {
+            /// <summary>
+            /// Rule is disabled and will never be executed.
+            /// </summary>
             Disable = 0,
-            CompilationPipeline = 1,
-            EditorApplication = 2
+            /// <summary>
+            /// Rule runs after Unity finishes compiling scripts.
+            /// Triggered by <see cref="CompilationPipeline.compilationFinished"/>.
+            /// Useful for validating code structure or assets after compilation.
+            /// </summary>
+            AfterCompilation = 1,
+            /// <summary>
+            /// Rule runs on the editor update loop after the editor loads.
+            /// Triggered using <see cref="EditorApplication.delayCall"/>.
+            /// Useful for checks that should occur once the editor is ready.
+            /// </summary>
+            EditorStartup = 2
         }
 
         public CompileRule()
@@ -20,15 +42,47 @@ namespace RealMethod.Editor
             Initilized();
         }
 
-
+        /// <summary>
+        /// Called automatically right after the rule is constructed.
+        /// Use this to initialize internal data, cache values, or set up
+        /// anything needed before the rule is used by CompileGuard.
+        /// </summary>
         protected abstract void Initilized();
-        public abstract RuleMode GetRuleMode();
+        /// <summary>
+        /// Defines when this rule should run during the editor lifecycle.
+        /// The returned <see cref="RuleExecutionMode"/> determines whether
+        /// CompileGuard triggers this rule during:
+        /// - script compilation (CompilationPipeline), or
+        /// - editor updates (EditorApplication).
+        /// </summary>
+        public abstract RuleExecutionMode GetRuleMode();
+        /// <summary>
+        /// Returns the base type that this rule should scan for.
+        /// CompileGuard will call <see cref="OnCheck(Type)"/> for every type in the project
+        /// that inherits from the returned base type.
+        /// </summary>
+        /// <returns>
+        /// A Type that all target classes must derive from.
+        /// </returns>
         public abstract Type GetBaseType();
+        /// <summary>
+        /// Called when CompileGuard finds a type that inherits from the rule's base type.
+        /// Implement validation logic here. This method is invoked automatically for each
+        /// matching type during the selected rule mode.
+        /// </summary>
+        /// <param name="type">
+        /// The discovered type that matches <see cref="GetBaseType"/>.
+        /// </param>
         public abstract void OnCheck(Type type);
     }
 
 
     [InitializeOnLoad]
+    /// <summary>
+    /// Central system that discovers and executes all CompileRule instances.
+    /// It triggers rules during compilation or editor updates depending on their mode,
+    /// and passes every project type that matches the rule's base type.
+    /// </summary>
     public static class CompileGuard
     {
         private static ProjectSettingAsset ProjectSetting_Cache;
@@ -63,13 +117,13 @@ namespace RealMethod.Editor
 
         private static void OnCompilationFinished(object obj)
         {
-            CheckRuls(CompileRule.RuleMode.CompilationPipeline);
+            CheckRuls(CompileRule.RuleExecutionMode.AfterCompilation);
         }
         private static void OnEditorUpdated()
         {
-            CheckRuls(CompileRule.RuleMode.EditorApplication);
+            CheckRuls(CompileRule.RuleExecutionMode.EditorStartup);
         }
-        private static void CheckRuls(CompileRule.RuleMode mode)
+        private static void CheckRuls(CompileRule.RuleExecutionMode mode)
         {
             if (ProjectSetting == null)
                 return;
@@ -127,7 +181,7 @@ namespace RealMethod.Editor
                 {
                     if (Ruls == null)
                         return;
-                        
+
                     foreach (var rule in Ruls)
                     {
                         if (rule == null)

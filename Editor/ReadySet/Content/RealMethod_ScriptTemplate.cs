@@ -196,6 +196,11 @@ namespace RealMethod.Editor
 
 
         // Editor
+        [MenuItem("Assets/Create/Scripting/RealMethod/Editor/CompileRule", false, 80)]
+        public static void CreateCompileRule()
+        {
+            string Path = RM_Editor.CreateScriptTemplate("CompileRuleTemplate.txt", "MyRule.cs");
+        }
         [MenuItem("Assets/Create/Scripting/RealMethod/Editor/SettingSection", false, 80)]
         public static void CreateSettingSection()
         {

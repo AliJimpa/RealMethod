@@ -82,14 +82,13 @@ namespace RealMethod
         new FolderAddress { AssetType = (AssetFormat)13, AssetPath = "7_Misc"}
         };
         public IReadOnlyList<FolderAddress> FolderStructure => folderStructure;
-#endif
-
-#if UNITY_EDITOR
         [Header("GameStatus")]
         [ReadOnly]
         public List<string> Status = new List<string>(4) { "Menu", "Playing", "Pause", "GameOver" };
+        [Header("CompileGuard")]
+        [SerializeField, ReadOnly]
+        private string[] Rules;
 #endif
-
 
         // Unity Methods
         protected virtual void OnEnable()
@@ -153,6 +152,15 @@ namespace RealMethod
         }
         public FolderAddress GetFolderAddressByIndex(int index) => folderStructure[index];
         public void SetFolderAddressPath(int index, string value) => folderStructure[index].AssetPath = value;
+        public Type[] GetCompileRules()
+        {
+            List<Type> result = new List<Type>();
+            foreach (var item in Rules)
+            {
+                result.Add(Type.GetType(item));
+            }
+            return result.ToArray();
+        }
 #endif
 
 #if UNITY_SERVER || UNITY_EDITOR

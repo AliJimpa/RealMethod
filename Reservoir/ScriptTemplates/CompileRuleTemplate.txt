@@ -1,0 +1,26 @@
+using System;
+using RealMethod.Editor;
+using UnityEngine;
+
+public class #SCRIPTNAME# : CompileRule
+{
+    // CompileRule Methods
+    protected override void Initilized()
+    {
+        // Called right after Construct
+    }
+    public override RuleExecutionMode GetRuleMode()
+    {
+        // Defines when this rule should be executed
+        return RuleExecutionMode.AfterCompilation;
+    }
+    public override Type GetBaseType()
+    {
+        // A Type that all target classes must derive from
+        return typeof(MonoBehaviour);
+    }
+    public override void OnCheck(Type type)
+    {
+        // Called when CompileGuard finds a type that inherits from the rule's base type.
+    }
+}
