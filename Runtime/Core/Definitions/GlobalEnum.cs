@@ -81,7 +81,7 @@ namespace RealMethod
 #if UNITY_EDITOR
         public override string ToString()
         {
-            var ProjectSettings = ProjectSettingAsset.Loaded();
+            var ProjectSettings = ProjectSettingAsset.Load();
             if (ProjectSettings)
             {
                 var names = ProjectSettings.Status;

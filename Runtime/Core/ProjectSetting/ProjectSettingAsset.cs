@@ -127,9 +127,12 @@ namespace RealMethod
         }
 
 #if UNITY_EDITOR
-        public static ProjectSettingAsset Loaded()
+        public static ProjectSettingAsset Load()
         {
             return UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(Path);
+        }
+        public override void OnEditorPlay()
+        {
         }
         public GameObject GetPrefab_2()
         {

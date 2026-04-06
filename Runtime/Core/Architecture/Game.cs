@@ -486,14 +486,16 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">Service type to retrieve.</typeparam>
         /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
-        public static T GetService<T>()
+        public static T GetService<T>(bool Printdebug = true)
         {
             Type TypeService = typeof(T);
 
             if (Instance.Services.TryGetValue(TypeService, out var provider))
                 return (T)provider.GetServiceClass();
 
-            Debug.LogError($"Service {TypeService} not found.");
+            if (Printdebug)
+                Debug.LogError($"Service {TypeService} not found.");
+                
             return default;
         }
         /// <summary>
