@@ -31,7 +31,7 @@ namespace RealMethod
         }
         private void Start()
         {
-            SaveSystem = Game.FindManager<DataManager>();
+            SaveSystem = Game.GetManager<DataManager>();
         }
         private void OnEnable()
         {

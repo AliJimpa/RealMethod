@@ -12,7 +12,7 @@ namespace RealMethod
         // Command Methods
         protected override bool OnInitiate(Object owner)
         {
-            manager = Game.FindManager<HapticManager>();
+            manager = Game.GetManager<HapticManager>();
             return manager != null;
         }
         protected override bool CanExecute(object Executer)

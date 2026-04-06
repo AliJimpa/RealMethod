@@ -73,11 +73,6 @@ namespace RealMethod
                 return;
             }
 
-            if (Game.TryGetService(out Spawn SpawnServ))
-            {
-                SpawnServ.BringManager(this);
-            }
-
             if (DefaultConfig != null)
             {
                 foreach (var conf in DefaultConfig)
@@ -88,10 +83,6 @@ namespace RealMethod
         }
         public void ResolveService(Service service, bool active)
         {
-            if (service is Spawn spawnservice)
-            {
-                spawnservice.BringManager(this);
-            }
         }
 
 

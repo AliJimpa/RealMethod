@@ -23,11 +23,6 @@ namespace RealMethod
                 return;
             }
 
-            if (CanBringtoSpawn() && Game.TryGetService(out Spawn SpawnServ))
-            {
-                SpawnServ.BringManager(this);
-            }
-
             soundPool = new ObjectPool<AudioSource>(
             createFunc: CreateSource,
             actionOnGet: OnTakeSource,
@@ -35,15 +30,7 @@ namespace RealMethod
             actionOnDestroy: OnDestroySource,
             collectionCheck: false,
             defaultCapacity: 10,
-            maxSize: 500
-        );
-        }
-        protected override void InitiateService(Service service)
-        {
-            if (CanBringtoSpawn() && service is Spawn SpawnServ)
-            {
-                SpawnServ.BringManager(this);
-            }
+            maxSize: 500);
         }
 
         // Public Functions
@@ -120,9 +107,6 @@ namespace RealMethod
             if (source != null)
                 Destroy(source.gameObject);
         }
-
-        // Abstract Methods
-        protected abstract bool CanBringtoSpawn();
 
         // Enumerator Methods
         private IEnumerator PauseAfterSecond(AudioSource source, float time)

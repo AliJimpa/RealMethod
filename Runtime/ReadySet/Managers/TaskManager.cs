@@ -19,11 +19,6 @@ namespace RealMethod
         // TickManager Methods
         protected override void InitiateManager(bool alwaysLoaded)
         {
-            if (Game.TryGetService(out Spawn SpawnServ))
-            {
-                SpawnServ.BringManager(this);
-            }
-
             if (DefaultTasks != null)
             {
                 for (int i = 0; i < DefaultTasks.Length; i++)
@@ -34,10 +29,6 @@ namespace RealMethod
         }
         protected override void InitiateService(Service service)
         {
-            if (service is Spawn spawnservice)
-            {
-                spawnservice.BringManager(this);
-            }
         }
         protected override bool CheckUnit(ITask unit)
         {

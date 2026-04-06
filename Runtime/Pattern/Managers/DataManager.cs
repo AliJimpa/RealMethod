@@ -58,7 +58,7 @@ namespace RealMethod
         // Public Functions
         public bool Load(Object author)
         {
-            return Load(author, Game.FindManager<DataManager>());
+            return Load(author, Game.GetManager<DataManager>());
         }
         public bool Load(Object author, DataManager saveManager)
         {

@@ -25,17 +25,9 @@ namespace RealMethod
         {
             Game.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
             Game.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);
-            if (Game.TryGetService(out Spawn SpawnServ))
-            {
-                SpawnServ.BringManager(this);
-            }
         }
         protected override void InitiateService(Service newService)
         {
-            if (newService is Spawn spawnservice)
-            {
-                spawnservice.BringManager(this);
-            }
         }
 
         public void SetInformer(IInformer messanger)

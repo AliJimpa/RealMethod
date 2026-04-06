@@ -6,9 +6,8 @@ namespace RealMethod
     public sealed class SoundManager : AudioManager
     {
         // AudioManager Methods
-        protected override bool CanBringtoSpawn()
+        protected override void InitiateService(Service service)
         {
-            return true;
         }
     }
 }

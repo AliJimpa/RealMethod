@@ -2,6 +2,8 @@ using RealMethod;
 
 public class #SCRIPTNAME# : AudioManager
 {
-
-
+    // AudioManager Methods
+    protected override void InitiateService(Service service)
+    {
+    }
 }
