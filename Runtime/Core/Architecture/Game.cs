@@ -528,7 +528,7 @@ namespace RealMethod
         /// <returns>Array of service type names.</returns>
         public string[] GetAllServiceNames()
         {
-            return Services.Select(service => service.GetType().Name).ToArray();
+            return Services.Keys.Select(t => t.Name).ToArray();
         }
         /// <summary>
         /// Requests a scene load by build index .
@@ -697,20 +697,20 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">Manager type to find.</typeparam>
         /// <returns>An instance of the manager if found; otherwise <c>null</c>.</returns>
-        public static T FindManager<T>() where T : MonoBehaviour
+        public static T GetManager<T>() where T : MonoBehaviour
         {
             T Result = null;
 
             if (World != null)
             {
-                Result = World.GetManager<T>();
+                Result = World.FindManager<T>();
             }
 
             if (Result != null)
             {
                 return Result;
             }
-            return Instance.GetManager<T>();
+            return Instance.FindManager<T>();
         }
         /// <summary>
         /// Parents the provided <paramref name="Target"/> GameObject to the game root instance.
@@ -797,6 +797,7 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void Log(object message)
         {
             Debug.Log(message);
@@ -808,6 +809,7 @@ namespace RealMethod
         /// <param name="context">Object to which the message applies.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void Log(object message, UnityEngine.Object context)
         {
             Debug.Log(message, context);
@@ -818,6 +820,7 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void LogWarning(object message)
         {
             Debug.LogWarning(message);
@@ -829,6 +832,7 @@ namespace RealMethod
         /// <param name="context">Object to which the message applies.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void LogWarning(object message, UnityEngine.Object context)
         {
             Debug.LogWarning(message, context);
@@ -839,6 +843,7 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void LogError(object message)
         {
             Debug.LogError(message);
@@ -850,6 +855,7 @@ namespace RealMethod
         /// <param name="context">Object to which the message applies.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void LogError(object message, UnityEngine.Object context)
         {
             Debug.LogError(message, context);
@@ -860,6 +866,7 @@ namespace RealMethod
         /// <param name="exception">Runtime Exception.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void LogException(Exception exception)
         {
             Debug.LogException(exception);
@@ -871,6 +878,7 @@ namespace RealMethod
         /// <param name="context">Object to which the message applies.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void LogException(Exception exception, UnityEngine.Object context)
         {
             Debug.LogException(exception, context);
@@ -881,6 +889,7 @@ namespace RealMethod
         /// <param name="condition">Condition you expect to be true.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void Assert(bool condition)
         {
             Debug.Assert(condition);
@@ -892,6 +901,7 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void Assert(bool condition, object message)
         {
             Debug.Assert(condition, message);
@@ -903,6 +913,7 @@ namespace RealMethod
         /// <param name="context">Object to which the message applies.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void Assert(bool condition, UnityEngine.Object context)
         {
             Debug.Assert(condition, context);
@@ -914,6 +925,7 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void Assert(bool condition, string message)
         {
             Debug.Assert(condition, message);
@@ -926,6 +938,7 @@ namespace RealMethod
         /// <param name="context">Object to which the message applies.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void Assert(bool condition, object message, UnityEngine.Object context)
         {
             Debug.Assert(condition, message, context);
@@ -938,6 +951,7 @@ namespace RealMethod
         /// <param name="context">Object to which the message applies.</param>
         [System.Diagnostics.Conditional("UNITY_EDITOR")]
         [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
         public static void Assert(bool condition, string message, UnityEngine.Object context)
         {
             Debug.Assert(condition, message, context);
@@ -949,7 +963,7 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">Manager type to retrieve.</typeparam>
         /// <returns>The manager instance if found; otherwise <c>null</c>.</returns>
-        public T GetManager<T>() where T : class
+        public T FindManager<T>() where T : class
         {
             foreach (var manager in Managers)
             {
@@ -965,7 +979,7 @@ namespace RealMethod
         /// </summary>
         /// <param name="ObjectName">Name of the manager GameObject to find.</param>
         /// <returns>The matching <see cref="IGameManager"/>, or <c>null</c> if none match.</returns>
-        public IGameManager GetManager(string ObjectName)
+        public IGameManager FindManager(string ObjectName)
         {
             foreach (var manger in Managers)
             {

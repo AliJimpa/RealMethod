@@ -59,7 +59,7 @@ namespace RealMethod
         private void CheckManager()
         {
             if (Printer == null)
-                Printer = Game.FindManager<PrintManager>();
+                Printer = Game.GetManager<PrintManager>();
         }
 
     }

@@ -40,12 +40,10 @@ namespace RealMethod.Editor
             {
                 if (method.IsStatic)
                 {
-                    Debug.LogError($"Service '{type.FullName}' contains static method '{method.Name}'. Static methods are not allowed in Service classes."
-                    );
+                    Debug.LogError($"Service '{type.FullName}' contains static method '{method.Name}'. Static methods are not allowed in Service classes.");
                 }
             }
         }
-
 
     }
 }

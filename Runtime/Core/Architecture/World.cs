@@ -199,7 +199,7 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">The manager type to search for.</typeparam>
         /// <returns>The manager instance cast to <typeparamref name="T"/>, or null if not found.</returns>
-        public T GetManager<T>() where T : class
+        public T FindManager<T>() where T : class
         {
             foreach (var manager in Managers)
             {
@@ -215,7 +215,7 @@ namespace RealMethod
         /// </summary>
         /// <param name="ObjectName">The name of the manager's GameObject to find.</param>
         /// <returns>The matching <see cref="IGameManager"/>, or null if none match.</returns>
-        public IGameManager GetManager(string ObjectName)
+        public IGameManager FindManager(string ObjectName)
         {
             foreach (var manger in Managers)
             {
