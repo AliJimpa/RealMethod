@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+using UnityEngine;
 
 namespace RealMethod.Editor
 {
@@ -7,7 +9,7 @@ namespace RealMethod.Editor
         // CompileRule Methods
         protected override void Initilized()
         {
-            
+
         }
         public override RuleExecutionMode GetRuleMode()
         {
@@ -19,7 +21,29 @@ namespace RealMethod.Editor
         }
         public override void OnCheck(Type type)
         {
-            throw new NotImplementedException();
+            // Check if class is static
+            if (type.IsAbstract && type.IsSealed)
+            {
+                Debug.LogError($"Service '{type.FullName}' cannot be static.");
+                return;
+            }
+
+            // Check for static methods
+            var methods = type.GetMethods(
+                BindingFlags.Public |
+                BindingFlags.NonPublic |
+                BindingFlags.Static |
+                BindingFlags.DeclaredOnly
+            );
+
+            foreach (var method in methods)
+            {
+                if (method.IsStatic)
+                {
+                    Debug.LogError($"Service '{type.FullName}' contains static method '{method.Name}'. Static methods are not allowed in Service classes."
+                    );
+                }
+            }
         }
 
 

@@ -103,9 +103,10 @@ namespace RealMethod.Editor
         private static System.Reflection.Assembly[] Assemblies;
         private static CompileRule[] Ruls;
 
-        public static Type[] DefaultRuls = new Type[1] {
+        public static Type[] DefaultRuls = new Type[2] {
         // Array of ruls to that should be run always for RealMethod
         typeof(ConfigAssetsRule),
+        typeof(ServiceRule),
         };
 
 
