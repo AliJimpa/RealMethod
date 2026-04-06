@@ -68,6 +68,107 @@ namespace RealMethod.Editor
                 }
             }
         }
+        protected class ArrayTypeSelector<T>
+        {
+            protected SerializedProperty myProperty;
+            private string fieldName;
+            private List<Type> typeList;
+            private string[] displayNames;
+            private string[] assemblyNames;
+            private int selectedIndex = 0;
+            private int newIndex;
+            private readonly int EnforceDisable = -1;
+
+
+            public ArrayTypeSelector(SerializedProperty TargetStringProperty, string displayName)
+            {
+                if (TargetStringProperty != null && displayName != string.Empty)
+                {
+                    myProperty = TargetStringProperty;
+                    fieldName = displayName;
+                }
+                else
+                {
+                    Debug.LogWarning("TypeSelector Can't Create");
+                    return;
+                }
+
+                typeList = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(a => a.GetTypes())
+                    .Where(t => typeof(T).IsAssignableFrom(t) && !t.IsAbstract)
+                    .ToList();
+
+                displayNames = typeList.Select(t => $"{t.Namespace}.{t.Name}").ToArray(); // shown in UI
+                assemblyNames = typeList.Select(t => t.AssemblyQualifiedName).ToArray(); // stored
+
+                EnforceDisable = GetEnforceDisableIndex();
+            }
+            public void Draw()
+            {
+                if (!myProperty.isArray)
+                    return;
+
+                if(myProperty.arraySize == 0)
+                {
+                    DefaultInitiation();
+                }
+
+                for (int i = 0; i < myProperty.arraySize; i++)
+                {
+                    EditorGUILayout.BeginHorizontal();
+
+                    SerializedProperty element = myProperty.GetArrayElementAtIndex(i);
+                    selectedIndex = Array.IndexOf(assemblyNames, element.stringValue);
+
+                    if (i < EnforceDisable)
+                        GUI.enabled = false;
+
+                    newIndex = EditorGUILayout.Popup(fieldName, selectedIndex, displayNames);
+                    if (newIndex >= 0 && newIndex < assemblyNames.Length)
+                    {
+                        element.stringValue = assemblyNames[newIndex];
+                    }
+
+                    GUI.enabled = true;
+
+                    // Prevent removing first two elements
+                    if (i >= EnforceDisable)
+                    {
+                        if (GUILayout.Button("Remove", GUILayout.Width(70)))
+                        {
+                            myProperty.DeleteArrayElementAtIndex(i);
+                        }
+                    }
+                    else
+                    {
+                        GUI.enabled = false;
+                        GUILayout.Button("Locked", GUILayout.Width(70));
+                        GUI.enabled = true;
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+
+                }
+
+                GUILayout.Space(10);
+
+                if (GUILayout.Button("Add New"))
+                {
+                    myProperty.InsertArrayElementAtIndex(myProperty.arraySize);
+                }
+
+            }
+
+
+            protected virtual int GetEnforceDisableIndex()
+            {
+                return -1;
+            }
+            protected virtual void DefaultInitiation()
+            {
+                
+            }
+        }
 
         private bool isReady = true;// Indicates whether the section is ready to render
         private string message = string.Empty;// Error message to display if the section is not ready
@@ -141,7 +242,6 @@ namespace RealMethod.Editor
             UpdateRender();
         }
 
-
     }
 
 
@@ -150,11 +250,12 @@ namespace RealMethod.Editor
     public static class ProjectSettingProvider
     {
         private static bool candraw = true;// Flag to determine if the UI can be drawn
-        private static List<ProjectSettingSection> sections = new List<ProjectSettingSection>(3) {
+        private static ProjectSettingSection[] sections = new ProjectSettingSection[4] {
         // Array of sections to be rendered in the settings UI
         new InitializerSetting_Section(),
         new FolderStructure_Section(),
         new GameStatus_Section(),
+        new CompileRule_Section(),
         };
 
 
