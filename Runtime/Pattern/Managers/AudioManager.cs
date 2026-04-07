@@ -10,8 +10,8 @@ namespace RealMethod
     {
         [Header("Audio")]
         [SerializeField]
-        private AudioMixerGroup DefaultGroup;
-        public AudioMixerGroup defaultGroup => DefaultGroup;
+        private AudioMixerGroup defaultGroup;
+        public AudioMixerGroup DefaultGroup => defaultGroup;
 
         public ObjectPool<AudioSource> soundPool;
 
@@ -38,7 +38,7 @@ namespace RealMethod
         {
             AudioSource source = soundPool.Get();
             source.clip = clip;
-            source.outputAudioMixerGroup = group != null ? group : DefaultGroup;
+            source.outputAudioMixerGroup = group != null ? group : defaultGroup;
             source.spatialBlend = 1;
             source.minDistance = rolloffDistanceMin;
             source.loop = loop;
@@ -62,7 +62,7 @@ namespace RealMethod
         {
             AudioSource source = soundPool.Get();
             source.clip = clip;
-            source.outputAudioMixerGroup = group != null ? group : DefaultGroup;
+            source.outputAudioMixerGroup = group != null ? group : defaultGroup;
             source.spatialBlend = 0;
             source.minDistance = rolloffDistanceMin;
             source.loop = loop;

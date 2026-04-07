@@ -119,7 +119,7 @@ namespace RealMethod
             {
                 if (!CashManagers.Contains(manager))
                 {
-                    manager.InitiateManager(true);
+                    manager.InitiateManager(false);
                     CashManagers.Add(manager);
                 }
                 else

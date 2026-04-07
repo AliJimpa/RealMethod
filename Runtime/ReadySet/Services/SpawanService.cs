@@ -810,7 +810,7 @@ namespace RealMethod
             source.clip = clip;
             if (GetManager<AudioManager>() != null)
             {
-                source.outputAudioMixerGroup = GetManager<AudioManager>().defaultGroup;
+                source.outputAudioMixerGroup = GetManager<AudioManager>().DefaultGroup;
                 emptyobject.transform.SetParent(GetManager<AudioManager>().transform);
             }
             return source;
