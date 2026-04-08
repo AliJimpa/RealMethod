@@ -1,65 +1,23 @@
 using RealMethod;
 
-public class #SCRIPTNAME# : CompositManager<STATESETVICE, MUSCIENUM>
+public class #SCRIPTNAME# : CompositManager<MUSCSTATE>
 {
-        [Header("Music")]
+        [Header("MusicList")]
         [SerializeField]
-        private AudioClip[] CreateLayers;
-        [SerializeField]
-        private bool AddServiceOnInitiate = false;
+        private Map<Name16, AudioClip> Clips = new Map<Name16, AudioClip>();
 
-        protected override void OnInitiate(bool AlwaysLoaded)
+        // IGameManager Interface
+        protected override void InitiateManager(bool AlwaysLoaded)
         {
-            foreach (var clip in CreateLayers)
+            base.InitiateManager(AlwaysLoaded);
+            foreach (var clip in Clips)
             {
-                CreateLayer(clip);
+                CreateLayer(clip.Key, clip.Value);
             }
-            if (AddServiceOnInitiate)
-                Game.AddService<DefaulMusicState>(this);
-        }
-        protected override void MusicStateAssigned()
-        {
-        }
-}
-
-public enum MUSCIENUM
-{
-    Default,
-    STATE_1,
-    STATE_2,
-}
-
-public sealed class STATESETVICE : StateService<MUSCIENUM>
-{
-     public MUSCIENUM() : base(MUSCIENUM.Default) // This is the First State Value
-        {
-
         }
 
-        // Service Methods
-        protected override void OnStart(object Author)
+        protected override bool CompairStates(MUSCIENUM State_A, MUSCIENUM State_B)
         {
-        }
-        protected override void OnEnd(object Author)
-        {
-
-        }
-
-        // StateService Methods
-        protected override DefaulMusicLayer DefaultState()
-        {
-            return DefaulMusicLayer.Default;
-        }
-        public override bool CanSwitch(DefaulMusicLayer A, DefaulMusicLayer B)
-        {
-            if (A == B)
-            {
-                return false;
-            }
-            return true;
-        }
-        protected override bool CanResetforNewWorld(World NewWorld)
-        {
-            return false;
+            return State_A == State_B;
         }
 }

@@ -6,8 +6,9 @@ namespace RealMethod
     public sealed class SoundManager : AudioManager
     {
         // AudioManager Methods
-        protected override void InitiateService(Service service)
+        protected override void ResolveService(Service service, bool active)
         {
+            base.ResolveService(service, active);
         }
     }
 }

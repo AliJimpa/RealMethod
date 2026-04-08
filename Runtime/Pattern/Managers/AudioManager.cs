@@ -17,6 +17,8 @@ namespace RealMethod
 
         protected override void InitiateManager(bool AlwaysLoaded)
         {
+            base.InitiateManager(AlwaysLoaded);
+            
             if (AlwaysLoaded)
             {
                 Debug.LogError("You can't use AudioManager in [Game] Scope");
