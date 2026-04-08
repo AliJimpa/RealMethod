@@ -11,13 +11,19 @@ namespace RealMethod.Editor
         {
 
         }
-        public override RuleExecutionMode GetRuleMode()
+        public override void OnStart(RuleExecutionMode mode)
         {
-            return RuleExecutionMode.AfterCompilation;
         }
-        public override Type GetBaseType()
+        public override Type GetSubClass(RuleExecutionMode mode)
         {
-            return typeof(Service);
+            if (mode == RuleExecutionMode.AfterCompilation)
+            {
+                return typeof(Service);
+            }
+            else
+            {
+                return null;
+            }
         }
         public override void OnCheck(Type type)
         {
@@ -44,6 +50,8 @@ namespace RealMethod.Editor
                 }
             }
         }
-
+        public override void OnEnd(RuleExecutionMode mode)
+        {
+        }
     }
 }

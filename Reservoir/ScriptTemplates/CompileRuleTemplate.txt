@@ -9,18 +9,30 @@ public class #SCRIPTNAME# : CompileRule
     {
         // Called right after Construct
     }
-    public override RuleExecutionMode GetRuleMode()
+    public override void OnStart(RuleExecutionMode mode)
     {
-        // Defines when this rule should be executed
-        return RuleExecutionMode.AfterCompilation;
+        // Called befor checking stage
     }
-    public override Type GetBaseType()
+    public override Type GetSubClass(RuleExecutionMode mode)
     {
         // A Type that all target classes must derive from
-        return typeof(MonoBehaviour);
+        if (mode == RuleExecutionMode.AfterCompilation)
+        {
+            return typeof(MonoBehaviour);
+        }
+        else
+        {
+            // Skip other mode
+            return null;
+        }
     }
     public override void OnCheck(Type type)
     {
         // Called when CompileGuard finds a type that inherits from the rule's base type.
     }
+    public override void OnEnd(RuleExecutionMode mode)
+    {
+        // Called after cheking stage
+    }
+
 }

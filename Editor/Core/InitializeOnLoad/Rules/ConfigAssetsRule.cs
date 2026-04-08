@@ -12,13 +12,19 @@ namespace RealMethod.Editor
         protected override void Initilized()
         {
         }
-        public override RuleExecutionMode GetRuleMode()
+        public override void OnStart(RuleExecutionMode mode)
         {
-            return RuleExecutionMode.EditorStartup;
         }
-        public override Type GetBaseType()
+        public override Type GetSubClass(RuleExecutionMode mode)
         {
-            return typeof(ConfigAsset);
+            if (mode == RuleExecutionMode.EditorStartup)
+            {
+                return typeof(ConfigAsset);
+            }
+            else
+            {
+                return null;
+            }
         }
         public override void OnCheck(Type type)
         {
@@ -42,6 +48,9 @@ namespace RealMethod.Editor
             {
                 Debug.LogError($"❌ '{type.Name}' public method '{m.Name}' modifies state — only pure getter/return methods are allowed in Config-derived classes.");
             }
+        }
+        public override void OnEnd(RuleExecutionMode mode)
+        {
         }
 
 
@@ -84,5 +93,6 @@ namespace RealMethod.Editor
 
             return false;
         }
+
     }
 }
