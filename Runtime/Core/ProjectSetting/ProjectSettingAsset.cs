@@ -84,7 +84,7 @@ namespace RealMethod
         public IReadOnlyList<FolderAddress> FolderStructure => folderStructure;
         [Header("GameStatus")]
         [ReadOnly]
-        public List<string> Status = new List<string>(4) { "Menu", "Playing", "Pause", "GameOver" };
+        public List<string> Status = new List<string>(5) { "Default", "Menu", "Playing", "Pause", "GameOver" };
         [Header("CompileGuard")]
         [SerializeField, ReadOnly]
         private string[] Rules;
