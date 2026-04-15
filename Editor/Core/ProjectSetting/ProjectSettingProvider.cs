@@ -108,6 +108,11 @@ namespace RealMethod.Editor
                 if (!myProperty.isArray)
                     return;
 
+                if(myProperty.arraySize < EnforceDisable)
+                {
+                    myProperty.ClearArray();
+                }
+
                 if(myProperty.arraySize == 0)
                 {
                     DefaultInitiation();

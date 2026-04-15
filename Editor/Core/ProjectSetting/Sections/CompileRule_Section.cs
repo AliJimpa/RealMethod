@@ -24,10 +24,12 @@ namespace RealMethod.Editor
                     myProperty.InsertArrayElementAtIndex(Index);
                     SerializedProperty element = myProperty.GetArrayElementAtIndex(Index);
                     element.stringValue = ruletype.AssemblyQualifiedName;
+                    Debug.LogWarning($"====>    {ruletype}");
                 }
             }
         }
 
+        private SerializedProperty CompilingSerialized;
         private ProjectSettingAsset SettingAsset;
         private SerializedObject projectSettings;
         private RuleSelector<CompileRule> Rules;
@@ -36,7 +38,6 @@ namespace RealMethod.Editor
         // Implement ProjectSettingSection Methods
         protected override void Initialized()
         {
-
         }
         protected override string GetTitle()
         {
@@ -50,6 +51,7 @@ namespace RealMethod.Editor
         {
             SettingAsset = Storage;
             projectSettings = new SerializedObject(Storage);
+            CompilingSerialized = projectSettings.FindProperty("Compiling");
             Rules = new RuleSelector<CompileRule>(projectSettings.FindProperty("Rules"), "Rules");
         }
         protected override void UpdateRender()
@@ -57,6 +59,8 @@ namespace RealMethod.Editor
             if (projectSettings == null) return;
 
             projectSettings.Update();
+            CompilingSerialized.boolValue = EditorGUILayout.Toggle("Enable", CompilingSerialized.boolValue, GUILayout.Width(100));
+
             Rules.Draw();
 
             if (GUI.changed)
