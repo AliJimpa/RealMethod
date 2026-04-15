@@ -357,11 +357,6 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR
-        [ContextMenu("ResetToDefault")]
-        private void Editor_BacktoDefault()
-        {
-            OnEditorPlay();
-        }
         [ContextMenu("Save")]
         private void Editor_SaveSelf()
         {

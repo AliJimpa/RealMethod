@@ -9,7 +9,12 @@ namespace RealMethod
     {
         PrimitiveAsset GetAsset();
     }
-    // PrimitiveAsset: is a ScriptableObject with some functions & IAsset interface
+
+    /// <summary>
+    /// Base class for all custom asset types in the system.
+    /// Provides shared functionality and common rules for assets derived from ScriptableObject,
+    /// such as cloning, instancing, or direct usage depending on the derived asset type.
+    /// </summary>
     public abstract class PrimitiveAsset : ScriptableObject, IAsset, ISpawn, ISpawnWithAuthor
     {
         // Implement IAsset Interface
@@ -57,33 +62,34 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR
-        [InitializeOnEnterPlayMode] // Runs when entering Play Mode in Editor
-        private static void EditorPlayModeInit()
+        /// <summary>
+        /// Returns whether Reset() should be automatically called for the given
+        /// PlayModeStateChange. If this method returns true, Unity's Reset() method
+        /// on this ScriptableObject will be invoked for that state.
+        /// </summary>
+        /// <param name="state">The current play mode state change.</param>
+        public virtual bool AutoReset(PlayModeStateChange state)
         {
-            var assets = Resources.FindObjectsOfTypeAll<PrimitiveAsset>();
-            foreach (var asset in assets)
-            {
-                if (asset.IsProjectAsset())
-                {
-                    asset.OnEditorPlay();
-                }
-            }
-        }
-
-        public virtual void OnEditorPlay()
-        {
-            Debug.Log($"[{GetType()}]  -> {name} OnEditorPlay called.");
+            return false;
         }
 #endif
     }
 
 
-    // DataAsset: is just a PrimitiveAsset
+    /// <summary>
+    /// A standard asset used to store data.
+    /// Developers can create and use these assets directly in the project
+    /// and access the functionality provided by PrimitiveAsset.
+    /// </summary>
     public abstract class DataAsset : PrimitiveAsset
     {
     }
-    // TemplateAsset: is a PrimitiveAsset that you can't create new at runtime & Should Use With Clone
-    public abstract class TemplateAsset : PrimitiveAsset
+    /// <summary>
+    /// Represents an asset used only as a clone.
+    /// This asset cannot be used directly or instantiated normally.
+    /// Its purpose is to generate clones that will be used instead of the original asset.
+    /// </summary>
+    public abstract class CloneAsset : PrimitiveAsset
     {
         protected virtual void OnEnable()
         {
@@ -91,22 +97,19 @@ namespace RealMethod
             {
                 if (!IsProjectAsset())
                 {
-                    Debug.LogError($"TemplateAsset Can't Create New Instance at Runtime, NewFile Removed!");
+                    Debug.LogError($"CloneAsset Can't Create New Instance at Runtime, NewFile Removed!");
                     Destroy(this);
                     return;
                 }
             }
         }
-
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
-        {
-
-        }
-#endif
     }
-    // FileAsset: is a PrimitiveAsset that you can't clone at runtime
-    public abstract class FileAsset : PrimitiveAsset
+    /// <summary>
+    /// Represents an asset that defines how to create new instances.
+    /// The asset itself cannot be used directly or cloned.
+    /// Instead, the system creates new independent instances based on this asset's data.
+    /// </summary>
+    public abstract class InstanceAsset : PrimitiveAsset
     {
         protected virtual void OnEnable()
         {
@@ -118,7 +121,11 @@ namespace RealMethod
             }
         }
     }
-    // UniqueAsset: is a PrimitiveAsset that you can't clone or create new at runtime
+    /// <summary>
+    /// Represents a unique shared asset in the project.
+    /// Developers must use the asset directly and cannot clone it
+    /// or create new instances from it.
+    /// </summary>
     public abstract class UniqueAsset : PrimitiveAsset
     {
         protected virtual void OnEnable()
@@ -136,15 +143,13 @@ namespace RealMethod
                 return;
             }
         }
-
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
-        {
-
-        }
-#endif
     }
-    // ConfigAsset: is a UniqueAsset that you can't decelar modifier variable or method , all of things should be readonly 
+    /// <summary>
+    /// A specialized UniqueAsset used for global configuration.
+    /// The asset is intended to be read-only at runtime,
+    /// and developers should not add mutable fields or methods
+    /// that modify its configuration values.
+    /// </summary>
     public abstract class ConfigAsset : UniqueAsset
     {
 

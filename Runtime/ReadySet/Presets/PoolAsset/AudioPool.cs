@@ -192,14 +192,11 @@ namespace RealMethod
             return PoolBack(Comp);
         }
 
-#if UNITY_EDITOR
-        // Base DataAsset Methods
-        public override void OnEditorPlay()
+        protected override void Reset()
         {
-            base.OnEditorPlay();
+            base.Reset();
             UseCacheData = 0;
         }
-#endif
 
         // IEnumerator
         private IEnumerator PoolBack(AudioSource source)

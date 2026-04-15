@@ -20,7 +20,14 @@ namespace RealMethod
             }
 
             // Still send message to Unity console
-            defaultLogHandler.LogFormat(logType, context, format, args);
+            if (defaultLogHandler != null)
+            {
+                defaultLogHandler.LogFormat(logType, context, format, args);
+            }
+            else
+            {
+                Debug.unityLogger.logHandler.LogFormat(logType, context, format, args);
+            }
         }
         void ILogHandler.LogException(System.Exception exception, Object context)
         {
@@ -47,7 +54,7 @@ namespace RealMethod
         }
         protected override void OnEnd(object Author)
         {
-            if(Printer != null)
+            if (Printer != null)
             {
                 Printer.Clear();
             }

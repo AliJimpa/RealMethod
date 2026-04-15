@@ -2,6 +2,10 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace RealMethod
 {
     public abstract class ResourcAsset : DataAsset
@@ -144,10 +148,17 @@ namespace RealMethod
         }
 
 
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
+        private void Reset()
         {
             Asset = null;
+        }
+
+#if UNITY_EDITOR
+        public override bool AutoReset(PlayModeStateChange state)
+        {
+            if (PlayModeStateChange.ExitingPlayMode == state)
+                return true;
+            return base.AutoReset(state);
         }
 #endif
 

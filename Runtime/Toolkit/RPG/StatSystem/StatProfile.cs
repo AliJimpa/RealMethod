@@ -277,13 +277,6 @@ namespace RealMethod
             }
         }
 
-
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
-        {
-            Clear();
-        }
-#endif
     }
 
 }

@@ -87,7 +87,9 @@ namespace RealMethod
         public List<string> Status = new List<string>(5) { "Default", "Menu", "Playing", "Pause", "GameOver" };
         [Header("CompileGuard")]
         [SerializeField, ReadOnly]
-        private string[] Rules;
+        private bool Compiling = true; // <-- this name must match
+        [SerializeField, ReadOnly]
+        private string[] Rules = null; // <-- this name must match
 #endif
 
         // Unity Methods
@@ -105,7 +107,6 @@ namespace RealMethod
             if (string.IsNullOrEmpty(GameBridge))
                 GameBridge = typeof(DefaultGameBridge).AssemblyQualifiedName;
         }
-
 
 
         // Public Functions
@@ -131,9 +132,6 @@ namespace RealMethod
         {
             return UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(Path);
         }
-        public override void OnEditorPlay()
-        {
-        }
         public GameObject GetPrefab_2()
         {
             return GamePrefab_2;
@@ -155,6 +153,10 @@ namespace RealMethod
         }
         public FolderAddress GetFolderAddressByIndex(int index) => folderStructure[index];
         public void SetFolderAddressPath(int index, string value) => folderStructure[index].AssetPath = value;
+        public bool CanCompile()
+        {
+            return Compiling;
+        }
         public Type[] GetCompileRules()
         {
             List<Type> result = new List<Type>();
@@ -172,8 +174,6 @@ namespace RealMethod
             return GamePrefab_3;
         }
 #endif
-
-
     }
 
 

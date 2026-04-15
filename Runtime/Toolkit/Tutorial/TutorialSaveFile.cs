@@ -2,6 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "TutorialSaveFile", menuName = "RealMethod/Tutorial/SaveFile", order = 1)]
@@ -61,10 +65,18 @@ namespace RealMethod
             TutorialMessage.Clear();
         }
 
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
+
+        private void Reset()
         {
             TutorialMessage.Clear();
+        }
+
+#if UNITY_EDITOR
+        public override bool AutoReset(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingPlayMode)
+                return true;
+            return base.AutoReset(state);
         }
 #endif
 

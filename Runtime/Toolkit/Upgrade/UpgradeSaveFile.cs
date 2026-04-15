@@ -2,6 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "UpgradeSaveFile", menuName = "RealMethod/Upgrade/SaveFile", order = 1)]
@@ -93,11 +97,18 @@ namespace RealMethod
         }
 
 
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
+        private void Reset()
         {
-            //base.OnEditorPlay();
             ((IStorage)this).StorageClear();
+        }
+
+
+#if UNITY_EDITOR
+        public override bool AutoReset(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingPlayMode)
+                return true;
+            return base.AutoReset(state);
         }
 #endif
 

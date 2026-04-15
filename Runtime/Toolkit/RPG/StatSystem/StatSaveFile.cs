@@ -18,7 +18,7 @@ namespace RealMethod
         public List<float> Mins = new List<float>(5);
         public List<float> Maxs = new List<float>(5);
 
-
+        // SaveFile Methods
         protected override void OnStable(DataManager manager)
         {
         }
@@ -52,7 +52,6 @@ namespace RealMethod
                 Maxs = null;
             }
         }
-
 
         // Implement IStorage Interface
         void IStorage.StorageCreated(Object author)
@@ -97,14 +96,14 @@ namespace RealMethod
             return false;
         }
 
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
+
+        // Unity Event
+        private void Reset()
         {
             Names.Clear();
             BaseValue.Clear();
             Mins.Clear();
             Maxs.Clear();
         }
-#endif
     }
 }

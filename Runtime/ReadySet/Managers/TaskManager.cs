@@ -1,5 +1,9 @@
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace RealMethod
 {
     public delegate void TaskCallback(bool enable);
@@ -80,15 +84,22 @@ namespace RealMethod
             onTaskStatus?.Invoke(false);
         }
 
+        protected virtual void Reset()
+        {
+            IsEnable = false;
+        }
+
         // Abstract Methods
         protected abstract void OnTaskEnable(Object author);
         protected abstract void OnTaskUpdate(float delta);
         protected abstract void OnTaskDisable(Object author);
 
 #if UNITY_EDITOR
-        public override void OnEditorPlay()
+        public override bool AutoReset(PlayModeStateChange state)
         {
-            IsEnable = false;
+            if (state == PlayModeStateChange.ExitingPlayMode)
+                return true;
+            return base.AutoReset(state);
         }
 #endif
     }
@@ -214,6 +225,7 @@ namespace RealMethod
             isValidated = false;
             Author = null;
         }
+
         // Implement IBehaviourCycle Interface
         public bool IsInfinit => infinit;
         public float RemainingTime => residuary;
@@ -238,6 +250,7 @@ namespace RealMethod
                 Debug.LogError("First You Sould Initiate Behaviour");
             }
         }
+
         // Implement IBehaviourAction Interface
         public bool IsPaused => !isRunning;
         void IBehaviourAction.Pause()
@@ -293,6 +306,13 @@ namespace RealMethod
         }
 
 
+        // Unity Methods
+        protected override void Reset()
+        {
+            base.Reset();
+            ResetTaskValues();
+        }
+
         // Abstract Methods
         protected abstract void OnInitiate();
         protected abstract void OnBegin();
@@ -301,15 +321,6 @@ namespace RealMethod
         protected abstract void OnResume();
         protected abstract void OnReset();
         protected abstract void OnEnd();
-
-#if UNITY_EDITOR
-        public sealed override void OnEditorPlay()
-        {
-            base.OnEditorPlay();
-            ResetTaskValues();
-        }
-#endif
-
 
     }
 
