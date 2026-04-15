@@ -11,18 +11,15 @@ namespace RealMethod.Editor
         {
 
         }
-        public override void OnStart(RuleExecutionMode mode)
-        {
-        }
-        public override Type GetSubClass(RuleExecutionMode mode)
+        public override bool CanCheck(RuleExecutionMode mode, Type type)
         {
             if (mode == RuleExecutionMode.AfterCompilation)
             {
-                return typeof(Service);
+                return type.IsSubclassOf(typeof(Service));
             }
             else
             {
-                return null;
+                return false;
             }
         }
         public override void OnCheck(Type type)
@@ -49,9 +46,6 @@ namespace RealMethod.Editor
                     Debug.LogError($"Service '{type.FullName}' contains static method '{method.Name}'. Static methods are not allowed in Service classes.");
                 }
             }
-        }
-        public override void OnEnd(RuleExecutionMode mode)
-        {
         }
     }
 }

@@ -53,10 +53,12 @@ namespace RealMethod.Editor
             ExitingPlayMode = 5,
         }
 
+
         public CompileRule()
         {
             Initilized();
         }
+
 
         /// <summary>
         /// Called automatically right after the rule is constructed.
@@ -65,35 +67,25 @@ namespace RealMethod.Editor
         /// </summary>
         protected abstract void Initilized();
         /// <summary>
-        /// Called befor rule check,
-        /// Once per event mode
+        /// Determines whether this rule can perform a check using the specified
+        /// execution mode and target type. Override this method in derived classes
+        /// to define which modes and types the rule supports.
         /// </summary>
-        /// <param name="mode">Represent whitch mode started</param>
-        public abstract void OnStart(RuleExecutionMode mode);
-        /// <summary>
-        /// Returns the base type that this rule should scan for.
-        /// CompileGuard will call <see cref="OnCheck(Type)"/> for every type in the project
-        /// that inherits from the returned base type.
-        /// </summary>
+        /// <param name="mode">The rule execution mode being requested.</param>
+        /// <param name="type">The target data type to evaluate.</param>
         /// <returns>
-        /// A Type that all target classes must derive from.
+        /// True if the rule can check the given mode and type; otherwise, false.
         /// </returns>
-        public abstract Type GetSubClass(RuleExecutionMode mode);
+        public abstract bool CanCheck(RuleExecutionMode mode, Type type);
         /// <summary>
         /// Called when CompileGuard finds a type that inherits from the rule's base type.
         /// Implement validation logic here. This method is invoked automatically for each
         /// matching type during the selected rule mode.
         /// </summary>
         /// <param name="type">
-        /// The discovered type that matches <see cref="GetSubClass"/>.
+        /// The discovered type that matches <see cref="CanCheck"/>.
         /// </param>
         public abstract void OnCheck(Type type);
-        /// <summary>
-        /// Called after rule checkd,
-        /// Once per event mode
-        /// </summary>
-        /// <param name="mode">Represent whitch mode started</param>
-        public abstract void OnEnd(RuleExecutionMode mode);
     }
 
 
@@ -122,17 +114,27 @@ namespace RealMethod.Editor
         }
         private static System.Reflection.Assembly[] Assemblies;
         private static CompileRule[] Rules;
+        private static bool initialized;
 
-        public static Type[] DefaultRuls = new Type[3] {
+        public static readonly Type[] DefaultRuls = new Type[3] {
         // Array of ruls to that should be run always for RealMethod
         typeof(ConfigAssetsRule),
         typeof(ServiceRule),
-        typeof(CloneAssetsRule),
+        typeof(PrimitveAssetsRule),
+
         };
 
 
         static CompileGuard()
         {
+            if (!ProjectSetting.CanCompile())
+            {
+                return;
+            }
+
+            if (initialized) return;
+            initialized = true;
+
             CompilationPipeline.compilationFinished += OnCompilationFinished;
             EditorApplication.delayCall += OnEditorUpdated;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
@@ -151,16 +153,23 @@ namespace RealMethod.Editor
             int index = (int)state + 2;
             CheckRuls((CompileRule.RuleExecutionMode)index);
         }
+
+
+        // Checking process
         private static void CheckRuls(CompileRule.RuleExecutionMode mode)
         {
             if (ProjectSetting == null)
                 return;
 
+
             if (Rules == null)
             {
                 Type[] RulsClass = ProjectSetting.GetCompileRules();
                 if (RulsClass == null)
+                {
+                    Debug.LogError($"ProjectSetting didn't have Compilerule but compileguard is enable");
                     return;
+                }
 
                 Rules = new CompileRule[RulsClass.Length];
                 for (int i = 0; i < RulsClass.Length; i++)
@@ -188,15 +197,10 @@ namespace RealMethod.Editor
                 }
             }
 
+
             if (Assemblies == null)
             {
                 Assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            }
-
-            // Start
-            foreach (var rule in Rules)
-            {
-                rule.OnStart(mode);
             }
 
             // Checking
@@ -214,28 +218,16 @@ namespace RealMethod.Editor
 
                 foreach (var type in types)
                 {
-                    if (Rules == null)
-                        return;
-
                     foreach (var rule in Rules)
                     {
                         if (rule == null)
                             continue;
-                        if (rule.GetSubClass(mode) == null)
+                        if (rule.CanCheck(mode, type) == false)
                             continue;
 
-                        if (type.IsSubclassOf(rule.GetSubClass(mode)))
-                        {
-                            rule.OnCheck(type);
-                        }
+                        rule.OnCheck(type);
                     }
                 }
-            }
-
-            // End
-            foreach (var rule in Rules)
-            {
-                rule.OnEnd(mode);
             }
         }
     }
