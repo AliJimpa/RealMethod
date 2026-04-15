@@ -67,6 +67,13 @@ namespace RealMethod.Editor
         /// </summary>
         protected abstract void Initilized();
         /// <summary>
+        /// Performs rule initialization for the specified execution mode.
+        /// This method is called once per mode before any type scanning or rule checks begin.
+        /// Use it to reset internal state, prepare data, or configure the rule
+        /// </summary>
+        /// <param name="mode">The execution mode for the current validation pass.</param>
+        public abstract void OnStartCheck(RuleExecutionMode mode);
+        /// <summary>
         /// Determines whether this rule can perform a check using the specified
         /// execution mode and target type. Override this method in derived classes
         /// to define which modes and types the rule supports.
@@ -201,6 +208,12 @@ namespace RealMethod.Editor
             if (Assemblies == null)
             {
                 Assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            }
+
+            // StartMode
+            foreach (var rule in Rules)
+            {
+                rule.OnStartCheck(mode);
             }
 
             // Checking

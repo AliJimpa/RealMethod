@@ -36,7 +36,7 @@ namespace RealMethod
         public Component GetComponent(Name16 name) => Blackboard.GetValue<Component>(name);
 
 
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
             Blackboard.SetSize(GetMaxSize());
         }

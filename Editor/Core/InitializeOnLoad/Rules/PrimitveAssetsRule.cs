@@ -7,32 +7,47 @@ namespace RealMethod.Editor
     public class PrimitveAssetsRule : CompileRule
     {
         private PrimitiveAsset[] assets = null;
-        private int state = 0;
 
         protected override void Initilized()
         {
             assets = Resources.FindObjectsOfTypeAll<PrimitiveAsset>();
         }
-        public override bool CanCheck(RuleExecutionMode mode, Type type)
+        public override void OnStartCheck(RuleExecutionMode mode)
         {
             if ((int)mode < 2)
-                return false;
+                return;
 
-
-            state = (int)mode - 2;
-            return true;
-        }
-        public override void OnCheck(Type type)
-        {
+            PlayModeStateChange CurrentMode = (PlayModeStateChange)((int)mode - 2);
             foreach (var asset in assets)
             {
-                if (asset.AutoReset((PlayModeStateChange)state))
+                if (mode == RuleExecutionMode.EnteredPlayMode)
+                {
+                    asset.Invoke("OnValidateAsset");
+                    if (AssetDatabase.Contains(asset))
+                    {
+                        if (asset is InstanceAsset)
+                        {
+                            Debug.LogWarning($"InstanceAsset '{asset.name}' is used directly in Play Mode. " +
+                            $"A runtime instanceAsset should be used instead.Create() at runtime",
+                            asset);
+                        }
+                    }
+                }
+
+                if (asset.AutoReset(CurrentMode))
                 {
                     asset.Invoke("Reset");
                 }
             }
         }
+        public override bool CanCheck(RuleExecutionMode mode, Type type)
+        {
+            return false;
+        }
+        public override void OnCheck(Type type)
+        {
 
+        }
 
     }
 }

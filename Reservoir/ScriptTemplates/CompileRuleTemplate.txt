@@ -9,6 +9,10 @@ public class #SCRIPTNAME# : CompileRule
     {
         // Called right after Construct
     }
+    public override void OnStartCheck(RuleExecutionMode mode)
+    {
+        // Called once per mode befor any cheking.
+    }
     public override bool CanCheck(RuleExecutionMode mode, Type type)
     {
         // A Type that all target classes must derive from

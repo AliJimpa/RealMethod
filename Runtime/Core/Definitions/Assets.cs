@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.InputSystem.EnhancedTouch;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -72,6 +74,7 @@ namespace RealMethod
         {
             return false;
         }
+        protected abstract void OnValidateAsset();
 #endif
     }
 
@@ -83,6 +86,12 @@ namespace RealMethod
     /// </summary>
     public abstract class DataAsset : PrimitiveAsset
     {
+#if UNITY_EDITOR
+        protected override sealed void OnValidateAsset()
+        {
+
+        }
+#endif
     }
     /// <summary>
     /// Represents an asset used only as a clone.
@@ -91,17 +100,47 @@ namespace RealMethod
     /// </summary>
     public abstract class CloneAsset : PrimitiveAsset
     {
-        protected virtual void OnEnable()
+        [SerializeField, HideInInspector]
+        private bool _isRuntimeClone = false;
+
+#if UNITY_EDITOR
+        protected override sealed void OnValidateAsset()
         {
             if (!HasCloneName())
             {
                 if (!IsProjectAsset())
                 {
-                    Debug.LogError($"CloneAsset Can't Create New Instance at Runtime, NewFile Removed!");
-                    Destroy(this);
+                    Debug.LogError($"[{name}] CloneAsset cannot create new instance at runtime. Asset has been removed!");
+                    DestroyImmediate(this);
                     return;
                 }
             }
+        }
+#endif
+
+        /// <summary>
+        /// Creates a runtime clone of this asset and marks it as safe for usage.
+        /// Direct project assets cannot be used; only cloned copies are valid.
+        /// </summary>
+        public CloneAsset Clone()
+        {
+            var clone = Instantiate(this);
+            clone._isRuntimeClone = true;
+            //clone.name = $"{name}_Clone";
+            return clone;
+        }
+
+        /// <summary>
+        /// Ensures this asset can be used safely. Throws an error if it's a direct project asset.
+        /// </summary>
+        protected void EnsureClonedUsage()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (!_isRuntimeClone)
+            {
+                Debug.LogError($"[{name}] You cannot use a direct asset of type {GetType().Name}. Use Clone() instead.");
+            }
+#endif
         }
     }
     /// <summary>
@@ -111,14 +150,47 @@ namespace RealMethod
     /// </summary>
     public abstract class InstanceAsset : PrimitiveAsset
     {
-        protected virtual void OnEnable()
+        [SerializeField, HideInInspector]
+        private bool _isRuntimeInstance = false;
+
+#if UNITY_EDITOR
+        protected override sealed void OnValidateAsset()
         {
             if (HasCloneName())
             {
-                Debug.LogError($"FileAsset Can't Clone at Runtime, NewFile Removed!");
-                Destroy(this);
+                Debug.LogError($"[{name}] InstanceAsset cannot be cloned directly. The cloned asset has been removed!");
+                DestroyImmediate(this);
                 return;
             }
+        }
+#endif
+
+        /// <summary>
+        /// Creates a valid runtime instance of this InstanceAsset.
+        /// This is the only allowed way to use InstanceAsset at runtime.
+        /// </summary>
+        public static T Create<T>(string name = "") where T : InstanceAsset
+        {
+            T inst = CreateInstance<T>();
+            inst._isRuntimeInstance = true;
+            inst.name = $"{name}_Instance";
+            return inst;
+        }
+
+        /// <summary>
+        /// Ensures this asset is being used correctly.
+        /// Only runtime-created instances are allowed at runtime.
+        /// </summary>
+        protected void EnsureInstanceUsage()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (!_isRuntimeInstance)
+            {
+                Debug.LogError(
+                    $"[{name}] InstanceAsset must be instantiated using Create<T>(). " +
+                    "Direct use of project asset is not allowed.");
+            }
+#endif
         }
     }
     /// <summary>
@@ -128,21 +200,23 @@ namespace RealMethod
     /// </summary>
     public abstract class UniqueAsset : PrimitiveAsset
     {
-        protected virtual void OnEnable()
+#if UNITY_EDITOR
+        protected override sealed void OnValidateAsset()
         {
             if (HasCloneName())
             {
-                Debug.LogError($"UniqueAsset Can't Clone at Runtime, NewFile Removed!");
+                Debug.LogError($"[{name}] UniqueAsset cannot clone at runtime. NewAsset has been removed!");
                 Destroy(this);
                 return;
             }
             if (!IsProjectAsset())
             {
-                Debug.LogError($"UniqueAsset Can't Create New Instance at Runtime, NewFile Removed!");
+                Debug.LogError($"[{name}] UniqueAsset cannot create new instance at runtime. NewAsset has been removed!");
                 Destroy(this);
                 return;
             }
         }
+#endif
     }
     /// <summary>
     /// A specialized UniqueAsset used for global configuration.

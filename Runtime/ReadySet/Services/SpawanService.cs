@@ -308,7 +308,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning($"Spawn Event can only be sent to MonoBehaviour or GameObject. Target type: {target.GetType()}");
+                    Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
                 }
                 return target;
             }
@@ -332,7 +332,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning($"Spawn Event can only be sent to MonoBehaviour or GameObject. Target type: {target.GetType()}");
+                    Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
                 }
                 return target;
             }
@@ -356,7 +356,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning($"Spawn Event can only be sent to MonoBehaviour or GameObject. Target type: {target.GetType()}");
+                    Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
                 }
                 return target;
             }
@@ -380,7 +380,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning($"Spawn Event can only be sent to MonoBehaviour or GameObject. Target type: {target.GetType()}");
+                    Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
                 }
                 return target;
             }

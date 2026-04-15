@@ -128,6 +128,9 @@ namespace RealMethod
         }
 
 #if UNITY_EDITOR
+        protected override void OnValidateAsset()
+        {
+        }
         public static ProjectSettingAsset Load()
         {
             return UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(Path);

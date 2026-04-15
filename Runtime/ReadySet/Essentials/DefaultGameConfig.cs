@@ -4,7 +4,7 @@ namespace RealMethod
 {
     public sealed class DefaultGameConfig : GameConfig
     {
-        protected override void OnEnable()
+        private void OnEnable()
         {
             if (HasCloneName())
             {

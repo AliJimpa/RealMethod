@@ -12,6 +12,9 @@ namespace RealMethod.Editor
         protected override void Initilized()
         {
         }
+        public override void OnStartCheck(RuleExecutionMode mode)
+        {
+        }
         public override bool CanCheck(RuleExecutionMode mode, Type type)
         {
             if (mode == RuleExecutionMode.EditorStartup)
