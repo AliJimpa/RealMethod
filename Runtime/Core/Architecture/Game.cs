@@ -98,6 +98,11 @@ namespace RealMethod
         /// </summary>
         public static bool IsLoading => Instance.IsGameLoading();
         /// <summary>
+        /// Returns true if the Game system has one or more registered services;
+        /// otherwise, returns false.
+        /// </summary>
+        public static bool HasService => Instance.Services.Count > 0;
+        /// <summary>
         /// Event invoked when a scene or world starts or finishes loading.
         /// The boolean parameter is true when loading starts and false when loading ends.
         /// </summary>
@@ -495,7 +500,7 @@ namespace RealMethod
 
             if (Printdebug)
                 Debug.LogError($"Service {TypeService} not found.");
-                
+
             return default;
         }
         /// <summary>
@@ -521,6 +526,7 @@ namespace RealMethod
         public static void ClearService()
         {
             Instance.Services.Clear();
+            Instance.OnServiceCleand();
         }
         /// <summary>
         /// Returns the type names of all registered game services.
@@ -1028,6 +1034,13 @@ namespace RealMethod
         protected virtual bool CanChangeState(int A, int B, object author)
         {
             return true;
+        }
+        /// <summary>
+        /// Called after GameServices clear.
+        /// </summary>
+        protected virtual void OnServiceCleand()
+        {
+            
         }
 
 

@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 
 namespace RealMethod
@@ -16,7 +17,6 @@ namespace RealMethod
         }
         protected override void OnGameStart()
         {
-            AddService<DebugService>(this);
             Debug.Log("DefultGame Started");
         }
         protected override void OnWorldChanged(World NewWorld)
@@ -28,6 +28,14 @@ namespace RealMethod
             Debug.Log("DefultGame Closed");
         }
 
+
+
+        protected override void OnServiceCleand()
+        {
+#if UNITY_EDITOR
+            AddService<DebugService>(this);
+#endif
+        }
 
     }
 }

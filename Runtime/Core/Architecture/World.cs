@@ -102,10 +102,6 @@ namespace RealMethod
             IRelationBridge SyncProvider = Game.Bridge;
             if (SyncProvider.IntroduceWorld(this))
             {
-                if (clearServices)
-                {
-                    Game.ClearService();
-                }
                 SyncProvider.BindServicesUpdated(Notify_OnServicesUpdated);
             }
             else
@@ -148,6 +144,11 @@ namespace RealMethod
             // Reset Location of World
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;
+
+            if (clearServices)
+            {
+                Game.ClearService();
+            }
 
             WorldBegin();
             SyncProvider.WorldIsReady();
