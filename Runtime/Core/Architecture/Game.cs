@@ -74,6 +74,10 @@ namespace RealMethod
         /// </summary>
         public static GlobalEnum State { get; private set; } = 0;
         /// <summary>
+        /// This represents the persistent scene reference used for managing components across the game lifecycle.
+        /// </summary>
+        public static Scene PersistentScene => ((IRelationBridge)Bridge).InstanceScene;
+        /// <summary>
         /// Indicates whether a scene or world load operation is currently in progress.
         /// </summary>
         public static bool IsPaused
@@ -796,7 +800,6 @@ namespace RealMethod
         Application.Quit();
 #endif
         }
-
         /// <summary>
         /// Logs a message to the Unity Console.
         /// </summary>
@@ -1040,7 +1043,7 @@ namespace RealMethod
         /// </summary>
         protected virtual void OnServiceCleand()
         {
-            
+
         }
 
 

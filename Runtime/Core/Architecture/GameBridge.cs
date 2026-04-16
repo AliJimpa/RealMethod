@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
+using Codice.Client.Common;
 
 namespace RealMethod
 {
@@ -14,6 +15,10 @@ namespace RealMethod
     public interface IRelationBridge
     {
         /// <summary>
+        /// This represents the persistent scene
+        /// </summary>
+        Scene InstanceScene { get; }
+        /// <summary>
         /// Introduces a newly created world to the system.
         /// </summary>
         /// <param name="world">The world instance being introduced.</param>
@@ -21,7 +26,7 @@ namespace RealMethod
         /// True if the world is treated as the main world;
         /// false if it is considered a side/additive world.
         /// </returns>
-        bool IntroduceWorld(World world);
+        bool RegisterWorld(World world);
         /// <summary>
         /// Binds a callback invoked when the main world is added.
         /// </summary>
@@ -94,7 +99,7 @@ namespace RealMethod
     /// Inherits from <see cref="Service"/> and implements <see cref="IRelationBridge"/>
     /// to integrate with the game's internal world and service management system.
     /// </summary>
-    public abstract class GameBridge : Service, IRelationBridge, ILoadScneBridge
+    public abstract class GameBridge : IService, IRelationBridge, ILoadScneBridge
     {
         // Events
         private Action GameReadyEvent;
@@ -104,8 +109,25 @@ namespace RealMethod
         private Action<float> SceneLoadingProcessEvent;
         private bool isLoading;
         private List<GameObject> Shareds = new List<GameObject>(5);
-        private bool IsHolding = false;
+        public bool IsHolding { get; private set; } = false;
         protected float FadeTime = 0;
+        private Scene CurrrentScene;
+        public static Scene LastActiveScene;
+        public static bool SceneWillUnload { get; private set; }
+
+        // Implement IService Interface
+        object IService.GetServiceClass() => this;
+        void IService.Created(object author)
+        {
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+        }
+        void IService.ChangingWorld(World NewWorld)
+        {
+        }
+        void IService.Deleted(object author)
+        {
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+        }
 
 
         // Implement IRelationBridge Interface
@@ -121,9 +143,10 @@ namespace RealMethod
                 GameReadyEvent -= value;
             }
         }
-        bool IRelationBridge.IntroduceWorld(World world)
+        Scene IRelationBridge.InstanceScene => CurrrentScene;
+        bool IRelationBridge.RegisterWorld(World world)
         {
-            return RequestForNewWorld(world);
+            return TryToRegisterWorld(world);
         }
         void IRelationBridge.BindWorldCreated(Action<World> func)
         {
@@ -197,11 +220,6 @@ namespace RealMethod
         /// <param name="obj">GameObject should be always loaded cross scenes</param>
         public void AddSharedObject(GameObject obj)
         {
-            if (IsHolding)
-            {
-                Debug.LogError("You can't Set Object as Shared in holding time");
-                return;
-            }
             Shareds.Add(obj);
             if (obj.gameObject.activeInHierarchy && Game.World.gameObject.activeInHierarchy)
                 obj.transform.SetParent(Game.World.transform);
@@ -212,11 +230,6 @@ namespace RealMethod
         /// <param name="obj">GameObject should not be always loaded cross scenes</param>
         public void RemoveSharedObject(GameObject obj)
         {
-            if (IsHolding)
-            {
-                Debug.LogError("You can't Set Object as Shared in holding time");
-                return;
-            }
             Shareds.Remove(obj);
             if (obj.gameObject.activeInHierarchy)
                 obj.transform.SetParent(null);
@@ -245,7 +258,9 @@ namespace RealMethod
         /// <param name="world">The world instance will set as main world for game.</param>
         protected void SetMianWorld(World world)
         {
+            CurrrentScene = world.gameObject.scene;
             NewWorldEvent?.Invoke(world);
+            SceneWillUnload = false;
         }
         /// <summary>
         /// Call this when you want to define new World class that created and should not be main world (probably deleted)
@@ -296,17 +311,34 @@ namespace RealMethod
         /// If this request is valid return true that mean this world set as main world.
         /// If this request false means this world import from scen that is additive and should deactive.
         /// </returns
-        protected virtual bool RequestForNewWorld(World NewWorld)
+        protected virtual bool TryToRegisterWorld(World NewWorld)
         {
-            // this approach world just when you destroy last world instance from scene
+            Scene NewScene = NewWorld.gameObject.scene;
+
+            // If no instance yet, this becomes the persistent instance
             if (Game.World == null)
             {
                 SetMianWorld(NewWorld);
                 return true;
             }
-            else
+
+            // This is a new scene loaded in Single mode
+            if (SceneWillUnload && NewScene == LastActiveScene)
+            {
+                // Replace instance because old scene is going away immediately
+                SetMianWorld(NewWorld);
+                return true;
+            }
+
+            // Different scene but NOT replacing old => Additive load
+            if (NewScene != CurrrentScene)
             {
                 SetAdditiveWorld(NewWorld);
+                return false; ;
+            }
+            else
+            {
+                Debug.LogError($"[WorldRegistry] Duplicate world in SAME scene : {NewWorld.gameObject.name} / {Game.World.gameObject}");
                 return false;
             }
         }
@@ -405,7 +437,11 @@ namespace RealMethod
         }
 
 
-
+        private static void OnActiveSceneChanged(Scene oldScene, Scene newScene)
+        {
+            LastActiveScene = newScene;
+            SceneWillUnload = true;   // old scene will be destroyed next frame
+        }
         private float RemapClamped(float value, float inMin, float inMax, float outMin, float outMax)
         {
             // Prevent divide by zero

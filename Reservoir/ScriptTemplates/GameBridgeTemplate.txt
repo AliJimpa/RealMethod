@@ -2,9 +2,4 @@ using RealMethod;
 
 public class #SCRIPTNAME# : GameBridge
 {
-    // Base Service Methods
-    protected override void OnStart(object Author) {}
-    protected override void OnWorldChanging() { }
-    protected override void OnEnd(object Author) { }
-
 }

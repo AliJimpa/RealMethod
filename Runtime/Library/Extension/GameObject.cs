@@ -231,8 +231,13 @@ namespace RealMethod
         /// Registers the GameObject with a shared object system.
         /// </summary>
         /// <param name="obj">The GameObject to register.</param>
-        public static void Share(this GameObject obj)
+        public static void Share(this GameObject obj , bool safety = true)
         {
+            if (Game.Bridge.IsHolding && safety)
+            {
+                Debug.LogError("You can't Set Object as Shared in holding time (When bridge hold all object in gamescope or unhold)");
+                return;
+            }
             Game.Bridge.AddSharedObject(obj);
             obj.SendMessage(GameMessage.Share, true, SendMessageOptions.DontRequireReceiver);
         }
@@ -240,8 +245,13 @@ namespace RealMethod
         /// Unregisters the GameObject from the shared object system.
         /// </summary>
         /// <param name="obj">The GameObject to unregister.</param>
-        public static void Unshare(this GameObject obj)
+        public static void Unshare(this GameObject obj, bool safety = true)
         {
+            if (Game.Bridge.IsHolding && safety)
+            {
+                Debug.LogError("You can't Set Object as Shared in holding time (When bridge hold all object in gamescope or unhold)");
+                return;
+            }
             Game.Bridge.RemoveSharedObject(obj);
             obj.SendMessage(GameMessage.Share, false, SendMessageOptions.DontRequireReceiver);
         }

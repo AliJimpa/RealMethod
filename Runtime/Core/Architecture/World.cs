@@ -100,7 +100,7 @@ namespace RealMethod
         {
             //Connect to Game With Bridge
             IRelationBridge SyncProvider = Game.Bridge;
-            if (SyncProvider.IntroduceWorld(this))
+            if (SyncProvider.RegisterWorld(this))
             {
                 SyncProvider.BindServicesUpdated(Notify_OnServicesUpdated);
             }
