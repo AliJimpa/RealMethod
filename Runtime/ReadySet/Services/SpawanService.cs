@@ -306,6 +306,10 @@ namespace RealMethod
                 {
                     obj.InvokeSpawnEvent(spawner);
                 }
+                else if (target is PrimitiveAsset asset)
+                {
+                    asset.InvokeSpawnEvent(spawner);
+                }
                 else
                 {
                     Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
@@ -329,6 +333,10 @@ namespace RealMethod
                 else if (target is GameObject obj)
                 {
                     obj.InvokeSpawnEvent(spawner);
+                }
+                else if (target is PrimitiveAsset asset)
+                {
+                    asset.InvokeSpawnEvent(spawner);
                 }
                 else
                 {
@@ -354,6 +362,10 @@ namespace RealMethod
                 {
                     obj.InvokeSpawnEvent(spawner);
                 }
+                else if (target is PrimitiveAsset asset)
+                {
+                    asset.InvokeSpawnEvent(spawner);
+                }
                 else
                 {
                     Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
@@ -377,6 +389,10 @@ namespace RealMethod
                 else if (target is GameObject obj)
                 {
                     obj.InvokeSpawnEvent(spawner);
+                }
+                else if (target is PrimitiveAsset asset)
+                {
+                    asset.InvokeSpawnEvent(spawner);
                 }
                 else
                 {
@@ -685,24 +701,26 @@ namespace RealMethod
         public static T Asset<T>(Object spawner = null) where T : PrimitiveAsset
         {
             var target = ScriptableObject.CreateInstance<T>();
-            if (spawner != null)
-            {
-                if (target is ISpawnWithAuthor provider)
-                {
-                    provider.OnSpawn(spawner);
-                }
+            target.InvokeSpawnEvent(spawner);
+            target.name = $"{typeof(T).Name}_Instance";
 
-            }
-            else
-            {
-                if (target is ISpawn provider)
-                {
-                    provider.OnSpawn();
-                }
-            }
             return target;
         }
+        public static PrimitiveAsset Asset(System.Type type, Object spawner = null)
+        {
+            if (type == null)
+                throw new System.ArgumentNullException(nameof(type));
 
+            if (!typeof(PrimitiveAsset).IsAssignableFrom(type))
+                throw new System.ArgumentException(
+                    $"Type {type.Name} must inherit from PrimitiveAsset.");
+
+            PrimitiveAsset target = (PrimitiveAsset)ScriptableObject.CreateInstance(type);
+            target.InvokeSpawnEvent(spawner);
+            target.name = $"{type.Name}_Instance";
+
+            return target;
+        }
         // Task
         public static bool Task(object TaskObj, Object author)
         {

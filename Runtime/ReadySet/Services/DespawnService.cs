@@ -126,7 +126,7 @@ namespace RealMethod
 
 
         // UI
-        public static bool Widget(string Name, Object spawner = null, bool debug = true)
+        public static bool Widget(string Name, Object despawner = null, bool debug = true)
         {
             if (GetManager<UIManager>() == null)
             {
@@ -135,9 +135,9 @@ namespace RealMethod
                 return false;
             }
 
-            return GetManager<UIManager>().RemoveLayer(Name, spawner);
+            return GetManager<UIManager>().RemoveLayer(Name, despawner);
         }
-        public static bool Widget(MonoBehaviour Comp, Object spawner = null, bool debug = true)
+        public static bool Widget(MonoBehaviour Comp, Object despawner = null, bool debug = true)
         {
             if (GetManager<UIManager>() == null)
             {
@@ -146,17 +146,17 @@ namespace RealMethod
                 return false;
             }
 
-            return GetManager<UIManager>().RemoveLayer(Comp, spawner);
+            return GetManager<UIManager>().RemoveLayer(Comp, despawner);
         }
 
         // Prefab
-        public static bool GameObject(GameObject target, Object spawner = null, bool debug = true)
+        public static bool GameObject(GameObject target, Object despawner = null, bool debug = true)
         {
             if (target != null)
             {
-                if (spawner != null)
+                if (despawner != null)
                 {
-                    target.InvokeDespawnEvent(spawner);
+                    target.InvokeDespawnEvent(despawner);
                 }
                 Object.Destroy(target);
                 return true;
@@ -198,6 +198,24 @@ namespace RealMethod
                 return false;
             }
         }
+
+        // Realmethod
+        public static bool Asset<T>(T target, Object despawner = null, bool debug = true) where T : PrimitiveAsset
+        {
+            if (target != null)
+            {
+                Object.Destroy(target);
+                target.InvokeDespawnEvent(despawner);
+                return true;
+            }
+            else
+            {
+                if (debug)
+                    Debug.LogWarning($"Asset is not Valid!");
+                return false;
+            }
+        }
+
 
         // Task
         public static bool Task(object TaskObj, Object author, bool debug = true)

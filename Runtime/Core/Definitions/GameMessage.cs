@@ -9,5 +9,7 @@ namespace RealMethod
         public const string Attach = "OnAttach";
         public const string Detach = "OnDetach";
         public const string Share = "OnShare";
+        public const string AssetPermission = "EnsureAssetPermission";
+        public const string Reset = "Reset";
     }
 }

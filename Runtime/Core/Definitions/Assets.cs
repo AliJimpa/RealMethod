@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem.EnhancedTouch;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -19,19 +18,21 @@ namespace RealMethod
     /// </summary>
     public abstract class PrimitiveAsset : ScriptableObject, IAsset, ISpawn, ISpawnWithAuthor
     {
+        public bool IsSpawned { get; private set; } = false;
         // Implement IAsset Interface
-        PrimitiveAsset IAsset.GetAsset()
-        {
-            return this;
-        }
+        PrimitiveAsset IAsset.GetAsset() => this;
         // Implement ISpawn interface
         void ISpawn.OnSpawn()
         {
+            IsSpawned = true;
+            EnsureAssetPermission();
             OnSpawn(null);
         }
         // Implement ISpawnWithAuthor interface
         void ISpawnWithAuthor.OnSpawn(Object author)
         {
+            IsSpawned = true;
+            EnsureAssetPermission();
             OnSpawn(author);
         }
 
@@ -39,6 +40,15 @@ namespace RealMethod
         protected virtual void OnSpawn(Object spawner)
         {
 
+        }
+        /// <summary>
+        /// Ensures this asset can be used safely. Throws an error if it's not.
+        /// </summary>
+        protected virtual void EnsureAssetPermission()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.LogError($"[{name}] For this asset didnt write any permission.");
+#endif
         }
 
         public bool HasCloneName()
@@ -74,7 +84,6 @@ namespace RealMethod
         {
             return false;
         }
-        protected abstract void OnValidateAsset();
 #endif
     }
 
@@ -86,12 +95,7 @@ namespace RealMethod
     /// </summary>
     public abstract class DataAsset : PrimitiveAsset
     {
-#if UNITY_EDITOR
-        protected override sealed void OnValidateAsset()
-        {
 
-        }
-#endif
     }
     /// <summary>
     /// Represents an asset used only as a clone.
@@ -100,12 +104,9 @@ namespace RealMethod
     /// </summary>
     public abstract class CloneAsset : PrimitiveAsset
     {
-        [SerializeField, HideInInspector]
-        private bool _isRuntimeClone = false;
-
-#if UNITY_EDITOR
-        protected override sealed void OnValidateAsset()
+        protected sealed override void EnsureAssetPermission()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (!HasCloneName())
             {
                 if (!IsProjectAsset())
@@ -115,33 +116,9 @@ namespace RealMethod
                     return;
                 }
             }
-        }
-#endif
-
-        /// <summary>
-        /// Creates a runtime clone of this asset and marks it as safe for usage.
-        /// Direct project assets cannot be used; only cloned copies are valid.
-        /// </summary>
-        public CloneAsset Clone()
-        {
-            var clone = Instantiate(this);
-            clone._isRuntimeClone = true;
-            //clone.name = $"{name}_Clone";
-            return clone;
-        }
-
-        /// <summary>
-        /// Ensures this asset can be used safely. Throws an error if it's a direct project asset.
-        /// </summary>
-        protected void EnsureClonedUsage()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (!_isRuntimeClone)
-            {
-                Debug.LogError($"[{name}] You cannot use a direct asset of type {GetType().Name}. Use Clone() instead.");
-            }
 #endif
         }
+
     }
     /// <summary>
     /// Represents an asset that defines how to create new instances.
@@ -150,45 +127,24 @@ namespace RealMethod
     /// </summary>
     public abstract class InstanceAsset : PrimitiveAsset
     {
-        [SerializeField, HideInInspector]
-        private bool _isRuntimeInstance = false;
-
-#if UNITY_EDITOR
-        protected override sealed void OnValidateAsset()
+        protected sealed override void EnsureAssetPermission()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (HasCloneName())
             {
                 Debug.LogError($"[{name}] InstanceAsset cannot be cloned directly. The cloned asset has been removed!");
                 DestroyImmediate(this);
                 return;
             }
-        }
-#endif
 
-        /// <summary>
-        /// Creates a valid runtime instance of this InstanceAsset.
-        /// This is the only allowed way to use InstanceAsset at runtime.
-        /// </summary>
-        public static T Create<T>(string name = "") where T : InstanceAsset
-        {
-            T inst = CreateInstance<T>();
-            inst._isRuntimeInstance = true;
-            inst.name = $"{name}_Instance";
-            return inst;
-        }
-
-        /// <summary>
-        /// Ensures this asset is being used correctly.
-        /// Only runtime-created instances are allowed at runtime.
-        /// </summary>
-        protected void EnsureInstanceUsage()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (!_isRuntimeInstance)
+            if (IsSpawned)
             {
-                Debug.LogError(
-                    $"[{name}] InstanceAsset must be instantiated using Create<T>(). " +
-                    "Direct use of project asset is not allowed.");
+                if (IsProjectAsset())
+                {
+                    Debug.LogError($"[{name}] This asset is direct asset but Spawn Event called. Asset has been removed!");
+                    DestroyImmediate(this);
+                    return;
+                }
             }
 #endif
         }
@@ -200,9 +156,9 @@ namespace RealMethod
     /// </summary>
     public abstract class UniqueAsset : PrimitiveAsset
     {
-#if UNITY_EDITOR
-        protected override sealed void OnValidateAsset()
+        protected sealed override void EnsureAssetPermission()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (HasCloneName())
             {
                 Debug.LogError($"[{name}] UniqueAsset cannot clone at runtime. NewAsset has been removed!");
@@ -215,8 +171,8 @@ namespace RealMethod
                 Destroy(this);
                 return;
             }
-        }
 #endif
+        }
     }
     /// <summary>
     /// A specialized UniqueAsset used for global configuration.

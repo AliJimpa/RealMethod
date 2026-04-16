@@ -128,7 +128,7 @@ namespace RealMethod
         }
 
 #if UNITY_EDITOR
-        protected override void OnValidateAsset()
+        protected sealed override void EnsureAssetPermission()
         {
         }
         public static ProjectSettingAsset Load()
