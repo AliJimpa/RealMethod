@@ -10,6 +10,13 @@ namespace RealMethod.Editor
         public static string ScriptTemplatesPath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
         public static string PrefabTemplatePath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/Prefabs";
         public static string Documentation => GetPackagePath("com.mustard.realmethod") + "/Documentation/Information";
+        public static bool IsPlayMode
+        {
+            get
+            {
+                return EditorApplication.isPlaying && EditorApplication.isPlayingOrWillChangePlaymode == false;
+            }
+        }
 
         public static bool TryGetSettingAsset(out ProjectSettingAsset settings)
         {

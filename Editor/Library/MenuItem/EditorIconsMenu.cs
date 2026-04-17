@@ -10,7 +10,7 @@ namespace RealMethod.Editor
 {
 #if UNITY_EDITOR
 
-    public class EditorIcons : EditorWindow
+    public class EditorIconsMenu : EditorWindow
     {
         [MenuItem("Tools/RealMethod/Vendor/EditorIcons")]
         public static void EditorIconsOpen()
@@ -18,7 +18,7 @@ namespace RealMethod.Editor
 #if UNITY_2018
         var w = GetWindow<EditorIcons>("Editor Icons");
 #else
-            var w = CreateWindow<EditorIcons>("Editor Icons");
+            var w = CreateWindow<EditorIconsMenu>("Editor Icons");
 #endif
             w.ShowUtility();
             w.minSize = new Vector2(320, 450);
