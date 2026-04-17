@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class InitializerSetting_Section : ProjectSettingSection
+    public class InitializerSettingSection : ProjectSettingSection
     {
         private TypeSelector<Game> gameClass;
         private TypeSelector<GameBridge> gameBridge;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class CompileRule_Section : ProjectSettingSection
+    public class CompileRuleSection : ProjectSettingSection
     {
         private class RuleSelector<T> : ArrayTypeSelector<T>
         {

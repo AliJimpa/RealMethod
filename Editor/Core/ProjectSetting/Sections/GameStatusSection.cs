@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class GameStatus_Section : ProjectSettingSection
+    public class GameStatusSection : ProjectSettingSection
     {
         private ProjectSettingAsset SettingAsset;
         private SerializedObject projectSettings;

@@ -257,10 +257,10 @@ namespace RealMethod.Editor
         private static bool candraw = true;// Flag to determine if the UI can be drawn
         private static ProjectSettingSection[] sections = new ProjectSettingSection[4] {
         // Array of sections to be rendered in the settings UI
-        new InitializerSetting_Section(),
-        new FolderStructure_Section(),
-        new GameStatus_Section(),
-        new CompileRule_Section(),
+        new InitializerSettingSection(),
+        new FolderStructureSection(),
+        new GameStatusSection(),
+        new CompileRuleSection(),
         };
 
 
