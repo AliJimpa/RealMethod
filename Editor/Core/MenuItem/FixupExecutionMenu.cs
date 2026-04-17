@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace RealMethod.Editor
 {
-    public static class WorldExecutionOrderMenu
+    public static class FixupExecutionMenu
     {
-        [MenuItem("Tools/RealMethod/Core/ExecutionOrder" , priority = -1001)]
+        [MenuItem("Tools/RealMethod/Core/FixupExecutionOrder" , priority = -1001)]
         static void ApplyExecutionOrder()
         {
             SetExecutionOrderForDerivedTypes(typeof(World), -18); // ← change base class and order here
