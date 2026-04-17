@@ -21,7 +21,7 @@ namespace RealMethod
             }
             else
             {
-                target.SendMessage(GameMessage.Die, SendMessageOptions.RequireReceiver);
+                target.SendMessage(MessageNames.Die, SendMessageOptions.RequireReceiver);
             }
         }
         /// <summary>
@@ -43,7 +43,7 @@ namespace RealMethod
             }
             else
             {
-                target.SendMessage(GameMessage.ApplyDamage, hitdata, SendMessageOptions.RequireReceiver);
+                target.SendMessage(MessageNames.ApplyDamage, hitdata, SendMessageOptions.RequireReceiver);
             }
         }
         /// <summary>
@@ -58,7 +58,7 @@ namespace RealMethod
         {
             Transform MySocket = parent.GetSocket(socketname);
             MySocket.SetParent(parent.transform, worldPositionStays);
-            target.SendMessage(GameMessage.Attach, parent, SendMessageOptions.DontRequireReceiver);
+            target.SendMessage(MessageNames.Attach, parent, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Attaches this GameObject to a specified parent GameObject, optionally preserving world position.
@@ -70,7 +70,7 @@ namespace RealMethod
         public static void Attach(this GameObject target, GameObject parent, bool worldPositionStays = true)
         {
             target.transform.SetParent(parent.transform, worldPositionStays);
-            target.SendMessage(GameMessage.Attach, parent, SendMessageOptions.DontRequireReceiver);
+            target.SendMessage(MessageNames.Attach, parent, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Detaches this GameObject from its current parent and sends an "OnDetach" message.
@@ -80,7 +80,7 @@ namespace RealMethod
         public static void Detach(this GameObject target, GameObject parent)
         {
             target.transform.SetParent(null);
-            target.SendMessage(GameMessage.Detach, SendMessageOptions.DontRequireReceiver);
+            target.SendMessage(MessageNames.Detach, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Sends an "OnSpawn" message to the owner GameObject.
@@ -99,7 +99,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.SendMessage(GameMessage.Spawn, spawner, option);
+                    owner.SendMessage(MessageNames.Spawn, spawner, option);
                 }
             }
             else
@@ -111,7 +111,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.SendMessage(GameMessage.Spawn, option);
+                    owner.SendMessage(MessageNames.Spawn, option);
                 }
             }
         }
@@ -132,7 +132,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.SendMessage(GameMessage.Despawn, despawner, option);
+                    owner.SendMessage(MessageNames.Despawn, despawner, option);
                 }
             }
             else
@@ -144,7 +144,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.SendMessage(GameMessage.Despawn, option);
+                    owner.SendMessage(MessageNames.Despawn, option);
                 }
             }
         }
@@ -239,7 +239,7 @@ namespace RealMethod
                 return;
             }
             Game.Bridge.AddSharedObject(obj);
-            obj.SendMessage(GameMessage.Share, true, SendMessageOptions.DontRequireReceiver);
+            obj.SendMessage(MessageNames.Share, true, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Unregisters the GameObject from the shared object system.
@@ -253,7 +253,7 @@ namespace RealMethod
                 return;
             }
             Game.Bridge.RemoveSharedObject(obj);
-            obj.SendMessage(GameMessage.Share, false, SendMessageOptions.DontRequireReceiver);
+            obj.SendMessage(MessageNames.Share, false, SendMessageOptions.DontRequireReceiver);
         }
         /// <summary>
         /// Checks if the GameObject is currently registered in the shared object system.

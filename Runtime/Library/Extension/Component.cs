@@ -14,7 +14,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.SendMessage(GameMessage.Spawn, spawner, option);
+                    owner.SendMessage(MessageNames.Spawn, spawner, option);
                 }
             }
             else
@@ -25,7 +25,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.SendMessage(GameMessage.Spawn, option);
+                    owner.SendMessage(MessageNames.Spawn, option);
                 }
             }
         }
@@ -39,7 +39,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.SendMessage(GameMessage.Despawn, despawner, option);
+                    owner.SendMessage(MessageNames.Despawn, despawner, option);
                 }
             }
             else
@@ -50,7 +50,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.SendMessage(GameMessage.Despawn, option);
+                    owner.SendMessage(MessageNames.Despawn, option);
                 }
             }
         }

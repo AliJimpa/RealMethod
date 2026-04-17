@@ -20,7 +20,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.Invoke(GameMessage.Spawn, new object[1] { spawner });
+                    owner.Invoke(MessageNames.Spawn, new object[1] { spawner });
                 }
             }
             else
@@ -31,7 +31,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.Invoke(GameMessage.Spawn);
+                    owner.Invoke(MessageNames.Spawn);
                 }
             }
         }
@@ -50,7 +50,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.Invoke(GameMessage.Despawn, new object[1] { despawner });
+                    owner.Invoke(MessageNames.Despawn, new object[1] { despawner });
                 }
             }
             else
@@ -61,7 +61,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.Invoke(GameMessage.Despawn);
+                    owner.Invoke(MessageNames.Despawn);
                 }
             }
         }
