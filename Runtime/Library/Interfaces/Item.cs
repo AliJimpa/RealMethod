@@ -8,7 +8,7 @@ namespace RealMethod
         Sprite GetSpriteIcon();
         Sprite GetSpriteIcon(Rect rect, Vector2 pivot);
 #if UNITY_EDITOR
-        void ChangeItemName(string NewName);
+        void SetItemName(string NewName);
 #endif
     }
 

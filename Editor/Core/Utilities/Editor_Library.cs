@@ -4,11 +4,22 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
+    public enum RealMethodLayer
+    {
+        Core,
+        Library,
+        Pattern,
+        ReadySet,
+        Toolkit
+    }
+
     public static class RM_Editor
     {
         public static string SetttingAssetPath = ProjectSettingAsset.Path;
         public static string ScriptTemplatesPath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
         public static string PrefabTemplatePath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/Prefabs";
+        public const string GameObjectMenuItemPath = "GameObject/RealMethod/";
+        public const string ScriptMenuItemPath = "Assets/Create/Scripting/RealMethod/";
         public static string Documentation => GetPackagePath("com.mustard.realmethod") + "/Documentation/Information";
         public static bool IsPlayMode
         {
@@ -46,55 +57,11 @@ namespace RealMethod.Editor
             Debug.LogError($"Could not find package path for: {packageName}");
             return null;
         }
-        public static string CreateScriptTemplate(string templateFileName, string defaultName, bool UseProject = false)
+        public static void CreateScriptTemplate(string TemplateName, RealMethodLayer layer)
         {
-            string templatePath = string.Empty;
-            if (UseProject)
-            {
-                ProjectSettingAsset ProjectSetting = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(SetttingAssetPath);
-                templatePath = Path.Combine(ProjectSetting.GetFolderPathByType(ProjectSettingAsset.AssetFormat.Other), templateFileName);
-            }
-            else
-            {
-                templatePath = Path.Combine(ScriptTemplatesPath, templateFileName);
-            }
-
-
-            if (!File.Exists(templatePath))
-            {
-                Debug.LogError($"Template file not found: {templatePath}");
-                return string.Empty;
-            }
-
-            string selectedPath = RM_Asset.GetSelectedAssetDirectory();
-            string newScriptPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(selectedPath, defaultName));
-
-            // Prompt user for script name before creating the file
-            string inputName = EditorUtility.SaveFilePanel(
-                "Create Script",
-                selectedPath,
-                Path.GetFileNameWithoutExtension(defaultName),
-                "cs"
-            );
-
-            if (string.IsNullOrEmpty(inputName))
-                return string.Empty;
-
-            // Ensure the path is relative to the Assets folder
-            if (inputName.StartsWith(Application.dataPath))
-                newScriptPath = "Assets" + inputName.Substring(Application.dataPath.Length);
-            else
-                newScriptPath = inputName;
-
-            string template = File.ReadAllText(templatePath);
-            template = template.Replace("#SCRIPTNAME#", Path.GetFileNameWithoutExtension(newScriptPath));
-            string projectName = Application.productName;
-            template = template.Replace("#PROJECTNAME#", projectName);
-
-            File.WriteAllText(newScriptPath, template);
-            AssetDatabase.Refresh();
-            Selection.activeObject = AssetDatabase.LoadAssetAtPath<MonoScript>(newScriptPath);
-            return newScriptPath;
+            string NewFileName = $"My{TemplateName}.cs";
+            string TemplateFileName = $"{layer}/{TemplateName}Template.txt";
+            string NewFilePath = CreateScriptTemplate(TemplateFileName, NewFileName);
         }
         public static GameObject CreatePrefabTemplate(string prefabName, bool UseProject = false)
         {
@@ -141,6 +108,62 @@ namespace RealMethod.Editor
             return null;
         }
 
+
+
+
+
+        private static string CreateScriptTemplate(string templateFileName, string defaultName)
+        {
+            string templatePath = string.Empty;
+            try
+            {
+                templatePath = Path.Combine(ScriptTemplatesPath, templateFileName);
+            }
+            catch (System.Exception)
+            {
+                Debug.LogWarning("Can't combine path for template, use other addres in project setting.");
+                ProjectSettingAsset ProjectSetting = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(SetttingAssetPath);
+                templatePath = Path.Combine(ProjectSetting.GetFolderPathByType(ProjectSettingAsset.AssetFormat.Other), templateFileName);
+                //throw;
+            }
+
+
+            if (!File.Exists(templatePath))
+            {
+                Debug.LogError($"Template file not found: {templatePath}");
+                return string.Empty;
+            }
+
+            string selectedPath = RM_Asset.GetSelectedAssetDirectory();
+            string newScriptPath = AssetDatabase.GenerateUniqueAssetPath(Path.Combine(selectedPath, defaultName));
+
+            // Prompt user for script name before creating the file
+            string inputName = EditorUtility.SaveFilePanel(
+                "Create Script",
+                selectedPath,
+                Path.GetFileNameWithoutExtension(defaultName),
+                "cs"
+            );
+
+            if (string.IsNullOrEmpty(inputName))
+                return string.Empty;
+
+            // Ensure the path is relative to the Assets folder
+            if (inputName.StartsWith(Application.dataPath))
+                newScriptPath = "Assets" + inputName.Substring(Application.dataPath.Length);
+            else
+                newScriptPath = inputName;
+
+            string template = File.ReadAllText(templatePath);
+            template = template.Replace("#SCRIPTNAME#", Path.GetFileNameWithoutExtension(newScriptPath));
+            string projectName = Application.productName;
+            template = template.Replace("#PROJECTNAME#", projectName);
+
+            File.WriteAllText(newScriptPath, template);
+            AssetDatabase.Refresh();
+            Selection.activeObject = AssetDatabase.LoadAssetAtPath<MonoScript>(newScriptPath);
+            return newScriptPath;
+        }
 
     }
 }

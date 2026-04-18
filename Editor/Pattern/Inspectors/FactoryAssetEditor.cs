@@ -5,7 +5,7 @@ using UnityEditor;
 namespace RealMethod.Editor
 {
     [CustomEditor(typeof(FactoryAsset), true)]
-    public class FactoryEditor : UnityEditor.Editor
+    public class FactoryAssetEditor : UnityEditor.Editor
     {
         private FactoryAsset TargetAsset;
         private string[] actionNames;

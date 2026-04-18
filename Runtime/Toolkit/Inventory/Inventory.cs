@@ -103,7 +103,7 @@ namespace RealMethod
         [SerializeField]
         private BehaviorType Behavior;
         [SerializeField]
-        private ItemAsset[] DefaultItem;
+        private PrimitiveAsset[] DefaultItem;
 
         // Actions
         public System.Action<IInventoryItem, int> OnItemAdded;

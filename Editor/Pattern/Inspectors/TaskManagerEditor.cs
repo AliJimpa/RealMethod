@@ -4,7 +4,7 @@ using UnityEditor;
 namespace RealMethod
 {
     [CustomEditor(typeof(TaskManager), true)]
-    public class TaskManagerCompWindow : UnityEditor.Editor
+    public class TaskManagerEditor : UnityEditor.Editor
     {
         private TaskManager BaseComponent;
 

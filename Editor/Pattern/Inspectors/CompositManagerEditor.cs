@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CustomEditor(typeof(CompositManager), true)]
-    public class CompositManagerCompWindow : UnityEditor.Editor
+    public class CompositManagerEditor : UnityEditor.Editor
     {
         private CompositManager BaseComponent;
 

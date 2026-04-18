@@ -3,7 +3,7 @@ using UnityEditor;
 namespace RealMethod
 {
     [CustomEditor(typeof(DataManager), true)]
-    public class DataManagerCompWindow : UnityEditor.Editor
+    public class DataManagerEditor : UnityEditor.Editor
     {
         private DataManager BaseComponent;
 

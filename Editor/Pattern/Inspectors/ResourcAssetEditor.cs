@@ -4,7 +4,7 @@ using System.Reflection;
 namespace RealMethod.Editor
 {
     [CustomEditor(typeof(ResourcAsset<>), true)]
-    public class ResourcEditor : UnityEditor.Editor
+    public class ResourcAssetEditor : UnityEditor.Editor
     {
         private object baseComponent;
         private System.Type targetType;

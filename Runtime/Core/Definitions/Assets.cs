@@ -39,7 +39,9 @@ namespace RealMethod
 
         protected virtual void OnSpawn(Object spawner)
         {
-
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log($"[{name}] Spawned");
+#endif
         }
         /// <summary>
         /// Ensures this asset can be used safely. Throws an error if it's not.
@@ -121,54 +123,25 @@ namespace RealMethod
 
     }
     /// <summary>
-    /// Represents an asset that defines how to create new instances.
-    /// The asset itself cannot be used directly or cloned.
-    /// Instead, the system creates new independent instances based on this asset's data.
-    /// </summary>
-    public abstract class InstanceAsset : PrimitiveAsset
-    {
-        protected sealed override void EnsureAssetPermission()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (HasCloneName())
-            {
-                Debug.LogError($"[{name}] InstanceAsset cannot be cloned directly. The cloned asset has been removed!");
-                DestroyImmediate(this);
-                return;
-            }
-
-            if (IsSpawned)
-            {
-                if (IsProjectAsset())
-                {
-                    Debug.LogError($"[{name}] This asset is direct asset but Spawn Event called. Asset has been removed!");
-                    DestroyImmediate(this);
-                    return;
-                }
-            }
-#endif
-        }
-    }
-    /// <summary>
     /// Represents a unique shared asset in the project.
     /// Developers must use the asset directly and cannot clone it
     /// or create new instances from it.
     /// </summary>
     public abstract class UniqueAsset : PrimitiveAsset
     {
-        protected sealed override void EnsureAssetPermission()
+        protected override void EnsureAssetPermission()
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (HasCloneName())
             {
                 Debug.LogError($"[{name}] UniqueAsset cannot clone at runtime. NewAsset has been removed!");
-                Destroy(this);
+                DestroyImmediate(this);
                 return;
             }
             if (!IsProjectAsset())
             {
                 Debug.LogError($"[{name}] UniqueAsset cannot create new instance at runtime. NewAsset has been removed!");
-                Destroy(this);
+                DestroyImmediate(this);
                 return;
             }
 #endif
@@ -184,5 +157,30 @@ namespace RealMethod
     {
 
     }
-
+    /// <summary>
+    ///  A specialized UniqueAsset used for File system.
+    /// The asset is uniqueAsset can instance at runtime.
+    /// and developer can use fileasset for saving data in asset,
+    /// or in runtime asset creation.
+    /// The asset itself cannot be used cloned.
+    /// Instead, the system creates new independent instances based on this asset's data.
+    /// </summary>
+    public abstract class FileAsset : UniqueAsset
+    {
+        protected override void EnsureAssetPermission()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            base.EnsureAssetPermission();
+            if (IsSpawned)
+            {
+                if (IsProjectAsset())
+                {
+                    Debug.LogError($"[{name}] This asset is direct asset but Spawn Event called. Asset has been removed!");
+                    DestroyImmediate(this);
+                    return;
+                }
+            }
+#endif
+        }
+    }
 }

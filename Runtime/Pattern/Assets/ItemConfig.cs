@@ -34,7 +34,7 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR
-        void IItem.ChangeItemName(string NewName)
+        void IItem.SetItemName(string NewName)
         {
             itemName = NewName;
         }

@@ -27,7 +27,7 @@ namespace RealMethod.Editor
 
                     if (AssetDatabase.Contains(asset))
                     {
-                        if (asset is InstanceAsset)
+                        if (asset is FileAsset)
                         {
                             Debug.LogWarning($"InstanceAsset '{asset.name}' is used directly in Play Mode. " +
                             $"A runtime instanceAsset should be used instead.Create() at runtime",

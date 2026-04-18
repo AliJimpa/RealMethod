@@ -73,7 +73,7 @@ namespace RealMethod
         protected abstract UI_TutorialUnit InstantiateMessageObject(Transform parent);
 
 #if UNITY_EDITOR
-        void IItem.ChangeItemName(string newLabel)
+        void IItem.SetItemName(string newLabel)
         {
             label = newLabel;
         }
