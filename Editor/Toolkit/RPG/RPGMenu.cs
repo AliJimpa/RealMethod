@@ -8,22 +8,22 @@ namespace RealMethod.Editor
 
 
 
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/RPG/StatDefinition", false, 80)]
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/RPG/StatDefinition", false, RM_Editor.MenuOrder.Toolkit)]
         public static void CreateStatDefinition()
         {
             RM_Editor.CreateScriptTemplate("StatDefinition", MenuLayer);
         }
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/RPG/StatProfile", false, 80)]
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/RPG/StatProfile", false, RM_Editor.MenuOrder.Toolkit)]
         public static void CreateStatProfile()
         {
             RM_Editor.CreateScriptTemplate("StatProfile", MenuLayer);
         }
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/RPG/StatBuff", false, 80)]
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/RPG/StatBuff", false, RM_Editor.MenuOrder.Toolkit)]
         public static void CreateBuffConfig()
         {
             RM_Editor.CreateScriptTemplate("BuffConfig", MenuLayer);
         }
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/RPG/ResourceData", false, 80)]
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/RPG/ResourceData", false, RM_Editor.MenuOrder.Toolkit)]
         public static void CreateResourceData()
         {
             RM_Editor.CreateScriptTemplate("ResourceData", MenuLayer);

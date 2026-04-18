@@ -15,6 +15,34 @@ namespace RealMethod.Editor
 
     public static class RM_Editor
     {
+        public static class MenuOrder
+        {
+            private const int starter = 80;
+            private const int space = 1;
+            private const int priorityjumps = 11;
+
+
+
+            public const int Essential_Head = starter;
+            public const int Essential_Body = Essential_Head;
+            public const int Manager_Head = Essential_Head + space;
+            public const int Manager_Body = Manager_Head + priorityjumps;
+            public const int Service_Head = Manager_Head + space;
+            public const int Service_Body = Service_Head + priorityjumps;
+            public const int DataAsset_Head = Service_Head + space;
+            public const int DataAsset_Body = DataAsset_Head + priorityjumps;
+            public const int CloneAsset_Head = DataAsset_Head + space;
+            public const int CloneAsset_Body = CloneAsset_Head + priorityjumps;
+            public const int UniqueAsset_Head = CloneAsset_Head + space;
+            public const int UniqueAsset_Body = UniqueAsset_Head + priorityjumps;
+            public const int ConfigAsset_Head = UniqueAsset_Head + space;
+            public const int ConfigAsset_Body = ConfigAsset_Head + priorityjumps;
+            public const int FileAsset_Head = ConfigAsset_Head + space;
+            public const int FileAsset_Body = FileAsset_Head + priorityjumps;
+            public const int Method = FileAsset_Head + space;
+            public const int Toolkit = Method + space;
+            public const int Editor = Toolkit + space + priorityjumps;
+        }
         public static string SetttingAssetPath = ProjectSettingAsset.Path;
         public static string ScriptTemplatesPath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
         public static string PrefabTemplatePath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/Prefabs";
@@ -29,6 +57,10 @@ namespace RealMethod.Editor
             }
         }
 
+
+
+
+        // Functions
         public static bool TryGetSettingAsset(out ProjectSettingAsset settings)
         {
             // Attempt to load the settings asset from the specified path
@@ -111,7 +143,7 @@ namespace RealMethod.Editor
 
 
 
-
+        // Methods
         private static string CreateScriptTemplate(string templateFileName, string defaultName)
         {
             string templatePath = string.Empty;

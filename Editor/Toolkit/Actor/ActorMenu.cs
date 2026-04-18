@@ -7,7 +7,7 @@ namespace RealMethod.Editor
         private const RealMethodLayer MenuLayer = RealMethodLayer.Toolkit;
 
 
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/Actor/Act", false, 80)]
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Toolkit/Actor/Act", false, RM_Editor.MenuOrder.Toolkit)]
         public static void CreateActCommand()
         {
             RM_Editor.CreateScriptTemplate("Act", MenuLayer);
