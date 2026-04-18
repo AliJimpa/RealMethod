@@ -60,7 +60,7 @@ namespace RealMethod.Editor
         public static void CreateScriptTemplate(string TemplateName, RealMethodLayer layer)
         {
             string NewFileName = $"My{TemplateName}.cs";
-            string TemplateFileName = $"{layer}/{TemplateName}Template.txt";
+            string TemplateFileName = $"{layer}\\{TemplateName}Template.txt";
             string NewFilePath = CreateScriptTemplate(TemplateFileName, NewFileName);
         }
         public static GameObject CreatePrefabTemplate(string prefabName, bool UseProject = false)
@@ -115,16 +115,14 @@ namespace RealMethod.Editor
         private static string CreateScriptTemplate(string templateFileName, string defaultName)
         {
             string templatePath = string.Empty;
-            try
+            if (Directory.Exists("Assets/RealDev/_General"))
+            {
+                Debug.LogWarning("When This Message show RealMetod using hardcode addres becuase find [Assets/RealDev/_General]");
+                templatePath = Path.Combine("Assets\\RealMethod\\Reservoir\\ScriptTemplates\\", templateFileName);
+            }
+            else
             {
                 templatePath = Path.Combine(ScriptTemplatesPath, templateFileName);
-            }
-            catch (System.Exception)
-            {
-                Debug.LogWarning("Can't combine path for template, use other addres in project setting.");
-                ProjectSettingAsset ProjectSetting = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(SetttingAssetPath);
-                templatePath = Path.Combine(ProjectSetting.GetFolderPathByType(ProjectSettingAsset.AssetFormat.Other), templateFileName);
-                //throw;
             }
 
 

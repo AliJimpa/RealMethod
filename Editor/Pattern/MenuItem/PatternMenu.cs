@@ -89,7 +89,7 @@ namespace RealMethod.Editor
         {
             RM_Editor.CreateScriptTemplate("SaveFile", MenuLayer);
         }
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/ّFile/GameSetting", false, 80)]
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/File/GameSetting", false, 80)]
         public static void CreateGameSettingFile()
         {
             RM_Editor.CreateScriptTemplate("GameSettingFile", MenuLayer);
