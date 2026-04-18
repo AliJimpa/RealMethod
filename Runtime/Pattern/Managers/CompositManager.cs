@@ -40,7 +40,7 @@ namespace RealMethod
         public int LayerCount => Layers.Count;
 
         // Override Methods
-        protected override void InitiateManager(bool AlwaysLoaded)
+        public override void InitiateManager(bool AlwaysLoaded)
         {
             base.InitiateManager(AlwaysLoaded);
 
@@ -270,7 +270,6 @@ namespace RealMethod
             }
             return new MusicLerp((AudioSource)Layers[LayerA], (AudioSource)Layers[LayerB]);
         }
-
     }
 
     public abstract class CompositManager<T> : CompositManager

@@ -9,8 +9,8 @@ namespace RealMethod
         [SerializeField]
         private Map<Name16, AudioClip> Clips = new Map<Name16, AudioClip>();
 
-        // IGameManager Interface
-        protected override void InitiateManager(bool AlwaysLoaded)
+        // GameManager
+        public override void InitiateManager(bool AlwaysLoaded)
         {
             base.InitiateManager(AlwaysLoaded);
             foreach (var clip in Clips)

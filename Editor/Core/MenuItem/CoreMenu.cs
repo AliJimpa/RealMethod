@@ -9,7 +9,7 @@ namespace RealMethod.Editor
 
 
         ///////////// GameObject \\\\\\\\\\\\
-        [MenuItem(RM_Editor.GameObjectMenuItemPath + "PlayerStarter", false, 10)]
+        [MenuItem(RM_Editor.GameObjectMenuItemPath + "PlayerStarter", false, 1)]
         static void CreatePlayerStarter(MenuCommand menuCommand)
         {
             // Create a new GameObject
@@ -27,7 +27,7 @@ namespace RealMethod.Editor
             // Select the new GameObject
             Selection.activeObject = go;
         }
-        [MenuItem(RM_Editor.GameObjectMenuItemPath + "World", false, 10)]
+        [MenuItem(RM_Editor.GameObjectMenuItemPath + "World", false, 1)]
         static void CreateWorld(MenuCommand menuCommand)
         {
             // Create a new GameObject

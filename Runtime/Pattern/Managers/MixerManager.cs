@@ -15,34 +15,24 @@ namespace RealMethod
         private Map<string, float> Parameter;
 #endif
 
-        // Operators
-        public float this[string param]
-        {
-            get
-            {
-                mixer.GetFloat(param, out float result);
-                return result;
-            }
-            set => mixer.SetFloat(param, value);
-        }
 
         // IGameManager Interface Implementation
         MonoBehaviour IGameManager.GetManagerClass()
         {
             return this;
         }
-        void IGameManager.InitiateManager(bool AlwaysLoaded)
+        public virtual void InitiateManager(bool AlwaysLoaded)
         {
-            InitiateManager(AlwaysLoaded);
+
         }
-        void IGameManager.ResolveService(Service service, bool active)
+        public virtual void ResolveService(Service service, bool active)
         {
-            ResolveService(service, active);
+
         }
 
         // Unity Methods
 #if UNITY_EDITOR
-        private void OnValidate()
+        protected virtual void OnValidate()
         {
             if (mixer != null)
             {
@@ -60,19 +50,29 @@ namespace RealMethod
 #endif
 
         // Public Functions
+        public void SetParam(string param, float value)
+        {
+            mixer.SetFloat(param, value);
+        }
+        public float GetParam(string param)
+        {
+            if (mixer.GetFloat(param, out float result))
+            {
+                return result;
+            }
+            else
+            {
+                Debug.LogError($"Can't find any value with param:({param})");
+                return 0;
+            }
+        }
+        public bool TryGetParam(string param, out float result)
+        {
+            return mixer.GetFloat(param, out result);
+        }
         public void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1f)
         {
             snapshot?.TransitionTo(transitionTime);
-        }
-
-        // Protected Method
-        protected virtual void InitiateManager(bool AlwaysLoaded)
-        {
-
-        }
-        protected virtual void ResolveService(Service service, bool active)
-        {
-
         }
     }
 
