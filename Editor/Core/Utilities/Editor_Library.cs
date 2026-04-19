@@ -37,9 +37,7 @@ namespace RealMethod.Editor
             public const int UniqueAsset_Body = UniqueAsset_Head + priorityjumps;
             public const int ConfigAsset_Head = UniqueAsset_Head + space;
             public const int ConfigAsset_Body = ConfigAsset_Head + priorityjumps;
-            public const int FileAsset_Head = ConfigAsset_Head + space;
-            public const int FileAsset_Body = FileAsset_Head + priorityjumps;
-            public const int Method = FileAsset_Head + space;
+            public const int Method = ConfigAsset_Body + space;
             public const int Toolkit = Method + space;
             public const int Editor = Toolkit + space + priorityjumps;
         }

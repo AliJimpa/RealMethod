@@ -84,12 +84,17 @@ namespace RealMethod.Editor
         {
             RM_Editor.CreateScriptTemplate("HapticConfig", MenuLayer);
         }
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/File/Save", false, RM_Editor.MenuOrder.FileAsset_Body)]
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/File/EmptyFileAsset", false, RM_Editor.MenuOrder.UniqueAsset_Body)]
+        public static void CreateFileAsset()
+        {
+            RM_Editor.CreateScriptTemplate("FileAsset", MenuLayer);
+        }
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/File/Save", false, RM_Editor.MenuOrder.UniqueAsset_Body)]
         public static void CreateSaveFile()
         {
             RM_Editor.CreateScriptTemplate("SaveFile", MenuLayer);
         }
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/File/GameSetting", false, RM_Editor.MenuOrder.FileAsset_Body)]
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/File/GameSetting", false, RM_Editor.MenuOrder.UniqueAsset_Body)]
         public static void CreateGameSettingFile()
         {
             RM_Editor.CreateScriptTemplate("GameSettingFile", MenuLayer);
@@ -104,6 +109,7 @@ namespace RealMethod.Editor
         {
             RM_Editor.CreateScriptTemplate("PoolAsset", MenuLayer);
         }
+
 
         // UI
         [MenuItem(RM_Editor.ScriptMenuItemPath + "Method/UI/Widget", false, RM_Editor.MenuOrder.Method)]

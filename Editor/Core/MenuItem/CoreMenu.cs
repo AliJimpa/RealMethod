@@ -97,11 +97,6 @@ namespace RealMethod.Editor
         {
             RM_Editor.CreateScriptTemplate("ConfigAsset", MenuLayer);
         }
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/File/EmptyFileAsset", false, RM_Editor.MenuOrder.FileAsset_Head)]
-        public static void CreateFileAsset()
-        {
-            RM_Editor.CreateScriptTemplate("FileAsset", MenuLayer);
-        }
         [MenuItem(RM_Editor.ScriptMenuItemPath + "Asset/Config/Game", false, RM_Editor.MenuOrder.ConfigAsset_Body)]
         public static void CreateGameConfig()
         {

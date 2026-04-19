@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace RealMethod
 {
-    public interface IAsset
+    public interface IAsset : IIdentifier
     {
         PrimitiveAsset GetAsset();
     }
@@ -19,6 +19,9 @@ namespace RealMethod
     public abstract class PrimitiveAsset : ScriptableObject, IAsset, ISpawn, ISpawnWithAuthor
     {
         public bool IsSpawned { get; private set; } = false;
+
+        // Implement IIdentifier Interface
+        public Name16 NameID => name;
         // Implement IAsset Interface
         PrimitiveAsset IAsset.GetAsset() => this;
         // Implement ISpawn interface
@@ -156,31 +159,5 @@ namespace RealMethod
     public abstract class ConfigAsset : UniqueAsset
     {
 
-    }
-    /// <summary>
-    ///  A specialized UniqueAsset used for File system.
-    /// The asset is uniqueAsset can instance at runtime.
-    /// and developer can use fileasset for saving data in asset,
-    /// or in runtime asset creation.
-    /// The asset itself cannot be used cloned.
-    /// Instead, the system creates new independent instances based on this asset's data.
-    /// </summary>
-    public abstract class FileAsset : UniqueAsset
-    {
-        protected override void EnsureAssetPermission()
-        {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            base.EnsureAssetPermission();
-            if (IsSpawned)
-            {
-                if (IsProjectAsset())
-                {
-                    Debug.LogError($"[{name}] This asset is direct asset but Spawn Event called. Asset has been removed!");
-                    DestroyImmediate(this);
-                    return;
-                }
-            }
-#endif
-        }
     }
 }
