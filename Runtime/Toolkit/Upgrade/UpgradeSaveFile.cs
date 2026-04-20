@@ -18,9 +18,6 @@ namespace RealMethod
         public List<string> AvailableItems;
 
         // Base SaveFile Method
-        protected override void OnStable(DataManager manager)
-        {
-        }
         protected override void OnSaved()
         {
             if (UsePlayerPrefs)
@@ -36,15 +33,6 @@ namespace RealMethod
                 UnlockItems = RM_Save.GetArray<string>("UnlockItems").ToList();
                 AvailableItems = RM_Save.GetArray<string>("AvailableItems").ToList();
             }
-        }
-        protected override void OnDeleted()
-        {
-            if (UsePlayerPrefs)
-            {
-                UnlockItems = null;
-                AvailableItems = null;
-            }
-
         }
 
 

@@ -20,9 +20,6 @@ namespace RealMethod
         public HashSet<string> TutorialMessage = new HashSet<string>();
 
         // SaveFile Method
-        protected override void OnStable(DataManager manager)
-        {
-        }
         protected override void OnSaved()
         {
             if (UsePlayerPrefs)
@@ -32,11 +29,6 @@ namespace RealMethod
         {
             if (UsePlayerPrefs)
                 TutorialMessage = RM_Save.GetArray<string>("Tutorial").ToHashSet();
-        }
-        protected override void OnDeleted()
-        {
-            if (UsePlayerPrefs)
-                TutorialMessage.Clear();
         }
 
         // IMplement ITutorialStorage Interface

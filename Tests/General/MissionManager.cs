@@ -33,8 +33,6 @@ namespace RealMethod
         //private PlayerEnergy playerenargy;
         // private Rigidbody body;
         private int currentObstacleCount = 0;
-        // private bool IsMissionComplited = false;
-        private DataManager dataManager;
         private Text GoalRecord;
         private Text GoalTitle;
         private Button NextLevel;
@@ -54,7 +52,7 @@ namespace RealMethod
             //playercontroller = PlayerObject.GetComponent<PlayerController>();
             //playerenargy = PlayerObject.GetComponent<PlayerEnergy>();
             //body = PlayerObject.GetComponent<Rigidbody>();
-            dataManager = Game.Instance.GetComponent<DataManager>();
+            //dataManager = Game.Instance.GetComponent<SaveManager>();
             GoalRecord = UI.GetComponentsInChildren<Text>()[1];
             GoalTitle = UI.GetComponentsInChildren<Text>()[0];
             GoalRecord.text = $"{currentObstacleCount}/{ObstacleCount}";

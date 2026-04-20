@@ -2,14 +2,14 @@ using UnityEditor;
 
 namespace RealMethod
 {
-    [CustomEditor(typeof(DataManager), true)]
-    public class DataManagerEditor : UnityEditor.Editor
+    [CustomEditor(typeof(SaveManager), true)]
+    public class SaveManagerEditor : UnityEditor.Editor
     {
-        private DataManager BaseComponent;
+        private SaveManager BaseComponent;
 
         private void OnEnable()
         {
-            BaseComponent = (DataManager)target;
+            BaseComponent = (SaveManager)target;
         }
 
         public override void OnInspectorGUI()

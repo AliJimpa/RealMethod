@@ -2,7 +2,7 @@ using RealMethod;
 
 public class #SCRIPTNAME# : GizmoManager
 {
-    // Base DataManager Methods
+    // Base SaveManager Methods
     protected override GUIRenderer[] GetRenderSlots()
     {
         throw new System.NotImplementedException();

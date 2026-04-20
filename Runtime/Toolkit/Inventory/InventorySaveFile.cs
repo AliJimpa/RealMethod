@@ -22,10 +22,6 @@ namespace RealMethod
 
 
         // SaveFile Methods
-        protected override void OnStable(DataManager manager)
-        {
-
-        }
         protected override void OnSaved()
         {
             if (UsePlayerPrefs)
@@ -42,15 +38,6 @@ namespace RealMethod
                 ItemsName = RM_Save.GetArray<string>("ItemsName").ToList();
                 ItemsQuantity = RM_Save.GetArray<int>("ItemsQuantity").ToList();
                 ItemsCapacity = RM_Save.GetArray<int>("ItemsCapacity").ToList();
-            }
-        }
-        protected override void OnDeleted()
-        {
-            if (UsePlayerPrefs)
-            {
-                ItemsName = null;
-                ItemsQuantity = null;
-                ItemsCapacity = null;
             }
         }
 

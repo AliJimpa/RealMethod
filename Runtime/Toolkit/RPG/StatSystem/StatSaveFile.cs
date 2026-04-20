@@ -19,9 +19,6 @@ namespace RealMethod
         public List<float> Maxs = new List<float>(5);
 
         // SaveFile Methods
-        protected override void OnStable(DataManager manager)
-        {
-        }
         protected override void OnSaved()
         {
             if (UsePlayerPrefs)
@@ -40,16 +37,6 @@ namespace RealMethod
                 BaseValue = RM_Save.GetArray<float>("StatBaseValue").ToList();
                 Mins = RM_Save.GetArray<float>("StatMin").ToList();
                 Maxs = RM_Save.GetArray<float>("StatMax").ToList();
-            }
-        }
-        protected override void OnDeleted()
-        {
-            if (UsePlayerPrefs)
-            {
-                Names = null;
-                BaseValue = null;
-                Mins = null;
-                Maxs = null;
             }
         }
 

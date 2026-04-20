@@ -5,7 +5,7 @@ using UnityEngine;
 public class #SCRIPTNAME# : SettingFile
 {
     // SaveFile Methods
-    protected override void OnStable(DataManager manager){}
+    protected override void OnStable(SaveManager manager){}
     protected override void OnLoaded(){}
     protected override void OnDeleted(){}
     

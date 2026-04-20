@@ -224,7 +224,7 @@ namespace RealMethod
         //     aIManager.SetEnemySpawnEnabled(true);
         //     ResetPlayer();
         //     Savefile.FirstPlay = true;
-        //     Game.Instance.GetComponent<DataManager>().SaveFile();
+        //     Game.Instance.GetComponent<SaveManager>().SaveFile();
         //     Destroy(this);
         // }
 

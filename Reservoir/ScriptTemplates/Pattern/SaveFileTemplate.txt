@@ -5,16 +5,10 @@ using UnityEngine;
 public class #SCRIPTNAME# : SaveFile
 {
     // SaveFile Method
-    protected override void OnStable(DataManager manager)
-    {
-    }
     protected override void OnSaved()
     {
     }
     protected override void OnLoaded()
-    {
-    }
-    protected override void OnDeleted()
     {
     }
 }

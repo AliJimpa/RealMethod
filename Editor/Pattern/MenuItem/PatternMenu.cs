@@ -20,10 +20,10 @@ namespace RealMethod.Editor
         {
             RM_Editor.CreateScriptTemplate("CompositManager", MenuLayer);
         }
-        [MenuItem(RM_Editor.ScriptMenuItemPath + "Manager/DataManager", false, RM_Editor.MenuOrder.Manager_Body)]
-        public static void CreateDataManager()
+        [MenuItem(RM_Editor.ScriptMenuItemPath + "Manager/SaveManager", false, RM_Editor.MenuOrder.Manager_Body)]
+        public static void CreateSaveManager()
         {
-            RM_Editor.CreateScriptTemplate("DataManager", MenuLayer);
+            RM_Editor.CreateScriptTemplate("SaveManager", MenuLayer);
         }
         [MenuItem(RM_Editor.ScriptMenuItemPath + "Manager/GizmoManager", false, RM_Editor.MenuOrder.Manager_Body)]
         public static void CreateGizmoManager()
