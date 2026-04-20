@@ -45,8 +45,7 @@ namespace RealMethod
             }
         }
 
-        // Implement IIdentifier Interface
-        public Name16 NameID => profileName;
+        // Implement IPrimitiveStatContainer Interface
         void IPrimitiveStatContainer.InitializeResource(IResourceData resource)
         {
             resource.Initialize(this);

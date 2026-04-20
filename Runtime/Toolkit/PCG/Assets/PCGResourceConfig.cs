@@ -36,7 +36,6 @@ namespace RealMethod
     [CreateAssetMenu(fileName = "PCG_Resource", menuName = "RealMethod/PCG/Resource", order = 1)]
     public class PCGResourceConfig : ConfigAsset, IPCGResource
     {
-        public Name16 NameID => name;
         [SerializeField]
         private PCGSource[] Sources;
 

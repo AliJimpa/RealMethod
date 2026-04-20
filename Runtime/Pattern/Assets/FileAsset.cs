@@ -19,9 +19,13 @@ namespace RealMethod
         private DateTime createTime;
         private DateTime modifiedTime;
 
+
         // Implement IFile Interface
+        string IFile.Name => name;
         DateTime IFile.CreateTime => createTime;
         DateTime IFile.ModifiedTime => modifiedTime;
+        public object GetObject() => this;
+
 
         // Unity Events
         protected virtual void OnEnable()
@@ -63,6 +67,8 @@ namespace RealMethod
         {
             Modifiy();
         }
+
+
 #endif
     }
 }

@@ -138,9 +138,6 @@ namespace RealMethod
         [SerializeField]
         private string configName;
 
-        // Implement 
-        public Name16 NameID => configName;
-
         private void OnValidate()
         {
             configName = name;
