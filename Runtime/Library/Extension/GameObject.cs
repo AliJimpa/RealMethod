@@ -228,43 +228,6 @@ namespace RealMethod
 #endif
         }
         /// <summary>
-        /// Registers the GameObject with a shared object system.
-        /// </summary>
-        /// <param name="obj">The GameObject to register.</param>
-        public static void Share(this GameObject obj , bool safety = true)
-        {
-            if (Game.Bridge.IsHolding && safety)
-            {
-                Debug.LogError("You can't Set Object as Shared in holding time (When bridge hold all object in gamescope or unhold)");
-                return;
-            }
-            Game.Bridge.AddSharedObject(obj);
-            obj.SendMessage(MessageNames.Share, true, SendMessageOptions.DontRequireReceiver);
-        }
-        /// <summary>
-        /// Unregisters the GameObject from the shared object system.
-        /// </summary>
-        /// <param name="obj">The GameObject to unregister.</param>
-        public static void Unshare(this GameObject obj, bool safety = true)
-        {
-            if (Game.Bridge.IsHolding && safety)
-            {
-                Debug.LogError("You can't Set Object as Shared in holding time (When bridge hold all object in gamescope or unhold)");
-                return;
-            }
-            Game.Bridge.RemoveSharedObject(obj);
-            obj.SendMessage(MessageNames.Share, false, SendMessageOptions.DontRequireReceiver);
-        }
-        /// <summary>
-        /// Checks if the GameObject is currently registered in the shared object system.
-        /// </summary>
-        /// <param name="obj">The GameObject to check.</param>
-        /// <returns>True if the GameObject is shared, false otherwise.</returns>
-        public static bool IsShared(this GameObject obj)
-        {
-            return Game.Bridge.IsSharedObject(obj);
-        }
-        /// <summary>
         /// Check if GameObject was lives in DontDestroyOnload scene
         /// </summary>
         /// <param name="obj">The GameObject to check.</param>
@@ -285,7 +248,48 @@ namespace RealMethod
                 t.gameObject.layer = layer;
             }
         }
+        /// <summary>
+        /// Checks whether the GameObject contains a component that implements or matches type T.
+        /// </summary>
+        /// <typeparam name="T">The interface or component type to search for.</typeparam>
+        /// <param name="target">The GameObject to check.</param>
+        /// <returns>True if a component of type T exists on the GameObject; otherwise false.</returns>
+        public static bool HasImplementInterface<T>(this GameObject target)
+        {
+            if (target != null)
+            {
+                T provider = target.GetComponent<T>();
+                if (provider != null)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// Checks whether the GameObject contains a component that implements or matches type T
+        /// and returns the found component.
+        /// </summary>
+        /// <typeparam name="T">The interface or component type to search for.</typeparam>
+        /// <param name="target">The GameObject to check.</param>
+        /// <param name="Result">Outputs the found component if one exists.</param>
+        /// <returns>True if a component of type T exists on the GameObject; otherwise false.</returns>
+        public static bool HasImplementInterface<T>(this GameObject target, out T Result)
+        {
+            if (target != null)
+            {
+                T provider = target.GetComponent<T>();
+                if (provider != null)
+                {
+                    Result = provider;
+                    return true;
+                }
+            }
 
+            Result = default;
+            return false;
+
+        }
 
 
 #if UNITY_EDITOR

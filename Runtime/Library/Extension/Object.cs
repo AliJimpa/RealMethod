@@ -4,9 +4,9 @@ namespace RealMethod
 {
     public static class Object_Extension
     {
-        public static bool NullChecker(this Object Obj, string Name)
+        public static bool NullChecker(this object Obj, string Name)
         {
-            if (Obj)
+            if (Obj != null)
             {
                 return true;
             }
@@ -51,5 +51,69 @@ namespace RealMethod
                 return false;
             }
         }
+        /// <summary>
+        /// Checks whether the object contains a component that implements or matches type T.
+        /// </summary>
+        /// <typeparam name="T">The interface or component type to search for.</typeparam>
+        /// <param name="target">The object to check.</param>
+        /// <returns>True if a component of type T exists on the object; otherwise false.</returns>
+        public static bool HasImplementInterface<T>(this object target)
+        {
+            if (target != null)
+            {
+                if (target is T provider)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// Checks whether the object contains a component that implements or matches type T
+        /// and returns the found component.
+        /// </summary>
+        /// <typeparam name="T">The interface or component type to search for.</typeparam>
+        /// <param name="target">The object to check.</param>
+        /// <param name="Result">Outputs the found component if one exists.</param>
+        /// <returns>True if a component of type T exists on the object; otherwise false.</returns>
+        public static bool HasImplementInterface<T>(this object target, out T Result)
+        {
+            if (target != null)
+            {
+                if (target is T provider)
+                {
+                    Result = provider;
+                    return true;
+                }
+            }
+
+            Result = default;
+            return false;
+
+        }
+        /// <summary>
+        /// Get all fields from object by filtering bindingflags
+        /// </summary>
+        /// <param name="target">the object refrence</param>
+        /// <param name="flags">make filtering witch type of field</param>
+        /// <returns>Array of Fieldinfo</returns>
+        public static System.Reflection.FieldInfo[] GetFields(this object target, System.Reflection.BindingFlags flags)
+        {
+            System.Type type = target.GetType();
+            return type.GetFields(flags);
+        }
+        /// <summary>
+        /// Get all Property from object by filtering bindingflags
+        /// </summary>
+        /// <param name="target">the object refrence</param>
+        /// <param name="flags">make filtering witch type of Property</param>
+        /// <returns>Array of PropertyInfo</returns>
+        public static System.Reflection.PropertyInfo[] GetProperties(this object target, System.Reflection.BindingFlags flags)
+        {
+            System.Type type = target.GetType();
+            return type.GetProperties(flags);
+        }
+
+
     }
 }
