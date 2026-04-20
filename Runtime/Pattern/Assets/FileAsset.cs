@@ -14,8 +14,8 @@ namespace RealMethod
     public abstract class FileAsset : UniqueAsset, IFile
     {
         [Header("File")]
-        [SerializeField, TextArea(5, 20)]
-        private string fileContents;
+        [SerializeField, TextArea(3, 20)]
+        private string description;
         private DateTime createTime;
         private DateTime modifiedTime;
 
@@ -66,9 +66,11 @@ namespace RealMethod
         protected virtual void OnValidate()
         {
             Modifiy();
+            if (string.IsNullOrWhiteSpace(description))
+            {
+                description = $"Description for {name}.\nWrite details here...";
+            }
         }
-
-
 #endif
     }
 }
