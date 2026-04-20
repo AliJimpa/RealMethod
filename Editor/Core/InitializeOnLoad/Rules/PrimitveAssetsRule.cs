@@ -25,15 +25,15 @@ namespace RealMethod.Editor
                     if (asset is not DataAsset)
                         asset.Invoke(FunctionNames.AssetPermission);
 
-                    if (AssetDatabase.Contains(asset))
-                    {
-                        if (asset is FileAsset)
-                        {
-                            Debug.LogWarning($"InstanceAsset '{asset.name}' is used directly in Play Mode. " +
-                            $"A runtime instanceAsset should be used instead.Create() at runtime",
-                            asset);
-                        }
-                    }
+                    // if (AssetDatabase.Contains(asset))
+                    // {
+                    //     if (asset is FileAsset)
+                    //     {
+                    //         Debug.LogWarning($"InstanceAsset '{asset.name}' is used directly in Play Mode. " +
+                    //         $"A runtime instanceAsset should be used instead.Create() at runtime",
+                    //         asset);
+                    //     }
+                    // }
                 }
 
                 if (asset.AutoReset(CurrentMode))
