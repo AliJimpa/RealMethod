@@ -1,6 +1,10 @@
 using System.Linq;
 using UnityEngine;
 
+#if UNITY_ADDRESSABLES
+using UnityEngine.AddressableAssets;
+#endif
+
 namespace RealMethod
 {
     public static class RM_Save
@@ -180,5 +184,34 @@ namespace RealMethod
             string joined = PlayerPrefs.GetString(key);
             return joined.Split('|').Select(s => (T)System.Convert.ChangeType(s, typeof(T))).ToArray(); // Convert each string to T
         }
+
+        // Asset
+        public static void SetAsset<T>(string key, T asset) where T : UniqueAsset
+        {
+            string savedAddress = string.Empty;
+#if UNITY_ADDRESSABLES
+            savedAddress = AddressablesUtility.GetAddress(asset); 
+#else
+            savedAddress = asset.name;
+#endif
+            PlayerPrefs.SetString(key, savedAddress);
+            PlayerPrefs.Save();
+        }
+        public static T GetAsset<T>(string key) where T : UniqueAsset
+        {
+            if (!PlayerPrefs.HasKey(key)) return null;
+            string savedAddress = PlayerPrefs.GetString(key);
+
+#if UNITY_ADDRESSABLES
+            if (!string.IsNullOrEmpty(savedAddress))
+            {
+                loadedObject = await Addressables.LoadAssetAsync<T>(savedAddress).Task;
+                return loadedObject;
+            }
+#else
+            return Resources.Load<T>(savedAddress);
+#endif
+        }
+
     }
 }
