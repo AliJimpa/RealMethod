@@ -25,6 +25,16 @@ namespace RealMethod
             }
         }
         /// <summary>
+        /// pplies damage to the target GameObject.
+        /// </summary>
+        /// <param name="target">The GameObject that should receive damage.</param>
+        /// <param name="attacker">ther GameObject how applyed damage</param>
+        /// <param name="damage">The damage payload containing specific value</param>
+        public static void ApplyDamage(this GameObject target, GameObject attacker, float damage)
+        {
+            target.ApplyDamage(new HitData(new RaycastHit(), attacker, damage));
+        }
+        /// <summary>
         /// Applies damage to the target GameObject using two fallback methods:
         /// 1) If the object implements <see cref="IDamageable"/>, damage is applied directly through <c>TakeDamage</c>.
         /// 2) Otherwise, a Unity <c>SendMessage</c> call is made using <c>GameMessages.ApplyDamage</c>.
