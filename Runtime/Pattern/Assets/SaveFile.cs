@@ -61,6 +61,19 @@ namespace RealMethod
                 Debug.LogError("No SaveManager found in the scene.");
             }
         }
+        [ContextMenu("IsExist")]
+        private void Editor_IsExist()
+        {
+            var manager = FindFirstObjectByType<SaveManager>();
+            if (manager != null)
+            {
+                Debug.Log($"[{name}] IsExist: {manager.IsExist(this)}");
+            }
+            else
+            {
+                Debug.LogError("No SaveManager found in the scene.");
+            }
+        }
 #endif
     }
 }
