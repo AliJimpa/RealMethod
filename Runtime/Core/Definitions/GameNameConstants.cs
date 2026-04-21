@@ -14,8 +14,9 @@ namespace RealMethod
         public const string Attach = "OnAttach";
         public const string Detach = "OnDetach";
 
-        // Misc
-        public const string Share = "OnShare";
+        // Save
+        public const string Save = "OnSave";
+        public const string Load = "Onload";
     }
 
     public static class FunctionNames

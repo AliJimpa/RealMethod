@@ -1,4 +1,3 @@
-using System.Reflection;
 using UnityEngine;
 
 namespace RealMethod
@@ -10,7 +9,7 @@ namespace RealMethod
         /// </summary>
         /// <param name="owner">The GameObject to send the message to.</param>
         /// <param name="spawner">The object that triggered the spawn event (passed as parameter to the message).</param>
-        public static void InvokeSpawnEvent(this ScriptableObject owner, Object spawner = null)
+        public static void InvokeSpawnEvent(this ScriptableObject owner, Object spawner = null, SendMessageOptions option = SendMessageOptions.RequireReceiver)
         {
             if (spawner != null)
             {
@@ -20,7 +19,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.Invoke(MessageNames.Spawn, new object[1] { spawner });
+                    owner.SendMessage(MessageNames.Spawn, spawner, option);
                 }
             }
             else
@@ -31,7 +30,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.Invoke(MessageNames.Spawn);
+                    owner.SendMessage(MessageNames.Spawn, option);
                 }
             }
         }
@@ -40,7 +39,7 @@ namespace RealMethod
         /// </summary>
         /// <param name="owner">The GameObject to send the message to.</param>
         /// <param name="despawner">The object that triggered the despawn event (passed as parameter to the message).</param>
-        public static void InvokeDespawnEvent(this ScriptableObject owner, Object despawner = null)
+        public static void InvokeDespawnEvent(this ScriptableObject owner, Object despawner = null, SendMessageOptions option = SendMessageOptions.RequireReceiver)
         {
             if (despawner != null)
             {
@@ -50,7 +49,7 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.Invoke(MessageNames.Despawn, new object[1] { despawner });
+                    owner.SendMessage(MessageNames.Despawn, despawner, option);
                 }
             }
             else
@@ -61,27 +60,8 @@ namespace RealMethod
                 }
                 else
                 {
-                    owner.Invoke(MessageNames.Despawn);
+                    owner.SendMessage(MessageNames.Despawn, option);
                 }
-            }
-        }
-
-        public static void Invoke(this ScriptableObject so, string methodName)
-        {
-            so.Invoke(methodName, null);
-        }
-        public static void Invoke(this ScriptableObject so, string methodName, object[] parameters)
-        {
-            var method = so.GetType().GetMethod(methodName,
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            if (method != null)
-            {
-                method.Invoke(so, parameters);
-            }
-            else
-            {
-                Debug.LogError($"Method '{methodName}' not found.");
             }
         }
         public static ScriptableObject Clone(this ScriptableObject so)

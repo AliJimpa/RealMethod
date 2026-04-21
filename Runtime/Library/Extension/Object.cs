@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEngine;
 
 namespace RealMethod
@@ -14,6 +15,54 @@ namespace RealMethod
             {
                 Debug.LogError($"Target Object [{Name}] Is Not Valid");
                 return false;
+            }
+        }
+        public static void InvokeSaveEvent(this object obj, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            if (obj is ISave provider)
+            {
+                provider.OnSaved();
+            }
+            else
+            {
+                obj.SendMessage(MessageNames.Save, option);
+            }
+        }
+        public static void InvokeLoadEvent(this object obj, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            if (obj is ISave provider)
+            {
+                provider.OnLoaded();
+            }
+            else
+            {
+                obj.SendMessage(MessageNames.Load, option);
+            }
+        }
+        public static void SendMessage(this object so, string methodName, SendMessageOptions option)
+        {
+            so.SendMessage(methodName, null, option);
+        }
+        public static void SendMessage(this object obj, string methodName, object parameter, SendMessageOptions options)
+        {
+            var method = obj.GetType().GetMethod(methodName,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+
+            if (method != null)
+            {
+                if (parameter == null)
+                {
+                    method.Invoke(obj, null);
+                }
+                else
+                {
+                    method.Invoke(obj, new object[1] { parameter });
+                }
+            }
+            else
+            {
+                if (options == SendMessageOptions.RequireReceiver)
+                    Debug.LogError($"[SendMessageError] Method '{methodName}' was not found on '{obj}'.");
             }
         }
         public static T Cast<T>(this object obj) where T : class
