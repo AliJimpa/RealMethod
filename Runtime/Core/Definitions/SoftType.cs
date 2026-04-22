@@ -9,7 +9,7 @@ namespace RealMethod
         protected string typeName; // => PropertyRelative
         public Type Type
         {
-            get => string.IsNullOrEmpty(typeName) ? null : Type.GetType(typeName);
+            get => string.IsNullOrEmpty(typeName) ? GetNullType() : Type.GetType(typeName);
             set => typeName = value?.AssemblyQualifiedName;
         }
 
@@ -66,6 +66,9 @@ namespace RealMethod
         {
             return typeName?.GetHashCode() ?? 0;
         }
+
+        // Abstract Method
+        protected abstract Type GetNullType();
     }
 
     [Serializable]
@@ -79,6 +82,9 @@ namespace RealMethod
 
             return new SoftType<T> { typeName = type?.AssemblyQualifiedName };
         }
+
+        // SoftType Method
+        protected override Type GetNullType() => typeof(T);
     }
 
 

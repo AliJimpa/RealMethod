@@ -17,7 +17,11 @@ namespace RealMethod.Editor
             var typeProp = property.FindPropertyRelative("typeName");
 
             if (displayNames == null)
+            {
                 Initialize(typeProp);
+                typeProp.stringValue = typeNames[currentIndex];
+            }
+                
 
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, displayNames);
 
