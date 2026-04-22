@@ -65,6 +65,23 @@ namespace RealMethod
                     Debug.LogError($"[SendMessageError] Method '{methodName}' was not found on '{obj}'.");
             }
         }
+        /// <summary>
+        /// Attempts to cast the given <paramref name="obj"/> to the specified <paramref name="type"/> at runtime.
+        /// </summary>
+        /// <param name="obj">The source object to be cast.</param>
+        /// <param name="type">The target type to cast to.</param>
+        /// <returns>
+        /// Return true is cansting correct
+        /// </returns>
+        public static bool CanCast(this object obj, System.Type type)
+        {
+            if (obj == null)
+                throw new System.ArgumentNullException(nameof(obj));
+            if (type == null)
+                throw new System.ArgumentNullException(nameof(type));
+
+            return type.IsInstanceOfType(obj);
+        }
         public static T Cast<T>(this object obj) where T : class
         {
             return (T)obj;
