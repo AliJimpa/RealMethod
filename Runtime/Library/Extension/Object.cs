@@ -73,7 +73,7 @@ namespace RealMethod
         /// <returns>
         /// Return true is cansting correct
         /// </returns>
-        public static bool CanCast(this object obj, System.Type type)
+        public static bool IsChild(this object obj, System.Type type)
         {
             if (obj == null)
                 throw new System.ArgumentNullException(nameof(obj));
