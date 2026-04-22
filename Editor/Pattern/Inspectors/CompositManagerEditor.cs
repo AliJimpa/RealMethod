@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     [CustomEditor(typeof(CompositManager), true)]
     public class CompositManagerEditor : UnityEditor.Editor

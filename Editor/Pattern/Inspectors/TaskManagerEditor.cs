@@ -1,7 +1,7 @@
 using System;
 using UnityEditor;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     [CustomEditor(typeof(TaskManager), true)]
     public class TaskManagerEditor : UnityEditor.Editor

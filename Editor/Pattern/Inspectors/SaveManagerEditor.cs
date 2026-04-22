@@ -1,39 +1,40 @@
 using UnityEditor;
+using UnityEngine;
 
-namespace RealMethod
+namespace RealMethod.Editor
 {
     [CustomEditor(typeof(SaveManager), true)]
     public class SaveManagerEditor : UnityEditor.Editor
     {
-        private SaveManager BaseComponent;
+        private SaveManager Component; private bool IsShowLoadedFile = false;
 
         private void OnEnable()
         {
-            BaseComponent = (SaveManager)target;
+            Component = (SaveManager)target;
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField(" ----------------- History ----------------- ");
-            if (BaseComponent != null)
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            IsShowLoadedFile = EditorGUILayout.Foldout(IsShowLoadedFile, "Files", true, EditorStyles.foldoutHeader);
+            if (IsShowLoadedFile)
             {
-                if (BaseComponent.DataLog != null && BaseComponent.DataLog.Length > 0)
+                IFile[] files = Component.GetAllFiles();
+                if (Component != null)
                 {
-                    foreach (var item in BaseComponent.DataLog)
+                    foreach (var file in files)
                     {
-                        if (item != string.Empty)
-                        {
-                            EditorGUILayout.LabelField(item);
-                        }
+                        EditorGUILayout.LabelField($"{file.Key}({file.GetObject().GetType()})");
                     }
                 }
                 EditorGUILayout.Space();
-                EditorGUILayout.LabelField($"TotalLog: {BaseComponent.Logindex}");
+                EditorGUILayout.LabelField($"Total: {files.Length}");
             }
 
-
         }
+
+
     }
+
 }
