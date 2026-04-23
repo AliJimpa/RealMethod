@@ -56,6 +56,7 @@ namespace RealMethod
         private BindingFlags MergedFieldFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         [SerializeField, ConditionalShowByEnum("Mode", SaveFileStructure.MergedFile)]
         private BindingFlags MergedPropertieFlags = BindingFlags.Default;
+        public bool IsInSingleFile => Mode == SaveFileStructure.SingleFile;
         // Actions
         public event System.Action<IFile> OnLoaded;
         public event System.Action<IFile> OnSaved;

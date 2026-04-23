@@ -19,9 +19,15 @@ namespace RealMethod.Editor
             if (displayNames == null)
             {
                 Initialize(typeProp);
-                typeProp.stringValue = typeNames[currentIndex];
+                if (displayNames.Length > 0)
+                    typeProp.stringValue = typeNames[currentIndex];
             }
-                
+
+            if (displayNames.Length == 0)
+            {
+                EditorGUI.LabelField(position, label.text, "No class found");
+                return;
+            }
 
             int newIndex = EditorGUI.Popup(position, label.text, currentIndex, displayNames);
 

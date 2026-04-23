@@ -90,7 +90,7 @@ namespace RealMethod
         }
         protected virtual FileData CreateFileData(IFile file)
         {
-            return new FileData(file.GetObject(), GetFlagSetting());
+            return new FileData(file.FileObject, GetFlagSetting());
         }
 
         // Abstraction Methods

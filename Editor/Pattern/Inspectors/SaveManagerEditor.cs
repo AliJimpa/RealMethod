@@ -17,22 +17,24 @@ namespace RealMethod.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-            IsShowLoadedFile = EditorGUILayout.Foldout(IsShowLoadedFile, "Files", true, EditorStyles.foldoutHeader);
-            if (IsShowLoadedFile)
+            if (!Component.IsInSingleFile)
             {
-                IFile[] files = Component.GetAllFiles();
-                if (Component != null)
+                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+                IsShowLoadedFile = EditorGUILayout.Foldout(IsShowLoadedFile, "Files", true, EditorStyles.foldoutHeader);
+                if (IsShowLoadedFile)
                 {
-                    for (int i = 0; i < files.Length; i++)
+                    IFile[] files = Component.GetAllFiles();
+                    if (Component != null)
                     {
-                        EditorGUILayout.LabelField($"{i}.[{files[i].FileName}]: {files[i].FileObject.GetType()}");
+                        for (int i = 0; i < files.Length; i++)
+                        {
+                            EditorGUILayout.LabelField($"{i}.[{files[i].FileName}]: {files[i].FileObject.GetType()}");
+                        }
                     }
+                    EditorGUILayout.Space();
+                    EditorGUILayout.LabelField($"Total: {files.Length}");
                 }
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField($"Total: {files.Length}");
             }
-
         }
 
 
