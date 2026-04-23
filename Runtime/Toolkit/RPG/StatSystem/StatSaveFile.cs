@@ -41,15 +41,15 @@ namespace RealMethod
         }
 
         // Implement IStorage Interface
-        void IStorage.StorageCreated(Object author)
-        {
-        }
-        void IStorage.StorageLoaded(Object author)
-        {
-        }
-        void IStorage.StorageClear()
-        {
-        }
+        // void IStorage.StorageCreated(Object author)
+        // {
+        // }
+        // void IStorage.StorageLoaded(Object author)
+        // {
+        // }
+        // void IStorage.StorageClear()
+        // {
+        // }
         // Implement IStatStorage Interface
         void IStatStorage.StoreStats(IStat[] stats)
         {

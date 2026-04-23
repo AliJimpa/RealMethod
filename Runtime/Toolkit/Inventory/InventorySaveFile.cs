@@ -43,12 +43,12 @@ namespace RealMethod
 
 
         // Implement IInventorySave Interface
-        void IStorage.StorageCreated(Object author)
-        {
-        }
-        void IStorage.StorageLoaded(Object author)
-        {
-        }
+        // void IStorage.StorageCreated(Object author)
+        // {
+        // }
+        // void IStorage.StorageLoaded(Object author)
+        // {
+        // }
         void IInventoryStorage.CreateItem(InventoryItemProperty item)
         {
             ItemsName.Add(item.Name);
@@ -106,12 +106,12 @@ namespace RealMethod
             }
             return Result.ToArray();
         }
-        void IStorage.StorageClear()
-        {
-            ItemsName.Clear();
-            ItemsQuantity.Clear();
-            ItemsCapacity.Clear();
-        }
+        // void IStorage.StorageClear()
+        // {
+        //     ItemsName.Clear();
+        //     ItemsQuantity.Clear();
+        //     ItemsCapacity.Clear();
+        // }
 
         // Private Functions
         private int GetIndexItem(string name)

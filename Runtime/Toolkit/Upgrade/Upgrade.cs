@@ -259,7 +259,7 @@ namespace RealMethod
                     }
                 }
             }
-            upgradeStorage.StorageClear();
+            //////upgradeStorage.StorageClear();
             // Create AvailableItems
             AvailableItems = new List<IUpgradeItem>(Maps.Length);
             foreach (var conf in Maps)
@@ -320,17 +320,17 @@ namespace RealMethod
     {
         [Header("Save")]
         [SerializeField]
-        private StorageFile<IUpgradeStorage, UpgradeSaveFile> storage;
-        public SaveAsset file => storage.file;
+        private Storage<IUpgradeStorage> storage;
+        public IFile file => storage.File;
 
         // override Methods
         protected sealed override IUpgradeStorage GetStorage()
         {
-            return storage.provider;
+            return storage.File;
         }
         protected sealed override bool LoadStorage()
         {
-            return storage.Load(this);
+            return storage.IsExist;
         }
     }
 

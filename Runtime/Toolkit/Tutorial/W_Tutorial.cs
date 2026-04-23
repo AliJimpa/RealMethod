@@ -83,7 +83,7 @@ namespace RealMethod
         }
         public void Clear()
         {
-            tutorialStorage.StorageClear();
+            ////tutorialStorage.StorageClear();
         }
 
         // Private Functions
@@ -107,16 +107,16 @@ namespace RealMethod
     {
         [Header("Save")]
         [SerializeField]
-        private StorageFile<ITutorialStorage, TutorialSaveFile> storage;
-        public SaveAsset file => storage.file;
+        private Storage<ITutorialStorage> storage;
+        public IFile file => storage.File;
 
         protected sealed override ITutorialStorage GetStorage()
         {
-            return storage.provider;
+            return storage.File;
         }
         protected sealed override bool LoadStorage()
         {
-            return storage.Load(this);
+            return storage.IsExist;
         }
     }
 }

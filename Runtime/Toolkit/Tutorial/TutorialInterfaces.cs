@@ -13,7 +13,7 @@ namespace RealMethod
         T GetClass<T>() where T : UI_TutorialUnit;
         void Initiate(Object author, IWidget owner, TutorialConfig config);
     }
-    public interface ITutorialStorage : IStorage
+    public interface ITutorialStorage : IFile
     {
         void AddNewTutorial(TutorialConfig conf);
         bool RemoveTutorial(TutorialConfig conf);

@@ -37,21 +37,21 @@ namespace RealMethod
 
 
         // Implement IUpgradeStorage Interface
-        void IStorage.StorageCreated(Object author)
-        {
-            if (author is Upgrade upgrator)
-            {
-                UnlockItems = new List<string>(upgrator.ItemCount);
-                AvailableItems = new List<string>();
-            }
-            else
-            {
-                Debug.LogWarning($"{this} Storage Should create by Upgrade Class");
-            }
-        }
-        void IStorage.StorageLoaded(Object author)
-        {
-        }
+        // void IStorage.StorageCreated(Object author)
+        // {
+        //     if (author is Upgrade upgrator)
+        //     {
+        //         UnlockItems = new List<string>(upgrator.ItemCount);
+        //         AvailableItems = new List<string>();
+        //     }
+        //     else
+        //     {
+        //         Debug.LogWarning($"{this} Storage Should create by Upgrade Class");
+        //     }
+        // }
+        // void IStorage.StorageLoaded(Object author)
+        // {
+        // }
         void IUpgradeStorage.UnlockItem(IUpgradeItem item)
         {
             UnlockItems.Add(item.Label);
@@ -76,19 +76,19 @@ namespace RealMethod
         {
             return UnlockItems.ToArray();
         }
-        void IStorage.StorageClear()
-        {
-            if (UnlockItems != null)
-                UnlockItems.Clear();
-            if (UnlockItems != null)
-                AvailableItems.Clear();
-        }
+        // void IStorage.StorageClear()
+        // {
+        //     if (UnlockItems != null)
+        //         UnlockItems.Clear();
+        //     if (UnlockItems != null)
+        //         AvailableItems.Clear();
+        // }
 
 
         protected override void Reset()
         {
             base.Reset();
-            ((IStorage)this).StorageClear();
+            //((IFile)this).StorageClear();
         }
 
 

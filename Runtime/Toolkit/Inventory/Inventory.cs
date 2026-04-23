@@ -364,7 +364,7 @@ namespace RealMethod
         public void Clear()
         {
             Items.Clear();
-            inventoryStorage.StorageClear();
+            ////inventoryStorage.StorageClear();
         }
 
         // Protected Functions
@@ -462,17 +462,17 @@ namespace RealMethod
     {
         [Header("Save")]
         [SerializeField]
-        private StorageFile<IInventoryStorage, InventorySaveFile> storage;
-        public SaveAsset file => storage.file;
+        private Storage<IInventoryStorage> storage;
+        public IFile file => storage.File;
 
         // override Methods
         protected sealed override IInventoryStorage GetStorage()
         {
-            return storage.provider;
+            return storage.File;
         }
         protected sealed override bool LoadStorage()
         {
-            return storage.Load(this);
+            return storage.IsExist;
         }
     }
 

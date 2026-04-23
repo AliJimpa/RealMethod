@@ -32,14 +32,14 @@ namespace RealMethod
         }
 
         // IMplement ITutorialStorage Interface
-        void IStorage.StorageCreated(Object author)
-        {
+        // void IStorage.StorageCreated(Object author)
+        // {
 
-        }
-        void IStorage.StorageLoaded(Object author)
-        {
+        // }
+        // void IStorage.StorageLoaded(Object author)
+        // {
 
-        }
+        // }
         void ITutorialStorage.AddNewTutorial(TutorialConfig conf)
         {
             TutorialMessage.Add(conf.NameID);
@@ -52,10 +52,10 @@ namespace RealMethod
         {
             return TutorialMessage.Contains(conf.NameID);
         }
-        void IStorage.StorageClear()
-        {
-            TutorialMessage.Clear();
-        }
+        // void IStorage.StorageClear()
+        // {
+        //     TutorialMessage.Clear();
+        // }
 
 
         protected override void Reset()

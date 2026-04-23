@@ -18,7 +18,7 @@ namespace RealMethod
         void DeclineBuff(IStatModifier modifier, T identity);
         IStat GetStat(T identity);
     }
-    public interface IStatStorage : IStorage
+    public interface IStatStorage : IFile
     {
         void StoreStats(IStat[] stat);
         bool TryLoadStats(StatData data);
@@ -75,16 +75,16 @@ namespace RealMethod
     {
         [Header("Save")]
         [SerializeField]
-        private StorageFile<IStatStorage, StatSaveFile> storage;
-        public SaveAsset file => storage.file;
+        private Storage<IStatStorage> storage;
+        public IStatStorage file => storage.File;
 
         protected sealed override IStatStorage GetStorage()
         {
-            return storage.provider;
+            return storage.File;
         }
         protected sealed override bool LoadStorage()
         {
-            return storage.Load(this);
+            return storage.IsExist;
         }
     }
     public abstract class StatProfile<En, Sd> : StatProfileStorage, IPrimitiveStatContainer<En> where En : System.Enum where Sd : StatData
