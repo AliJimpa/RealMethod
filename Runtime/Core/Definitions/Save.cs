@@ -6,8 +6,8 @@ namespace RealMethod
 
     public interface IFile : IIdentifier
     {
-        string Key { get; }
-        object GetObject();
+        string FileName { get; }
+        object FileObject { get; }
     }
 
 
@@ -82,8 +82,8 @@ namespace RealMethod
     public abstract class SaveAsset : UniqueAsset, ISaveFile
     {
         // Implement IFile Interface
-        string IFile.Key => name;
-        object IFile.GetObject() => this;
+        string IFile.FileName => name;
+        object IFile.FileObject => this;
         // Implement ISave Interface
         void ISave.OnLoaded()
         {

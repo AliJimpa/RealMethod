@@ -50,13 +50,13 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning($"Can't Add file with name: {file.Key}");
+                    Debug.LogWarning($"Can't Add file with name: {file.FileName}");
                     return false;
                 }
             }
             else
             {
-                Debug.LogWarning($"There is a file with this name: {file.Key}");
+                Debug.LogWarning($"There is a file with this name: {file.FileName}");
                 return false;
             }
         }
@@ -70,7 +70,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Can't find any file with this name: {file.Key}");
+                Debug.LogWarning($"Can't find any file with this name: {file.FileName}");
                 return false;
             }
         }

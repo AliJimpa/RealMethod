@@ -140,10 +140,10 @@ namespace RealMethod
                 Debug.LogError(ex);
                 return;
             }
-            file.GetObject().InvokeSaveEvent();
+            file.FileObject.InvokeSaveEvent();
             OnSaved?.Invoke(file);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            WriteLog($"Save({GetMethod(file).Format}) Class({file.GetObject().GetType()})");
+            WriteLog($"Save({GetMethod(file).Format}) Class({file.FileObject.GetType()})");
 #endif
         }
         public void Load(IFile file)
@@ -163,10 +163,10 @@ namespace RealMethod
                 Debug.LogError(ex);
                 return;
             }
-            file.GetObject().InvokeLoadEvent();
+            file.FileObject.InvokeLoadEvent();
             OnLoaded?.Invoke(file);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            WriteLog($"Load({GetMethod(file).Format}) Class({file.GetObject().GetType()})");
+            WriteLog($"Load({GetMethod(file).Format}) Class({file.FileObject.GetType()})");
 #endif
         }
         public void Delete(IFile file)
@@ -185,7 +185,7 @@ namespace RealMethod
             }
             OnDeleted?.Invoke(file);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            WriteLog($"Delete({GetMethod(file).Format}) Class({file.GetObject().GetType()})");
+            WriteLog($"Delete({GetMethod(file).Format}) Class({file.FileObject.GetType()})");
 #endif
         }
         [ContextMenu("Save")]
@@ -209,10 +209,10 @@ namespace RealMethod
                             Debug.LogError(ex);
                             return;
                         }
-                        MainSaveFile.GetObject().InvokeSaveEvent();
+                        MainSaveFile.FileObject.InvokeSaveEvent();
                         OnSaved?.Invoke(MainSaveFile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        WriteLog($"Save[SingleFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.GetObject().GetType()})");
+                        WriteLog($"Save[SingleFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.FileObject.GetType()})");
 #endif
                         break;
                     case SaveFileStructure.MultiFile:
@@ -240,10 +240,10 @@ namespace RealMethod
                             Debug.LogError(ex);
                             return;
                         }
-                        MainSaveFile.GetObject().InvokeSaveEvent();
+                        MainSaveFile.FileObject.InvokeSaveEvent();
                         OnSaved?.Invoke(MainSaveFile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        WriteLog($"Save[MergedFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.GetObject().GetType()})");
+                        WriteLog($"Save[MergedFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.FileObject.GetType()})");
 #endif
                         break;
                 }
@@ -270,10 +270,10 @@ namespace RealMethod
                             Debug.LogError(ex);
                             return;
                         }
-                        MainSaveFile.GetObject().InvokeLoadEvent();
+                        MainSaveFile.FileObject.InvokeLoadEvent();
                         OnLoaded?.Invoke(MainSaveFile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.GetObject().GetType()})");
+                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.FileObject.GetType()})");
 #endif
                         break;
                     case SaveFileStructure.MultiFile:
@@ -301,10 +301,10 @@ namespace RealMethod
                             Debug.LogError(ex);
                             return;
                         }
-                        MainSaveFile.GetObject().InvokeLoadEvent();
+                        MainSaveFile.FileObject.InvokeLoadEvent();
                         OnLoaded?.Invoke(MainSaveFile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.GetObject().GetType()})");
+                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.FileObject.GetType()})");
 #endif
                         break;
                 }
@@ -344,7 +344,7 @@ namespace RealMethod
         }
         protected virtual bool Validate(IFile file)
         {
-            if (file == null && file.GetObject() != null)
+            if (file == null && file.FileObject != null)
             {
                 Debug.LogError("File Does not valid");
                 return false;
@@ -353,7 +353,7 @@ namespace RealMethod
         }
         protected virtual ISaveMethod GetMethod(IFile file)
         {
-            if (file != null && file.GetObject().HasImplementInterface(out ISaveMethod method))
+            if (file != null && file.FileObject.HasImplementInterface(out ISaveMethod method))
             {
                 return method;
             }
@@ -371,28 +371,28 @@ namespace RealMethod
         }
         protected virtual void WriteToMergeFile(IFile file, BindingFlags fieldFlags, BindingFlags propertyFlags)
         {
-            object FileObject = file.GetObject();
+            object FileObject = file.FileObject;
             IMergeFile mergefile = GetMainFile<IMergeFile>();
             foreach (var field in FileObject.GetFields(fieldFlags))
             {
-                mergefile.Write(file.Key, field.Name, field.FieldType, field.GetValue(FileObject));
+                mergefile.Write(file.FileName, field.Name, field.FieldType, field.GetValue(FileObject));
             }
             foreach (var propery in FileObject.GetProperties(propertyFlags))
             {
-                mergefile.Write(file.Key, propery.Name, propery.PropertyType, propery.GetValue(FileObject));
+                mergefile.Write(file.FileName, propery.Name, propery.PropertyType, propery.GetValue(FileObject));
             }
         }
         protected virtual void ReadFromMergeFile(IFile file, BindingFlags fieldFlags, BindingFlags propertyFlags)
         {
-            object FileObject = file.GetObject();
+            object FileObject = file.FileObject;
             IMergeFile mergefile = GetMainFile<IMergeFile>();
             foreach (var field in FileObject.GetFields(fieldFlags))
             {
-                field.SetValue(FileObject, mergefile.Read(file.Key, field.Name, field.FieldType));
+                field.SetValue(FileObject, mergefile.Read(file.FileName, field.Name, field.FieldType));
             }
             foreach (var propery in FileObject.GetProperties(propertyFlags))
             {
-                propery.SetValue(FileObject, mergefile.Read(file.Key, propery.Name, propery.PropertyType));
+                propery.SetValue(FileObject, mergefile.Read(file.FileName, propery.Name, propery.PropertyType));
             }
         }
 
@@ -460,7 +460,7 @@ namespace RealMethod
                 case SaveFormat.TEXT:
                     return File.Exists(GetPath(file, Method));
                 case SaveFormat.PlayerPrefs:
-                    return PlayerPrefs.HasKey(file.Key);
+                    return PlayerPrefs.HasKey(file.FileName);
                 case SaveFormat.Custom:
                     return CustomSavefile(file, Method, SaveState.IsExist);
                 default:
@@ -470,14 +470,14 @@ namespace RealMethod
         }
         protected override void OnSave(IFile file, ISaveMethod Method)
         {
-            object fileObject = file.GetObject();
+            object fileObject = file.FileObject;
 
             switch (Method.Format)
             {
                 case SaveFormat.None:
                     if (fileObject is not ISave)
                     {
-                        Debug.LogError($"Your file({fileObject}) with name({file.Key}) should implement ISave Interface");
+                        Debug.LogError($"Your file({fileObject}) with name({file.FileName}) should implement ISave Interface");
                     }
                     break;
                 case SaveFormat.Binary:
@@ -491,7 +491,7 @@ namespace RealMethod
                         }
                         catch (System.Exception e)
                         {
-                            Debug.LogError($"Failed to serialize {file.Key} to {GetPath(file, Method)}: {e}");
+                            Debug.LogError($"Failed to serialize {file.FileName} to {GetPath(file, Method)}: {e}");
                             return;
                         }
                     }
@@ -533,7 +533,7 @@ namespace RealMethod
                     {
                         Set_PlayerPrefsInfo(property, fileObject);
                     }
-                    PlayerPrefs.SetString(file.Key, System.DateTime.Now.ToString());
+                    PlayerPrefs.SetString(file.FileName, System.DateTime.Now.ToString());
                     PlayerPrefs.Save();
                     break;
                 case SaveFormat.Custom:
@@ -546,14 +546,14 @@ namespace RealMethod
         }
         protected override void OnLoad(IFile file, ISaveMethod Method)
         {
-            object fileObject = file.GetObject();
+            object fileObject = file.FileObject;
 
             switch (Method.Format)
             {
                 case SaveFormat.None:
                     if (fileObject is not ISave)
                     {
-                        Debug.LogError($"Your file({fileObject}) with name({file.Key}) should implement ISave Interface");
+                        Debug.LogError($"Your file({fileObject}) with name({file.FileName}) should implement ISave Interface");
                     }
                     break;
                 case SaveFormat.Binary:
@@ -679,7 +679,7 @@ namespace RealMethod
         }
         protected override void OnDelete(IFile file, ISaveMethod Method)
         {
-            object fileObject = file.GetObject();
+            object fileObject = file.FileObject;
 
             switch (Method.Format)
             {
@@ -722,7 +722,7 @@ namespace RealMethod
         // Methods
         protected virtual string GetPath(IFile file, ISaveMethod method)
         {
-            string filename = file.Key;
+            string filename = file.FileName;
             string filetype = GetFileType(method);
 
             if (CustomPath)
@@ -1111,7 +1111,7 @@ namespace RealMethod
 
             if (FileList.Contains(file))// reference comparison
             {
-                WriteLog($"File({file.Key}) already added");
+                WriteLog($"File({file.FileName}) already added");
                 return false;
             }
 

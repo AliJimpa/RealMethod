@@ -97,14 +97,14 @@ namespace RealMethod
                     _mergeFile = saveSystem.MainSaveFile;
                     if (_mergeFile != null)
                     {
-                        SelectedMergeFile = _mergeFile.GetObject().GetType().ToString();
+                        SelectedMergeFile = _mergeFile.FileObject.GetType().ToString();
                         if (_mergeFile is T provider)
                         {
                             _file = provider;
                         }
                         else
                         {
-                            Debug.LogError($"Your MergeFile({_mergeFile.GetObject().GetType()}) Should implement {typeof(T)} interface");
+                            Debug.LogError($"Your MergeFile({_mergeFile.FileObject.GetType()}) Should implement {typeof(T)} interface");
                             return;
                         }
                     }
