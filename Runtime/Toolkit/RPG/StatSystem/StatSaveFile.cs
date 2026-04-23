@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "StatSaveFile", menuName = "RealMethod/RPG/StatSaveFile", order = 1)]
-    public class StatSaveFile : SaveFile, IStatStorage
+    public class StatSaveFile : SaveAsset, IStatStorage
     {
         [Header("Stat")]
         [SerializeField, ReadOnly, TextArea]
@@ -85,8 +85,10 @@ namespace RealMethod
 
 
         // Unity Event
-        private void Reset()
+        protected override void Reset()
         {
+            base.Reset();
+            
             Names.Clear();
             BaseValue.Clear();
             Mins.Clear();

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace RealMethod
 {
@@ -12,6 +13,16 @@ namespace RealMethod
         {
             return target.IsAssignableFrom(type);
         }
-
+        public static object CreateInstance(this Type type)
+        {
+            if (type.IsChild(typeof(ScriptableObject)))
+            {
+                return ScriptableObject.CreateInstance(type);
+            }
+            else
+            {
+                return Activator.CreateInstance(type);
+            }
+        }
     }
 }

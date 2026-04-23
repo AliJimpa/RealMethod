@@ -163,7 +163,7 @@ namespace RealMethod
         /// <param name="target">the object refrence</param>
         /// <param name="flags">make filtering witch type of field</param>
         /// <returns>Array of Fieldinfo</returns>
-        public static System.Reflection.FieldInfo[] GetFields(this object target, System.Reflection.BindingFlags flags)
+        public static FieldInfo[] GetFields(this object target, BindingFlags flags)
         {
             System.Type type = target.GetType();
             return type.GetFields(flags);
@@ -174,12 +174,10 @@ namespace RealMethod
         /// <param name="target">the object refrence</param>
         /// <param name="flags">make filtering witch type of Property</param>
         /// <returns>Array of PropertyInfo</returns>
-        public static System.Reflection.PropertyInfo[] GetProperties(this object target, System.Reflection.BindingFlags flags)
+        public static PropertyInfo[] GetProperties(this object target, BindingFlags flags)
         {
             System.Type type = target.GetType();
             return type.GetProperties(flags);
         }
-
-
     }
 }

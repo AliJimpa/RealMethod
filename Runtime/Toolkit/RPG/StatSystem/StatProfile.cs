@@ -76,7 +76,7 @@ namespace RealMethod
         [Header("Save")]
         [SerializeField]
         private StorageFile<IStatStorage, StatSaveFile> storage;
-        public SaveFile file => storage.file;
+        public SaveAsset file => storage.file;
 
         protected sealed override IStatStorage GetStorage()
         {

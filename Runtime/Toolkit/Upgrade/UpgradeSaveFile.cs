@@ -9,7 +9,7 @@ using UnityEditor;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "UpgradeSaveFile", menuName = "RealMethod/Upgrade/SaveFile", order = 1)]
-    public class UpgradeSaveFile : SaveFile, IUpgradeStorage
+    public class UpgradeSaveFile : SaveAsset, IUpgradeStorage
     {
         [Header("Setting")]
         public bool UsePlayerPrefs = true;
@@ -85,8 +85,9 @@ namespace RealMethod
         }
 
 
-        private void Reset()
+        protected override void Reset()
         {
+            base.Reset();
             ((IStorage)this).StorageClear();
         }
 

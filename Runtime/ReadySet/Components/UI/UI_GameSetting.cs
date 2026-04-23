@@ -28,7 +28,7 @@ namespace RealMethod
         private StorageFile<ISettingStorage, SettingFile> Storage;
 
         public bool isFileDirty => Storage.provider.IsSettingDirty;
-        public SaveFile file => Storage.file;
+        public SaveAsset file => Storage.file;
         public bool isInSync { get; private set; } = false;
 
         // Unity Methods
@@ -243,7 +243,7 @@ namespace RealMethod
         }
     }
 
-    public abstract class SettingFile : SaveFile, ISettingStorage
+    public abstract class SettingFile : SaveAsset, ISettingStorage
     {
         protected bool IsDirty { get; private set; }
 

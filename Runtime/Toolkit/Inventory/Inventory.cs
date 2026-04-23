@@ -463,7 +463,7 @@ namespace RealMethod
         [Header("Save")]
         [SerializeField]
         private StorageFile<IInventoryStorage, InventorySaveFile> storage;
-        public SaveFile file => storage.file;
+        public SaveAsset file => storage.file;
 
         // override Methods
         protected sealed override IInventoryStorage GetStorage()

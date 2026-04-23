@@ -108,7 +108,7 @@ namespace RealMethod
         [Header("Save")]
         [SerializeField]
         private StorageFile<ITutorialStorage, TutorialSaveFile> storage;
-        public SaveFile file => storage.file;
+        public SaveAsset file => storage.file;
 
         protected sealed override ITutorialStorage GetStorage()
         {

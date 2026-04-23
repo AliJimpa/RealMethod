@@ -8,10 +8,13 @@ namespace RealMethod.Editor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            ConditionalShowByEnumAttribute showInInspector = (ConditionalShowByEnumAttribute)attribute;
-            SerializedProperty enumField = property.serializedObject.FindProperty(showInInspector.EnumFieldName);
+            var attr = (ConditionalShowByEnumAttribute)attribute;
 
-            if (enumField != null && IsVisible(enumField, showInInspector.ShowValues))
+            // Build sibling path: replace "UseAsset" with "Mode", etc.
+            string enumPath = property.propertyPath.Replace(property.name, attr.EnumFieldName);
+            SerializedProperty enumField = property.serializedObject.FindProperty(enumPath);
+
+            if (enumField != null && IsVisible(enumField, attr.ShowValues))
             {
                 EditorGUI.PropertyField(position, property, label);
             }
@@ -19,15 +22,19 @@ namespace RealMethod.Editor
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            ConditionalShowByEnumAttribute showInInspector = (ConditionalShowByEnumAttribute)attribute;
-            SerializedProperty enumField = property.serializedObject.FindProperty(showInInspector.EnumFieldName);
+            var attr = (ConditionalShowByEnumAttribute)attribute;
 
-            if (enumField != null && IsVisible(enumField, showInInspector.ShowValues))
+            // Must use the SAME path logic as in OnGUI
+            string enumPath = property.propertyPath.Replace(property.name, attr.EnumFieldName);
+            SerializedProperty enumField = property.serializedObject.FindProperty(enumPath);
+
+            if (enumField != null && IsVisible(enumField, attr.ShowValues))
             {
                 return EditorGUI.GetPropertyHeight(property, label, true);
             }
 
-            return 0; // Hides the property
+            // fully hide line
+            return -EditorGUIUtility.standardVerticalSpacing;
         }
 
         private bool IsVisible(SerializedProperty enumField, object[] showValues)

@@ -8,28 +8,47 @@ namespace RealMethod.Editor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            ConditionalHideByEnumAttribute hideAttribute = (ConditionalHideByEnumAttribute)attribute;
-            SerializedProperty enumField = property.serializedObject.FindProperty(hideAttribute.EnumFieldName);
+            var attr = (ConditionalHideByEnumAttribute)attribute;
 
-            if (enumField != null && enumField.enumValueIndex == hideAttribute.EnumValue)
+            // Build sibling path: replace "UseAsset" with "Mode", etc.
+            string enumPath = property.propertyPath.Replace(property.name, attr.EnumFieldName);
+            SerializedProperty enumField = property.serializedObject.FindProperty(enumPath);
+
+            if (enumField != null && !ShouldHide(enumField, attr.HideValues))
             {
-                return; // Do not draw the property if the condition matches.
+                EditorGUI.PropertyField(position, property, label, true);
             }
-
-            EditorGUI.PropertyField(position, property, label, true);
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            ConditionalHideByEnumAttribute hideAttribute = (ConditionalHideByEnumAttribute)attribute;
-            SerializedProperty enumField = property.serializedObject.FindProperty(hideAttribute.EnumFieldName);
+            var attr = (ConditionalHideByEnumAttribute)attribute;
 
-            if (enumField != null && enumField.enumValueIndex == hideAttribute.EnumValue)
+            // Must use the SAME path logic as in OnGUI
+            string enumPath = property.propertyPath.Replace(property.name, attr.EnumFieldName);
+            SerializedProperty enumField = property.serializedObject.FindProperty(enumPath);
+
+            if (enumField != null && !ShouldHide(enumField, attr.HideValues))
             {
-                return 0; // Hides the property by returning 0 height.
+                return EditorGUI.GetPropertyHeight(property, label, true);
             }
 
-            return EditorGUI.GetPropertyHeight(property, label, true);
+            // fully hide line
+            return -EditorGUIUtility.standardVerticalSpacing;
+        }
+
+        private bool ShouldHide(SerializedProperty enumField, object[] hideValues)
+        {
+            if (enumField.propertyType == SerializedPropertyType.Enum)
+            {
+                foreach (var value in hideValues)
+                {
+                    if (enumField.enumValueIndex == (int)value)
+                        return true; // hide when enum matches any of these
+                }
+            }
+
+            return false;
         }
     }
 }

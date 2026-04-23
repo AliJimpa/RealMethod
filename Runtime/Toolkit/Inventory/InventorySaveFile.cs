@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "InventorySaveFile", menuName = "RealMethod/Inventory/SaveFile", order = 1)]
-    public class InventorySaveFile : SaveFile, IInventoryStorage
+    public class InventorySaveFile : SaveAsset, IInventoryStorage
     {
         [Header("Inventory")]
         [SerializeField, ReadOnly, TextArea]

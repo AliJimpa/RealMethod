@@ -321,7 +321,7 @@ namespace RealMethod
         [Header("Save")]
         [SerializeField]
         private StorageFile<IUpgradeStorage, UpgradeSaveFile> storage;
-        public SaveFile file => storage.file;
+        public SaveAsset file => storage.file;
 
         // override Methods
         protected sealed override IUpgradeStorage GetStorage()

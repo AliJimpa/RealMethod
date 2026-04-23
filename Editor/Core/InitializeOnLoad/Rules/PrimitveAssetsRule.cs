@@ -23,7 +23,7 @@ namespace RealMethod.Editor
                 if (mode == RuleExecutionMode.EnteredPlayMode)
                 {
                     if (asset is not DataAsset)
-                        asset.Invoke(FunctionNames.AssetPermission);
+                        asset.SendMessage(FunctionNames.AssetPermission, SendMessageOptions.RequireReceiver);
 
                     // if (AssetDatabase.Contains(asset))
                     // {
@@ -38,7 +38,7 @@ namespace RealMethod.Editor
 
                 if (asset.AutoReset(CurrentMode))
                 {
-                    asset.Invoke(FunctionNames.Reset);
+                    asset.SendMessage(FunctionNames.Reset, SendMessageOptions.RequireReceiver);
                 }
             }
         }
