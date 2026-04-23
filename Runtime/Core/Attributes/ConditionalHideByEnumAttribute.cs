@@ -4,28 +4,30 @@ using UnityEngine;
 namespace RealMethod
 {
     /// <summary>
-    /// Example:
-    /// public enum DisplayMode
+    /// <code>
+    /// public enum ExampleEnum
     /// {
-    ///     Mode1,
-    ///     Mode2,
-    ///     Mode3
+    ///     Option1,
+    ///     Option2,
+    ///     Option3
     /// }
     /// 
-    /// public DisplayMode displayMode;
-    /// 
-    /// [HideInInspectorByEnum("displayMode", 0)]
-    /// public int DisplaySize_Mode_1;
+    /// public ExampleEnum exampleEnum;
+    /// [ConditionalHideByEnum("exampleEnum", ExampleEnum.Option1, ExampleEnum.Option3)]
+    /// public string hideOnlyForOption1And3;
+    /// [ConditionalHideByEnum("exampleEnum", ExampleEnum.Option2)]
+    /// public int hideOnlyForOption2;
+    /// </code>
     /// </summary>
     public class ConditionalHideByEnumAttribute : PropertyAttribute
     {
-        public string EnumFieldName { get; private set; }
-        public int EnumValue { get; private set; }
+        public string EnumFieldName;
+        public object[] HideValues;
 
-        public ConditionalHideByEnumAttribute(string enumFieldName, int enumValue)
+        public ConditionalHideByEnumAttribute(string enumFieldName, params object[] hideValues)
         {
             EnumFieldName = enumFieldName;
-            EnumValue = enumValue;
+            HideValues = hideValues;
         }
     }
 }

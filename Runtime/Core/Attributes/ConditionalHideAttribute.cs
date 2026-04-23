@@ -8,6 +8,7 @@ namespace RealMethod
     /// [ConditionalHide("Variable", true, false)]
     /// public String TargetName;
     /// </code>
+    /// conditionalSourceField,hideInInspector, reverceCondition
     /// </summary>
     public class ConditionalHideAttribute : PropertyAttribute
     {
