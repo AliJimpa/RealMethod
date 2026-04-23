@@ -4,17 +4,32 @@ using System.Xml.Serialization;
 using System.Reflection;
 using System.IO;
 using UnityEngine;
+using System.Linq;
+using System.ComponentModel;
 
 namespace RealMethod
 {
     [System.Serializable]
+    public enum SaveFileStructure
+    {
+        [DescriptionEnum("Always read/write one fixed file")]
+        SingleFile,
+        [DescriptionEnum("Each save item is saved separately")]
+        MultiFile,
+        [DescriptionEnum("Save multiple items but merge them into one output file")]
+        MergedFile
+    }
+    [System.Serializable]
     public enum SaveFormat
     {
-        PlayerPrefs = 0,
-        TEXT = 1,
-        XML = 2,
-        JSON = 3,
-        Binary = 4,
+        [DescriptionEnum("Didn't Store any data just call OnSave&OnLoad Event")]
+        None = 0,
+        PlayerPrefs = 1,
+        TEXT = 2,
+        XML = 3,
+        JSON = 4,
+        Binary = 5,
+        Custom = 6,
     }
     public interface ISaveMethod
     {
@@ -23,19 +38,31 @@ namespace RealMethod
         BindingFlags FieldFlags { get; }
         BindingFlags PropertieFlags { get; }
     }
-
-
-    public abstract class SaveManager : MonoBehaviour, IGameManager , ISaveSystem
+    public interface IMergeFile : ISaveFile
     {
+        void Write(string fileName, string variableName, System.Type variableType, object variableValue);
+        object Read(string fileName, string variableName, System.Type variableType);
+    }
+
+
+
+    public abstract class SaveManager : MonoBehaviour, IGameManager, ISaveSystem
+    {
+        [Header("Mode")]
+        [SerializeField]
+        protected SaveFileStructure Mode = SaveFileStructure.MultiFile;
+        [Space]
+        [SerializeField, ConditionalShowByEnum("Mode", SaveFileStructure.MergedFile)]
+        private BindingFlags MergedFieldFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        [SerializeField, ConditionalShowByEnum("Mode", SaveFileStructure.MergedFile)]
+        private BindingFlags MergedPropertieFlags = BindingFlags.Default;
         // Actions
         public event System.Action<IFile> OnLoaded;
         public event System.Action<IFile> OnSaved;
         public event System.Action<IFile> OnDeleted;
 
-#if UNITY_EDITOR
-        public byte Logindex { get; private set; }
-        public string[] DataLog { get; private set; }
-#endif
+
+
 
 
         // Implement IGameManager Interface
@@ -45,19 +72,52 @@ namespace RealMethod
         }
         public virtual void InitiateManager(bool AlwaysLoaded)
         {
-#if UNITY_EDITOR
-            Logindex = 0;
-            DataLog = new string[5];
-#endif
+            if (Mode != SaveFileStructure.MultiFile)
+            {
+                IFile provider = CreateMainFile();
+                ISaveMethod method = GetMethod(provider);
+                if (method.Format == SaveFormat.None)
+                {
+                    OnLoad(provider, method);
+                }
+                else
+                {
+                    if (IsExistFile(provider, method))
+                    {
+                        OnLoad(provider, method);
+                    }
+                }
+            }
         }
         public virtual void ResolveService(Service service, bool active)
         {
         }
 
 
-        // Functions
+        // Implement ISaveSystem Interface
+        /// <summary>
+        /// The file that created by savesystem for merging all file selected in sytem to one file or SingleFile
+        /// </summary>
+        public IFile MainSaveFile
+        {
+            get
+            {
+                if (Mode == SaveFileStructure.MultiFile)
+                {
+                    Debug.LogWarning("MainSaveFile Just created in SingleFile & MergedFile");
+                    return null;
+                }
+                else
+                {
+                    return GetMainFile<IFile>();
+                }
+            }
+        }
         public bool IsExist(IFile file)
         {
+            if (!CanContinue("check isExist"))
+                return false;
+
             if (!Validate(file))
                 return false;
 
@@ -65,58 +125,223 @@ namespace RealMethod
         }
         public void Save(IFile file)
         {
+            if (!CanContinue("Save"))
+                return;
+
             if (!Validate(file))
                 return;
 
-            if (file.GetObject() is ISave provider)
+            try
             {
                 OnSave(file, GetMethod(file));
-                provider.OnSaved();
-                OnSaved?.Invoke(file);
-
-#if UNITY_EDITOR
-                WriteLog($"Save ({GetMethod(file)})", file);
-#endif
             }
-            else
+            catch (System.Exception ex)
             {
-                Debug.LogWarning($"For saving file you should implement ISave interface in {file.GetObject()}");
+                Debug.LogError(ex);
                 return;
             }
+            file.GetObject().InvokeSaveEvent();
+            OnSaved?.Invoke(file);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            WriteLog($"Save({GetMethod(file).Format}) Class({file.GetObject().GetType()})");
+#endif
         }
         public void Load(IFile file)
         {
+            if (!CanContinue("Load"))
+                return;
+
             if (!Validate(file))
                 return;
 
-            if (file.GetObject() is ISave provider)
+            try
             {
                 OnLoad(file, GetMethod(file));
-                provider.OnLoaded();
-                OnLoaded?.Invoke(file);
-#if UNITY_EDITOR
-                WriteLog($"Save ({GetMethod(file)})", file);
-#endif
             }
-            else
+            catch (System.Exception ex)
             {
-                Debug.LogWarning($"For loading file you should implement ISave interface in {file.GetObject()}");
+                Debug.LogError(ex);
                 return;
             }
+            file.GetObject().InvokeLoadEvent();
+            OnLoaded?.Invoke(file);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            WriteLog($"Load({GetMethod(file).Format}) Class({file.GetObject().GetType()})");
+#endif
         }
         public void Delete(IFile file)
         {
             if (!Validate(file))
                 return;
 
-            OnDelete(file, GetMethod(file));
+            try
+            {
+                OnDelete(file, GetMethod(file));
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError(ex);
+                return;
+            }
             OnDeleted?.Invoke(file);
-#if UNITY_EDITOR
-            WriteLog($"Save ({GetMethod(file)})", file);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            WriteLog($"Delete({GetMethod(file).Format}) Class({file.GetObject().GetType()})");
 #endif
         }
+        [ContextMenu("Save")]
+        void ISaveSystem.SaveAll()
+        {
+            IFile[] files = GetAllFiles();
+            if (files != null)
+            {
+                switch (Mode)
+                {
+                    case SaveFileStructure.SingleFile:
+                        if (!Validate(MainSaveFile))
+                            return;
+
+                        try
+                        {
+                            OnSave(MainSaveFile, GetMethod(MainSaveFile));
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Debug.LogError(ex);
+                            return;
+                        }
+                        MainSaveFile.GetObject().InvokeSaveEvent();
+                        OnSaved?.Invoke(MainSaveFile);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                        WriteLog($"Save[SingleFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.GetObject().GetType()})");
+#endif
+                        break;
+                    case SaveFileStructure.MultiFile:
+                        foreach (var file in files)
+                        {
+                            Save(file);
+                        }
+                        break;
+                    case SaveFileStructure.MergedFile:
+                        foreach (var file in files)
+                        {
+                            WriteToMergeFile(file, MergedFieldFlags, MergedPropertieFlags);
+                        }
+
+
+                        if (!Validate(MainSaveFile))
+                            return;
+
+                        try
+                        {
+                            OnSave(MainSaveFile, GetMethod(MainSaveFile));
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Debug.LogError(ex);
+                            return;
+                        }
+                        MainSaveFile.GetObject().InvokeSaveEvent();
+                        OnSaved?.Invoke(MainSaveFile);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                        WriteLog($"Save[MergedFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.GetObject().GetType()})");
+#endif
+                        break;
+                }
+            }
+        }
+        [ContextMenu("Load")]
+        void ISaveSystem.LoadAll()
+        {
+            IFile[] files = GetAllFiles();
+            if (files != null)
+            {
+                switch (Mode)
+                {
+                    case SaveFileStructure.SingleFile:
+                        if (!Validate(MainSaveFile))
+                            return;
+
+                        try
+                        {
+                            OnLoad(MainSaveFile, GetMethod(MainSaveFile));
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Debug.LogError(ex);
+                            return;
+                        }
+                        MainSaveFile.GetObject().InvokeLoadEvent();
+                        OnLoaded?.Invoke(MainSaveFile);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.GetObject().GetType()})");
+#endif
+                        break;
+                    case SaveFileStructure.MultiFile:
+                        foreach (var file in files)
+                        {
+                            Save(file);
+                        }
+                        break;
+                    case SaveFileStructure.MergedFile:
+                        foreach (var file in files)
+                        {
+                            ReadFromMergeFile(file, MergedFieldFlags, MergedPropertieFlags);
+                        }
+
+
+                        if (!Validate(MainSaveFile))
+                            return;
+
+                        try
+                        {
+                            OnLoad(MainSaveFile, GetMethod(MainSaveFile));
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Debug.LogError(ex);
+                            return;
+                        }
+                        MainSaveFile.GetObject().InvokeLoadEvent();
+                        OnLoaded?.Invoke(MainSaveFile);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.GetObject().GetType()})");
+#endif
+                        break;
+                }
+            }
+        }
+        /// <summary>
+        /// use for adding file to filelist in savemsystem.
+        /// if you want to use saveall or geting file with name
+        /// </summary>
+        /// <param name="file">target file you want adding</param>
+        /// <returns>return true if can add</returns>
+        public abstract bool AddFile(IFile file);
+        /// <summary>
+        /// use for removing file to filelist in savesystem
+        /// </summary>
+        /// <param name="file">target file you want removing</param>
+        /// <returns>return true if can remove</returns>
+        public abstract bool RemoveFile(IFile file);
+        /// <summary>
+        /// Determines whether the specified file already exists in the file list.
+        /// Checks by object reference unless IFile implementations override equality.
+        /// </summary>
+        /// <param name="file">The file instance to check.</param>
+        /// <returns>True if the file is found in the list; otherwise false.</returns>
+        public abstract bool HasFile(IFile file);
+
 
         // Methods
+        protected virtual bool CanContinue(string message)
+        {
+            if (Mode == SaveFileStructure.MultiFile)
+            {
+                return true;
+            }
+            Debug.LogError($"You can't {message} when SaveMode is {Mode}");
+            return false;
+        }
         protected virtual bool Validate(IFile file)
         {
             if (file == null && file.GetObject() != null)
@@ -128,7 +353,7 @@ namespace RealMethod
         }
         protected virtual ISaveMethod GetMethod(IFile file)
         {
-            if (file.GetObject().HasImplementInterface(out ISaveMethod method))
+            if (file != null && file.GetObject().HasImplementInterface(out ISaveMethod method))
             {
                 return method;
             }
@@ -144,6 +369,32 @@ namespace RealMethod
                 }
             }
         }
+        protected virtual void WriteToMergeFile(IFile file, BindingFlags fieldFlags, BindingFlags propertyFlags)
+        {
+            object FileObject = file.GetObject();
+            IMergeFile mergefile = GetMainFile<IMergeFile>();
+            foreach (var field in FileObject.GetFields(fieldFlags))
+            {
+                mergefile.Write(file.Key, field.Name, field.FieldType, field.GetValue(FileObject));
+            }
+            foreach (var propery in FileObject.GetProperties(propertyFlags))
+            {
+                mergefile.Write(file.Key, propery.Name, propery.PropertyType, propery.GetValue(FileObject));
+            }
+        }
+        protected virtual void ReadFromMergeFile(IFile file, BindingFlags fieldFlags, BindingFlags propertyFlags)
+        {
+            object FileObject = file.GetObject();
+            IMergeFile mergefile = GetMainFile<IMergeFile>();
+            foreach (var field in FileObject.GetFields(fieldFlags))
+            {
+                field.SetValue(FileObject, mergefile.Read(file.Key, field.Name, field.FieldType));
+            }
+            foreach (var propery in FileObject.GetProperties(propertyFlags))
+            {
+                propery.SetValue(FileObject, mergefile.Read(file.Key, propery.Name, propery.PropertyType));
+            }
+        }
 
 
         // Abstract Mehtod
@@ -151,38 +402,39 @@ namespace RealMethod
         protected abstract void OnSave(IFile file, ISaveMethod Method);
         protected abstract void OnLoad(IFile file, ISaveMethod Method);
         protected abstract void OnDelete(IFile file, ISaveMethod Method);
-#if UNITY_EDITOR
-        private void WriteLog(string message, IFile file)
+        protected abstract IFile CreateMainFile();
+        protected abstract T GetMainFile<T>() where T : IFile;
+        public abstract IFile[] GetAllFiles();
+
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        protected virtual void WriteLog(string message)
         {
-            if (Application.isPlaying && DataLog != null)
-            {
-                if (Logindex == 0)
-                {
-                    DataLog[0] = $"{System.DateTime.Now} -- {file.Name} -- {message}";
-                    Logindex++;
-                }
-                else
-                {
-                    DataLog[Logindex % DataLog.Length] = $"{System.DateTime.Now} -- {file.Name} -- {message}";
-                    Logindex++;
-                }
-            }
+            Debug.Log($"{System.DateTime.Now} -- {message}");
         }
 #endif
     }
-    public abstract class SaveMethodManager : SaveManager, ISaveMethod
+    public abstract class SaveManager_Method : SaveManager, ISaveMethod
     {
+        protected enum SaveState
+        {
+            IsExist = 0,
+            Save = 1,
+            Load = 2,
+            Delete = 3
+        }
         [Header("SaveMethod")]
         [SerializeField]
         private SaveFormat fromat;
-        [SerializeField, ConditionalHideByEnum("fromat", 0)]
+        [SerializeField, ConditionalHideByEnum("fromat", SaveFormat.None, SaveFormat.PlayerPrefs)]
         private bool CustomPath = false;
-        [SerializeField, ConditionalHide("CustomPath", true, false)]
+        [SerializeField, ConditionalHideByEnum("fromat", SaveFormat.None, SaveFormat.PlayerPrefs), ConditionalHide("CustomPath", true, false)]
         private string FilePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
-        [SerializeField, ConditionalShowByEnum("fromat", SaveFormat.PlayerPrefs, SaveFormat.TEXT)]
+        [SerializeField, ConditionalShowByEnum("fromat", SaveFormat.PlayerPrefs, SaveFormat.TEXT, SaveFormat.Custom)]
         private BindingFlags FieldFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-        [SerializeField, ConditionalShowByEnum("fromat", SaveFormat.PlayerPrefs, SaveFormat.TEXT)]
+        [SerializeField, ConditionalShowByEnum("fromat", SaveFormat.PlayerPrefs, SaveFormat.TEXT, SaveFormat.Custom)]
         private BindingFlags PropertieFlags = BindingFlags.Default;
+
 
         // Implement ISaveMethod Interface
         SaveFormat ISaveMethod.Format => fromat;
@@ -196,6 +448,9 @@ namespace RealMethod
         {
             switch (Method.Format)
             {
+                case SaveFormat.None:
+                    Debug.LogWarning("SaveSystem can't check IsExistFile with None format");
+                    return false;
                 case SaveFormat.Binary:
                     return File.Exists(GetPath(file, Method));
                 case SaveFormat.XML:
@@ -205,7 +460,9 @@ namespace RealMethod
                 case SaveFormat.TEXT:
                     return File.Exists(GetPath(file, Method));
                 case SaveFormat.PlayerPrefs:
-                    return PlayerPrefs.HasKey(file.Name);
+                    return PlayerPrefs.HasKey(file.Key);
+                case SaveFormat.Custom:
+                    return CustomSavefile(file, Method, SaveState.IsExist);
                 default:
                     Debug.LogWarning($"The {Method.Format} is not implement");
                     return false;
@@ -217,6 +474,12 @@ namespace RealMethod
 
             switch (Method.Format)
             {
+                case SaveFormat.None:
+                    if (fileObject is not ISave)
+                    {
+                        Debug.LogError($"Your file({fileObject}) with name({file.Key}) should implement ISave Interface");
+                    }
+                    break;
                 case SaveFormat.Binary:
                     BinaryFormatter bf = new BinaryFormatter();
 #pragma warning disable SYSLIB0011 // Suppress BinaryFormatter warning (only use in trusted context)
@@ -228,7 +491,7 @@ namespace RealMethod
                         }
                         catch (System.Exception e)
                         {
-                            Debug.LogError($"Failed to serialize {file.Name} to {GetPath(file, Method)}: {e}");
+                            Debug.LogError($"Failed to serialize {file.Key} to {GetPath(file, Method)}: {e}");
                             return;
                         }
                     }
@@ -264,17 +527,20 @@ namespace RealMethod
                     PropertyInfo[] PP_properties = fileObject.GetProperties(Method.PropertieFlags);
                     foreach (FieldInfo field in PP_fields)
                     {
-                        PlayerPrefsSetValueByField(field, fileObject);
+                        Set_PlayerPrefsInfo(field, fileObject);
                     }
                     foreach (PropertyInfo property in PP_properties)
                     {
-                        PlayerPrefsSetValueByProperty(property, fileObject);
+                        Set_PlayerPrefsInfo(property, fileObject);
                     }
-                    PlayerPrefs.SetString(file.Name, System.DateTime.Now.ToString());
+                    PlayerPrefs.SetString(file.Key, System.DateTime.Now.ToString());
                     PlayerPrefs.Save();
                     break;
+                case SaveFormat.Custom:
+                    CustomSavefile(file, Method, SaveState.Save);
+                    break;
                 default:
-                    Debug.LogWarning($"The {Method} is not implement");
+                    Debug.LogWarning($"The {Method.Format} is not implement");
                     break;
             }
         }
@@ -284,6 +550,12 @@ namespace RealMethod
 
             switch (Method.Format)
             {
+                case SaveFormat.None:
+                    if (fileObject is not ISave)
+                    {
+                        Debug.LogError($"Your file({fileObject}) with name({file.Key}) should implement ISave Interface");
+                    }
+                    break;
                 case SaveFormat.Binary:
                     var bf = new BinaryFormatter();
 #pragma warning disable SYSLIB0011
@@ -390,15 +662,18 @@ namespace RealMethod
                     PropertyInfo[] PP_properties = fileObject.GetProperties(Method.PropertieFlags);
                     foreach (FieldInfo field in PP_fields)
                     {
-                        PlayerPrefsGetValueByField(field, fileObject);
+                        Get_PlayerPrefsInfo(field, fileObject);
                     }
                     foreach (PropertyInfo property in PP_properties)
                     {
-                        PlayerPrefsGetValueByProperty(property, fileObject);
+                        Get_PlayerPrefsInfo(property, fileObject);
                     }
                     break;
+                case SaveFormat.Custom:
+                    CustomSavefile(file, Method, SaveState.Load);
+                    break;
                 default:
-                    Debug.LogWarning($"The {Method} is not implement");
+                    Debug.LogWarning($"The {Method.Format} is not implement");
                     break;
             }
         }
@@ -408,6 +683,9 @@ namespace RealMethod
 
             switch (Method.Format)
             {
+                case SaveFormat.None:
+                    Debug.LogWarning("SaveSystem can't delete with None format");
+                    break;
                 case SaveFormat.Binary:
                     File.Delete(GetPath(file, Method));
                     break;
@@ -432,8 +710,11 @@ namespace RealMethod
                         PlayerPrefs.DeleteKey(property.Name);
                     }
                     break;
+                case SaveFormat.Custom:
+                    CustomSavefile(file, Method, SaveState.Delete);
+                    break;
                 default:
-                    Debug.LogWarning($"The {Method} is not implement");
+                    Debug.LogWarning($"The {Method.Format} is not implement");
                     break;
             }
         }
@@ -441,11 +722,8 @@ namespace RealMethod
         // Methods
         protected virtual string GetPath(IFile file, ISaveMethod method)
         {
-            string filename = file.Name;
-            string filetype = method.Format == SaveFormat.TEXT ? ".txt" :
-            method.Format == SaveFormat.Binary ? ".RSave" :
-            method.Format == SaveFormat.XML ? ".xml" :
-            method.Format == SaveFormat.JSON ? ".json" : "";
+            string filename = file.Key;
+            string filetype = GetFileType(method);
 
             if (CustomPath)
             {
@@ -456,12 +734,19 @@ namespace RealMethod
                 return Application.persistentDataPath + "/" + filename + filetype;
             }
         }
+        protected virtual string GetFileType(ISaveMethod method)
+        {
+            return method.Format == SaveFormat.TEXT ? ".txt" :
+            method.Format == SaveFormat.Binary ? ".RSave" :
+            method.Format == SaveFormat.XML ? ".xml" :
+            method.Format == SaveFormat.JSON ? ".json" : "";
+        }
 
         // Private Method
-        private void PlayerPrefsSetValueByField(FieldInfo field, object source)
+        private void Set_PlayerPrefsInfo(MemberInfo info, object source)
         {
-            string key = field.Name;
-            object value = field.GetValue(source);
+            string key = info.Name;
+            object value = GetValueInfo(info, source);
 
             if (value is int intValue)
             {
@@ -487,129 +772,373 @@ namespace RealMethod
             {
                 PlayerPrefs.SetInt(key, bytevalue);
             }
+            else if (value is Vector2 v2Value)
+            {
+                RM_Save.SetVector2(key, v2Value);
+            }
+            else if (value is Vector3 v3Value)
+            {
+                RM_Save.SetVector3(key, v3Value);
+            }
+            else if (value is Quaternion quatValue)
+            {
+                RM_Save.SetQuaternion(key, quatValue);
+            }
+            else if (value is Transform transValue)
+            {
+                RM_Save.SetTransform(key, transValue);
+            }
+            else if (value is UniqueAsset asset)
+            {
+                RM_Save.SetAsset(key, asset);
+            }
+            else if (value is IList<int> Intlist)
+            {
+                RM_Save.SetArray(key, Intlist.ToArray());
+            }
+            else if (value is IList<float> FloatList)
+            {
+                RM_Save.SetArray(key, FloatList.ToArray());
+            }
+            else if (value is IList<string> StringList)
+            {
+                RM_Save.SetArray(key, StringList.ToArray());
+            }
+            else if (value is IList<bool> BoolList)
+            {
+                RM_Save.SetArray(key, BoolList.ToArray());
+            }
+            else if (value is IList<System.Enum> EnumList)
+            {
+                RM_Save.SetArray(key, EnumList.ToArray());
+            }
+            else if (value is IList<byte> ByteList)
+            {
+                RM_Save.SetArray(key, ByteList.ToArray());
+            }
+            else if (value is IList<Vector3> V3List)
+            {
+                RM_Save.SetArray(key, V3List.ToArray());
+            }
+            else if (value is IList<Vector2> V2List)
+            {
+                RM_Save.SetArray(key, V2List.ToArray());
+            }
+            else if (value is int[] IntArray)
+            {
+                RM_Save.SetArray(key, IntArray);
+            }
+            else if (value is float[] FloatArray)
+            {
+                RM_Save.SetArray(key, FloatArray);
+            }
+            else if (value is string[] StringArray)
+            {
+                RM_Save.SetArray(key, StringArray);
+            }
+            else if (value is bool[] BoolArray)
+            {
+                RM_Save.SetArray(key, BoolArray);
+            }
+            else if (value is System.Enum[] EnumArray)
+            {
+                RM_Save.SetArray(key, EnumArray);
+            }
+            else if (value is byte[] ByteArray)
+            {
+                RM_Save.SetArray(key, ByteArray);
+            }
+            else if (value is Vector3[] V3Array)
+            {
+                RM_Save.SetArray(key, V3Array);
+            }
+            else if (value is Vector2[] V2Array)
+            {
+                RM_Save.SetArray(key, V2Array);
+            }
             else
             {
                 Debug.LogWarning($"Unsupported type for PlayerPrefs: {value?.GetType().Name} (Key: {key})");
             }
-        }
-        private void PlayerPrefsSetValueByProperty(PropertyInfo property, object source)
-        {
-            string key = property.Name;
-            object value = property.GetValue(source);
 
-            if (value is int intValue)
+        }
+        private void Get_PlayerPrefsInfo(MemberInfo info, object source)
+        {
+            string key = info.Name;
+            System.Type type = GetInfoType(info);
+
+            if (!PlayerPrefs.HasKey(key)) return;
+
+            if (type == typeof(int))
             {
-                PlayerPrefs.SetInt(key, intValue);
+                SetValueInfo(info, source, PlayerPrefs.GetInt(key));
             }
-            else if (value is float floatValue)
+            else if (type == typeof(float))
             {
-                PlayerPrefs.SetFloat(key, floatValue);
+                SetValueInfo(info, source, PlayerPrefs.GetFloat(key));
             }
-            else if (value is string stringValue)
+            else if (type == typeof(string))
             {
-                PlayerPrefs.SetString(key, stringValue);
+                SetValueInfo(info, source, PlayerPrefs.GetString(key));
             }
-            else if (value is bool boolValue)
+            else if (type == typeof(bool))
             {
-                PlayerPrefs.SetInt(key, boolValue ? 1 : 0);
+                SetValueInfo(info, source, PlayerPrefs.GetInt(key) == 1);
             }
-            else if (value is System.Enum enumvalue)
+            else if (type == typeof(System.Enum))
             {
-                PlayerPrefs.SetInt(key, System.Convert.ToInt32(enumvalue));
+                SetValueInfo(info, source, PlayerPrefs.GetInt(key));
             }
-            else if (value is byte bytevalue)
+            else if (type == typeof(byte))
             {
-                PlayerPrefs.SetInt(key, bytevalue);
+                SetValueInfo(info, source, PlayerPrefs.GetInt(key));
+            }
+            else if (type == typeof(Vector2))
+            {
+                SetValueInfo(info, source, RM_Save.GetVector2(key));
+            }
+            else if (type == typeof(Vector3))
+            {
+                SetValueInfo(info, source, RM_Save.GetVector3(key));
+            }
+            else if (type == typeof(Quaternion))
+            {
+                SetValueInfo(info, source, RM_Save.GetQuaternion(key));
+            }
+            else if (type == typeof(Transform))
+            {
+                Transform t = (Transform)GetValueInfo(info, source);
+                RM_Save.GetTransform(key, t);
+            }
+            else if (type == typeof(UniqueAsset))
+            {
+                SetValueInfo(info, source, RM_Save.GetAsset<UniqueAsset>(key));
+            }
+            else if (type == typeof(List<int>))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<int>(key).ToList());
+            }
+            else if (type == typeof(List<float>))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<float>(key).ToList());
+            }
+            else if (type == typeof(List<string>))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<string>(key).ToList());
+            }
+            else if (type == typeof(List<bool>))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<bool>(key).ToList());
+            }
+            else if (type == typeof(List<System.Enum>))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<System.Enum>(key).ToList());
+            }
+            else if (type == typeof(List<byte>))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<byte>(key).ToList());
+            }
+            else if (type == typeof(List<Vector3>))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<Vector3>(key).ToList());
+            }
+            else if (type == typeof(List<Vector2>))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<Vector2>(key).ToList());
+            }
+            else if (type == typeof(int[]))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<int>(key));
+            }
+            else if (type == typeof(float[]))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<float>(key));
+            }
+            else if (type == typeof(string[]))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<string>(key));
+            }
+            else if (type == typeof(bool[]))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<bool>(key));
+            }
+            else if (type == typeof(System.Enum[]))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<System.Enum>(key));
+            }
+            else if (type == typeof(byte[]))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<byte>(key));
+            }
+            else if (type == typeof(Vector2[]))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<Vector2>(key));
+            }
+            else if (type == typeof(Vector3[]))
+            {
+                SetValueInfo(info, source, RM_Save.GetArray<Vector3>(key));
+            }
+        }
+        private object GetValueInfo(MemberInfo info, object source)
+        {
+            if (info is FieldInfo field)
+            {
+                return field.GetValue(source);
+            }
+            else if (info is PropertyInfo property)
+            {
+                return property.GetValue(source);
             }
             else
             {
-                Debug.LogWarning($"Unsupported type for PlayerPrefs: {value?.GetType().Name} (Key: {key})");
+                Debug.LogError("Something wrong MemeberInfo has not correct valid");
+                return null;
             }
         }
-        private void PlayerPrefsGetValueByField(FieldInfo field, object source)
+        private void SetValueInfo<T>(MemberInfo info, object source, T value)
         {
-            string key = field.Name;
-
-            if (!PlayerPrefs.HasKey(key)) return;
-
-            if (field.FieldType == typeof(int))
+            if (info is FieldInfo field)
             {
-                field.SetValue(source, PlayerPrefs.GetInt(key));
+                field.SetValue(source, value);
             }
-            else if (field.FieldType == typeof(float))
+            else if (info is PropertyInfo property)
             {
-                field.SetValue(source, PlayerPrefs.GetFloat(key));
+                property.SetValue(source, value);
             }
-            else if (field.FieldType == typeof(string))
+            else
             {
-                field.SetValue(source, PlayerPrefs.GetString(key));
-            }
-            else if (field.FieldType == typeof(bool))
-            {
-                field.SetValue(source, PlayerPrefs.GetInt(key) == 1);
-            }
-            else if (field.FieldType == typeof(System.Enum))
-            {
-                field.SetValue(source, PlayerPrefs.GetInt(key) == 1);
-            }
-            else if (field.FieldType == typeof(byte))
-            {
-                field.SetValue(source, PlayerPrefs.GetInt(key) == 1);
+                Debug.LogError("Something wrong MemeberInfo has not correct valid");
+                return;
             }
         }
-        private void PlayerPrefsGetValueByProperty(PropertyInfo property, object source)
+        private System.Type GetInfoType(MemberInfo info)
         {
-            string key = property.Name;
-
-            if (!PlayerPrefs.HasKey(key)) return;
-
-            if (property.PropertyType == typeof(int))
+            if (info is FieldInfo field)
             {
-                property.SetValue(source, PlayerPrefs.GetInt(key));
+                return field.FieldType;
             }
-            else if (property.PropertyType == typeof(float))
+            else if (info is PropertyInfo property)
             {
-                property.SetValue(source, PlayerPrefs.GetFloat(key));
+                return property.PropertyType;
             }
-            else if (property.PropertyType == typeof(string))
+            else
             {
-                property.SetValue(source, PlayerPrefs.GetString(key));
-            }
-            else if (property.PropertyType == typeof(bool))
-            {
-                property.SetValue(source, PlayerPrefs.GetInt(key) == 1);
-            }
-            else if (property.PropertyType == typeof(System.Enum))
-            {
-                property.SetValue(source, PlayerPrefs.GetInt(key) == 1);
-            }
-            else if (property.PropertyType == typeof(byte))
-            {
-                property.SetValue(source, PlayerPrefs.GetInt(key) == 1);
+                Debug.LogError("Something wrong MemeberInfo has not correct valid");
+                return null;
             }
         }
+
+
+        // Abstract Mehtod
+        protected abstract bool CustomSavefile(IFile file, ISaveMethod Method, SaveState state);
+
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        [ContextMenu("PrintPath")]
+        private void PrintPath()
+        {
+            if (fromat == SaveFormat.PlayerPrefs)
+            {
+                Debug.Log("PlayerPrefs store by OS [Not Specefic location]");
+                return;
+            }
+
+            string filetype = fromat == SaveFormat.TEXT ? ".txt" :
+            fromat == SaveFormat.Binary ? ".RSave" :
+            fromat == SaveFormat.XML ? ".xml" :
+            fromat == SaveFormat.JSON ? ".json" : "";
+
+            if (CustomPath)
+            {
+                Debug.Log(FilePath + "/FileName" + filetype);
+            }
+            else
+            {
+                Debug.Log(Application.persistentDataPath + "/FileName" + filetype);
+            }
+        }
+#endif
 
     }
-    public abstract class SaveLoadManager : SaveMethodManager
+    public abstract class SaveManager_Storage : SaveManager_Method
     {
-        [Header("SaveSetting")]
-        [SerializeField]
-        private bool LoadOnInitiate = true;
-        [SerializeField, ConditionalHide("LoadOnInitiate", true, false)]
-        private SaveFile[] DefaultFile = new SaveFile[0];
+        [Header("Details")]
+        [SerializeField, ConditionalShowByEnum("Mode", SaveFileStructure.SingleFile)]
+        private SaveAsset SingeFileAsset;
+        [SerializeField, ConditionalShowByEnum("Mode", SaveFileStructure.MergedFile)]
+        private SoftType<IMergeFile> MergeFileClass;
+        private object MySaveFile;
+        public readonly List<IFile> FileList = new List<IFile>(3);
 
-        // IGameManager
-        public override void InitiateManager(bool AlwaysLoaded)
+
+        // SaveManager Methods
+        protected override IFile CreateMainFile()
         {
-            base.InitiateManager(AlwaysLoaded);
-
-            if (LoadOnInitiate)
+            if (Mode == SaveFileStructure.MergedFile)
             {
-                foreach (var file in DefaultFile)
+                MySaveFile = System.Activator.CreateInstance(MergeFileClass);
+            }
+            if (Mode == SaveFileStructure.SingleFile)
+            {
+                MySaveFile = ScriptableObject.CreateInstance(SingeFileAsset.GetType());
+            }
+
+            if (MySaveFile is IFile provider)
+            {
+                return provider;
+            }
+            else
+            {
+                Debug.LogError("Your MainFile should implement IFile interface");
+                return null;
+            }
+        }
+        protected override T GetMainFile<T>()
+        {
+            return (T)MySaveFile;
+        }
+        public override bool HasFile(IFile file)
+        {
+            return FileList.Contains(file);
+        }
+        public override bool AddFile(IFile file)
+        {
+            if (file == null)
+            {
+                WriteLog($"File not valid");
+                return false;
+            }
+
+            if (FileList.Contains(file))// reference comparison
+            {
+                WriteLog($"File({file.Key}) already added");
+                return false;
+            }
+
+            if (Mode == SaveFileStructure.MultiFile)
+            {
+                if (IsExist(file))
                 {
                     Load(file);
                 }
             }
+
+            FileList.Add(file);
+            return true;
+        }
+        public override bool RemoveFile(IFile file)
+        {
+            if (file == null)
+            {
+                WriteLog($"File not valid");
+                return false;
+            }
+
+            return FileList.Remove(file); // removes same reference
+        }
+        public override IFile[] GetAllFiles()
+        {
+            return FileList.ToArray();
         }
     }
 

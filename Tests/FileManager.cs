@@ -50,13 +50,13 @@ namespace RealMethod
                 }
                 else
                 {
-                    Debug.LogWarning($"Can't Add file with name: {file.Name}");
+                    Debug.LogWarning($"Can't Add file with name: {file.Key}");
                     return false;
                 }
             }
             else
             {
-                Debug.LogWarning($"There is a file with this name: {file.Name}");
+                Debug.LogWarning($"There is a file with this name: {file.Key}");
                 return false;
             }
         }
@@ -70,7 +70,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Can't find any file with this name: {file.Name}");
+                Debug.LogWarning($"Can't find any file with this name: {file.Key}");
                 return false;
             }
         }
@@ -97,22 +97,22 @@ namespace RealMethod
         protected abstract bool CanAddFile(IFile file);
     }
 
-    public abstract class FileManager<T> : FileManager where T : FileAsset
-    {
-        [Header("Files")]
-        [SerializeField]
-        private T[] Files;
+    // public abstract class FileManager<T> : FileManager where T : FileAsset
+    // {
+    //     [Header("Files")]
+    //     [SerializeField]
+    //     private T[] Files;
 
 
-        // IGameManager
-        public override void InitiateManager(bool AlwaysLoaded)
-        {
-            base.InitiateManager(AlwaysLoaded);
-            foreach (var file in Files)
-            {
-                AddFile(file);
-            }
-            Files = null;
-        }
-    }
+    //     // IGameManager
+    //     public override void InitiateManager(bool AlwaysLoaded)
+    //     {
+    //         base.InitiateManager(AlwaysLoaded);
+    //         foreach (var file in Files)
+    //         {
+    //             AddFile(file);
+    //         }
+    //         Files = null;
+    //     }
+    // }
 }

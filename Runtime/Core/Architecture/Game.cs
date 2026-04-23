@@ -146,8 +146,29 @@ namespace RealMethod
         public static event Action<int> OnStateChanged;
 
 
+        /// <summary>
+        /// Gets the active <see cref="ISaveSystem"/> implementation used for saving,
+        /// loading, and checking file existence. This value is assigned internally
+        /// through <c>CheckSaveSystem</c>.
+        /// </summary>
+        public ISaveSystem SaveSystem
+        {
+            get
+            {
+                if (IsGameInitialized == false)
+                {
+                    Debug.LogWarning("Game has not been initialized yet! You cannot call this method before initialization.");
+                    return null;
+                }
 
 
+                ISaveSystem result = World.gameObject.GetComponent<ISaveSystem>();
+                if (result == null)
+                    result = gameObject.GetComponentInChildren<ISaveSystem>();
+
+                return result;
+            }
+        }
         /// <summary>
         /// Cached array of managers that were instantiated from configured game prefabs.
         /// </summary>
@@ -156,6 +177,7 @@ namespace RealMethod
         /// List of runtime-registered <see cref="Service"/> instances owned by the game.
         /// </summary>
         private readonly Dictionary<Type, IService> Services = new();
+
 
 
 
@@ -790,6 +812,34 @@ namespace RealMethod
             return false;
         }
         /// <summary>
+        /// Saves the provided file using the active <see cref="ISaveSystem"/> implementation.
+        /// Logs a warning if no save system is available.
+        /// </summary>
+        public static void Save()
+        {
+            var system = Instance.SaveSystem;
+            if (system == null)
+            {
+                Debug.LogWarning("There is not any ISaveSystem Implemntation");
+                return;
+            }
+            system.SaveAll();
+        }
+        /// <summary>
+        /// Loads the provided file using the active <see cref="ISaveSystem"/> implementation.
+        /// Logs a warning if no save system is available.
+        /// </summary>
+        public static void Load()
+        {
+            var system = Instance.SaveSystem;
+            if (system == null)
+            {
+                Debug.LogWarning("There is not any ISaveSystem Implemntation");
+                return;
+            }
+            system.LoadAll();
+        }
+        /// <summary>
         /// Quits the application. In the Unity Editor this stops play mode instead.
         /// </summary>
         public static void Quit()
@@ -1047,6 +1097,7 @@ namespace RealMethod
         }
 
 
+
         /// <summary>
         /// Callback invoked when a new <see cref="World"/> is created or assigned.
         /// Updates the static <see cref="World"/> reference and notifies all services.
@@ -1079,6 +1130,7 @@ namespace RealMethod
             ((IService)Bridge).Deleted(this);
             OnGameClosed();
         }
+
 
 #if UNITY_EDITOR
         private void Awake()
