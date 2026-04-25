@@ -1081,7 +1081,15 @@ namespace RealMethod
             }
             if (Mode == SaveFileStructure.SingleFile)
             {
-                MySaveFile = ScriptableObject.CreateInstance(SingeFileAsset.GetType());
+                if (SingeFileAsset != null)
+                {
+                    MySaveFile = ScriptableObject.CreateInstance(SingeFileAsset.GetType());
+                }
+                else
+                {
+                    Debug.LogWarning("SingleFileAsset is not valid");
+                    // Mode = SaveFileStructure.MultiFile;
+                }
             }
 
             if (MySaveFile is IFile provider)
