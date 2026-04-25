@@ -3,14 +3,20 @@ using UnityEngine;
 
 namespace RealMethod
 {
-
+    // FILE
     public interface IFile : IIdentifier
     {
         string FileName { get; }
         object FileObject { get; }
     }
+    public interface ISaveFile : IFile, ISave
+    {
+        void SetName(string NewName);
+    }
 
 
+
+    // SAVE
     public interface ISaveSystem
     {
         /// <summary>
@@ -67,14 +73,6 @@ namespace RealMethod
         void OnLoaded();
         void OnSaved();
     }
-
-
-    public interface ISaveFile : IFile, ISave
-    {
-        void SetName(string NewName);
-    }
-
-
     /// <summary>
     /// this is UniqueAsset that implement ISaveFile Interface with some Editor Function
     /// for testing save and load
@@ -213,6 +211,5 @@ namespace RealMethod
 
 
     }
-
 
 }
