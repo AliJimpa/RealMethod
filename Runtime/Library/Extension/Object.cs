@@ -17,6 +17,180 @@ namespace RealMethod
                 return false;
             }
         }
+        /// <summary>
+        /// Sends an "OnSpawn" message to the owner object.
+        /// Auto detect type for MonoBehaviour,GameObject,PrimitiveAsset and object
+        /// </summary>
+        /// <param name="owner">The GameObject to send the message to.</param>
+        /// <param name="spawner">The object that triggered the spawn event (passed as parameter to the message).</param>
+        /// <param name="option">Specifies whether the message must be received, or if it is optional.</param>
+        public static void InvokeSpawnEvent(this object owner, Object spawner = null, SendMessageOptions option = SendMessageOptions.DontRequireReceiver)
+        {
+            if (owner is MonoBehaviour mono)
+            {
+                if (spawner != null)
+                {
+                    if (mono is ISpawnWithAuthor provider)
+                    {
+                        provider.OnSpawn(spawner);
+                    }
+                    else
+                    {
+                        mono.SendMessage(MessageNames.Spawn, spawner, option);
+                    }
+                }
+                else
+                {
+                    if (mono is ISpawn provider)
+                    {
+                        provider.OnSpawn();
+                    }
+                    else
+                    {
+                        mono.SendMessage(MessageNames.Spawn, option);
+                    }
+                }
+            }
+            else if (owner is GameObject gameobject)
+            {
+                if (spawner != null)
+                {
+                    ISpawnWithAuthor provider = gameobject.GetComponent<ISpawnWithAuthor>();
+                    if (provider != null)
+                    {
+                        provider.OnSpawn(spawner);
+                    }
+                    else
+                    {
+                        gameobject.SendMessage(MessageNames.Spawn, spawner, option);
+                    }
+                }
+                else
+                {
+                    ISpawn provider = gameobject.GetComponent<ISpawn>();
+                    if (provider != null)
+                    {
+                        provider.OnSpawn();
+                    }
+                    else
+                    {
+                        gameobject.SendMessage(MessageNames.Spawn, option);
+                    }
+                }
+            }
+            else
+            {
+                if (spawner != null)
+                {
+                    if (owner is ISpawnWithAuthor provider)
+                    {
+                        provider.OnSpawn(spawner);
+                    }
+                    else
+                    {
+                        owner.SendMessage(MessageNames.Spawn, spawner, option);
+                    }
+                }
+                else
+                {
+                    if (owner is ISpawn provider)
+                    {
+                        provider.OnSpawn();
+                    }
+                    else
+                    {
+                        owner.SendMessage(MessageNames.Spawn, option);
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// Sends an "OnDespawn" message to the owner object.
+        /// Auto detect type for MonoBehaviour,GameObject,PrimitiveAsset and object
+        /// </summary>
+        /// <param name="owner">The GameObject to send the message to.</param>
+        /// <param name="despawner">The object that triggered the despawn event (passed as parameter to the message).</param>
+        /// <param name="option">Specifies whether the message must be received, or if it is optional.</param>
+        public static void InvokeDespawnEvent(this object owner, Object despawner = null, SendMessageOptions option = SendMessageOptions.DontRequireReceiver)
+        {
+            if (owner is MonoBehaviour mono)
+            {
+                if (despawner != null)
+                {
+                    if (mono is IDespawnWithAuthor provider)
+                    {
+                        provider.OnDespawn(despawner);
+                    }
+                    else
+                    {
+                        mono.SendMessage(MessageNames.Despawn, despawner, option);
+                    }
+                }
+                else
+                {
+                    if (mono is IDespawn provider)
+                    {
+                        provider.OnDespawn();
+                    }
+                    else
+                    {
+                        mono.SendMessage(MessageNames.Despawn, option);
+                    }
+                }
+            }
+            else if (owner is GameObject gameobject)
+            {
+                if (despawner != null)
+                {
+                    IDespawnWithAuthor provider = gameobject.GetComponent<IDespawnWithAuthor>();
+                    if (provider != null)
+                    {
+                        provider.OnDespawn(despawner);
+                    }
+                    else
+                    {
+                        gameobject.SendMessage(MessageNames.Despawn, despawner, option);
+                    }
+                }
+                else
+                {
+                    IDespawn provider = gameobject.GetComponent<IDespawn>();
+                    if (provider != null)
+                    {
+                        provider.OnDespawn();
+                    }
+                    else
+                    {
+                        gameobject.SendMessage(MessageNames.Despawn, option);
+                    }
+                }
+            }
+            else
+            {
+                if (despawner != null)
+                {
+                    if (owner is IDespawnWithAuthor provider)
+                    {
+                        provider.OnDespawn(despawner);
+                    }
+                    else
+                    {
+                        owner.SendMessage(MessageNames.Despawn, despawner, option);
+                    }
+                }
+                else
+                {
+                    if (owner is IDespawn provider)
+                    {
+                        provider.OnDespawn();
+                    }
+                    else
+                    {
+                        owner.SendMessage(MessageNames.Despawn, option);
+                    }
+                }
+            }
+        }
         public static void InvokeSaveEvent(this object obj, SendMessageOptions option = SendMessageOptions.RequireReceiver)
         {
             if (obj is ISave provider)
