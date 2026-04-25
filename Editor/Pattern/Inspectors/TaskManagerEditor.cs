@@ -1,5 +1,7 @@
-using System;
+using System.Collections;
+using System.Reflection;
 using UnityEditor;
+using UnityEngine;
 
 namespace RealMethod.Editor
 {
@@ -7,28 +9,37 @@ namespace RealMethod.Editor
     public class TaskManagerEditor : UnityEditor.Editor
     {
         private TaskManager BaseComponent;
+        FieldInfo tasksField;
 
         private void OnEnable()
         {
             BaseComponent = (TaskManager)target;
+            tasksField = target.GetType().GetField(
+            "Tasks",
+            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public
+
+        );
+
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField(" ----------------- Tasks ----------------- ");
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             if (BaseComponent != null)
             {
                 if (BaseComponent.Count > 0)
                 {
-                    ITask[] tasks = BaseComponent.GetAllUnits();
-                    foreach (var task in tasks)
+                    IList tasks = tasksField.GetValue(target) as IList;
+                    for (int i = 0; i < tasks.Count; i++)
                     {
-                        EditorGUILayout.LabelField($"{task}");
+                        object task = tasks[i];
+                        if (task == null)
+                            continue;
+                        EditorGUILayout.LabelField($"{i}.{task.GetType().Name}", EditorStyles.boldLabel);
                     }
                     EditorGUILayout.Space();
-                    EditorGUILayout.LabelField($"Total: {tasks.Length}");
+                    EditorGUILayout.LabelField($"Total: {BaseComponent.Count}");
                 }
 
             }
@@ -36,48 +47,6 @@ namespace RealMethod.Editor
 
         }
     }
-
-
-    [CustomEditor(typeof(TaskAsset), true)]
-    public class TaskAssetCompWindow : UnityEditor.Editor
-    {
-        private TaskAsset BaseAsset;
-
-        private void OnEnable()
-        {
-            BaseAsset = (TaskAsset)target;
-        }
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Debug.... ");
-            if (BaseAsset != null)
-            {
-                EditorGUILayout.LabelField($"Status: {CheckStatus(BaseAsset)}");
-                if (BaseAsset is TaskBehaviour provider)
-                {
-                    if (provider.IsInfinit)
-                    {
-                        EditorGUILayout.LabelField($"Time: Infinit");
-                    }
-                    else
-                    {
-                        EditorGUILayout.LabelField($"Time: {Math.Round(provider.ElapsedTime, 2)}  ({Math.Round((1 - provider.NormalizedTime) * 100, 2)}%)");
-                    }
-                }
-
-            }
-        }
-
-
-        private string CheckStatus(TaskAsset task)
-        {
-            return task.IsEnable ? "Enable" : "Disable";
-        }
-    }
-
 
 
 
