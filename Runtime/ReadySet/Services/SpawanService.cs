@@ -298,22 +298,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 var target = Object.Instantiate(original);
-                if (target is MonoBehaviour mono)
-                {
-                    mono.InvokeSpawnEvent(spawner);
-                }
-                else if (target is GameObject obj)
-                {
-                    obj.InvokeSpawnEvent(spawner);
-                }
-                else if (target is PrimitiveAsset asset)
-                {
-                    asset.InvokeSpawnEvent(spawner);
-                }
-                else
-                {
-                    Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
-                }
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -326,22 +311,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 var target = Object.Instantiate(original, parent);
-                if (target is MonoBehaviour mono)
-                {
-                    mono.InvokeSpawnEvent(spawner);
-                }
-                else if (target is GameObject obj)
-                {
-                    obj.InvokeSpawnEvent(spawner);
-                }
-                else if (target is PrimitiveAsset asset)
-                {
-                    asset.InvokeSpawnEvent(spawner);
-                }
-                else
-                {
-                    Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
-                }
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -354,22 +324,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 var target = Object.Instantiate(original, position, rotation);
-                if (target is MonoBehaviour mono)
-                {
-                    mono.InvokeSpawnEvent(spawner);
-                }
-                else if (target is GameObject obj)
-                {
-                    obj.InvokeSpawnEvent(spawner);
-                }
-                else if (target is PrimitiveAsset asset)
-                {
-                    asset.InvokeSpawnEvent(spawner);
-                }
-                else
-                {
-                    Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
-                }
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -382,22 +337,7 @@ namespace RealMethod
             if (spawner != null)
             {
                 var target = Object.Instantiate(original, parent, worldPositionStays);
-                if (target is MonoBehaviour mono)
-                {
-                    mono.InvokeSpawnEvent(spawner);
-                }
-                else if (target is GameObject obj)
-                {
-                    obj.InvokeSpawnEvent(spawner);
-                }
-                else if (target is PrimitiveAsset asset)
-                {
-                    asset.InvokeSpawnEvent(spawner);
-                }
-                else
-                {
-                    Debug.LogWarning($"Spawn Event can only be send to MonoBehaviour or GameObject. Target type: {target.GetType()}");
-                }
+                target.InvokeSpawnEvent(spawner);
                 return target;
             }
             else
@@ -722,34 +662,12 @@ namespace RealMethod
             return target;
         }
         // Task
-        public static bool Task(object TaskObj, Object author)
+        public static T Task<T, F>(F Task, bool AutoStart = false) where T : IHandle where F : class
         {
-            if (GetManager<TaskManager>() != null)
-            {
-                if (TaskObj is ITask task)
-                {
-                    if (!GetManager<TaskManager>().IsValid(task))
-                    {
-                        GetManager<TaskManager>().Add(task, author);
-                        return true;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Task already is running");
-                        return false;
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"Your Object should have {typeof(ITask)} Interface");
-                    return false;
-                }
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: TaskManager is not available.");
-                return false;
-            }
+            TaskManager<T> manager = GetManager<TaskManager<T>>();
+            if (manager == null)
+                return default;
+            return manager.Create(Task, AutoStart);
         }
 
         // Enumerator

@@ -119,7 +119,7 @@ namespace RealMethod
                 }
             }
 
-            Debug.LogError($"{Ins}:Failed to spawn, Manager({typeof(T).Name}) is not available.");
+            Debug.LogError($"{Ins}:Failed to Despawn, Manager({typeof(T).Name}) is not available.");
             return null;
         }
 
@@ -218,35 +218,12 @@ namespace RealMethod
 
 
         // Task
-        public static bool Task(object TaskObj, Object author, bool debug = true)
+        public static bool Task<T>(T task) where T : IHandle
         {
-            if (GetManager<TaskManager>() == null)
-            {
-                if (debug)
-                    Debug.LogWarning("TaskManager is not available.");
+            TaskManager<T> manager = GetManager<TaskManager<T>>();
+            if (manager == null)
                 return false;
-            }
-
-            if (TaskObj is ITask task)
-            {
-                if (GetManager<TaskManager>().IsValid(task))
-                {
-                    GetManager<TaskManager>().Remove(task, author);
-                    return true;
-                }
-                else
-                {
-                    if (debug)
-                        Debug.LogWarning($"Task Not Found!");
-                    return false;
-                }
-            }
-            else
-            {
-                if (debug)
-                    Debug.LogWarning($"Your Object should have {typeof(ITask)} Interfave");
-                return false;
-            }
+            return manager.Destroy(task);
         }
 
         // Enumerator
