@@ -1,6 +1,28 @@
 namespace RealMethod
 {
-    public interface IBehaviour
+    /// <summary>
+    /// Represents the root interface for any system that exposes 
+    /// an external control handle. 
+    /// 
+    /// This interface itself defines no functionality; instead, it acts 
+    /// as a conceptual marker for objects whose execution, lifecycle, 
+    /// or behavior can be controlled through derived interfaces such as 
+    /// IHandleTrigger, IHandleLifecycle, IHandleTimed, or IHandleAction.
+    /// 
+    /// In other words, IHandle identifies a controllable unit that 
+    /// provides a unified access point for interacting with the 
+    /// underlying process, behavior, or action.
+    /// </summary>
+    public interface IHandle : IIdentifier
+    {
+    }
+
+    public interface IHandleTrigger : IHandle
+    {
+        void Trigger();
+        void Cancel();
+    }
+    public interface IHandleBehaviour : IHandle
     {
         /// <summary> Called when the Behaviour starts. </summary>
         void Start();
@@ -11,10 +33,10 @@ namespace RealMethod
         /// <summary> Whether the Behaviour is currently started. </summary>
         bool IsStarted { get; }
     }
-    public interface IBehaviourCycle : IBehaviour
+    public interface IHandleBehaviourCycle : IHandleBehaviour
     {
         /// <summary> Called when the Behaviour starts with override Time. </summary>
-        void Start(float overrideTime);
+        void Start(float Duration);
         // <summary> Whether the Behaviour has finished execution. </summary>
         bool IsFinished { get; }
         /// <summary> Has Behaviour infinit lifetime. </summary>
@@ -26,7 +48,7 @@ namespace RealMethod
         /// <summary> Normalized time since Behaviour Live. </summary>
         float NormalizedTime { get; }
     }
-    public interface IBehaviourAction : IBehaviourCycle
+    public interface IHandleBehaviourAction : IHandleBehaviourCycle
     {
         /// <summary> Called to pause the Behaviour temporarily. </summary>
         void Pause();
@@ -39,5 +61,6 @@ namespace RealMethod
         /// <summary> Whether the Behaviour is currently paused. </summary>
         bool IsPaused { get; }
     }
+
 
 }
