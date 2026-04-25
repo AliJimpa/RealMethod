@@ -1028,6 +1028,7 @@ namespace RealMethod
             if (element != null)
             {
                 Instance.DrawTasks.Add(element);
+                Instance.DrawTasks.Sort((a, b) => a.Priority.CompareTo(b.Priority));
                 element.Active();
             }
         }
