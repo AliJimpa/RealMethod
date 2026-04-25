@@ -181,7 +181,6 @@ namespace RealMethod
 
 
 
-
         /// <summary>
         /// Initializes the game singleton and core systems on subsystem registration.
         /// This sets up the <see cref="Instance"/>, game <see cref="Service"/>,
@@ -367,6 +366,8 @@ namespace RealMethod
                 Instance.OnGameStart();
             }
         }
+
+
 
 
         /// <summary>
@@ -1015,6 +1016,36 @@ namespace RealMethod
         {
             Debug.Assert(condition, message, context);
         }
+        /// <summary>
+        /// Adds a new draw task to the rendering queue.
+        /// </summary>
+        /// <param name="element">The draw task to add. Ignored if null.</param>
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
+        public static void Draw(IDrawTask element)
+        {
+            if (element != null)
+            {
+                Instance.DrawTasks.Add(element);
+                element.Active();
+            }
+        }
+        /// <summary>
+        /// Removes the specified draw task from the rendering queue.
+        /// </summary>
+        /// <param name="element">The draw task to remove.</param>
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        [HideInCallstack]
+        public static void Erase(IDrawTask element)
+        {
+            Instance.DrawTasks.Remove(element);
+            element.Deactive();
+        }
+
+
+
 
 
         /// <summary>
@@ -1049,6 +1080,8 @@ namespace RealMethod
             }
             return null;
         }
+
+
 
 
         /// <summary>
@@ -1095,6 +1128,7 @@ namespace RealMethod
         {
 
         }
+
 
 
 
@@ -1185,6 +1219,56 @@ namespace RealMethod
         private void FixedUpdate()
         {
 
+        }
+#endif
+
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        /// <summary>
+        /// A list containing all active draw tasks queued for rendering.
+        /// </summary>
+        private readonly List<IDrawTask> DrawTasks = new List<IDrawTask>();
+        private void OnGUI()
+        {
+            for (int i = 0; i < DrawTasks.Count; i++)
+            {
+                IDrawTask task = DrawTasks[i];
+
+                if (task == null || task.IsExpired())
+                {
+                    if (task != null)
+                        task.Deactive();
+                    DrawTasks.RemoveAt(i);
+                    continue;
+                }
+
+                if (task.GetDrawMode() != DrawMode.GUI)
+                    continue;
+
+                if (task.CanDraw(i))
+                    task.Draw(i);
+            }
+        }
+        private void OnDrawGizmos()
+        {
+            for (int i = 0; i < DrawTasks.Count; i++)
+            {
+                IDrawTask task = DrawTasks[i];
+
+                if (task == null || task.IsExpired())
+                {
+                    if (task != null)
+                        task.Deactive();
+                    DrawTasks.RemoveAt(i);
+                    continue;
+                }
+
+                if (task.GetDrawMode() != DrawMode.Gizmo)
+                    continue;
+
+                if (task.CanDraw(i))
+                    task.Draw(i);
+            }
         }
 #endif
 
