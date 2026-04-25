@@ -11,8 +11,10 @@ namespace RealMethod
 		void Update(Vector2 Offcet);
 	}
 
+
+
 	[Serializable]
-	public class LogData : IDraw, IPrint
+	public class LogData : IDrawWorkaround, IPrint
 	{
 		private PrintManager MyOwner;
 		[SerializeField]
@@ -43,7 +45,7 @@ namespace RealMethod
 		// Implement IIdentifier Interface
 		Name16 IIdentifier.NameID => GetHashCode().ToString();
 		// Implement IGUIDrawer Interface
-		bool IDraw.Start(IGameManager Manager)
+		bool IDrawWorkaround.Start(IGameManager Manager)
 		{
 			if (Manager.GetManagerClass() is PrintManager target)
 			{
@@ -57,13 +59,13 @@ namespace RealMethod
 				return false;
 			}
 		}
-		bool IDraw.CanDraw()
+		bool IDrawWorkaround.CanDraw()
 		{
 			if (IsStatic)
 				return true;
 			return !IsFinished;
 		}
-		void IDraw.Draw(Vector2 Pivot, int Index)
+		void IDrawWorkaround.Draw(Vector2 Pivot, int Index)
 		{
 			int w = Screen.width * MySize;
 			int h = Screen.height * MySize;
@@ -77,7 +79,7 @@ namespace RealMethod
 			style.normal.textColor = Color;
 			GUI.Label(rect, MyMessage, style);
 		}
-		void IDraw.End()
+		void IDrawWorkaround.End()
 		{
 
 		}
@@ -132,8 +134,16 @@ namespace RealMethod
 			}
 		}
 
+        public bool CanDraw(int Index)
+        {
+            throw new NotImplementedException();
+        }
 
-	}
+        public void Draw(int Index)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 
 	[AddComponentMenu("RealMethod/Manager/PrintManager")]
@@ -166,7 +176,7 @@ namespace RealMethod
 		public IPrint PrintStatic(Vector2 offcet)
 		{
 			var Result = new LogData(offcet);
-			((IDraw)Result).Start(this);
+			((IDrawWorkaround)Result).Start(this);
 			StaticData.Add(Result);
 			return Result;
 		}
@@ -177,7 +187,7 @@ namespace RealMethod
 			{
 				if (StaticData[i] == ID)
 				{
-					((IDraw)StaticData[i]).End();
+					((IDrawWorkaround)StaticData[i]).End();
 					StaticData.RemoveAt(i);
 					return true;
 				}
@@ -195,7 +205,7 @@ namespace RealMethod
 			base.PreDraw();
 			foreach (var item in StaticData)
 			{
-				if (item is IDraw Drawer)
+				if (item is IDrawWorkaround Drawer)
 				{
 					Drawer.Draw(Pivot, 0);
 				}

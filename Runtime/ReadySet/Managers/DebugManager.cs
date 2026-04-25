@@ -10,8 +10,17 @@ namespace RealMethod
         event Action OnPressed;
     }
 
+
+    public interface IDrawWorkaround : IDraw
+    {
+        bool Start(IGameManager Manager);
+        bool CanDraw();
+        void Draw(Vector2 Pivot, int Index);
+        void End();
+    }
+
     [System.Serializable]
-    public class ButtonData : IDraw, IButton
+    public class ButtonData : IDrawWorkaround, IButton
     {
         private DebugManager MyOwner;
         [SerializeField]
@@ -31,7 +40,7 @@ namespace RealMethod
         // Implement IIdentifier Interface
         public Name16 NameID => MyName;
         // Implement IGUIDrawer Interface
-        bool IDraw.Start(IGameManager Manager)
+        bool IDrawWorkaround.Start(IGameManager Manager)
         {
             if (Manager.GetManagerClass() is DebugManager target)
             {
@@ -44,11 +53,11 @@ namespace RealMethod
                 return false;
             }
         }
-        bool IDraw.CanDraw()
+        bool IDrawWorkaround.CanDraw()
         {
             return true;
         }
-        void IDraw.Draw(Vector2 Pivot, int Index)
+        void IDrawWorkaround.Draw(Vector2 Pivot, int Index)
         {
             if (GUI.Button(new Rect(Pivot.x + Offcet.x, (Pivot.y + Offcet.y) * Index, MyOwner.ButtonSize.x, MyOwner.ButtonSize.y), MyName))
             {
@@ -56,7 +65,7 @@ namespace RealMethod
             }
 
         }
-        void IDraw.End()
+        void IDrawWorkaround.End()
         {
             PressedEvent = null;
         }
@@ -81,6 +90,21 @@ namespace RealMethod
         public void Update(Vector2 offcet)
         {
             Offcet = offcet;
+        }
+
+        public void Start(IGameManager Manager)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CanDraw(int Index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Draw(int Index)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -110,14 +134,14 @@ namespace RealMethod
         public IButton AddButton(Name16 ButtonName, Action Callback)
         {
             var Result = new ButtonData(ButtonName, Callback);
-            ((IDraw)Result).Start(this);
+            ((IDrawWorkaround)Result).Start(this);
             Add(Result);
             return Result;
         }
         public bool Remove(IButton button)
         {
             var result = Find(button);
-            ((IDraw)result).End();
+            ((IDrawWorkaround)result).End();
             return DrawList.Remove(result);
         }
 
