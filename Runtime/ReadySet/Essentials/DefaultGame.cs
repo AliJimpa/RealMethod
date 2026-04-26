@@ -12,6 +12,7 @@ namespace RealMethod
         }
         protected override void OnGameInitialized()
         {
+            AddService<DebugService>(this);
             Debug.Log("DefultGame Initialized");
         }
         protected override void OnGameStart()

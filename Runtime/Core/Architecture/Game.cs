@@ -556,14 +556,6 @@ namespace RealMethod
             Instance.OnServiceCleand();
         }
         /// <summary>
-        /// Returns the type names of all registered game services.
-        /// </summary>
-        /// <returns>Array of service type names.</returns>
-        public string[] GetAllServiceNames()
-        {
-            return Services.Keys.Select(t => t.Name).ToArray();
-        }
-        /// <summary>
         /// Requests a scene load by build index .
         /// If the requested scene is already active, a warning is logged and <c>null</c> is returned.
         /// </summary>
@@ -1220,6 +1212,14 @@ namespace RealMethod
         private void FixedUpdate()
         {
 
+        }
+        /// <summary>
+        /// Returns the type names of all registered game services.
+        /// </summary>
+        /// <returns>Array of service type names.</returns>
+        public string[] GetAllServiceInfo()
+        {
+            return Services.Values.Select(t => t.GetInspectorInfo()).ToArray();
         }
 #endif
 

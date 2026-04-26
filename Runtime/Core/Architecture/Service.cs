@@ -26,6 +26,15 @@ namespace RealMethod
         /// </summary>
         /// <param name="author">The object responsible for deleting the service.</param>
         void Deleted(object author);
+#if UNITY_EDITOR
+        /// <summary>
+        /// Returns a formatted string containing information about this service
+        /// intended for display in the Unity Inspector or debugging interfaces.
+        /// This method is for visualization purposes only and must not affect logic.
+        /// </summary>
+        /// <returns>Formatted display information.</returns>
+        string GetInspectorInfo();
+#endif
     }
 
     /// <summary>
@@ -51,6 +60,17 @@ namespace RealMethod
         {
             OnEnd(author);
         }
+# if UNITY_EDITOR
+        string IService.GetInspectorInfo()
+        {
+            return GetDisplayInfo();
+        }
+        protected virtual string GetDisplayInfo()
+        {
+            return GetType().ToString()+": ";
+        }
+#endif
+
 
 
         /// <summary>
@@ -69,6 +89,8 @@ namespace RealMethod
         /// </summary>
         /// <param name="Author">The object responsible for deleting the service.</param>
         protected abstract void OnEnd(object Author);
+
+
     }
 
 }

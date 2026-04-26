@@ -84,6 +84,12 @@ namespace RealMethod
         {
             Managers.Clear();
         }
+#if UNITY_EDITOR
+        string IService.GetInspectorInfo()
+        {
+            return $"SelectedManagers:{Managers.Count}";
+        }
+#endif
 
         // Public Functions
         public void AddManager(IGameManager manager)
@@ -697,18 +703,6 @@ namespace RealMethod
         }
 
         // Debug
-        public static IPrint Printer(Vector2 offcet)
-        {
-            if (GetManager<PrintManager>() != null)
-            {
-                return GetManager<PrintManager>().PrintStatic(offcet);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: PrintManager is not available.");
-                return null;
-            }
-        }
         public static IButton Button(Name16 Name, System.Action Callback)
         {
             if (GetManager<DebugManager>() != null)

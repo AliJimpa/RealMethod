@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using Codice.Client.Common;
+using System.Runtime.CompilerServices;
 
 namespace RealMethod
 {
@@ -108,7 +109,6 @@ namespace RealMethod
         private Action<bool> SceneLoadingEvent;
         private Action<float> SceneLoadingProcessEvent;
         private bool isLoading;
-        private List<GameObject> Shareds = new List<GameObject>(5);
         public bool IsHolding { get; private set; } = false;
         protected float FadeTime = 0;
         private Scene CurrrentScene;
@@ -128,7 +128,12 @@ namespace RealMethod
         {
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
         }
-
+#if UNITY_EDITOR
+        string IService.GetInspectorInfo()
+        {
+            return $"IsLoading:{isLoading} - FadeTime:{FadeTime}";
+        }
+#endif
 
         // Implement IRelationBridge Interface
         event Action IRelationBridge.OnGameReady
@@ -214,43 +219,6 @@ namespace RealMethod
         }
         bool ILoadScneBridge.IsLoading => isLoading;
 
-        /// <summary>
-        /// Adds a GameObject to the shared objects collection so it can be accessed or managed globally.
-        /// </summary>
-        /// <param name="obj">GameObject should be always loaded cross scenes</param>
-        public void AddSharedObject(GameObject obj)
-        {
-            Shareds.Add(obj);
-            if (obj.gameObject.activeInHierarchy && Game.World.gameObject.activeInHierarchy)
-                obj.transform.SetParent(Game.World.transform);
-        }
-        /// <summary>
-        /// Removes a GameObject from the shared objects collection when it is no longer needed or should no longer be shared.
-        /// </summary>
-        /// <param name="obj">GameObject should not be always loaded cross scenes</param>
-        public void RemoveSharedObject(GameObject obj)
-        {
-            Shareds.Remove(obj);
-            if (obj.gameObject.activeInHierarchy)
-                obj.transform.SetParent(null);
-        }
-        /// <summary>
-        /// Check is GameObject is in Shared List
-        /// </summary>
-        /// <param name="obj">the target gameobject you want to check</param>
-        /// <returns>Return True when you gameobject is in shared list</returns>
-        public bool IsSharedObject(GameObject obj)
-        {
-            foreach (var item in Shareds)
-            {
-                if (item == obj)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
 
         /// <summary>
         /// Call this when you want to define new World class to game 
@@ -271,34 +239,7 @@ namespace RealMethod
             world.enabled = false;
             OnAdditiveWorldDetected(world);
         }
-        /// <summary>
-        /// Called in loading scene for holding some object to load complitly new scene.
-        /// With this you can managed some GameObject to active cross scene.
-        /// </summary>
-        /// <param name="active">Hold in Game class or back to persistance scne</param>
-        protected void HoldSharedObject(bool active)
-        {
-            if (Shareds.Count > 0)
-            {
-                if (active)
-                {
-                    IsHolding = true;
-                    foreach (var item in Shareds)
-                    {
-                        item.transform.SetParent(Game.Instance.transform);
-                    }
-                }
-                else
-                {
-                    foreach (var item in Shareds)
-                    {
-                        item.transform.SetParent(Game.World.transform);
-                    }
-                    IsHolding = false;
-                }
 
-            }
-        }
 
 
 
@@ -469,7 +410,6 @@ namespace RealMethod
             //StartLoading
             isLoading = true;
             SceneLoadingEvent?.Invoke(true);
-            HoldSharedObject(true);
             float fadingtime = FadeTime;
 
             //Fading Screen
@@ -510,7 +450,6 @@ namespace RealMethod
 
             //FinishLoading
             SceneLoadingEvent?.Invoke(false);
-            HoldSharedObject(false);
             isLoading = false;
         }
         private IEnumerator AddSceneAsync(Action callback, string scene, int scneIndex = -1)
@@ -543,7 +482,6 @@ namespace RealMethod
             //StartLoading
             isLoading = true;
             SceneLoadingEvent?.Invoke(true);
-            HoldSharedObject(true);
             float fadingtime = FadeTime;
 
             //Fading Screen
@@ -569,7 +507,6 @@ namespace RealMethod
                 isLoading = false;
                 yield return null;
             }
-            HoldSharedObject(false);
 
             // Load Additive Levels
             for (int i = 0; i < WS.Count; i++)
@@ -600,7 +537,6 @@ namespace RealMethod
             SceneLoadingEvent?.Invoke(false);
             isLoading = false;
         }
-
 
     }
 }

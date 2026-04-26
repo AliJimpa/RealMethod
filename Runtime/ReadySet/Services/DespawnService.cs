@@ -82,6 +82,12 @@ namespace RealMethod
         {
             Managers.Clear();
         }
+#if UNITY_EDITOR
+        string IService.GetInspectorInfo()
+        {
+            return $"SelectedManagers:{Managers.Count}";
+        }
+#endif
 
         // Public Functions
         public void AddManager(IGameManager manager)
@@ -253,16 +259,6 @@ namespace RealMethod
         }
 
         // Debug
-        public static bool Printer(IPrint printer, bool debug = true)
-        {
-            if (GetManager<PrintManager>() == null)
-            {
-                if (debug)
-                    Debug.LogWarning("Despawn PrintManager is not available.");
-                return false;
-            }
-            return GetManager<PrintManager>().RemoveStatic(printer);
-        }
         public static bool Button(IButton button, bool debug = true)
         {
             if (GetManager<DebugManager>() == null)
