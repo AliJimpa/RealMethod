@@ -553,7 +553,6 @@ namespace RealMethod
         public static void ClearService()
         {
             Instance.Services.Clear();
-            Instance.OnServiceCleand();
         }
         /// <summary>
         /// Requests a scene load by build index .
@@ -1114,13 +1113,6 @@ namespace RealMethod
         {
             return true;
         }
-        /// <summary>
-        /// Called after GameServices clear.
-        /// </summary>
-        protected virtual void OnServiceCleand()
-        {
-
-        }
 
 
 
@@ -1155,6 +1147,15 @@ namespace RealMethod
                 ClearService();
             }
             ((IService)Bridge).Deleted(this);
+#if UNITY_EDITOR
+            // Debug only: force GC to verify no references remain
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+#endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            DrawTasks.Clear();
+#endif
             OnGameClosed();
         }
 

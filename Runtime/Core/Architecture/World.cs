@@ -80,8 +80,6 @@ namespace RealMethod
     public abstract class World : MonoBehaviour
     {
         [Header("Setting")]
-        [SerializeField, Tooltip("Clears all registered services on Awake.")]
-        private bool clearServices;
         [SerializeField]
         private Prefab DefualtPlayer;
 
@@ -144,11 +142,6 @@ namespace RealMethod
             // Reset Location of World
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;
-
-            if (clearServices)
-            {
-                Game.ClearService();
-            }
 
             WorldBegin();
             SyncProvider.WorldIsReady();

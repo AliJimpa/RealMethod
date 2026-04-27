@@ -29,13 +29,5 @@ namespace RealMethod
         }
 
 
-
-        protected override void OnServiceCleand()
-        {
-#if UNITY_EDITOR
-            AddService<DebugService>(this);
-#endif
-        }
-
     }
 }

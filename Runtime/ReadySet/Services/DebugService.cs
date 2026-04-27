@@ -172,6 +172,8 @@ namespace RealMethod
         }
         protected override void OnEnd(object Author)
         {
+            if (defaultLogHandler != null)
+                Debug.unityLogger.logHandler = defaultLogHandler;
             Lines.Clear();
         }
         protected override string GetDisplayInfo()
