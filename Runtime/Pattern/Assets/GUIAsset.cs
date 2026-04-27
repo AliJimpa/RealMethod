@@ -13,7 +13,7 @@ namespace RealMethod
         GUIStyle GetStyle(int ID);
     }
 
-    public abstract class DrawAsset : ConfigAsset, IDraw, ITask, IDrawWindow
+    public abstract class GUIAsset : UniqueAsset, IDraw, ITask, IDrawWindow
     {
         public enum BuiltInGUIType
         {
@@ -276,7 +276,7 @@ namespace RealMethod
             }
 
 
-            public void Active(DrawAsset owner)
+            public void Active(GUIAsset owner)
             {
                 window = owner;
             }
