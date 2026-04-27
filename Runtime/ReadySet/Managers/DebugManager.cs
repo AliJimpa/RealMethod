@@ -49,7 +49,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"LogData can't created the start manager should be {typeof(PrintManager)}");
+                Debug.LogWarning($"LogData can't created the start manager should be {typeof(DebugManager)}");
                 return false;
             }
         }
@@ -109,7 +109,7 @@ namespace RealMethod
     }
 
     [AddComponentMenu("RealMethod/Manager/DebugManager")]
-    public class DebugManager : GUIManager<ButtonData>
+    public class DebugManager : MonoBehaviour
     {
         [Header("Debug Button")]
         public Vector2 ScrollPosition = Vector2.zero;
@@ -122,37 +122,37 @@ namespace RealMethod
 #endif
 
         // GUIManager Methods
-        public override void InitiateManager(bool AlwaysLoaded)
-        {
-            Pivot = new Vector2(0, 50);
-        }
-        public override void ResolveService(Service service, bool active)
-        {
-        }
+        // public override void InitiateManager(bool AlwaysLoaded)
+        // {
+        //     Pivot = new Vector2(0, 50);
+        // }
+        // public override void ResolveService(Service service, bool active)
+        // {
+        // }
 
 
         public IButton AddButton(Name16 ButtonName, Action Callback)
         {
             var Result = new ButtonData(ButtonName, Callback);
-            ((IDrawWorkaround)Result).Start(this);
-            Add(Result);
+            //((IDrawWorkaround)Result).Start(this);
+            //Add(Result);
             return Result;
         }
         public bool Remove(IButton button)
         {
-            var result = Find(button);
-            ((IDrawWorkaround)result).End();
-            return DrawList.Remove(result);
+           // var result = Find(button);
+            //((IDrawWorkaround)result).End();
+            return false;//DrawList.Remove(result);
         }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        protected override void PreDraw()
+        protected  void PreDraw()
         {
-            base.PreDraw();
+            //base.PreDraw();
             RectOffset padding = GUI.skin.button.padding;
             RectOffset margin = GUI.skin.button.margin;
             // TODO: The height calculation should be done more correctly.
-            Rect viewRect = new Rect(0, 0, buttonSize.x, ((buttonSize.y + (padding.vertical + margin.vertical)) * Count) - buttonSize.y);
+            Rect viewRect = new Rect(0, 0, buttonSize.x, ((buttonSize.y + (padding.vertical + margin.vertical)) * 000) - buttonSize.y);
 
             ScrollPosition = GUI.BeginScrollView(
            position: new Rect(Screen.width - buttonSize.x - buttonMargin, 10, buttonSize.x + buttonMargin, Screen.height - 10),
@@ -161,9 +161,9 @@ namespace RealMethod
            alwaysShowHorizontal: false,
            alwaysShowVertical: false);
         }
-        protected override void PostDraw()
+        protected  void PostDraw()
         {
-            base.PostDraw();
+            //base.PostDraw();
             GUI.EndScrollView();
         }
 #endif

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using UnityEditor;
 
@@ -84,7 +85,7 @@ namespace RealMethod
             // Restore previous color
             Gizmos.color = prevColor;
         }
-#if UNITY_EDITOR
+
         // Draw a Text using Gizmos (With Colort)
         public static void Text(string text, Vector3 position, Color color, FontStyle font = FontStyle.Bold, TextAnchor ancher = TextAnchor.MiddleCenter)
         {
@@ -97,6 +98,6 @@ namespace RealMethod
             // Draw the label above the GameObject
             Handles.Label(position, text, style);
         }
-#endif
     }
 }
+#endif
