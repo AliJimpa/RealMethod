@@ -107,10 +107,6 @@ namespace RealMethod
                 if (!saveSystem.HasFile(this))
                     saveSystem.AddFile(this);
             }
-            else
-            {
-                Debug.LogError("Can't find SaveSystem");
-            }
 #endif
         }
         protected virtual void OnDisable()
@@ -136,10 +132,6 @@ namespace RealMethod
             {
                 if (!saveSystem.HasFile(this))
                     saveSystem.AddFile(this);
-            }
-            else
-            {
-                Debug.LogError("Can't find SaveSystem");
             }
 #endif
         }
