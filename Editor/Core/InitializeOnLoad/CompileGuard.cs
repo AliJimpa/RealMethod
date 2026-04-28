@@ -123,12 +123,12 @@ namespace RealMethod.Editor
         private static CompileRule[] Rules;
         private static bool initialized;
 
-        public static readonly Type[] DefaultRuls = new Type[3] {
+        public static readonly Type[] DefaultRuls = new Type[4] {
         // Array of ruls to that should be run always for RealMethod
         typeof(ConfigAssetsRule),
         typeof(ServiceRule),
         typeof(PrimitveAssetsRule),
-
+        typeof(PureRule),
         };
 
 
