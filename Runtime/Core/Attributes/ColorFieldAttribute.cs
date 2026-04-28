@@ -7,7 +7,7 @@ namespace RealMethod
     /// public GameObject Target;
     /// </code>
     /// </summary>
-    public class ColorFieldAttribute : PropertyAttribute
+    public sealed class ColorFieldAttribute : PropertyAttribute
     {
         public Color color = Color.blue;
 

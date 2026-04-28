@@ -7,7 +7,7 @@ namespace RealMethod
     /// [TagSelector]
     /// </code>
     /// </summary>
-    public class TagSelectorAttribute : PropertyAttribute
+    public sealed class TagSelectorAttribute : PropertyAttribute
     {
         public bool UseDefaultTagFieldDrawer = false;
     }

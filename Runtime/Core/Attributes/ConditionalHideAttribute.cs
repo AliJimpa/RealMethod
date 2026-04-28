@@ -10,7 +10,7 @@ namespace RealMethod
     /// </code>
     /// conditionalSourceField,hideInInspector, reverceCondition
     /// </summary>
-    public class ConditionalHideAttribute : PropertyAttribute
+    public sealed class ConditionalHideAttribute : PropertyAttribute
     {
         public string ConditionalSourceField;
         public bool HideInInspector;

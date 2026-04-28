@@ -12,7 +12,7 @@ namespace RealMethod
     /// public int selectedOptionIndex;
     /// </code>
     /// </summary>
-    public class DropdownAttribute : PropertyAttribute
+    public sealed class DropdownAttribute : PropertyAttribute
     {
         public string[] options;
 

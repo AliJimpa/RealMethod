@@ -10,7 +10,7 @@ namespace RealMethod
     /// public string selectedOption;
     /// </code>
     /// </summary>
-    public class DropdownFromArrayAttribute : PropertyAttribute
+    public sealed class DropdownFromArrayAttribute : PropertyAttribute
     {
         public string TargetArray;
         public DropdownFromArrayAttribute(string array)

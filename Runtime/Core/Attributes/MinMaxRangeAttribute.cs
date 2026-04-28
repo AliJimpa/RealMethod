@@ -8,7 +8,7 @@ namespace RealMethod
     /// public Vector2 myRange;
     /// </code>
     /// </summary>
-    public class MinMaxRangeAttribute : PropertyAttribute
+    public sealed class MinMaxRangeAttribute : PropertyAttribute
     {
         public float minLimit;
         public float maxLimit;

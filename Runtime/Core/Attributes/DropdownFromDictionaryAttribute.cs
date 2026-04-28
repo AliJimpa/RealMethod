@@ -15,7 +15,7 @@ namespace RealMethod
     /// public string selectedOption;
     /// </code>
     /// </summary>
-    public class DropdownFromDictionaryAttribute : PropertyAttribute
+    public sealed class DropdownFromDictionaryAttribute : PropertyAttribute
     {
         public string dictionaryFieldName;
         public DropdownFromDictionaryAttribute(string dictionaryFieldName)

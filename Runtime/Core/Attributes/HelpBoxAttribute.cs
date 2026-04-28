@@ -10,7 +10,7 @@ namespace RealMethod
     /// </code>
     /// {0:None,1:Info,2:Warning,3:Error}
     /// </summary>
-    public class HelpBoxAttribute : PropertyAttribute
+    public sealed class HelpBoxAttribute : PropertyAttribute
     {
         public string text;
         public int messageType;

@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace RealMethod
 {
-    public class TypeSelectorAttribute : PropertyAttribute
+    public sealed class TypeSelectorAttribute : PropertyAttribute
     {
         public Type BaseType { get; private set; }
 

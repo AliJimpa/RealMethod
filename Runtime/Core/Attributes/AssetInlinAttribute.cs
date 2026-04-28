@@ -10,7 +10,7 @@ namespace RealMethod
     /// public ScriptableObject TEST;
     /// </code>
     /// </summary>
-    public class AssetInlinAttribute : PropertyAttribute
+    public sealed class AssetInlinAttribute : PropertyAttribute
     {
         public AssetInlinAttribute()
         {

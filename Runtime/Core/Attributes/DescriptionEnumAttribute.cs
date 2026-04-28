@@ -18,7 +18,7 @@ namespace RealMethod
     /// </code>
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class DescriptionEnumAttribute : PropertyAttribute
+    public sealed class DescriptionEnumAttribute : PropertyAttribute
     {
         public string Description { get; }
         public DescriptionEnumAttribute(string description)

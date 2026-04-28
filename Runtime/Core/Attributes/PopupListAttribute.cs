@@ -13,7 +13,7 @@ namespace RealMethod
     /// public string selectedOption;
     /// </code>
     /// </summary>
-    public class PopupListAttribute : PropertyAttribute
+    public sealed class PopupListAttribute : PropertyAttribute
     {
         public Type myType;
         public string propertyName;

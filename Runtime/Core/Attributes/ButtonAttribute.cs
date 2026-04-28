@@ -12,7 +12,7 @@ namespace RealMethod
     /// </code>
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
-    public class ButtonAttribute : Attribute { }
+    public sealed class ButtonAttribute : Attribute { }
 }
 
 

@@ -9,7 +9,7 @@ namespace RealMethod
     /// public int layer;
     /// </code>
     /// </summary>
-    public class LayerAttribute : PropertyAttribute
+    public sealed class LayerAttribute : PropertyAttribute
     {
 
     }

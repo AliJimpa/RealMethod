@@ -8,5 +8,5 @@ namespace RealMethod
     /// public int readOnlyValue = 42;
     /// </code>
     /// </summary>
-    public class ReadOnlyAttribute : PropertyAttribute { }
+    public sealed class ReadOnlyAttribute : PropertyAttribute { }
 }

@@ -17,7 +17,7 @@ namespace RealMethod
     ///  bool ddd = true;
     /// </code>
     /// </summary>
-    public class ShowOnlyAttribute : PropertyAttribute
+    public sealed class ShowOnlyAttribute : PropertyAttribute
     {
     }
 }

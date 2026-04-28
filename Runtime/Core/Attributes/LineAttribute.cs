@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
-    public class LineAttribute : PropertyAttribute
+    public sealed class LineAttribute : PropertyAttribute
     {
         public readonly float Height;
         public readonly float Spacing;

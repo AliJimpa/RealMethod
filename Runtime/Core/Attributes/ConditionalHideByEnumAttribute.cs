@@ -19,7 +19,7 @@ namespace RealMethod
     /// public int hideOnlyForOption2;
     /// </code>
     /// </summary>
-    public class ConditionalHideByEnumAttribute : PropertyAttribute
+    public sealed class ConditionalHideByEnumAttribute : PropertyAttribute
     {
         public string EnumFieldName;
         public object[] HideValues;

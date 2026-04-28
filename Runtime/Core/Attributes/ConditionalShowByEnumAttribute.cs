@@ -20,7 +20,7 @@ namespace RealMethod
     /// </code>
     /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
-    public class ConditionalShowByEnumAttribute : PropertyAttribute
+    public sealed class ConditionalShowByEnumAttribute : PropertyAttribute
     {
         public string EnumFieldName { get; }
         public object[] ShowValues { get; }
