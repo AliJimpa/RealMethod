@@ -1,4 +1,5 @@
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+using System.Reflection;
 using UnityEngine;
 
 namespace RealMethod
@@ -6,12 +7,11 @@ namespace RealMethod
     [AddComponentMenu("RealMethod/Manager/DeveloperManager")]
     public class DevManager : DeveloperManager
     {
-
         // DeveloperManager Methods
-        protected override void InitiateManager(bool alwaysLoaded)
+        public override void InitiateManager(bool alwaysLoaded)
         {
         }
-        protected override void ResolveService(Service service)
+        public override void ResolveService(Service service, bool active)
         {
         }
     }
