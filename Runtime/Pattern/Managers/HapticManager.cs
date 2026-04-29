@@ -101,7 +101,7 @@ namespace RealMethod
         {
             foreach (var item in produceList)
             {
-                if (item.NameID == target.NameID)
+                if (item == target)
                 {
                     return produceList.Remove(item);
                 }
