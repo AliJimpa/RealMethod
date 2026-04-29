@@ -81,7 +81,7 @@ namespace RealMethod
     {
         [Header("Setting")]
         [SerializeField]
-        private Prefab DefualtPlayer;
+        private Prefab DefaultPlayer;
 
 
         private IGameManager[] Managers;
@@ -132,7 +132,7 @@ namespace RealMethod
             {
                 var starters = FindObjectsByType<PlayerStarter>(FindObjectsSortMode.InstanceID);
                 Transform SpawnPoint = SelectSpawnPoint(starters);
-                PlayerObject = SpawnPlayer(DefualtPlayer, SpawnPoint);
+                PlayerObject = SpawnPlayer(DefaultPlayer, SpawnPoint);
             }
             else
             {

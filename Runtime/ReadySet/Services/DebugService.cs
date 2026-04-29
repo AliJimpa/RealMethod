@@ -125,8 +125,8 @@ namespace RealMethod
         private ILogHandler defaultLogHandler;
 
         private List<LogLine> Lines = new List<LogLine>(10);
-        public Vector2 PrintPivot = Vector2.zero;
-        public float PrintSpace = 20;
+        public Vector2 PrintPivot = new Vector2(10, 10);
+        public float PrintSpace => Screen.height / 40;
         public int PrintSize = 1;
 
 
