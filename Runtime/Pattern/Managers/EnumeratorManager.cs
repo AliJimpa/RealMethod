@@ -70,10 +70,6 @@ namespace RealMethod
         {
             InitiateManager(AlwaysLoaded);
         }
-        void IGameManager.ResolveService(Service service, bool active)
-        {
-            InitiateService(service);
-        }
 
 
         // Unity Methods
@@ -108,7 +104,6 @@ namespace RealMethod
 
         // Abstract Methods
         protected abstract void InitiateManager(bool alwaysLoaded);
-        protected abstract void InitiateService(Service newService);
 
     }
 

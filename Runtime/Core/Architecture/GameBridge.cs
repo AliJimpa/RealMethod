@@ -37,25 +37,6 @@ namespace RealMethod
         /// </summary>
         void UnbindWorldCreated();
         /// <summary>
-        /// Notifies the system that a service has been created.
-        /// </summary>
-        void ServiceCreated(Service service);
-        /// <summary>
-        /// Notifies the system that a service has been removed.
-        /// </summary>
-        void ServiceRemoved(Service service);
-        /// <summary>
-        /// Binds a callback invoked when services are added or removed.
-        /// </summary>
-        /// <param name="func">
-        /// Callback receiving the service instance and its active state.
-        /// </param>
-        void BindServicesUpdated(Action<Service, bool> func);
-        /// <summary>
-        /// Unbinds the service update callback.
-        /// </summary>
-        void UnbindServicesUpdated();
-        /// <summary>
         /// Called by world class to tell game the initiation is complite
         /// </summary>
         void WorldIsReady();
@@ -105,7 +86,6 @@ namespace RealMethod
         // Events
         private Action GameReadyEvent;
         private Action<World> NewWorldEvent;
-        private Action<Service, bool> ServiceEvents;
         private Action<bool> SceneLoadingEvent;
         private Action<float> SceneLoadingProcessEvent;
         private bool isLoading;
@@ -116,14 +96,15 @@ namespace RealMethod
         public static bool SceneWillUnload { get; private set; }
 
         // Implement IService Interface
-        void IService.Created(object author)
+        void IService.OnRegister(object author)
         {
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
         }
-        void IService.ChangingWorld(World NewWorld)
+        void IService.OnWorldChanging(World Previous, World New)
         {
+            throw new NotImplementedException();
         }
-        void IService.Deleted(object author)
+        void IService.OnUnregister(object author)
         {
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
         }
@@ -164,27 +145,6 @@ namespace RealMethod
         void IRelationBridge.UnbindWorldCreated()
         {
             NewWorldEvent = null;
-        }
-        void IRelationBridge.ServiceCreated(Service service)
-        {
-            ServiceEvents?.Invoke(service, true);
-        }
-        void IRelationBridge.ServiceRemoved(Service service)
-        {
-            ServiceEvents.Invoke(service, false);
-        }
-        void IRelationBridge.BindServicesUpdated(Action<Service, bool> func)
-        {
-            if (ServiceEvents != null)
-            {
-                Debug.LogWarning("BindServicesUpdated is already binded this interface is internal didnt use in another script or your game");
-                return;
-            }
-            ServiceEvents = func;
-        }
-        void IRelationBridge.UnbindServicesUpdated()
-        {
-            ServiceEvents = null;
         }
         void IRelationBridge.WorldIsReady()
         {
@@ -536,6 +496,7 @@ namespace RealMethod
             SceneLoadingEvent?.Invoke(false);
             isLoading = false;
         }
+
 
     }
 }

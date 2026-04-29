@@ -13,16 +13,16 @@ namespace RealMethod
         /// Called when the service is created.
         /// </summary>
         /// <param name="author">The object responsible for creating the service.</param>
-        void Created(object author);
+        void OnRegister(object author);
         /// <summary>
         /// Called when the world or environment updates.
         /// </summary>
-        void ChangingWorld(World NewWorld);
+        void OnWorldChanging(World Previous, World New);
         /// <summary>
         /// Called when the service is deleted or destroyed.
         /// </summary>
         /// <param name="author">The object responsible for deleting the service.</param>
-        void Deleted(object author);
+        void OnUnregister(object author);
 #if UNITY_EDITOR
         /// <summary>
         /// Returns a formatted string containing information about this service
@@ -41,19 +41,23 @@ namespace RealMethod
     public abstract class Service : IService
     {
         // Implement IService Interface
-        void IService.Created(object author)
-        {
-            OnStart(author);
-        }
-        void IService.ChangingWorld(World NewWorld)
-        {
-            OnWorldChanging(Game.World, NewWorld);
-        }
-        void IService.Deleted(object author)
-        {
-            OnEnd(author);
-        }
-# if UNITY_EDITOR
+        /// <summary>
+        /// Called when the service starts. Must be implemented by derived classes.
+        /// </summary>
+        /// <param name="Author">The object responsible for creating the service.</param>
+        public abstract void OnRegister(object author);
+        /// <summary>
+        /// Called when a new world or environment is initialized.
+        /// Must be implemented by derived classes.
+        /// </summary>
+        public abstract void OnWorldChanging(World Previous, World New);
+        /// <summary>
+        /// Called when the service ends or is deleted.
+        /// Must be implemented by derived classes.
+        /// </summary>
+        /// <param name="Author">The object responsible for deleting the service.</param>
+        public abstract void OnUnregister(object author);
+#if UNITY_EDITOR
         string IService.GetInspectorInfo()
         {
             return GetDisplayInfo();
@@ -63,26 +67,6 @@ namespace RealMethod
             return GetType().ToString() + ": ";
         }
 #endif
-
-
-
-        /// <summary>
-        /// Called when the service starts. Must be implemented by derived classes.
-        /// </summary>
-        /// <param name="Author">The object responsible for creating the service.</param>
-        protected abstract void OnStart(object Author);
-        /// <summary>
-        /// Called when a new world or environment is initialized.
-        /// Must be implemented by derived classes.
-        /// </summary>
-        protected abstract void OnWorldChanging(World Previous, World New);
-        /// <summary>
-        /// Called when the service ends or is deleted.
-        /// Must be implemented by derived classes.
-        /// </summary>
-        /// <param name="Author">The object responsible for deleting the service.</param>
-        protected abstract void OnEnd(object Author);
-
 
     }
 

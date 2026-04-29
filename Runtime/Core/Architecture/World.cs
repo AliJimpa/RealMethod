@@ -98,11 +98,7 @@ namespace RealMethod
         {
             //Connect to Game With Bridge
             IRelationBridge SyncProvider = Game.Bridge;
-            if (SyncProvider.RegisterWorld(this))
-            {
-                SyncProvider.BindServicesUpdated(Notify_OnServicesUpdated);
-            }
-            else
+            if (!SyncProvider.RegisterWorld(this))
             {
                 return;
             }
@@ -182,8 +178,6 @@ namespace RealMethod
         /// </summary>
         private void OnDestroy()
         {
-            IRelationBridge SyncProvider = Game.Bridge;
-            SyncProvider.UnbindServicesUpdated();
             WorldEnd();
         }
 
@@ -375,24 +369,6 @@ namespace RealMethod
 
             transform.position = Vector3.zero;
             return transform;
-        }
-
-
-        /// <summary>
-        /// Internal callback invoked when services are updated. Forwards the service update
-        /// to all managers so they can resolve or react to the change.
-        /// </summary>
-        /// <param name="NewService">The service that changed.</param>
-        /// <param name="stage">The stage or phase of the service update.</param>
-        private void Notify_OnServicesUpdated(Service NewService, bool stage)
-        {
-            if (Managers != null)
-            {
-                foreach (var manager in Managers)
-                {
-                    manager.ResolveService(NewService, stage);
-                }
-            }
         }
 
 

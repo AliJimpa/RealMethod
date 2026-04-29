@@ -73,14 +73,14 @@ namespace RealMethod
 
         // Implement IService Interface
         public object GetServiceClass() => this;
-        void IService.Created(object Author)
+        void IService.OnRegister(object Author)
         {
         }
-        void IService.ChangingWorld(World NewWorld)
+        void IService.OnWorldChanging(World Previous, World New)
         {
             Managers.Clear();
         }
-        void IService.Deleted(object Author)
+        void IService.OnUnregister(object Author)
         {
             Managers.Clear();
         }

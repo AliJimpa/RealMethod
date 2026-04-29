@@ -9,17 +9,17 @@ namespace RealMethod
         private NameTable<float> RecordTime;
 
         // Service Methods
-        protected override void OnStart(object Author)
+        public override void OnRegister(object Author)
         {
             serviceTime = Time.time;
             worldTime = Time.time;
             RecordTime = new NameTable<float>(10);
         }
-        protected override void OnWorldChanging(World Previous , World New)
+        public override void OnWorldChanging(World Previous, World New)
         {
             worldTime = Time.time;
         }
-        protected override void OnEnd(object Author)
+        public override void OnUnregister(object Author)
         {
             RecordTime.Clear();
         }

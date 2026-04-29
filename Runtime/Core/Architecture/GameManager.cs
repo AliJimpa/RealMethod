@@ -23,17 +23,6 @@ namespace RealMethod
         /// If true, the manager should persist and remain loaded at all times.
         /// </param>
         void InitiateManager(bool AlwaysLoaded);
-
-        /// <summary>
-        /// Enables or disables a service handled by this manager.
-        /// </summary>
-        /// <param name="service">
-        /// The service to be resolved or managed.
-        /// </param>
-        /// <param name="active">
-        /// Indicates whether the service should be activated (true) or deactivated (false).
-        /// </param>
-        void ResolveService(Service service, bool active);
     }
 
 }

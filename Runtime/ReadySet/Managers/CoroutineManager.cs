@@ -9,9 +9,6 @@ namespace RealMethod
         protected override void InitiateManager(bool alwaysLoaded)
         {
         }
-        protected override void InitiateService(Service service)
-        {
-        }
 
     }
 }

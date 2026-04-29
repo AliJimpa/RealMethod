@@ -16,15 +16,15 @@ namespace RealMethod
 
 
 
-        protected override void OnStart(object Author)
+        public override void OnRegister(object Author)
         {
             throw new NotImplementedException();
         }
-        protected override void OnWorldChanging(World Previous , World New)
+        public override void OnWorldChanging(World Previous, World New)
         {
             throw new NotImplementedException();
         }
-         protected override void OnEnd(object Author)
+        public override void OnUnregister(object Author)
         {
             throw new NotImplementedException();
         }
@@ -81,7 +81,7 @@ namespace RealMethod
             callback(DownloadHandlerTexture.GetContent(request));
         }
 
-       
+
 
     }
 

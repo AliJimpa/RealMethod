@@ -71,10 +71,6 @@ namespace RealMethod
 
             InitiateManager(alwaysLoaded);
         }
-        void IGameManager.ResolveService(Service service, bool active)
-        {
-            InitiateService(service);
-        }
 
 
         // Unity Methods
@@ -547,7 +543,6 @@ namespace RealMethod
 
         // Abstract Methods
         protected abstract void InitiateManager(bool alwaysLoaded);
-        protected abstract void InitiateService(Service newService);
 
         //Enumerators
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration)

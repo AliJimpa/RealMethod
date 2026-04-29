@@ -20,14 +20,9 @@ namespace RealMethod
         {
             InitiateManager(AlwaysLoaded);
         }
-        void IGameManager.ResolveService(Service service, bool active)
-        {
-            ResolveService(service);
-        }
 
         // Abstract Methods
         protected abstract void InitiateManager(bool alwaysLoaded);
-        protected abstract void ResolveService(Service service);
     }
     public abstract class TaskManager<J> : TaskManager where J : IHandle
     {

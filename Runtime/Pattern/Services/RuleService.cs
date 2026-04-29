@@ -13,7 +13,7 @@ namespace RealMethod
             Rules = new NameTable<Observer<bool>>(5);
         }
 
-        protected override void OnWorldChanging(World Previous, World New)
+        public override void OnWorldChanging(World Previous, World New)
         {
             foreach (var item in Rules)
             {

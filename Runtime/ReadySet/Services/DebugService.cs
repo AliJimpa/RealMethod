@@ -160,15 +160,15 @@ namespace RealMethod
 
 
         // Service Methods
-        protected override void OnStart(object Author)
+        public override void OnRegister(object Author)
         {
             defaultLogHandler = Debug.unityLogger.logHandler;
             Debug.unityLogger.logHandler = this;
         }
-        protected override void OnWorldChanging(World Previous, World New)
+        public override void OnWorldChanging(World Previous, World New)
         {
         }
-        protected override void OnEnd(object Author)
+        public override void OnUnregister(object Author)
         {
             if (defaultLogHandler != null)
                 Debug.unityLogger.logHandler = defaultLogHandler;

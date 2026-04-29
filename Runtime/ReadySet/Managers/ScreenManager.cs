@@ -26,10 +26,6 @@ namespace RealMethod
             Game.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
             Game.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);
         }
-        protected override void InitiateService(Service newService)
-        {
-        }
-
         public void SetInformer(IInformer messanger)
         {
             Informer = messanger;

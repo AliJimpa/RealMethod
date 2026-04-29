@@ -37,9 +37,6 @@ namespace RealMethod
                 }
             }
         }
-        protected override void ResolveService(Service service)
-        {
-        }
         protected override bool TryCreateNewInstance<P>(object ClassType, out P result)
         {
             if (ClassType is ActionClass ActionType)

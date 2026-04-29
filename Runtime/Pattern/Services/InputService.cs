@@ -7,21 +7,21 @@ namespace RealMethod
     {
         private InputActionAsset CurrentInputAsset;
 
-        protected sealed override void OnStart(object Author)
+        public sealed override void OnRegister(object Author)
         {
             if (TryFindInputAsset(out InputActionAsset newAsset))
             {
                 ReplaceInputAsset(newAsset);
             }
         }
-        protected sealed override void OnWorldChanging(World Previous , World New)
+        public sealed override void OnWorldChanging(World Previous, World New)
         {
             if (TryFindInputAsset(out InputActionAsset newAsset))
             {
                 ReplaceInputAsset(newAsset);
             }
         }
-        protected sealed override void OnEnd(object Author)
+        public sealed override void OnUnregister(object Author)
         {
             if (CurrentInputAsset != null)
             {
