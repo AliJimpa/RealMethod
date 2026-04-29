@@ -702,20 +702,6 @@ namespace RealMethod
             }
         }
 
-        // Debug
-        public static IButton Button(Name16 Name, System.Action Callback)
-        {
-            if (GetManager<DebugManager>() != null)
-            {
-                return GetManager<DebugManager>().AddButton(Name, Callback);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: DebugManager is not available.");
-                return null;
-            }
-        }
-
         // Other
         public static GameObject Empty(string name)
         {

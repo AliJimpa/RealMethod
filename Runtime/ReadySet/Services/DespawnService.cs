@@ -258,18 +258,6 @@ namespace RealMethod
             return GetManager<HapticManager>().Demolish(provider);
         }
 
-        // Debug
-        public static bool Button(IButton button, bool debug = true)
-        {
-            if (GetManager<DebugManager>() == null)
-            {
-                if (debug)
-                    Debug.LogWarning("Despawn DebugManager is not available.");
-                return false;
-            }
-            return GetManager<DebugManager>().Remove(button);
-        }
-
 
     }
 }
