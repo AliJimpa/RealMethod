@@ -92,7 +92,7 @@ namespace RealMethod
         // Public Functions
         public void AddManager(IGameManager manager)
         {
-            System.Type ManagerType = manager.GetManagerClass().GetType();
+            System.Type ManagerType = manager.Component.GetType();
             if (Managers.ContainsKey(ManagerType))
             {
                 Managers.Add(ManagerType, manager);
@@ -110,7 +110,7 @@ namespace RealMethod
             System.Type type = typeof(T);
             if (Ins.Managers.ContainsKey(type))
             {
-                if (Ins.Managers[type].GetManagerClass() is T manager)
+                if (Ins.Managers[type].Component is T manager)
                 {
                     return manager;
                 }

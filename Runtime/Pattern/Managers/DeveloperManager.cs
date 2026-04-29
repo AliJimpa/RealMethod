@@ -46,14 +46,6 @@ namespace RealMethod
 
         public Rect ButtonRect => RM_GUI.GetButtonRect(ButtonPosition, Scale.x, Scale.y, margin);
 
-
-
-        // Implement IGameManager Interface
-        MonoBehaviour IGameManager.GetManagerClass()
-        {
-            return this;
-        }
-
         // Unity Methods
         private void OnEnable()
         {

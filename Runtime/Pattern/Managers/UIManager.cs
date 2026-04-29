@@ -35,10 +35,6 @@ namespace RealMethod
 
 
         // Implement IGameManager Interface
-        MonoBehaviour IGameManager.GetManagerClass()
-        {
-            return this;
-        }
         void IGameManager.InitiateManager(bool alwaysLoaded)
         {
             if (header == null)

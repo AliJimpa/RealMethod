@@ -67,10 +67,6 @@ namespace RealMethod
 
 
         // Implement IGameManager Interface
-        MonoBehaviour IGameManager.GetManagerClass()
-        {
-            return this;
-        }
         public virtual void InitiateManager(bool AlwaysLoaded)
         {
             if (Mode != SaveFileStructure.MultiFile)

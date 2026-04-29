@@ -24,10 +24,6 @@ namespace RealMethod
         public event System.Action<IFile> OnFileRemoved;
 
         // Implement IGameManager Interface
-        MonoBehaviour IGameManager.GetManagerClass()
-        {
-            return this;
-        }
         public virtual void InitiateManager(bool AlwaysLoaded)
         {
 

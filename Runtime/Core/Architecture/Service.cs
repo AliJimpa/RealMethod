@@ -8,10 +8,7 @@ namespace RealMethod
         /// <summary>
         /// Returns the object instance that implements this service.
         /// </summary>
-        /// <returns>
-        /// The object associated with this service.
-        /// </returns>
-        object GetServiceClass();
+        object Self => this;
         /// <summary>
         /// Called when the service is created.
         /// </summary>
@@ -44,10 +41,6 @@ namespace RealMethod
     public abstract class Service : IService
     {
         // Implement IService Interface
-        object IService.GetServiceClass()
-        {
-            return this;
-        }
         void IService.Created(object author)
         {
             OnStart(author);
@@ -67,7 +60,7 @@ namespace RealMethod
         }
         protected virtual string GetDisplayInfo()
         {
-            return GetType().ToString()+": ";
+            return GetType().ToString() + ": ";
         }
 #endif
 

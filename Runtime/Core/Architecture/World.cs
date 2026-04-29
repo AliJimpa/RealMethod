@@ -197,7 +197,7 @@ namespace RealMethod
         {
             foreach (var manager in Managers)
             {
-                if (manager.GetManagerClass() is T Result)
+                if (manager.Component is T Result)
                 {
                     return Result;
                 }
@@ -213,7 +213,7 @@ namespace RealMethod
         {
             foreach (var manger in Managers)
             {
-                if (manger.GetManagerClass().gameObject.name == ObjectName)
+                if (manger.Component.gameObject.name == ObjectName)
                 {
                     return manger;
                 }

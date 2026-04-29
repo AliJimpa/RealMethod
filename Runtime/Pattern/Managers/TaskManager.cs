@@ -16,10 +16,6 @@ namespace RealMethod
         public int Count => Tasks != null ? Tasks.Count : 0;
 
         // Implement IGameManager Interface
-        MonoBehaviour IGameManager.GetManagerClass()
-        {
-            return this;
-        }
         void IGameManager.InitiateManager(bool AlwaysLoaded)
         {
             InitiateManager(AlwaysLoaded);

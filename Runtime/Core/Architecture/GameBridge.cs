@@ -116,7 +116,6 @@ namespace RealMethod
         public static bool SceneWillUnload { get; private set; }
 
         // Implement IService Interface
-        object IService.GetServiceClass() => this;
         void IService.Created(object author)
         {
             SceneManager.activeSceneChanged += OnActiveSceneChanged;

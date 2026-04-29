@@ -8,12 +8,13 @@ namespace RealMethod
     public interface IGameManager
     {
         /// <summary>
-        /// Returns the MonoBehaviour instance that implements this manager.
+        /// Gets the Unity <see cref="Component"/> instance that implements this interface.
         /// </summary>
-        /// <returns>
-        /// The MonoBehaviour associated with this game manager.
-        /// </returns>
-        MonoBehaviour GetManagerClass();
+        /// <remarks>
+        /// This allows systems interacting with the interface to access the underlying
+        /// Unity component and its associated GameObject and Transform.
+        /// </remarks>
+        Component Component => (Component)this;
 
         /// <summary>
         /// Initializes the manager and prepares it for use in the game lifecycle.

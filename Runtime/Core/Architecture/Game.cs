@@ -486,7 +486,7 @@ namespace RealMethod
             var provider = Instance.Services[TypeService];
             if (provider != null)
             {
-                if (provider.GetServiceClass() is Service service)
+                if (provider.Self is Service service)
                 {
                     if (Instance.Managers != null)
                     {
@@ -523,7 +523,7 @@ namespace RealMethod
             Type TypeService = typeof(T);
 
             if (Instance.Services.TryGetValue(TypeService, out var provider))
-                return (T)provider.GetServiceClass();
+                return (T)provider.Self;
 
             if (Printdebug)
                 Debug.LogError($"Service {TypeService} not found.");
@@ -540,7 +540,7 @@ namespace RealMethod
         {
             if (Instance.Services.TryGetValue(typeof(T), out var provider))
             {
-                service = (T)provider.GetServiceClass();
+                service = (T)provider.Self;
                 return true;
             }
 
@@ -1052,7 +1052,7 @@ namespace RealMethod
         {
             foreach (var manager in Managers)
             {
-                if (manager.GetManagerClass() is T Result)
+                if (manager.Component is T Result)
                 {
                     return Result;
                 }
@@ -1068,7 +1068,7 @@ namespace RealMethod
         {
             foreach (var manger in Managers)
             {
-                if (manger.GetManagerClass().gameObject.name == ObjectName)
+                if (manger.Component.gameObject.name == ObjectName)
                 {
                     return manger;
                 }
