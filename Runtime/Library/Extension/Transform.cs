@@ -32,5 +32,9 @@ namespace RealMethod
             t.localRotation = Quaternion.identity;
             t.localScale = Vector3.one;
         }
+        public static TransformData ConvertToData(this Transform trans)
+        {
+            return new TransformData(trans);
+        }
     }
 }

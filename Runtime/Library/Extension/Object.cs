@@ -353,5 +353,32 @@ namespace RealMethod
             System.Type type = target.GetType();
             return type.GetProperties(flags);
         }
+        public static IIdentifier GetID(this object obj)
+        {
+            return GetID<IIdentifier>(obj);
+        }
+        public static T GetID<T>(this object obj) where T : IIdentifier
+        {
+            if (obj is T Provider)
+            {
+                return Provider;
+            }
+            else
+            {
+                return default;
+            }
+        }
+        public static bool HasNameID(this object obj, string NameID)
+        {
+            if (obj is INameIdentifier Provider)
+            {
+                return Provider.HasNameID(NameID);
+            }
+            else
+            {
+                Debug.LogError($"Target Object({obj}) should implement {typeof(INameIdentifier)} interface.");
+                return false;
+            }
+        }
     }
 }
