@@ -29,8 +29,6 @@ namespace RealMethod
         public event Action<ActionSlot> OnFinished;
 
 
-        // Implement IIdentifier Interface
-        Name16 IIdentifier.NameID => GetType().ToString();
         // Implement ITask Interface
         void ITask.Active()
         {

@@ -27,7 +27,6 @@ namespace RealMethod
         private float lifetime = -1;
 
 
-
         // Implement ITask Interface
         void ITask.Active()
         {

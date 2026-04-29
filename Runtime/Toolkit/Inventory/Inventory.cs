@@ -5,12 +5,12 @@ using UnityEngine;
 namespace RealMethod
 {
 
-    public class InventoryItemProperty : IResource
+    public class InventoryItemProperty : IResource, INameIdentifier
     {
         [SerializeField]
         private IInventoryItem Item;
         public IInventoryItem provider => Item;
-        public string Name => provider.NameID;
+        public string SelfName => provider.SelfName;
         [SerializeField]
         private int ItemQuantity;
         public int Quantity => ItemQuantity;
@@ -140,7 +140,7 @@ namespace RealMethod
                 Items = new NameTable<InventoryItemProperty>(cacheItems.Length);
                 foreach (var data in cacheItems)
                 {
-                    Items.Add(data.Name, data);
+                    Items.Add(data.SelfName, data);
                 }
             }
             else
@@ -197,31 +197,31 @@ namespace RealMethod
         }
         public IResource GetResourceProvider(IInventoryItem item)
         {
-            return Items[item.NameID];
+            return Items[item.SelfName];
         }
         public int GetQuantity(IInventoryItem item)
         {
-            if (Items.ContainsKey(item.NameID))
+            if (Items.ContainsKey(item.SelfName))
             {
-                return Items[item.NameID].Quantity;
+                return Items[item.SelfName].Quantity;
             }
             else
             {
                 return 0;
             }
         }
-        public bool IsValidItem(IIdentifier item)
+        public bool IsValidItem(INameIdentifier Name)
         {
-            return Items.ContainsKey(item.NameID);
+            return Items.ContainsKey(Name.SelfName);
         }
         public bool AddNewItem(IInventoryItem item, int quantity, int capacity)
         {
-            if (!Items.ContainsKey(item.NameID))
+            if (!Items.ContainsKey(item.SelfName))
             {
                 if (item.CanPickUp(this))
                 {
                     InventoryItemProperty NewItem = new InventoryItemProperty(item, quantity, capacity);
-                    Items.Add(item.NameID, NewItem);
+                    Items.Add(item.SelfName, NewItem);
                     inventoryStorage.CreateItem(NewItem);
                     MessageBehavior(ItemState.Create, item, quantity);
                     return true;
@@ -233,7 +233,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($"Item with this Name {item.NameID} already there");
+                Debug.LogWarning($"Item with this Name {item.SelfName} already there");
                 return false;
             }
         }
@@ -241,11 +241,11 @@ namespace RealMethod
         {
             if (_capacity == 0 || Items.Count < _capacity)
             {
-                if (Items.ContainsKey(item.NameID))
+                if (Items.ContainsKey(item.SelfName))
                 {
                     if (item.CanChange(true))
                     {
-                        Items[item.NameID].Add(quantity);
+                        Items[item.SelfName].Add(quantity);
                         inventoryStorage.UpdateQuantity(item, quantity);
                         MessageBehavior(ItemState.Update, item, quantity);
                     }
@@ -255,7 +255,7 @@ namespace RealMethod
                     if (item.CanPickUp(this))
                     {
                         InventoryItemProperty NewItem = new InventoryItemProperty(item, quantity);
-                        Items.Add(item.NameID, NewItem);
+                        Items.Add(item.SelfName, NewItem);
                         inventoryStorage.CreateItem(NewItem);
                         MessageBehavior(ItemState.Create, item, quantity);
                     }
@@ -271,7 +271,7 @@ namespace RealMethod
         public bool SetItemCapacity(IInventoryItem item, int newCpacity)
         {
             InventoryItemProperty target;
-            if (Items.TryGetValue(item.NameID, out target))
+            if (Items.TryGetValue(item.SelfName, out target))
             {
                 inventoryStorage.UpdateCapacity(item, newCpacity);
                 target.NewCpacity(newCpacity);
@@ -279,14 +279,14 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogError($"Can't Find Item With this Name {item.NameID}");
+                Debug.LogError($"Can't Find Item With this Name {item.SelfName}");
                 return false;
             }
         }
         public bool RemoveItem(IInventoryItem item, int quantity = 1)
         {
             InventoryItemProperty target;
-            if (Items.TryGetValue(item.NameID, out target))
+            if (Items.TryGetValue(item.SelfName, out target))
             {
                 if (item.CanChange(true))
                 {
@@ -300,7 +300,7 @@ namespace RealMethod
                     {
                         if (item.CanDropp(this))
                         {
-                            if (Items.Remove(item.NameID))
+                            if (Items.Remove(item.SelfName))
                             {
                                 inventoryStorage.DestroyItem(item);
                                 MessageBehavior(ItemState.Delete, null, 0);
@@ -333,9 +333,9 @@ namespace RealMethod
         }
         public bool DeleteItem(IInventoryItem item)
         {
-            if (Items.ContainsKey(item.NameID))
+            if (Items.ContainsKey(item.SelfName))
             {
-                bool Result = Items.Remove(item.NameID);
+                bool Result = Items.Remove(item.SelfName);
                 if (Result)
                 {
                     inventoryStorage.DestroyItem(item);

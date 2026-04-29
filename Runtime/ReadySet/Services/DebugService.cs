@@ -80,8 +80,6 @@ namespace RealMethod
                 ActiveTime = 0;
             }
 
-            // Implement IIdentifier Interface
-            Name16 IIdentifier.NameID => throw new System.NotImplementedException();
             // Implemetn ITask Interface
             void ITask.Active()
             {

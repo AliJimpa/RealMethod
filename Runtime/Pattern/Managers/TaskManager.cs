@@ -6,6 +6,7 @@ namespace RealMethod
 {
     public interface ITask<T> : ITask, ITick where T : IHandle
     {
+        string ID => this.GetType().ToString();
         T Controller { get; }
     }
 
@@ -91,11 +92,16 @@ namespace RealMethod
         {
             foreach (var task in Tasks)
             {
-                if (task is J provider)
+                if (task.HasNameID(TaskName))
                 {
-                    if (provider.NameID == TaskName)
+                    if (task is J provider)
                     {
                         return provider;
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Task({task}) should implement {typeof(J)}");
+                        return default;
                     }
                 }
             }
@@ -148,7 +154,7 @@ namespace RealMethod
             {
                 if (task is T provider)
                 {
-                    if (provider.Controller.NameID == behavior.NameID)
+                    if (provider.Controller.IsSame(behavior))
                     {
                         provider.Deactive();
                         OnTaskRemoved?.Invoke(provider.Controller);

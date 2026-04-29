@@ -53,23 +53,23 @@ namespace RealMethod
         // Implement IStatStorage Interface
         void IStatStorage.StoreStats(IStat[] stats)
         {
-            foreach (var stat in stats)
-            {
-                if (Names.Contains(stat.NameID))
-                {
-                    int targetindex = Names.IndexOf(stat.NameID);
-                    BaseValue[targetindex] = stat.BaseValue;
-                    Mins[targetindex] = stat.MinValue;
-                    Maxs[targetindex] = stat.MaxValue;
-                }
-                else
-                {
-                    Names.Add(stat.NameID);
-                    BaseValue.Add(stat.BaseValue);
-                    Mins.Add(stat.MinValue);
-                    Maxs.Add(stat.MaxValue);
-                }
-            }
+            // foreach (var stat in stats)
+            // {
+            //     if (Names.Contains(stat.NameID))
+            //     {
+            //         int targetindex = Names.IndexOf(stat.NameID);
+            //         BaseValue[targetindex] = stat.BaseValue;
+            //         Mins[targetindex] = stat.MinValue;
+            //         Maxs[targetindex] = stat.MaxValue;
+            //     }
+            //     else
+            //     {
+            //         Names.Add(stat.NameID);
+            //         BaseValue.Add(stat.BaseValue);
+            //         Mins.Add(stat.MinValue);
+            //         Maxs.Add(stat.MaxValue);
+            //     }
+            // }
         }
         bool IStatStorage.TryLoadStats(StatData data)
         {

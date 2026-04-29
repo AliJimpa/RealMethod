@@ -126,8 +126,6 @@ namespace RealMethod
             private Component CachedComponent;
 
 
-            // Implement IIdentifier Interface
-            Name16 IIdentifier.NameID => NameID;
             // Implement IDraw Interface
             bool IDraw.CanDraw(int Index)
             {
