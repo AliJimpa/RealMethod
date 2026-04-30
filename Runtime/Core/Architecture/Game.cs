@@ -414,14 +414,28 @@ namespace RealMethod
             }
         }
         /// <summary>
-        /// Register new instance (<typeparamref name="T"/>) that include 'IService' interface .
-        /// New IService instance register to the game if one des not already exist
+        /// Registers a service instance of type <typeparamref name="T"/> in the service container.
         /// </summary>
-        /// <typeparam name="T">Any Type can inplement 'IService' interface</typeparam>
-        /// <param name="service">Any Instance can inplement 'IService' interface </param>
-        /// <param name="author">The object responsible for creating the service (used for provider callbacks).</param>
-        /// <returns>The newly created service instance, or <c>null</c> if a service of the same type already exists.</returns>
-        public static bool RegisterService<T>(T service, object author = null) where T : IService
+        /// <typeparam name="T">
+        /// The type of the service to register. Must implement <see cref="IService"/>.
+        /// </typeparam>
+        /// <param name="service">
+        /// The service instance to register.
+        /// </param>
+        /// <param name="author">
+        /// Optional object providing context or ownership information for the registration.
+        /// Passed to <see cref="IService.OnRegister(object)"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the service was successfully registered; 
+        /// <c>false</c> if a service of the same type is already registered.
+        /// </returns>
+        /// <remarks>
+        /// This method prevents duplicate registrations. If a service of the same type
+        /// is already registered, an error is logged and the method returns <c>false</c>.
+        /// Upon successful registration, <see cref="IService.OnRegister(object)"/> is invoked.
+        /// </remarks>
+        public static bool Register<T>(T service, object author = null) where T : IService
         {
             Type TypeService = typeof(T);
 
@@ -434,6 +448,21 @@ namespace RealMethod
             service.OnRegister(author);
             Instance.Services[TypeService] = service;
             return true;
+
+        }
+        /// <summary>
+        /// Checks whether a service of type <typeparamref name="T"/> is currently registered
+        /// in the Service Locator.
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type of service to check. The type must implement <see cref="IService"/>.
+        /// </typeparam>
+        /// <returns>
+        /// <c>true</c> if a service of type <typeparamref name="T"/> is registered; otherwise <c>false</c>.
+        /// </returns>
+        public static bool IsRegistered<T>() where T : IService
+        {
+            return Instance.Services.ContainsKey(typeof(T));
         }
         /// <summary>
         /// Remove service instance 
@@ -446,7 +475,7 @@ namespace RealMethod
             if (Instance.Services.ContainsKey(TypeService))
             {
                 Instance.Services[TypeService].OnUnregister(author);
-                return Instance.Services.Remove(typeof(T)); ;
+                return Instance.Services.Remove(TypeService); ;
             }
             else
             {
@@ -459,17 +488,14 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">IService type to retrieve.</typeparam>
         /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
-        public static T GetService<T>(bool Printdebug = true) where T : IService
+        public static T GetService<T>() where T : IService
         {
             Type TypeService = typeof(T);
 
             if (Instance.Services.TryGetValue(TypeService, out var provider))
                 return (T)provider.Self;
 
-            if (Printdebug)
-                Debug.LogError($"IService {TypeService} not found.");
-
-            return default;
+            throw new Exception($"Service {TypeService} not registered.");
         }
         /// <summary>
         /// Attempts to find a service of type <typeparamref name="T"/>.
@@ -493,6 +519,10 @@ namespace RealMethod
         /// </summary>
         public static void ClearService()
         {
+            foreach (var service in Instance.Services.Values)
+            {
+                service.OnUnregister(null);
+            }
             Instance.Services.Clear();
         }
         /// <summary>
