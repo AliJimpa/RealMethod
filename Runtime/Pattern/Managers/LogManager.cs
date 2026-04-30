@@ -4,9 +4,9 @@ namespace RealMethod
 {
     public class LogManager : MonoBehaviour, IGameManager
     {
-        void IGameManager.InitiateManager(bool AlwaysLoaded)
+        void IGameManager.InitiateManager(Scope owner)
         {
-            if (!AlwaysLoaded)
+            if (owner.IsWorldScope())
             {
                 Debug.LogError("LogManager should be Initiate in GameScope.");
                 Destroy(this);

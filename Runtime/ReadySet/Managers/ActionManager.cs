@@ -27,7 +27,7 @@ namespace RealMethod
         private SoftType<ActionClass>[] DefaultActions;
 
         // TaskMaanger Methods
-        protected override void InitiateManager(bool alwaysLoaded)
+        protected override void InitiateManager(Scope owner)
         {
             if (DefaultActions != null)
             {

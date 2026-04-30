@@ -6,7 +6,7 @@ namespace RealMethod
     public class CoroutineManager : EnumeratorManager
     {
         // EnumeratorManager Methods
-        protected override void InitiateManager(bool alwaysLoaded)
+        protected override void InitiateManager(Scope owner)
         {
         }
 

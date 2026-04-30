@@ -4,13 +4,9 @@ public class #SCRIPTNAME# : TickManager<YOURUNIT>
 {
 
     // TickManager Methods
-    protected override void InitiateManager(bool alwaysLoaded)
+    protected override void InitiateManager(Scope owner)
     {
 
-    }
-    protected override void ResolveService(Service service, bool active)
-    {
-        
     }
     protected override bool CheckUnit(T unit)
     {

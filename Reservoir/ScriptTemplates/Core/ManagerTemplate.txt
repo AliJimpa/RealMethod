@@ -3,21 +3,13 @@ using RealMethod;
 
 public class #SCRIPTNAME# : MonoBehaviour, IGameManager
 {
-
-
-
-
     // Implement IGameManage Interface
     MonoBehaviour IGameManager.GetManagerClass() => this;
-    void IGameManager.InitiateManager(bool AlwaysLoaded)
+    void IGameManager.InitiateManager(Scope owner)
     {
         // Called Just Once Befor any Awake called
         // Called when World or Game initializing
-        // AlwaysLoaded means your manager initialize in GameScope(always valid) or World Scope(destroy after change World)
-    }
-    void IGameManager.ResolveService(Service service, bool active)
-    {
-        // Called When any Service Created or Deleted in Game
+        // Owner means your manager initialize in GameScope(always valid) or World Scope(destroy after change World)
     }
 
 }

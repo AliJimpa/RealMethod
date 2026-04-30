@@ -240,8 +240,7 @@ namespace RealMethod
             TriggerVisiblity();
         }
 #endif
-        public abstract void InitiateManager(bool alwaysLoaded);
-        public abstract void ResolveService(Service service, bool active);
+        public abstract void InitiateManager(Scope owner);
     }
 
 

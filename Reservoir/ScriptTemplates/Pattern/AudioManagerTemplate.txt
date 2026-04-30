@@ -2,9 +2,4 @@ using RealMethod;
 
 public class #SCRIPTNAME# : AudioManager
 {
-    // AudioManager Methods
-    protected override void ResolveService(Service service, bool active)
-    {
-        base.ResolveService(service, active);
-    }
 }

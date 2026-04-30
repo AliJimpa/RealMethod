@@ -40,9 +40,9 @@ namespace RealMethod
         public int LayerCount => Layers.Count;
 
         // Override Methods
-        public override void InitiateManager(bool AlwaysLoaded)
+        public override void InitiateManager(Scope owner)
         {
-            base.InitiateManager(AlwaysLoaded);
+            base.InitiateManager(owner);
 
             foreach (Transform item in header)
             {

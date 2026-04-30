@@ -21,7 +21,7 @@ namespace RealMethod
         public IInformer Informer { get; private set; }
 
         // UIManager Methods
-        protected override void InitiateManager(bool alwaysLoaded)
+        protected override void InitiateManager(Scope owner)
         {
             Game.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
             Game.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);

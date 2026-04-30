@@ -66,9 +66,9 @@ namespace RealMethod
         {
             return this;
         }
-        void IGameManager.InitiateManager(bool AlwaysLoaded)
+        void IGameManager.InitiateManager(Scope owner)
         {
-            InitiateManager(AlwaysLoaded);
+            InitiateManager(owner);
         }
 
 
@@ -103,7 +103,7 @@ namespace RealMethod
 
 
         // Abstract Methods
-        protected abstract void InitiateManager(bool alwaysLoaded);
+        protected abstract void InitiateManager(Scope owner);
 
     }
 

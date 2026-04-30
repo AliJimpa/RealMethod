@@ -16,11 +16,11 @@ namespace RealMethod
         public ObjectPool<AudioSource> soundPool;
 
         // Manager
-        public override void InitiateManager(bool AlwaysLoaded)
+        public override void InitiateManager(Scope owner)
         {
-            base.InitiateManager(AlwaysLoaded);
+            base.InitiateManager(owner);
 
-            if (AlwaysLoaded)
+            if (owner.IsGameScope())
             {
                 Debug.LogError("You can't use AudioManager in [Game] Scope");
                 return;

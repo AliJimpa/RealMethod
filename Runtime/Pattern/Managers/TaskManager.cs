@@ -16,13 +16,13 @@ namespace RealMethod
         public int Count => Tasks != null ? Tasks.Count : 0;
 
         // Implement IGameManager Interface
-        void IGameManager.InitiateManager(bool AlwaysLoaded)
+        void IGameManager.InitiateManager(Scope owner)
         {
-            InitiateManager(AlwaysLoaded);
+            InitiateManager(owner);
         }
 
         // Abstract Methods
-        protected abstract void InitiateManager(bool alwaysLoaded);
+        protected abstract void InitiateManager(Scope owner);
     }
     public abstract class TaskManager<J> : TaskManager where J : IHandle
     {

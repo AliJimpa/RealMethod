@@ -10,9 +10,9 @@ namespace RealMethod
         private Map<Name16, AudioClip> Clips = new Map<Name16, AudioClip>();
 
         // GameManager
-        public override void InitiateManager(bool AlwaysLoaded)
+        public override void InitiateManager(Scope owner)
         {
-            base.InitiateManager(AlwaysLoaded);
+            base.InitiateManager(owner);
             foreach (var clip in Clips)
             {
                 CreateLayer(clip.Key, clip.Value);

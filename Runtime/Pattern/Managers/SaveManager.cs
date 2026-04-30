@@ -67,7 +67,7 @@ namespace RealMethod
 
 
         // Implement IGameManager Interface
-        public virtual void InitiateManager(bool AlwaysLoaded)
+        public virtual void InitiateManager(Scope owner)
         {
             if (Mode != SaveFileStructure.MultiFile)
             {
@@ -85,9 +85,6 @@ namespace RealMethod
                     }
                 }
             }
-        }
-        public virtual void ResolveService(Service service, bool active)
-        {
         }
 
 

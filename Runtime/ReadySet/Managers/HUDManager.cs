@@ -7,7 +7,7 @@ namespace RealMethod
     {
 
         // UIManager Methods
-        protected override void InitiateManager(bool alwaysLoaded)
+        protected override void InitiateManager(Scope owner)
         {
         }
 

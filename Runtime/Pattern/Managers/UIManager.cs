@@ -35,7 +35,7 @@ namespace RealMethod
 
 
         // Implement IGameManager Interface
-        void IGameManager.InitiateManager(bool alwaysLoaded)
+        void IGameManager.InitiateManager(Scope owner)
         {
             if (header == null)
             {
@@ -69,7 +69,7 @@ namespace RealMethod
                 }
             }
 
-            InitiateManager(alwaysLoaded);
+            InitiateManager(owner);
         }
 
 
@@ -77,8 +77,12 @@ namespace RealMethod
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            if (gameObject.layer != 5)
-                gameObject.layer = 5;
+            if (header != null)
+            {
+                if (header.gameObject.layer != 5)
+                    header.gameObject.layer = 5;
+            }
+
         }
 #endif
 
@@ -542,7 +546,7 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        protected abstract void InitiateManager(bool alwaysLoaded);
+        protected abstract void InitiateManager(Scope owner);
 
         //Enumerators
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration)
@@ -611,5 +615,5 @@ namespace RealMethod
     }
 
 
-   
+
 }

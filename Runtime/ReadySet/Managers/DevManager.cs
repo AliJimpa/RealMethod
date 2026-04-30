@@ -8,10 +8,7 @@ namespace RealMethod
     public class DevManager : DeveloperManager
     {
         // DeveloperManager Methods
-        public override void InitiateManager(bool alwaysLoaded)
-        {
-        }
-        public override void ResolveService(Service service, bool active)
+        public override void InitiateManager(Scope owner)
         {
         }
     }

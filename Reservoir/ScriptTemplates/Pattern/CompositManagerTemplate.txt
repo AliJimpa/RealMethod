@@ -7,9 +7,9 @@ public class #SCRIPTNAME# : CompositManager<MUSCSTATE>
         private Map<Name16, AudioClip> Clips = new Map<Name16, AudioClip>();
 
         // IGameManager Interface
-        protected override void InitiateManager(bool AlwaysLoaded)
+        protected override void InitiateManager(Scope owner)
         {
-            base.InitiateManager(AlwaysLoaded);
+            base.InitiateManager(owner);
             foreach (var clip in Clips)
             {
                 CreateLayer(clip.Key, clip.Value);

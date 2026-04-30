@@ -65,9 +65,9 @@ namespace RealMethod
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
-            if (!AlwaysLoaded)
+            if (owner.IsWorldScope())
             {
                 Debug.LogWarning("HapticManager Should initiate in Game Scope");
                 return;
@@ -81,10 +81,6 @@ namespace RealMethod
                 }
             }
         }
-        public void ResolveService(Service service, bool active)
-        {
-        }
-
 
         // Public Methods
         public IHapticProvider Produce(HapticConfig config)
