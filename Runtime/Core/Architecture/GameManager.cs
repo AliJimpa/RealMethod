@@ -19,10 +19,10 @@ namespace RealMethod
         /// <summary>
         /// Initializes the manager and prepares it for use in the game lifecycle.
         /// </summary>
-        /// <param name="AlwaysLoaded">
-        /// If true, the manager should persist and remain loaded at all times.
+        /// <param name="owner">
+        /// Whitch owner class Initiation the manager
         /// </param>
-        void InitiateManager(bool AlwaysLoaded);
+        void InitiateManager(Scope owner);
     }
 
 }

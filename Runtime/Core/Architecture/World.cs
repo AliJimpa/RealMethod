@@ -77,14 +77,13 @@ namespace RealMethod
     /// <see cref="WorldBegin"/> and <see cref="WorldEnd"/> to perform
     /// world-specific initialization and cleanup.
     /// </summary>
-    public abstract class World : MonoBehaviour
+    public abstract class World : Scope
     {
         [Header("Setting")]
         [SerializeField]
         private Prefab DefaultPlayer;
 
 
-        private IGameManager[] Managers;
         private GameObject PlayerObject;
 
 
@@ -104,23 +103,7 @@ namespace RealMethod
             }
 
             // Get All Managers
-            List<IGameManager> CashManagers = new List<IGameManager>(10);
-            foreach (var manager in GetComponents<IGameManager>())
-            {
-                if (!CashManagers.Contains(manager))
-                {
-                    manager.InitiateManager(false);
-                    CashManagers.Add(manager);
-                }
-                else
-                {
-                    Debug.LogError($"You should not use a manager {manager} twice");
-                    throw new System.NotImplementedException();
-                }
-
-            }
-            Managers = new IGameManager[CashManagers.Count];
-            Managers = CashManagers.ToArray();
+            CollectManagers(new GameObject[1] { gameObject });
 
             // Find Player or Create newone
             var scneplayer = GetPlayerInScene();
@@ -182,38 +165,6 @@ namespace RealMethod
         }
 
 
-        /// <summary>
-        /// Returns a manager instance of the requested type if one exists on this world.
-        /// </summary>
-        /// <typeparam name="T">The manager type to search for.</typeparam>
-        /// <returns>The manager instance cast to <typeparamref name="T"/>, or null if not found.</returns>
-        public T FindManager<T>() where T : class
-        {
-            foreach (var manager in Managers)
-            {
-                if (manager.Component is T Result)
-                {
-                    return Result;
-                }
-            }
-            return null;
-        }
-        /// <summary>
-        /// Returns a manager whose associated GameObject has the specified name.
-        /// </summary>
-        /// <param name="ObjectName">The name of the manager's GameObject to find.</param>
-        /// <returns>The matching <see cref="IGameManager"/>, or null if none match.</returns>
-        public IGameManager FindManager(string ObjectName)
-        {
-            foreach (var manger in Managers)
-            {
-                if (manger.Component.gameObject.name == ObjectName)
-                {
-                    return manger;
-                }
-            }
-            return null;
-        }
 
         /// <summary>
         /// Returns the primary player <see cref="GameObject"/> for this world.

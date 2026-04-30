@@ -35,7 +35,7 @@ namespace RealMethod
     /// configuration and high-level game lifecycle (initialization, start, and shutdown).
     /// Derive from this class to implement project-specific behavior for the game's lifecycle hooks.
     /// </summary>
-    public abstract class Game : MonoBehaviour
+    public abstract class Game : Scope
     {
         /// <summary>
         /// Singleton instance of the active game.
@@ -169,10 +169,8 @@ namespace RealMethod
                 return result;
             }
         }
-        /// <summary>
-        /// Cached array of managers that were instantiated from configured game prefabs.
-        /// </summary>
-        private IGameManager[] Managers;
+
+
         /// <summary>
         /// List of runtime-registered <see cref="IService"/> instances owned by the game.
         /// </summary>
@@ -264,26 +262,12 @@ namespace RealMethod
             }
 
             // Initiate GamePrefab & Managers
-            HashSet<IGameManager> CashManagers = new HashSet<IGameManager>();
-
+            GameObject[] Objects = new GameObject[3];
             if (ProjectSettings.GetPrefab_1() != null)
             {
                 GameObject newobj = Instantiate(ProjectSettings.GetPrefab_1());
                 newobj.name = "GameScope(Runtime)";
-                foreach (var manager in newobj.GetComponents<IGameManager>())
-                {
-                    if (!CashManagers.Contains(manager))
-                    {
-                        manager.InitiateManager(true);
-                        CashManagers.Add(manager);
-                    }
-                    else
-                    {
-                        Debug.LogError($"You should not use a manager {manager} twice");
-                        throw new NotImplementedException();
-                    }
-
-                }
+                Objects[0] = newobj;
                 newobj.transform.SetParent(RealObject.transform);
             }
 #if UNITY_EDITOR
@@ -291,20 +275,7 @@ namespace RealMethod
             {
                 GameObject newobj = Instantiate(ProjectSettings.GetPrefab_2());
                 newobj.name = "GameScope(Editor)";
-                foreach (var manager in newobj.GetComponents<IGameManager>())
-                {
-                    if (!CashManagers.Contains(manager))
-                    {
-                        manager.InitiateManager(true);
-                        CashManagers.Add(manager);
-                    }
-                    else
-                    {
-                        Debug.LogError($"You should not use a manager {manager} twice");
-                        throw new NotImplementedException();
-                    }
-
-                }
+                Objects[1] = newobj;
                 newobj.transform.SetParent(RealObject.transform);
             }
 #endif
@@ -313,24 +284,12 @@ namespace RealMethod
             {
                 GameObject newobj = Instantiate(ProjectSettings.GetPrefab_3());
                 newobj.name = "GameScope(Server)";
-                foreach (var manager in newobj.GetComponents<IGameManager>())
-                {
-                    if (!CashManagers.Contains(manager))
-                    {
-                        manager.InitiateManager(true);
-                        CashManagers.Add(manager);
-                    }
-                    else
-                    {
-                        Debug.LogError($"You should not use a manager {manager} twice");
-                        throw new NotImplementedException();
-                    }
-
-                }
+                Objects[2] = newobj;
                 newobj.transform.SetParent(RealObject.transform);
             }
 #endif
-            Instance.Managers = CashManagers.ToArray();
+            Instance.CollectManagers(Objects);
+
 
             // Unload Project Setting
             Resources.UnloadAsset(ProjectSettings);
@@ -687,25 +646,24 @@ namespace RealMethod
             return Instance.StartCoroutine(Bridge.GetLoadScneCorotine(SceneManager.GetActiveScene().name)); ;
         }
         /// <summary>
-        /// Finds a manager of type <typeparamref name="T"/> in the current <see cref="World"/>,
-        /// falling back to the global game managers if not found.
+        /// Retrieves a manager of type <typeparamref name="T"/> from the active manager scopes.
+        /// The search is performed in the following order:
+        /// 1. The current <c>World</c> scope (if available).
+        /// 2. The global <c>Instance</c> scope.
         /// </summary>
-        /// <typeparam name="T">Manager type to find.</typeparam>
-        /// <returns>An instance of the manager if found; otherwise <c>null</c>.</returns>
-        public static T GetManager<T>() where T : MonoBehaviour
+        /// <typeparam name="T">The type of manager to retrieve.</typeparam>
+        /// <returns>
+        /// The manager of type <typeparamref name="T"/> if found; otherwise <c>null</c>.
+        /// </returns>
+        public static T GetManager<T>() where T : Component, IGameManager
         {
-            T Result = null;
+            if (World != null && World.TryFindManager(out T worldResult))
+                return worldResult;
 
-            if (World != null)
-            {
-                Result = World.FindManager<T>();
-            }
+            if (Instance.TryFindManager(out T gameResult))
+                return gameResult;
 
-            if (Result != null)
-            {
-                return Result;
-            }
-            return Instance.FindManager<T>();
+            return null;
         }
         /// <summary>
         /// Parents the provided <paramref name="Target"/> GameObject to the game root instance.
@@ -1008,43 +966,6 @@ namespace RealMethod
         {
             Instance.DrawTasks.Remove(element);
             element.Deactive();
-        }
-
-
-
-
-
-        /// <summary>
-        /// Retrieves a manager of type <typeparamref name="T"/> from this game's instantiated managers.
-        /// </summary>
-        /// <typeparam name="T">Manager type to retrieve.</typeparam>
-        /// <returns>The manager instance if found; otherwise <c>null</c>.</returns>
-        public T FindManager<T>() where T : class
-        {
-            foreach (var manager in Managers)
-            {
-                if (manager.Component is T Result)
-                {
-                    return Result;
-                }
-            }
-            return null;
-        }
-        /// <summary>
-        /// Retrieves an <see cref="IGameManager"/> by the name of its GameObject.
-        /// </summary>
-        /// <param name="ObjectName">Name of the manager GameObject to find.</param>
-        /// <returns>The matching <see cref="IGameManager"/>, or <c>null</c> if none match.</returns>
-        public IGameManager FindManager(string ObjectName)
-        {
-            foreach (var manger in Managers)
-            {
-                if (manger.Component.gameObject.name == ObjectName)
-                {
-                    return manger;
-                }
-            }
-            return null;
         }
 
 
