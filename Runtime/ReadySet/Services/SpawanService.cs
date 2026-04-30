@@ -48,11 +48,11 @@ namespace RealMethod
         {
             get
             {
-                var CacheInstance = Game.GetService<Spawn>(false);
+                var CacheInstance = Game.GetService<Spawn>();
                 if (CacheInstance == null)
                 {
                     CacheInstance = new Spawn();
-                    Game.RegisterService(CacheInstance, null);
+                    Game.Register(CacheInstance, null);
                 }
                 return CacheInstance;
             }
