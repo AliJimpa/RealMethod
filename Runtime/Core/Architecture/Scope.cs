@@ -10,10 +10,7 @@ namespace RealMethod
         /// Cached array of managers that were instantiated from configured game prefabs or World gameobject.
         /// </summary>
         private IGameManager[] Managers = null;
-        /// <summary>
-        /// Cached array of managers that were instantiated from configured game prefabs or World gameobject.
-        /// </summary>
-        // public IReadOnlyList<IGameManager> manager => Managers;
+
 
 
         /// <summary>
@@ -45,7 +42,6 @@ namespace RealMethod
 
             return false;
         }
-
 
 
         /// <summary>
@@ -100,8 +96,6 @@ namespace RealMethod
             }
             Managers = managerCache.ToArray();
         }
-
-
 
     }
 

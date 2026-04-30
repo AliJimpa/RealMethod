@@ -48,8 +48,7 @@ namespace RealMethod
         {
             get
             {
-                var CacheInstance = Game.GetService<Spawn>();
-                if (CacheInstance == null)
+                if (!Game.TryGetService(out Spawn CacheInstance))
                 {
                     CacheInstance = new Spawn();
                     Game.Register(CacheInstance, null);
@@ -106,7 +105,7 @@ namespace RealMethod
         }
 
         // Private Functions
-        private static T GetManager<T>() where T : MonoBehaviour
+        private static T GetManager<T>() where T : Component, IGameManager
         {
             System.Type type = typeof(T);
             if (Ins.Managers.ContainsKey(type))
@@ -118,10 +117,9 @@ namespace RealMethod
             }
             else
             {
-                var manager = Game.World.FindManager<T>();
-                if (manager is IGameManager provider)
+                if (Game.World.TryFindManager(out T manager))
                 {
-                    Ins.Managers.Add(type, provider);
+                    Ins.Managers.Add(type, manager);
                     return manager;
                 }
             }
