@@ -34,7 +34,7 @@ namespace RealMethod
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
             // if (!LG)
             // {
@@ -53,11 +53,6 @@ namespace RealMethod
             StartCoroutine(OnPlayerLocationChange());
 
         }
-        public void ResolveService(Service service, bool active)
-        {
-            throw new System.NotImplementedException();
-        }
-
 
         private void OnEnable()
         {

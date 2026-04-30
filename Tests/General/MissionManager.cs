@@ -45,7 +45,7 @@ namespace RealMethod
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
             //MyWorld = Game.CastWorld<CCWorld>();
             //GameObject PlayerObject = MyWorld.GetPlayerObject();
@@ -61,9 +61,6 @@ namespace RealMethod
             NextLevel = MissionPassUI.transform.Find("B_NextMission").GetComponent<Button>();
             //if (GameData.GetMissionsLength() == MissionID)
             //NextLevel.gameObject.SetActive(false);
-        }
-        public void ResolveService(Service service, bool active)
-        {
         }
 
 

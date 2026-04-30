@@ -24,11 +24,7 @@ namespace RealMethod
         public event System.Action<IFile> OnFileRemoved;
 
         // Implement IGameManager Interface
-        public virtual void InitiateManager(bool AlwaysLoaded)
-        {
-
-        }
-        public virtual void ResolveService(Service service, bool active)
+        public virtual void InitiateManager(Scope owner)
         {
 
         }
