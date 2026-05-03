@@ -5,6 +5,23 @@ namespace RealMethod
 {
 
     /// <summary>
+    /// Defines the contract for a service that can respond to lifecycle events.
+    /// </summary>
+    public interface IRegistrable
+    {
+        /// <summary>
+        /// Called when the service is created.
+        /// </summary>
+        /// <param name="author">The object responsible for creating the service.</param>
+        void OnRegister();
+        /// <summary>
+        /// Called when the service is deleted or destroyed.
+        /// </summary>
+        /// <param name="author">The object responsible for deleting the service.</param>
+        void OnUnregister();
+    }
+
+    /// <summary>
     /// Global service locator with automatic garbage collection safety.
     /// Stores services by interface type using WeakReferences.
     /// Thread‑safe for Register / Get / Remove operations.
@@ -56,12 +73,16 @@ namespace RealMethod
                     if (!weak.TryGetTarget(out _))
                     {
                         _services[serviceType] = new WeakReference<object>(service);
+                        if (service is IRegistrable provider1)
+                            provider1.OnRegister();
                         return;
                     }
 
                     if (overwrite)
                     {
                         _services[serviceType] = new WeakReference<object>(service);
+                        if (service is IRegistrable provider2)
+                            provider2.OnRegister();
                         return;
                     }
 
@@ -70,6 +91,8 @@ namespace RealMethod
                 }
 
                 _services[serviceType] = new WeakReference<object>(service);
+                if (service is IRegistrable provider3)
+                    provider3.OnRegister();
             }
         }
         /// <summary>
@@ -89,6 +112,8 @@ namespace RealMethod
                     !weak.TryGetTarget(out _))
                 {
                     _services[type] = new WeakReference<object>(service);
+                    if (service is IRegistrable provider)
+                        provider.OnRegister();
                 }
             }
         }
@@ -157,12 +182,12 @@ namespace RealMethod
         /// <summary>
         /// Manually unregisters (removes) a service type.
         /// </summary>
-        public void Unregister<T>() where T : class
+        public bool Unregister<T>() where T : class
         {
             var type = typeof(T);
             lock (_lock)
             {
-                _services.Remove(type);
+                return Unregister(type);
             }
         }
         /// <summary>
@@ -174,10 +199,21 @@ namespace RealMethod
         /// Use this when services are registered using generic calls such as
         /// Register&lt;T&gt;(instance).
         /// </remarks>
-        public void Unregister(Type type)
+        public bool Unregister(Type type)
         {
-            if (_services.ContainsKey(type))
-                _services.Remove(type);
+            lock (_lock)
+            {
+                if (_services.ContainsKey(type))
+                {
+                    if (_services[type].TryGetTarget(out object target))
+                    {
+                        if (target is IRegistrable provider)
+                            provider.OnRegister();
+                    }
+                    return _services.Remove(type);
+                }
+                return false;
+            }
         }
         /// <summary>
         /// Force-clears all services from the locator.
@@ -186,6 +222,10 @@ namespace RealMethod
         {
             lock (_lock)
             {
+                foreach (var item in _services)
+                {
+                    Unregister(item.Key);
+                }
                 _services.Clear();
             }
         }
