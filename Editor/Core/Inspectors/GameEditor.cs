@@ -5,43 +5,34 @@ namespace RealMethod.Editor
     [CustomEditor(typeof(Game), true)]
     public class GameEditor : UnityEditor.Editor
     {
-        private Game BaseComponent;
+        private Game Comp;
+        private string WorldName => Game.World != null ? Game.World.GetType().Name : "World Not Valid";
+        private string BridgeName => Game.Bridge != null ? Game.Bridge.GetType().Name : "GameBridge Not Valid";
+        private string ConfigName => Game.Config != null ? Game.Config.GetType().Name : "GameConfig Not Valid";
 
         private void OnEnable()
         {
-            BaseComponent = (Game)target;
+            Comp = (Game)target;
         }
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             EditorGUILayout.Space();
-            if (BaseComponent != null)
+            if (Comp != null)
             {
+                EditorGUILayout.LabelField($"{WorldName} | {BridgeName} | {ConfigName}");
                 EditorGUILayout.LabelField($"GameStat: {Game.State}");
-                EditorGUILayout.LabelField($"{GetWorld()} | {GetBrgidge()} | {GetConfig()}");
                 EditorGUILayout.Space(0.5f);
-                IInspectorInfo[] Info = BaseComponent.GetAllInfo();
-                //string[] Managers = BaseComponent.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray();
-                //string[] WorldManagers = Game.World ? Game.World.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray() : new string[0];
+                
+                EditorGUILayout.LabelField($"----------------------------");
+                IInspectorInfo[] Info = Comp.GetAllInfo();
                 for (int i = 0; i < Info.Length; i++)
                 {
-                    EditorGUILayout.LabelField($"{i + 1}.{Info[i].GetType().Name}->    {Info[i].GetInfo()}");
+                    EditorGUILayout.LabelField($"{i + 1}.{Info[i].GetType().Name}->      {Info[i].GetInfo()}");
                 }
             }
         }
 
-        private string GetWorld()
-        {
-            return Game.World != null ? Game.World.GetType().Name : "World Not Valid";
-        }
-        private string GetBrgidge()
-        {
-            return Game.Bridge != null ? Game.Bridge.GetType().Name : "GameBridge Not Valid";
-        }
-        private string GetConfig()
-        {
-            return Game.Config != null ? Game.Config.GetType().Name : "GameConfig Not Valid";
-        }
 
     }
 

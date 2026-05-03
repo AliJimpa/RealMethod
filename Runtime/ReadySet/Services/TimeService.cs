@@ -26,7 +26,7 @@ namespace RealMethod
 #if UNITY_EDITOR
         protected override string GetInspectorInfo()
         {
-            return $"Record({RecordTime.Count})";
+            return $"Record ({RecordTime.Count})";
         }
 #endif
 

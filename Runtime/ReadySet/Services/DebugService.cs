@@ -190,7 +190,7 @@ namespace RealMethod
 #if UNITY_EDITOR
         protected override string GetInspectorInfo()
         {
-            return $"Lines({Lines.Count})";
+            return $"Lines ({Lines.Count})";
         }
 #endif
 

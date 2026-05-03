@@ -69,7 +69,7 @@ namespace RealMethod
         // Implement IInspectorInfo Interface
         string IInspectorInfo.GetInfo()
         {
-            return $"Managers({Managers.Count})";
+            return $"Managers ({Managers.Count})";
         }
 #endif
 

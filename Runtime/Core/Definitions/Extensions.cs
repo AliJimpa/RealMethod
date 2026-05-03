@@ -1,6 +1,6 @@
 namespace RealMethod
 {
-    public static class Method_Extension
+    public static class Extensions
     {
         public static bool IsGameScope(this Scope target)
         {

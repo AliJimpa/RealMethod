@@ -15,16 +15,6 @@ namespace RealMethod
         public int Count => _services.Count;
         private readonly object _lock = new();
 
-
-
-        // Implement IInspectorInfo Interface
-        string IInspectorInfo.GetInfo()
-        {
-            return $"Regitereis({_services.Count})";
-        }
-
-
-
         /// <summary>
         /// Register a service instance under its concrete or interface type T.
         /// T must implement IService so we know this is a service.
@@ -199,6 +189,17 @@ namespace RealMethod
                 _services.Clear();
             }
         }
+
+
+
+
+#if UNITY_EDITOR
+        // Implement IInspectorInfo Interface
+        string IInspectorInfo.GetInfo()
+        {
+            return $"Registered ({_services.Count})";
+        }
+#endif
 
     }
 }

@@ -561,8 +561,11 @@ namespace RealMethod
         // Implement IInspectorInfo Interface
         string IInspectorInfo.GetInfo()
         {
-            //GetType().ToString() + ": "
-            return $"IsLoading:{isLoading} - FadeTime:{FadeTime}";
+            return $"IsLoading ({isLoading}) , FadeTime ({FadeTime}) , {GetInspectorInfo()}";
+        }
+        protected virtual string GetInspectorInfo()
+        {
+            return null;
         }
 #endif
 

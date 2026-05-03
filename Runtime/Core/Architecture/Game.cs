@@ -1065,9 +1065,19 @@ namespace RealMethod
         /// <returns>Array of service type names.</returns>
         public override IInspectorInfo[] GetAllInfo()
         {
-            var baseInfo = base.GetAllInfo();
+            List<IInspectorInfo> Result = new List<IInspectorInfo>();
+            foreach (var item in base.GetAllInfo())
+            {
+                Result.Add(item);
+            }
+            Result.Add(Bridge);
+            Result.Add(Config);
             var servicesInfo = GameServices != null ? GameServices.OfType<IInspectorInfo>().ToArray() : Array.Empty<IInspectorInfo>();
-            return baseInfo.Concat(servicesInfo).ToArray();
+            foreach (var item in servicesInfo)
+            {
+                Result.Add(item);
+            }
+            return Result.ToArray();
         }
 #endif
 
