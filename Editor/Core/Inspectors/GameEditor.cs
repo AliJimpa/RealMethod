@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEditor;
 
 namespace RealMethod.Editor
@@ -21,12 +20,12 @@ namespace RealMethod.Editor
                 EditorGUILayout.LabelField($"GameStat: {Game.State}");
                 EditorGUILayout.LabelField($"{GetWorld()} | {GetBrgidge()} | {GetConfig()}");
                 EditorGUILayout.Space(0.5f);
-                string[] Services = BaseComponent.GetAllServiceInfo();
+                IInspectorInfo[] Info = BaseComponent.GetAllInfo();
                 //string[] Managers = BaseComponent.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray();
                 //string[] WorldManagers = Game.World ? Game.World.gameObject.GetComponents<IGameManager>().Select(c => c.GetManagerClass().name).ToArray() : new string[0];
-                for (int i = 0; i < Services.Length; i++)
+                for (int i = 0; i < Info.Length; i++)
                 {
-                    EditorGUILayout.LabelField($"{i + 1}. {Services[i]}");
+                    EditorGUILayout.LabelField($"{i + 1}.{Info[i].GetType().Name}->    {Info[i].GetInfo()}");
                 }
             }
         }
