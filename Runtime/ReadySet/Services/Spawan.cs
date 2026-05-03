@@ -42,51 +42,36 @@ namespace RealMethod
     /// system that intelligently reuses previously found managers and adapts to
     /// scene changes.
     /// </summary>
-    public sealed class Spawn : IService
+    public sealed class Spawn : IBridge, System.IDisposable, IInspectorInfo
     {
-        private static Spawn Ins
-        {
-            get
-            {
-                if (!Game.TryGetService(out Spawn CacheInstance))
-                {
-                    CacheInstance = new Spawn();
-                    Game.Register(CacheInstance, null);
-                }
-                return CacheInstance;
-            }
-        }
+        private static Spawn Ins => CacheInstance.Value;
+        private static System.Lazy<Spawn> CacheInstance = new System.Lazy<Spawn>(() => new Spawn());
 
         private Dictionary<System.Type, IGameManager> Managers;
 
 
         public Spawn()
         {
+            Game.Bridge.Bind(this);
             Managers = new();
         }
-        public Spawn(Dictionary<System.Type, IGameManager> DefaultManager)
-        {
-            Managers = DefaultManager;
-        }
 
-
-        // Implement IService Interface
-        public object GetServiceClass() => this;
-        void IService.OnRegister(object Author)
-        {
-        }
-        void IService.OnWorldChanging(World Previous, World New)
+        // Implement IBridge Interface
+        void IBridge.OnWorldChanged(World world)
         {
             Managers.Clear();
         }
-        void IService.OnUnregister(object Author)
+        // Implement IDisposable Interface
+        void System.IDisposable.Dispose()
         {
+            Game.Bridge.Unbind(this);
             Managers.Clear();
         }
 #if UNITY_EDITOR
-        string IService.GetInspectorInfo()
+        // Implement IInspectorInfo Interface
+        string IInspectorInfo.GetInfo()
         {
-            return $"SelectedManagers:{Managers.Count}";
+            return $"Managers({Managers.Count})";
         }
 #endif
 
@@ -731,7 +716,5 @@ namespace RealMethod
         }
 
     }
-
-
 }
 

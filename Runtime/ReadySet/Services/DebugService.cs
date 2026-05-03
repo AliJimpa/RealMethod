@@ -87,7 +87,7 @@ namespace RealMethod
             }
             void ITask.Deactive()
             {
-                MyOwner.OnLineDeactive(this);
+                MyOwner.RemoveLog(this);
             }
             // Implement IDraw Interface
             bool IDraw.CanDraw(int Index)
@@ -120,12 +120,13 @@ namespace RealMethod
             }
 
         }
-        private ILogHandler defaultLogHandler;
-
-        private List<LogLine> Lines = new List<LogLine>(10);
+        // LineSetting
         public Vector2 PrintPivot = new Vector2(10, 10);
         public float PrintSpace => Screen.height / 40;
         public int PrintSize = 1;
+        private List<LogLine> Lines = new List<LogLine>(10);
+        private ILogHandler defaultLogHandler;
+        public event System.Action<LogType, string> OnLogWrited;
 
 
         // Implement ILogHandler Interfacwe
@@ -147,6 +148,7 @@ namespace RealMethod
             {
                 Debug.unityLogger.logHandler.LogFormat(logType, context, format, args);
             }
+            OnLogWrited?.Invoke(logType, format);
         }
         void ILogHandler.LogException(System.Exception exception, Object context)
         {
@@ -156,33 +158,41 @@ namespace RealMethod
             Game.Draw(NewLine);
 
             defaultLogHandler.LogException(exception, context);
+            OnLogWrited?.Invoke(LogType.Exception, exception.Message);
         }
 
 
+
         // Service Methods
-        public override void OnRegister(object Author)
+        protected override void OnBegin()
         {
             defaultLogHandler = Debug.unityLogger.logHandler;
             Debug.unityLogger.logHandler = this;
         }
-        public override void OnWorldChanging(World Previous, World New)
+        protected override void OnWorldChanged()
         {
+            // Nothing
         }
-        public override void OnUnregister(object Author)
+        protected override void OnEnd()
         {
-            if (defaultLogHandler != null)
-                Debug.unityLogger.logHandler = defaultLogHandler;
+            Debug.unityLogger.logHandler = defaultLogHandler;
             Lines.Clear();
-        }
-        protected override string GetDisplayInfo()
-        {
-            return $"{base.GetDisplayInfo()}Lines:{Lines.Count}";
         }
 
         // Methods
-        private void OnLineDeactive(LogLine line)
+        private void RemoveLog(LogLine line)
         {
             Lines.Remove(line);
         }
+
+
+
+#if UNITY_EDITOR
+        protected override string GetInspectorInfo()
+        {
+            return $"Lines({Lines.Count})";
+        }
+#endif
+
     }
 }

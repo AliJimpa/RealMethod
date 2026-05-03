@@ -39,54 +39,40 @@ namespace RealMethod
     /// system that intelligently reuses previously found managers and adapts to
     /// scene changes.
     /// </summary>
-    public sealed class Despawn : IService
+    public sealed class Despawn : IBridge, System.IDisposable, IInspectorInfo
     {
-        private static Despawn Ins
-        {
-            get
-            {
-                if (!Game.TryGetService(out Despawn CacheInstance))
-                {
-                    CacheInstance = new Despawn();
-                    Game.Register(CacheInstance, null);
-                }
-                return CacheInstance;
-            }
-        }
+        private static Despawn Ins => CacheInstance.Value;
+        private static System.Lazy<Despawn> CacheInstance = new System.Lazy<Despawn>(() => new Despawn());
+
+
         private Dictionary<System.Type, IGameManager> Managers;
-
-
-
 
         public Despawn()
         {
+            Game.Bridge.Bind(this);
             Managers = new();
         }
-        public Despawn(Dictionary<System.Type, IGameManager> DefaultManager)
-        {
-            Managers = DefaultManager;
-        }
 
-
-        // Implement IService Interface
-        public object GetServiceClass() => this;
-        void IService.OnRegister(object Author)
-        {
-        }
-        void IService.OnWorldChanging(World Previous, World New)
+        // Implement IBridge Interface
+        void IBridge.OnWorldChanged(World world)
         {
             Managers.Clear();
         }
-        void IService.OnUnregister(object Author)
+        // Implement IDisposable Interface
+        void System.IDisposable.Dispose()
         {
+            Game.Bridge.Unbind(this);
             Managers.Clear();
         }
+
 #if UNITY_EDITOR
-        string IService.GetInspectorInfo()
+        // Implement IInspectorInfo Interface
+        string IInspectorInfo.GetInfo()
         {
-            return $"SelectedManagers:{Managers.Count}";
+            return $"Managers({Managers.Count})";
         }
 #endif
+
 
         // Public Functions
         public void AddManager(IGameManager manager)

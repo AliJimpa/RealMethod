@@ -9,20 +9,26 @@ namespace RealMethod
         private NameTable<float> RecordTime;
 
         // Service Methods
-        public override void OnRegister(object Author)
+        protected override void OnBegin()
         {
             serviceTime = Time.time;
             worldTime = Time.time;
             RecordTime = new NameTable<float>(10);
         }
-        public override void OnWorldChanging(World Previous, World New)
+        protected override void OnWorldChanged()
         {
             worldTime = Time.time;
         }
-        public override void OnUnregister(object Author)
+        protected override void OnEnd()
         {
             RecordTime.Clear();
         }
+#if UNITY_EDITOR
+        protected override string GetInspectorInfo()
+        {
+            return $"Record({RecordTime.Count})";
+        }
+#endif
 
         // Public Functions
         public bool CheckRecord(string tag, float targettime)
@@ -68,6 +74,8 @@ namespace RealMethod
         {
             return RecordTime.ContainsKey(tag);
         }
+
+
     }
 
 }

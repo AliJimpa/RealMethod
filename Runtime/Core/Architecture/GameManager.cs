@@ -25,4 +25,20 @@ namespace RealMethod
         void InitiateManager(Scope owner);
     }
 
+    public class GameManager : MonoBehaviour, IGameManager
+    {
+        // Implement IGameManager Interface
+        public void InitiateManager(Scope owner)
+        {
+            OnInitiateManager(owner);
+        }
+
+
+        
+        protected virtual void OnInitiateManager(Scope owner)
+        {
+            
+        }
+    }
+
 }

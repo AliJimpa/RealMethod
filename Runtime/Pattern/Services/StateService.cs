@@ -16,14 +16,13 @@ namespace RealMethod
         }
 
         // StateService Methods
-        public sealed override void OnWorldChanging(World Previous , World New)
+        protected override void OnWorldChanged()
         {
             if (CanResetforNewWorld(Game.World))
             {
                 ResetToDefault();
             }
         }
-
         // Public Functions
         public bool SetState(byte target)
         {

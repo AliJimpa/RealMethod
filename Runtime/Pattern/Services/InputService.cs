@@ -7,27 +7,33 @@ namespace RealMethod
     {
         private InputActionAsset CurrentInputAsset;
 
-        public sealed override void OnRegister(object Author)
+        protected override void OnBegin()
         {
             if (TryFindInputAsset(out InputActionAsset newAsset))
             {
                 ReplaceInputAsset(newAsset);
             }
         }
-        public sealed override void OnWorldChanging(World Previous, World New)
+        protected override void OnWorldChanged()
         {
             if (TryFindInputAsset(out InputActionAsset newAsset))
             {
                 ReplaceInputAsset(newAsset);
             }
         }
-        public sealed override void OnUnregister(object Author)
+        protected override void OnEnd()
         {
             if (CurrentInputAsset != null)
             {
                 OnDisposeInputAsset(CurrentInputAsset);
             }
         }
+#if UNITY_EDITOR
+        protected override string GetInspectorInfo()
+        {
+            return CurrentInputAsset.name;
+        }
+#endif
 
 
         public void ReplaceInputAsset(InputActionAsset asset)
@@ -64,6 +70,8 @@ namespace RealMethod
 
         protected abstract void OnAcquireInputAsset(InputActionAsset asset);
         protected abstract void OnDisposeInputAsset(InputActionAsset asset);
+
+
     }
 
 

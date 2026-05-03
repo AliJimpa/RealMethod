@@ -21,12 +21,6 @@ namespace RealMethod
     public abstract class Scope : Kernel
     {
         /// <summary>
-        /// Cached array of managers that were instantiated from configured game prefabs or World gameobject.
-        /// </summary>
-        //private IGameManager[] Managers = null;
-
-
-        /// <summary>
         /// Attempts to find a manager whose <c>Component</c> matches the specified type <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The component type to search for.</typeparam>
@@ -39,29 +33,7 @@ namespace RealMethod
         /// </returns>
         public bool TryFindManager<T>(out T result) where T : Component, IGameManager
         {
-            return Services.TryGet(out result);
-            // result = null;
-
-            // if (Managers == null)
-            // {
-            //     Debug.LogError("Managers list is not initialized. Call CollectManagers() before searching.");
-            //     return false;
-            // }
-
-            // foreach (var manager in Managers)
-            // {
-            //     if (manager == null)
-            //     {
-            //         Debug.LogError($"A manager reference({typeof(T)}) has been removed or destroyed. Managers should never be null.");
-            //         return false;
-            //     }
-            //     if (manager.Component is T found)
-            //     {
-            //         result = found;
-            //         return true;
-            //     }
-            // }
-            // return false;
+            return Registry.TryGet(out result);
         }
         /// <summary>
         /// Collects all <see cref="IGameManager"/> components from the provided GameObjects,
@@ -84,13 +56,6 @@ namespace RealMethod
                 return;
             }
 
-            // if (Managers != null)
-            // {
-            //     Debug.LogError("CollectManagers was called more than once. This is not allowed.");
-            //     return;
-            // }
-
-            //HashSet<IGameManager> managerCache = new HashSet<IGameManager>();
             for (int i = 0; i < Objects.Length; i++)
             {
                 GameObject Obj = Objects[i];
@@ -102,19 +67,10 @@ namespace RealMethod
                 foreach (var manager in found)
                 {
                     Component comp = manager.Component;
-                    Services.Register(comp.GetType(), comp);
+                    Registry.Register(comp, comp.GetType());
                     manager.InitiateManager(this);
-                    // if (managerCache.Add(manager))
-                    // {
-                    // }
-                    // else
-                    // {
-                    //     Debug.LogWarning($"Duplicate manager detected: {manager.GetType().Name} in {manager.Component.gameObject.name}");
-                    //     continue;
-                    // }
                 }
             }
-            //Managers = managerCache.ToArray();
         }
 
     }

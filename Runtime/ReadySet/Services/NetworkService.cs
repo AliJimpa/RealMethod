@@ -15,16 +15,15 @@ namespace RealMethod
         private const string xmlApi = "http://api.openweathermap.org/data/2.5/weather?q=Chicago,us&mode=xml&APPID=<your api key>";
 
 
-
-        public override void OnRegister(object Author)
+        protected override void OnBegin()
         {
             throw new NotImplementedException();
         }
-        public override void OnWorldChanging(World Previous, World New)
+        protected override void OnWorldChanged()
         {
             throw new NotImplementedException();
         }
-        public override void OnUnregister(object Author)
+        protected override void OnEnd()
         {
             throw new NotImplementedException();
         }
@@ -80,7 +79,6 @@ namespace RealMethod
             yield return null; //request.Send();
             callback(DownloadHandlerTexture.GetContent(request));
         }
-
 
 
     }

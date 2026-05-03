@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
-using Codice.Client.Common;
-using System.Runtime.CompilerServices;
 
 namespace RealMethod
 {
@@ -28,14 +26,6 @@ namespace RealMethod
         /// false if it is considered a side/additive world.
         /// </returns>
         bool RegisterWorld(World world);
-        /// <summary>
-        /// Binds a callback invoked when the main world is added.
-        /// </summary>
-        void BindWorldCreated(Action<World> func);
-        /// <summary>
-        /// Unbinds the main world added callback.
-        /// </summary>
-        void UnbindWorldCreated();
         /// <summary>
         /// Called by world class to tell game the initiation is complite
         /// </summary>
@@ -70,6 +60,18 @@ namespace RealMethod
 
 
     /// <summary>
+    /// A bridge that receives notifications before and after the global world changes.
+    /// </summary>
+    public interface IBridge
+    {
+        /// <summary>
+        /// Called after the new world has been set as the active global world.
+        /// </summary>
+        void OnWorldChanged(World world);
+    }
+
+
+    /// <summary>
     /// Base class for any gamebridge in the framework.
     /// Provides core functionality for:
     /// <list type="bullet">
@@ -81,40 +83,38 @@ namespace RealMethod
     /// Inherits from <see cref="Service"/> and implements <see cref="IRelationBridge"/>
     /// to integrate with the game's internal world and service management system.
     /// </summary>
-    public abstract class GameBridge : IService, IRelationBridge, ILoadScneBridge
+    public abstract class GameBridge : IDisposable, IRelationBridge, ILoadScneBridge, IInspectorInfo
     {
         // Events
         private Action GameReadyEvent;
-        private Action<World> NewWorldEvent;
+
         private Action<bool> SceneLoadingEvent;
         private Action<float> SceneLoadingProcessEvent;
         private bool isLoading;
         public bool IsHolding { get; private set; } = false;
         protected float FadeTime = 0;
         private Scene CurrrentScene;
-        public static Scene LastActiveScene;
-        public static bool SceneWillUnload { get; private set; }
+        public Scene LastActiveScene;
+        public bool SceneWillUnload { get; private set; }
 
-        // Implement IService Interface
-        void IService.OnRegister(object author)
+        private readonly Action<World> OnNextWorld;
+        private readonly List<WeakReference<IBridge>> bridges = new();
+
+
+
+        public GameBridge(Action<World> method)
         {
+            OnNextWorld = method ?? throw new ArgumentNullException(nameof(method));
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
         }
-        void IService.OnWorldChanging(World Previous, World New)
-        {
-            throw new NotImplementedException();
-        }
-        void IService.OnUnregister(object author)
+
+
+
+        // Implement IDisposable Interface
+        void IDisposable.Dispose()
         {
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
         }
-#if UNITY_EDITOR
-        string IService.GetInspectorInfo()
-        {
-            return $"IsLoading:{isLoading} - FadeTime:{FadeTime}";
-        }
-#endif
-
         // Implement IRelationBridge Interface
         event Action IRelationBridge.OnGameReady
         {
@@ -133,24 +133,10 @@ namespace RealMethod
         {
             return TryToRegisterWorld(world);
         }
-        void IRelationBridge.BindWorldCreated(Action<World> func)
-        {
-            if (NewWorldEvent != null)
-            {
-                Debug.LogWarning("BindMainWorldAdd is already binded this interface is internal didnt use in another script or your game");
-                return;
-            }
-            NewWorldEvent = func;
-        }
-        void IRelationBridge.UnbindWorldCreated()
-        {
-            NewWorldEvent = null;
-        }
         void IRelationBridge.WorldIsReady()
         {
             GameReadyEvent?.Invoke();
         }
-
         // Implement ILoadScneBridge Interface
         event Action<bool> ILoadScneBridge.OnSceneLoading
         {
@@ -179,76 +165,53 @@ namespace RealMethod
         bool ILoadScneBridge.IsLoading => isLoading;
 
 
+
+
+
         /// <summary>
-        /// Call this when you want to define new World class to game 
+        /// Registers a bridge provider using a weak reference.  
+        /// Prevents duplicate bindings and ignores null providers.
         /// </summary>
-        /// <param name="world">The world instance will set as main world for game.</param>
-        protected void SetMianWorld(World world)
+        /// <param name="provider">The bridge instance to bind.</param>
+        /// <exception cref="ArgumentNullException">Thrown when provider is null.</exception>
+        public void Bind(IBridge provider)
         {
-            CurrrentScene = world.gameObject.scene;
-            NewWorldEvent?.Invoke(world);
-            SceneWillUnload = false;
+            if (provider == null)
+                throw new ArgumentNullException(nameof(provider));
+
+            // Prevent duplicates
+            foreach (var weak in bridges)
+            {
+                if (weak.TryGetTarget(out IBridge existing) && existing == provider)
+                    return; // Already stored
+            }
+
+            bridges.Add(new WeakReference<IBridge>(provider));
         }
         /// <summary>
-        /// Call this when you want to define new World class that created and should not be main world (probably deleted)
+        /// Removes the specified bridge instance from the registry.
         /// </summary>
-        /// <param name="world">The world instance will not set to main world for game.</param>
-        protected void SetAdditiveWorld(World world)
-        {
-            world.enabled = false;
-            OnAdditiveWorldDetected(world);
-        }
-
-
-
-
-
-        /// <summary>
-        /// Request for this NewWorld to set for Main World in Scene
-        /// </summary>
-        /// <param name="NewWorld">The New WorldClass Refrence in Scene
+        /// <param name="obj">The object to unbind (must implement IBridge).</param>
         /// <returns>
-        /// If this request is valid return true that mean this world set as main world.
-        /// If this request false means this world import from scen that is additive and should deactive.
-        /// </returns
-        protected virtual bool TryToRegisterWorld(World NewWorld)
+        /// True if the bridge was found and removed; otherwise false.
+        /// </returns>
+        public bool Unbind(object obj)
         {
-            Scene NewScene = NewWorld.gameObject.scene;
-
-            // If no instance yet, this becomes the persistent instance
-            if (Game.World == null)
-            {
-                SetMianWorld(NewWorld);
-                return true;
-            }
-
-            // This is a new scene loaded in Single mode
-            if (SceneWillUnload && NewScene == LastActiveScene)
-            {
-                // Replace instance because old scene is going away immediately
-                SetMianWorld(NewWorld);
-                return true;
-            }
-
-            // Different scene but NOT replacing old => Additive load
-            if (NewScene != CurrrentScene)
-            {
-                SetAdditiveWorld(NewWorld);
-                return false; ;
-            }
-            else
-            {
-                Debug.LogError($"[WorldRegistry] Duplicate world in SAME scene : {NewWorld.gameObject.name} / {Game.World.gameObject}");
+            if (obj is not IBridge provider)
                 return false;
+
+            for (int i = bridges.Count - 1; i >= 0; i--) // reverse-safe removal
+            {
+                var weak = bridges[i];
+
+                if (!weak.TryGetTarget(out IBridge bridge) || bridge == provider)
+                {
+                    bridges.RemoveAt(i);
+                    return true;
+                }
             }
-        }
-        /// <summary>
-        /// Called when new scene loaded and during base world valid new world created.
-        /// </summary>
-        /// <param name="AdditiveWorld">The New WorldClass Refrence in AdditiveScene</param>
-        protected virtual void OnAdditiveWorldDetected(World AdditiveWorld)
-        {
-            UnityEngine.Object.Destroy(AdditiveWorld.gameObject);
+
+            return false;
         }
         /// <summary>
         /// Starts loading a scene by name using a coroutine.
@@ -337,10 +300,103 @@ namespace RealMethod
         }
 
 
-        private static void OnActiveSceneChanged(Scene oldScene, Scene newScene)
+
+
+
+
+        /// <summary>
+        /// Call this when you want to define new World class to game 
+        /// </summary>
+        /// <param name="world">The world instance will set as main world for game.</param>
+        protected void SetMianWorld(World world)
+        {
+            CurrrentScene = world.gameObject.scene;
+            OnNextWorld.Invoke(world);
+            NotifyBridges(world);
+            SceneWillUnload = false;
+        }
+        /// <summary>
+        /// Call this when you want to define new World class that created and should not be main world (probably deleted)
+        /// </summary>
+        /// <param name="world">The world instance will not set to main world for game.</param>
+        protected void SetAdditiveWorld(World world)
+        {
+            world.enabled = false;
+            OnAdditiveWorldDetected(world);
+        }
+        /// <summary>
+        /// Request for this NewWorld to set for Main World in Scene
+        /// </summary>
+        /// <param name="NewWorld">The New WorldClass Refrence in Scene
+        /// <returns>
+        /// If this request is valid return true that mean this world set as main world.
+        /// If this request false means this world import from scen that is additive and should deactive.
+        /// </returns
+        protected virtual bool TryToRegisterWorld(World NewWorld)
+        {
+            Scene NewScene = NewWorld.gameObject.scene;
+
+            // If no instance yet, this becomes the persistent instance
+            if (Game.World == null)
+            {
+                SetMianWorld(NewWorld);
+                return true;
+            }
+
+            // This is a new scene loaded in Single mode
+            if (SceneWillUnload && NewScene == LastActiveScene)
+            {
+                // Replace instance because old scene is going away immediately
+                SetMianWorld(NewWorld);
+                return true;
+            }
+
+            // Different scene but NOT replacing old => Additive load
+            if (NewScene != CurrrentScene)
+            {
+                SetAdditiveWorld(NewWorld);
+                return false; ;
+            }
+            else
+            {
+                Debug.LogError($"[WorldRegistry] Duplicate world in SAME scene : {NewWorld.gameObject.name} / {Game.World.gameObject}");
+                return false;
+            }
+        }
+        /// <summary>
+        /// Called when new scene loaded and during base world valid new world created.
+        /// </summary>
+        /// <param name="AdditiveWorld">The New WorldClass Refrence in AdditiveScene</param>
+        protected virtual void OnAdditiveWorldDetected(World AdditiveWorld)
+        {
+            UnityEngine.Object.Destroy(AdditiveWorld.gameObject);
+        }
+
+
+
+
+        private void OnActiveSceneChanged(Scene oldScene, Scene newScene)
         {
             LastActiveScene = newScene;
             SceneWillUnload = true;   // old scene will be destroyed next frame
+        }
+        /// <summary>
+        /// Calls the bridge method on all active bridge instances.
+        /// Invalid or collected references are removed automatically.
+        /// </summary>
+        private void NotifyBridges(World Newworld)
+        {
+            for (int i = bridges.Count - 1; i >= 0; i--)
+            {
+                if (bridges[i].TryGetTarget(out IBridge bridge))
+                {
+                    bridge.OnWorldChanged(Newworld);
+                }
+                else
+                {
+                    bridges.RemoveAt(i);
+                }
+            }
         }
         private float RemapClamped(float value, float inMin, float inMax, float outMin, float outMax)
         {
@@ -496,6 +552,20 @@ namespace RealMethod
             SceneLoadingEvent?.Invoke(false);
             isLoading = false;
         }
+
+
+
+
+
+#if UNITY_EDITOR
+        // Implement IInspectorInfo Interface
+        string IInspectorInfo.GetInfo()
+        {
+            //GetType().ToString() + ": "
+            return $"IsLoading:{isLoading} - FadeTime:{FadeTime}";
+        }
+#endif
+
 
 
     }

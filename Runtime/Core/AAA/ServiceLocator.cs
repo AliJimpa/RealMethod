@@ -9,10 +9,21 @@ namespace RealMethod
     /// Stores services by interface type using WeakReferences.
     /// Thread‑safe for Register / Get / Remove operations.
     /// </summary>
-    public class ServiceLocator
+    public sealed class ServiceLocator : IInspectorInfo
     {
         private readonly Dictionary<Type, WeakReference<object>> _services = new();
+        public int Count => _services.Count;
         private readonly object _lock = new();
+
+
+
+        // Implement IInspectorInfo Interface
+        string IInspectorInfo.GetInfo()
+        {
+            return $"Regitereis({_services.Count})";
+        }
+
+
 
         /// <summary>
         /// Register a service instance under its concrete or interface type T.
@@ -22,49 +33,55 @@ namespace RealMethod
         public void Register<T>(T service, bool overwrite = false)
             where T : class
         {
-            Register(typeof(T), service, overwrite);
+            Register(service, typeof(T), overwrite);
         }
-
         /// <summary>
         /// Register a service instance under its concrete or interface type T.
         /// T must implement IService so we know this is a service.
         /// Stored internally as WeakReference&lt;object&gt;.
         /// </summary>
-        public void Register(Type type, object service, bool overwrite = false)
+        public void Register(object service, Type type = null, bool overwrite = false)
         {
+            Type serviceType = null;
             if (type == null)
-                throw new ArgumentNullException(nameof(type));
+            {
+                serviceType = service.GetType();
+            }
+            else
+            {
+                serviceType = type;
+            }
+
 
             if (service == null)
                 throw new ArgumentNullException(nameof(service));
 
-            if (!type.IsAssignableFrom(service.GetType()))
-                throw new ArgumentException($"{service.GetType().Name} is not assignable to {type.Name}");
+            if (!serviceType.IsAssignableFrom(service.GetType()))
+                throw new ArgumentException($"{service.GetType().Name} is not assignable to {serviceType.Name}");
 
             lock (_lock)
             {
-                if (_services.TryGetValue(type, out var weak))
+                if (_services.TryGetValue(serviceType, out var weak))
                 {
                     if (!weak.TryGetTarget(out _))
                     {
-                        _services[type] = new WeakReference<object>(service);
+                        _services[serviceType] = new WeakReference<object>(service);
                         return;
                     }
 
                     if (overwrite)
                     {
-                        _services[type] = new WeakReference<object>(service);
+                        _services[serviceType] = new WeakReference<object>(service);
                         return;
                     }
 
                     throw new InvalidOperationException(
-                        $"Service of type {type.Name} is already registered and still alive.");
+                        $"Service of type {serviceType.Name} is already registered and still alive.");
                 }
 
-                _services[type] = new WeakReference<object>(service);
+                _services[serviceType] = new WeakReference<object>(service);
             }
         }
-
         /// <summary>
         /// Register only if no live instance is currently registered for T.
         /// </summary>
@@ -85,7 +102,6 @@ namespace RealMethod
                 }
             }
         }
-
         /// <summary>
         /// Get the registered instance for type T.
         /// Returns null if not found or GC-collected.
@@ -110,7 +126,6 @@ namespace RealMethod
                 return null;
             }
         }
-
         /// <summary>
         /// Try to get the registered instance for type T.
         /// </summary>
@@ -136,7 +151,6 @@ namespace RealMethod
             result = null;
             return false;
         }
-
         /// <summary>
         /// Check whether a live instance exists for type T.
         /// </summary>
@@ -150,7 +164,6 @@ namespace RealMethod
                        weak.TryGetTarget(out _);
             }
         }
-
         /// <summary>
         /// Manually unregisters (removes) a service type.
         /// </summary>
@@ -176,7 +189,6 @@ namespace RealMethod
             if (_services.ContainsKey(type))
                 _services.Remove(type);
         }
-
         /// <summary>
         /// Force-clears all services from the locator.
         /// </summary>
@@ -187,5 +199,6 @@ namespace RealMethod
                 _services.Clear();
             }
         }
+
     }
 }
