@@ -2,9 +2,13 @@ using System;
 
 namespace RealMethod
 {
-    public abstract class Service : IBridge, IInspectorInfo, IDisposable
+    public interface IGameService : IBridge, IInspectorInfo, IDisposable
     {
-        public Service()
+    }
+
+    public abstract class GameService : IGameService
+    {
+        public GameService()
         {
             Game.Bridge.Bind(this);
             OnBegin();

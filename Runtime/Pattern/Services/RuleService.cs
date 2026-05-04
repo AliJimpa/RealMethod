@@ -2,7 +2,7 @@ using System;
 
 namespace RealMethod
 {
-    public abstract class RuleService : Service
+    public abstract class RuleService : GameService
     {
         public Action<string> OnAddedRule;
         public Action<string> OnFinishRule;

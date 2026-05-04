@@ -173,9 +173,9 @@ namespace RealMethod
 
 
         /// <summary>
-        /// List of runtime-registered <see cref="Service"/> instances owned by the game.
+        /// List of runtime-registered <see cref="GameService"/> instances owned by the game.
         /// </summary>
-        private readonly List<Service> myServicObjects = new List<Service>();
+        private readonly List<GameService> myServicObjects = new List<GameService>();
 
 
 
@@ -379,7 +379,7 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">Service type to add.</typeparam>
         /// <returns>The newly created service instance, or <c>null</c> if a service of the same type already exists.</returns>
-        public static T AddService<T>() where T : Service, new()
+        public static T AddService<T>() where T : GameService, new()
         {
             // Check if you game not initialized
             if (!IsGameInitialized)
@@ -406,9 +406,9 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">Service type to remove.</typeparam>
         /// <returns><c>true</c> if a service was found and removed; otherwise <c>false</c>.</returns>
-        public static bool RemoveService<T>() where T : Service
+        public static bool RemoveService<T>() where T : GameService
         {
-            Service targetService = Instance.myServicObjects.FirstOrDefault(s => s.GetType() == typeof(T));
+            GameService targetService = Instance.myServicObjects.FirstOrDefault(s => s.GetType() == typeof(T));
             if (targetService != null)
             {
                 Instance.myServicObjects.Remove(targetService);
@@ -425,7 +425,7 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">IService type to retrieve.</typeparam>
         /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
-        public static T GetService<T>() where T : Service
+        public static T GetService<T>() where T : GameService
         {
             return Services.Get<T>();
         }
@@ -435,7 +435,7 @@ namespace RealMethod
         /// <typeparam name="T">IService type to find.</typeparam>
         /// <param name="service">Out parameter that receives the service if found.</param>
         /// <returns><c>true</c> if the service was found; otherwise <c>false</c>.</returns>
-        public static bool TryGetService<T>(out T service) where T : Service
+        public static bool TryGetService<T>(out T service) where T : GameService
         {
             return Services.TryGet<T>(out service);
         }

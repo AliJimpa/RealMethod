@@ -80,7 +80,7 @@ namespace RealMethod
     /// <item>world check for single remove new version</item>
     /// <item>Load & Unload Scene reporting</item>
     /// </list>
-    /// Inherits from <see cref="Service"/> and implements <see cref="IRelationBridge"/>
+    /// Inherits from <see cref="GameService"/> and implements <see cref="IRelationBridge"/>
     /// to integrate with the game's internal world and service management system.
     /// </summary>
     public abstract class GameBridge : IDisposable, IRelationBridge, ILoadScneBridge, IInspectorInfo

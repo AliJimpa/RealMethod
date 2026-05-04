@@ -18,7 +18,7 @@ namespace RealMethod.Editor
         {
             if (mode == RuleExecutionMode.AfterCompilation)
             {
-                return type.IsSubclassOf(typeof(Service));
+                return type.IsSubclassOf(typeof(GameService));
             }
             else
             {

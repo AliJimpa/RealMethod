@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public sealed class DebugService : Service, ILogHandler
+    public sealed class DebugService : GameService, ILogHandler
     {
         private class LogLine : IDrawTask
         {

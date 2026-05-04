@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public sealed class TimeService : Service
+    public sealed class TimeService : GameService
     {
         private float serviceTime;
         private float worldTime;
