@@ -3,34 +3,15 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-
-    /// <summary>
-    /// Defines the contract for a service that can respond to lifecycle events.
-    /// </summary>
-    public interface IRegistrable
-    {
-        /// <summary>
-        /// Called when the service is created.
-        /// </summary>
-        /// <param name="author">The object responsible for creating the service.</param>
-        void OnRegister();
-        /// <summary>
-        /// Called when the service is deleted or destroyed.
-        /// </summary>
-        /// <param name="author">The object responsible for deleting the service.</param>
-        void OnUnregister();
-    }
-
     /// <summary>
     /// Global service locator with automatic garbage collection safety.
     /// Stores services by interface type using WeakReferences.
     /// Thread‑safe for Register / Get / Remove operations.
     /// </summary>
-    public sealed class ServiceLocator : IInspectorInfo
+    public sealed class ServiceLocator : GameModule
     {
-        private readonly Dictionary<Type, WeakReference<object>> _services = new();
-        public int Count => _services.Count;
         private readonly object _lock = new();
+        private Dictionary<Type, WeakReference<object>> _services => Repository;
 
         /// <summary>
         /// Register a service instance under its concrete or interface type T.
@@ -231,13 +212,10 @@ namespace RealMethod
         }
 
 
-
-
 #if UNITY_EDITOR
-        // Implement IInspectorInfo Interface
-        string IInspectorInfo.GetInfo()
+        protected override string GetInspectorInfor()
         {
-            return $"Registered ({_services.Count})";
+            return $"Repository ({_services.Count})";
         }
 #endif
 

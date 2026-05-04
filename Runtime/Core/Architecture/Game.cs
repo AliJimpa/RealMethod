@@ -106,7 +106,7 @@ namespace RealMethod
         /// Returns true if the Game system has one or more registered services;
         /// otherwise, returns false.
         /// </summary>
-        public static bool HasService => Instance.GameServices.Count > 0;
+        public static bool HasService => Instance.myServicObjects.Count > 0;
         /// <summary>
         /// Event invoked when a scene or world starts or finishes loading.
         /// The boolean parameter is true when loading starts and false when loading ends.
@@ -175,7 +175,7 @@ namespace RealMethod
         /// <summary>
         /// List of runtime-registered <see cref="Service"/> instances owned by the game.
         /// </summary>
-        private readonly List<Service> GameServices = new List<Service>();
+        private readonly List<Service> myServicObjects = new List<Service>();
 
 
 
@@ -372,6 +372,7 @@ namespace RealMethod
                 return null;
             }
         }
+
         /// <summary>
         /// Adds a new service of type <typeparamref name="T"/> to the game if one does not already exist.
         /// Newly created service will be bound to managers and notified to the global service system.
@@ -387,7 +388,7 @@ namespace RealMethod
                 return null;
             }
 
-            if (Registry.Exists<T>())
+            if (Services.Exists<T>())
             {
                 Debug.LogWarning($"Service of type {typeof(T)} is already added and still alive.");
                 return null;
@@ -395,8 +396,8 @@ namespace RealMethod
 
             // Create Service
             T newService = new T();
-            Registry.Register(newService);
-            Instance.GameServices.Add(newService);
+            Services.Register(newService);
+            Instance.myServicObjects.Add(newService);
             return newService;
         }
         /// <summary>
@@ -407,11 +408,11 @@ namespace RealMethod
         /// <returns><c>true</c> if a service was found and removed; otherwise <c>false</c>.</returns>
         public static bool RemoveService<T>() where T : Service
         {
-            Service targetService = Instance.GameServices.FirstOrDefault(s => s.GetType() == typeof(T));
+            Service targetService = Instance.myServicObjects.FirstOrDefault(s => s.GetType() == typeof(T));
             if (targetService != null)
             {
-                Instance.GameServices.Remove(targetService);
-                Registry.Unregister<T>();
+                Instance.myServicObjects.Remove(targetService);
+                Services.Unregister<T>();
                 ((IDisposable)targetService).Dispose();
                 targetService = null;
                 return true;
@@ -426,7 +427,7 @@ namespace RealMethod
         /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
         public static T GetService<T>() where T : Service
         {
-            return Registry.Get<T>();
+            return Services.Get<T>();
         }
         /// <summary>
         /// Attempts to find a service of type <typeparamref name="T"/>.
@@ -436,14 +437,14 @@ namespace RealMethod
         /// <returns><c>true</c> if the service was found; otherwise <c>false</c>.</returns>
         public static bool TryGetService<T>(out T service) where T : Service
         {
-            return Registry.TryGet<T>(out service);
+            return Services.TryGet<T>(out service);
         }
         /// <summary>
         ///  Clear all services in Game
         /// </summary>
         public static void ClearService()
         {
-            Registry.ClearAll();
+            Services.ClearAll();
         }
         /// <summary>
         /// Requests a scene load by build index .
@@ -1072,7 +1073,7 @@ namespace RealMethod
             }
             Result.Add(Bridge);
             Result.Add(Config);
-            var servicesInfo = GameServices != null ? GameServices.OfType<IInspectorInfo>().ToArray() : Array.Empty<IInspectorInfo>();
+            var servicesInfo = myServicObjects != null ? myServicObjects.OfType<IInspectorInfo>().ToArray() : Array.Empty<IInspectorInfo>();
             foreach (var item in servicesInfo)
             {
                 Result.Add(item);

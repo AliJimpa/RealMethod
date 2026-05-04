@@ -33,7 +33,7 @@ namespace RealMethod
         /// </returns>
         public bool TryFindManager<T>(out T result) where T : Component, IGameManager
         {
-            return Registry.TryGet(out result);
+            return Services.TryGet(out result);
         }
         /// <summary>
         /// Collects all <see cref="IGameManager"/> components from the provided GameObjects,
@@ -67,7 +67,7 @@ namespace RealMethod
                 foreach (var manager in found)
                 {
                     Component comp = manager.Component;
-                    Registry.Register(comp, comp.GetType());
+                    Services.Register(comp, comp.GetType(), true);
                     manager.InitiateManager(this);
                 }
             }

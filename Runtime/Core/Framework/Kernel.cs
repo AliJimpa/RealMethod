@@ -22,13 +22,21 @@ namespace RealMethod
     /// </summary>
     public abstract class Kernel : MonoBehaviour
     {
-        protected static ServiceLocator Registry => _serviceLocator.Value;
         private static Lazy<ServiceLocator> _serviceLocator = new Lazy<ServiceLocator>(() => new ServiceLocator());
+        private static Lazy<DependencyInjection> _dependencyInjection = new Lazy<DependencyInjection>(() => new DependencyInjection());
+
+
+        // GameModules
+        protected static ServiceLocator Services => _serviceLocator.Value;
+        protected static DependencyInjection DInjection => _dependencyInjection.Value;
+
+
+
 
 #if UNITY_EDITOR
         public virtual IInspectorInfo[] GetAllInfo()
         {
-            return new IInspectorInfo[1] { Registry };
+            return new IInspectorInfo[2] { Services, DInjection };
         }
 #endif
     }
