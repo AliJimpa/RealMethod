@@ -8,10 +8,14 @@ namespace RealMethod
     /// Stores services by interface type using WeakReferences.
     /// Thread‑safe for Register / Get / Remove operations.
     /// </summary>
-    public sealed class ServiceLocator : GameModule
+    public sealed class ServiceLocator : GameSubsystem
     {
         private readonly object _lock = new();
-        private Dictionary<Type, WeakReference<object>> _services => Repository;
+        private Dictionary<Type, WeakReference<object>> _services => Data.Repository;
+
+        public ServiceLocator(IShareData data) : base(data)
+        {
+        }
 
         /// <summary>
         /// Register a service instance under its concrete or interface type T.
@@ -125,7 +129,7 @@ namespace RealMethod
         /// <summary>
         /// Try to get the registered instance for type T.
         /// </summary>
-        public bool TryGet<T>(out T result) where T : class
+        public bool TryGet<T>(out T result)
         {
             var type = typeof(T);
 
@@ -135,17 +139,18 @@ namespace RealMethod
                 {
                     if (weak.TryGetTarget(out var obj) && obj != null)
                     {
-                        result = obj as T;
+                        result = (T)obj;
                         return result != null;
                     }
 
                     // Weak reference dead → remove entry
                     _services.Remove(type);
                 }
-            }
 
-            result = null;
-            return false;
+
+                result = default;
+                return false;
+            }
         }
         /// <summary>
         /// Check whether a live instance exists for type T.

@@ -20,10 +20,16 @@ namespace RealMethod
         void OnUnregister();
     }
 
-    
-    public abstract class GameModule : IInspectorInfo
+
+    public abstract class GameSubsystem : IInspectorInfo
     {
-        protected static readonly Dictionary<Type, WeakReference<object>> Repository = new();
+        protected IShareData Data { get; private set; }
+
+
+        public GameSubsystem(IShareData data)
+        {
+            Data = data;
+        }
 
 #if UNITY_EDITOR
         string IInspectorInfo.GetInfo()

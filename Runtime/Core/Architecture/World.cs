@@ -102,7 +102,7 @@ namespace RealMethod
             }
 
             // Get All Managers
-            CollectManagers(new GameObject[1] { gameObject });
+            OpenScope(new GameObject[1] { gameObject });
 
             // Find Player or Create newone
             var scneplayer = GetPlayerInScene();
@@ -160,6 +160,7 @@ namespace RealMethod
         /// </summary>
         private void OnDestroy()
         {
+            CloseScope();
             WorldEnd();
         }
 

@@ -5,10 +5,15 @@ using System.Reflection;
 
 namespace RealMethod
 {
-    public sealed class DependencyInjection : GameModule
+    public sealed class DependencyInjection : GameSubsystem
     {
         private readonly object _lock = new();
-        private Dictionary<Type, WeakReference<object>> bindings => Repository;
+        private Dictionary<Type, WeakReference<object>> bindings => Data.Repository;
+
+        public DependencyInjection(IShareData data) : base(data)
+        {
+        }
+
 
         /// <summary>
         /// Registers the specified instance as a dependency in the DI container.

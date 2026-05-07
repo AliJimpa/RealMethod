@@ -1,8 +1,15 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RealMethod
 {
+    public interface IShareData
+    {
+        Dictionary<Type, WeakReference<object>> Repository { get; }
+    }
+
+
     /// <summary>
     /// The foundational runtime core of the RealMethod framework.
     /// Provides the minimal infrastructure required for all higher-level systems,
@@ -20,15 +27,19 @@ namespace RealMethod
     /// Regular users normally interact only with GameScope or WorldScope,
     /// while RealKernel remains an internal framework component.
     /// </summary>
-    public abstract class Kernel : MonoBehaviour
+    public abstract class Kernel : MonoBehaviour, IShareData
     {
-        private static Lazy<ServiceLocator> _serviceLocator = new Lazy<ServiceLocator>(() => new ServiceLocator());
-        private static Lazy<DependencyInjection> _dependencyInjection = new Lazy<DependencyInjection>(() => new DependencyInjection());
+        private static readonly Dictionary<Type, WeakReference<object>> _rpository = new();
+        private static Lazy<ServiceLocator> _serviceLocator = new Lazy<ServiceLocator>(() => new ServiceLocator(Game.Instance));
+        private static Lazy<DependencyInjection> _dependencyInjection = new Lazy<DependencyInjection>(() => new DependencyInjection(Game.Instance));
 
 
         // GameModules
+        Dictionary<Type, WeakReference<object>> IShareData.Repository => _rpository;
         protected static ServiceLocator Services => _serviceLocator.Value;
         protected static DependencyInjection DInjection => _dependencyInjection.Value;
+
+
 
 
 

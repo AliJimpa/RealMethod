@@ -288,7 +288,7 @@ namespace RealMethod
                 newobj.transform.SetParent(RealObject.transform);
             }
 #endif
-            Instance.CollectManagers(Objects);
+            Instance.OpenScope(Objects);
 
 
             // Unload Project Setting
@@ -372,79 +372,21 @@ namespace RealMethod
                 return null;
             }
         }
-
-        /// <summary>
-        /// Adds a new service of type <typeparamref name="T"/> to the game if one does not already exist.
-        /// Newly created service will be bound to managers and notified to the global service system.
-        /// </summary>
-        /// <typeparam name="T">Service type to add.</typeparam>
-        /// <returns>The newly created service instance, or <c>null</c> if a service of the same type already exists.</returns>
-        public static T AddService<T>() where T : GameService, new()
-        {
-            // Check if you game not initialized
-            if (!IsGameInitialized)
-            {
-                Debug.LogWarning($"Game doesn't initialized !");
-                return null;
-            }
-
-            if (Services.Exists<T>())
-            {
-                Debug.LogWarning($"Service of type {typeof(T)} is already added and still alive.");
-                return null;
-            }
-
-            // Create Service
-            T newService = new T();
-            Services.Register(newService);
-            Instance.myServicObjects.Add(newService);
-            return newService;
-        }
-        /// <summary>
-        /// Removes the service instance of type <typeparamref name="T"/> if present.
-        /// Managers and the global service system will be notified of the removal.
-        /// </summary>
-        /// <typeparam name="T">Service type to remove.</typeparam>
-        /// <returns><c>true</c> if a service was found and removed; otherwise <c>false</c>.</returns>
-        public static bool RemoveService<T>() where T : GameService
-        {
-            GameService targetService = Instance.myServicObjects.FirstOrDefault(s => s.GetType() == typeof(T));
-            if (targetService != null)
-            {
-                Instance.myServicObjects.Remove(targetService);
-                Services.Unregister<T>();
-                ((IDisposable)targetService).Dispose();
-                targetService = null;
-                return true;
-            }
-            Debug.LogWarning($"Service of type {typeof(T).Name} not found to remove.");
-            return false;
-        }
         /// <summary>
         /// Retrieves the service instance of type <typeparamref name="T"/> if available.
         /// </summary>
         /// <typeparam name="T">IService type to retrieve.</typeparam>
         /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
-        public static T GetService<T>() where T : GameService
+        public static T GetService<T>() where T : IService
         {
-            return Services.Get<T>();
-        }
-        /// <summary>
-        /// Attempts to find a service of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T">IService type to find.</typeparam>
-        /// <param name="service">Out parameter that receives the service if found.</param>
-        /// <returns><c>true</c> if the service was found; otherwise <c>false</c>.</returns>
-        public static bool TryGetService<T>(out T service) where T : GameService
-        {
-            return Services.TryGet<T>(out service);
-        }
-        /// <summary>
-        ///  Clear all services in Game
-        /// </summary>
-        public static void ClearService()
-        {
-            Services.ClearAll();
+            if (Services.TryGet(out T Myservice))
+            {
+                return Myservice;
+            }
+            else
+            {
+                return default;
+            }
         }
         /// <summary>
         /// Requests a scene load by build index .
@@ -619,10 +561,10 @@ namespace RealMethod
         /// </returns>
         public static T GetManager<T>() where T : Component, IGameManager
         {
-            if (World != null && World.TryFindManager(out T worldResult))
+            if (World != null && World.TryFindGameManager(out T worldResult))
                 return worldResult;
 
-            if (Instance.TryFindManager(out T gameResult))
+            if (Instance.TryFindGameManager(out T gameResult))
                 return gameResult;
 
             return null;
@@ -990,17 +932,18 @@ namespace RealMethod
         private void Notify_OnGameQuit()
         {
             Application.quitting -= Notify_OnGameQuit;
-            ClearService();
+            CloseScope();
             ((IDisposable)Bridge).Dispose();
             Bridge = null;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            DrawTasks.Clear();
+#endif
+
 #if UNITY_EDITOR
             // Debug only: force GC to verify no references remain
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
-#endif
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            DrawTasks.Clear();
 #endif
             OnGameClosed();
         }

@@ -1,15 +1,19 @@
 using System;
+using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IGameService : IBridge, IInspectorInfo, IDisposable
-    {
-    }
-
-    public abstract class GameService : IGameService
+    public abstract class GameService : IBridge, IInspectorInfo, IDisposable
     {
         public GameService()
         {
+            // Check if you game not initialized
+            if (!Game.IsGameInitialized)
+            {
+                Debug.LogWarning($"Game doesn't initialized !");
+                return;
+            }
+
             Game.Bridge.Bind(this);
             OnBegin();
         }
