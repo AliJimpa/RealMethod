@@ -1,47 +1,31 @@
-using System;
 using UnityEngine;
 
 namespace RealMethod
 {
-    public abstract class GameService : IBridge, IInspectorInfo, IDisposable
+    /// <summary>
+    /// Defines a contract for services in the game architecture.
+    /// Extends the IIdentifier interface.
+    /// </summary>
+    public interface IService : IIdentifier
     {
-        public GameService()
-        {
-            // Check if you game not initialized
-            if (!Game.IsGameInitialized)
-            {
-                Debug.LogWarning($"Game doesn't initialized !");
-                return;
-            }
 
-            Game.Bridge.Bind(this);
-            OnBegin();
-        }
-
-        // Implement IBridge Interface
-        void IBridge.OnWorldChanged(World world) => OnWorldChanged();
-        void IDisposable.Dispose()
-        {
-            Game.Bridge.Unbind(this);
-            OnEnd();
-        }
-
-        // Abstraction Methods
-        protected abstract void OnBegin();
-        protected abstract void OnWorldChanged();
-        protected abstract void OnEnd();
-
-#if UNITY_EDITOR
-        string IInspectorInfo.GetInfo()
-        {
-            return GetInspectorInfo();
-        }
-        protected virtual string GetInspectorInfo()
-        {
-            return null;
-        }
-#endif
     }
 
-
+    /// <summary>
+    /// Represents a service in the game architecture, extending the functionality of GameModule.
+    /// Ensures that all derived services implement the IService interface.
+    /// </summary>
+    public abstract class GameService : GameModule
+    {
+        /// <summary>
+        /// Initializes a new instance of the GameService class.
+        /// Validates that the derived class implements the IService interface.
+        /// Logs an error if the IService interface is not implemented.
+        /// </summary>
+        public GameService() : base()
+        {
+            if (this is not IService)
+                Debug.LogError($"Service of type {GetType().Name} should implement one of tye {typeof(IService).Name} interface");
+        }
+    }
 }

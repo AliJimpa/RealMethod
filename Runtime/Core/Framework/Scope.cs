@@ -30,7 +30,7 @@ namespace RealMethod
         /// <summary>
         /// Cached list of modules that were instantiated from scope functions (add / remove).
         /// </summary>
-        private List<GameService> _gameServices;
+        private List<GameModule> _gameModules;
 
 
 
@@ -79,7 +79,7 @@ namespace RealMethod
         /// and the search is aborted.
         /// </summary>
         /// <typeparam name="T">
-        /// The type of game service to search for. Must inherit from <see cref="GameService"/>.
+        /// The type of game service to search for. Must inherit from <see cref="GameModule"/>.
         /// </typeparam>
         /// <param name="result">
         /// When the method returns, contains the found service instance if a match is discovered; otherwise null.
@@ -87,19 +87,19 @@ namespace RealMethod
         /// <returns>
         /// True if a service of type <typeparamref name="T"/> is found; otherwise false.
         /// </returns>
-        public bool TryFindGameService<T>(out T result) where T : GameService
+        public bool TryFindModule<T>(out T result) where T : GameModule
         {
             result = null;
 
             if (IsScopeLive())
                 return false;
 
-            if (_gameServices == null)
+            if (_gameModules == null)
             {
                 return false;
             }
 
-            foreach (var service in _gameServices)
+            foreach (var service in _gameModules)
             {
                 if (service == null)
                 {
@@ -122,13 +122,13 @@ namespace RealMethod
         /// in the service container, except the base <see cref="IService"/> interface itself.
         /// </summary>
         /// <typeparam name="T">
-        /// The type of service to create and add. Must inherit from <see cref="GameService"/>
+        /// The type of service to create and add. Must inherit from <see cref="GameModule"/>
         /// and provide a parameterless constructor.
         /// </typeparam>
         /// <returns>
         /// The created service as <see cref="IService"/> if successful; otherwise null.
         /// </returns>
-        public IService AddGameService<T>() where T : GameService, new()
+        public T AddModule<T>() where T : GameModule, new()
         {
             if (IsExistsModule<T>())
             {
@@ -138,30 +138,10 @@ namespace RealMethod
 
             // Create Service
             T newService = new T();
-            _gameServices.Add(newService);
+            _gameModules.Add(newService);
+            RegisterInterface<IService>(newService);
 
-            if (newService is IService provider)
-            {
-                var interfaces = newService.GetType().GetInterfaces();
-                foreach (var i in interfaces)
-                {
-                    // Skip the base Interface
-                    if (i == typeof(IService))
-                        continue;
-
-                    // Only interfaces derived from Interface
-                    if (typeof(IService).IsAssignableFrom(i))
-                    {
-                        Services.Register(newService, i, false);
-                    }
-                }
-                return provider;
-            }
-            else
-            {
-                Debug.LogWarning($"Service of type {typeof(T)} should implement one of tye {typeof(IService)} interface");
-                return null;
-            }
+            return newService;
         }
         /// <summary>
         /// Removes a service of type <typeparamref name="T"/> from the scope.
@@ -173,20 +153,20 @@ namespace RealMethod
         /// <returns>
         /// True if the service was successfully removed; otherwise false.
         /// </returns>
-        public bool RemoveGameService<T>() where T : GameService
+        public bool RemoveModule<T>() where T : GameModule
         {
             if (!IsExistsModule<T>())
             {
                 Debug.LogWarning($"Service of type {typeof(T)} is not exist.");
                 return false;
             }
-            return RemoveGameService(typeof(T));
+            return RemoveModule(typeof(T));
         }
-        public void ClearGameServices()
+        public void ClearModules()
         {
-            for (int i = 0; i < _gameServices.Count; i++)
+            for (int i = 0; i < _gameModules.Count; i++)
             {
-                var interfaces = _gameServices[i].GetType().GetInterfaces();
+                var interfaces = _gameModules[i].GetType().GetInterfaces();
                 foreach (var interf in interfaces)
                 {
                     // Only interfaces derived from Interface
@@ -195,10 +175,10 @@ namespace RealMethod
                         Services.Unregister(interf);
                     }
                 }
-                ((IDisposable)_gameServices[i]).Dispose();
-                _gameServices.RemoveAt(i);
+                ((IDisposable)_gameModules[i]).Dispose();
+                _gameModules.RemoveAt(i);
             }
-            _gameServices.Clear();
+            _gameModules.Clear();
         }
 
 
@@ -221,7 +201,7 @@ namespace RealMethod
             }
             IsScopeOpened = true;
 
-            _gameServices = new List<GameService>(10);
+            _gameModules = new List<GameModule>(10);
 
 
             if (Objects == null)
@@ -235,9 +215,12 @@ namespace RealMethod
             for (int i = 0; i < Objects.Length; i++)
             {
                 var Newmanager = CollectManagers(Objects[i]);
-                foreach (var manager in Newmanager)
+                if (Newmanager != null)
                 {
-                    result.Add(manager);
+                    foreach (var manager in Newmanager)
+                    {
+                        result.Add(manager);
+                    }
                 }
             }
             _gameManagers = result.ToArray();
@@ -257,9 +240,9 @@ namespace RealMethod
             }
             IsScopeOpened = false;
 
-            for (int i = 0; i < _gameServices.Count; i++)
+            for (int i = 0; i < _gameModules.Count; i++)
             {
-                var interfaces = _gameServices[i].GetType().GetInterfaces();
+                var interfaces = _gameModules[i].GetType().GetInterfaces();
                 foreach (var interf in interfaces)
                 {
                     // Only interfaces derived from Interface
@@ -268,10 +251,10 @@ namespace RealMethod
                         Services.Unregister(interf);
                     }
                 }
-                ((IDisposable)_gameServices[i]).Dispose();
-                _gameServices.RemoveAt(i);
+                ((IDisposable)_gameModules[i]).Dispose();
+                _gameModules.RemoveAt(i);
             }
-            _gameServices = null;
+            _gameModules = null;
 
             foreach (var manager in _gameManagers)
             {
@@ -284,27 +267,19 @@ namespace RealMethod
 
 
 
-        private bool RemoveGameService(Type type)
+        private bool RemoveModule(Type type)
         {
             if (type == null)
                 return false;
 
 
-            for (int i = 0; i < _gameServices.Count; i++)
+            for (int i = 0; i < _gameModules.Count; i++)
             {
-                if (_gameServices[i].GetType() == type)
+                if (_gameModules[i].GetType() == type)
                 {
-                    var interfaces = _gameServices[i].GetType().GetInterfaces();
-                    foreach (var interf in interfaces)
-                    {
-                        // Only interfaces derived from Interface
-                        if (typeof(IService).IsAssignableFrom(interf))
-                        {
-                            Services.Unregister(interf);
-                        }
-                    }
-                    ((IDisposable)_gameServices[i]).Dispose();
-                    _gameServices.RemoveAt(i);
+                    UnregisterInterface<IService>(_gameModules[i]);
+                    ((IDisposable)_gameModules[i]).Dispose();
+                    _gameModules.RemoveAt(i);
                     return true;
                 }
             }
@@ -316,7 +291,7 @@ namespace RealMethod
         {
             if (Object == null)
             {
-                Debug.LogWarning("CollectManagers: GameObject 'Object' is null.");
+                // Debug.LogWarning("CollectManagers: GameObject 'Object' is null.");
                 return null;
             }
 
@@ -329,7 +304,6 @@ namespace RealMethod
                 RegisterInterface<IService>(comp);
                 manager.InitiateManager(this);
             }
-
             return managers;
         }
         private void DispenseManagers(IGameManager manager)
@@ -342,11 +316,10 @@ namespace RealMethod
             Component comp = manager.Component;
             UnregisterInterface<IGameManager>(comp);
             UnregisterInterface<IService>(comp);
-            manager.InitiateManager(this);
         }
-        private void RegisterInterface<T>(Component comp)
+        private void RegisterInterface<T>(object comp)
         {
-            if (comp is T service)
+            if (comp is T)
             {
                 var interfaces = comp.GetType().GetInterfaces();
 
@@ -364,9 +337,9 @@ namespace RealMethod
                 }
             }
         }
-        private void UnregisterInterface<T>(Component comp)
+        private void UnregisterInterface<T>(object comp)
         {
-            if (comp is T service)
+            if (comp is T)
             {
                 var interfaces = comp.GetType().GetInterfaces();
 
@@ -393,9 +366,9 @@ namespace RealMethod
             }
             return true;
         }
-        private bool IsExistsModule<T>() where T : GameService
+        private bool IsExistsModule<T>() where T : GameModule
         {
-            foreach (var module in _gameServices)
+            foreach (var module in _gameModules)
             {
                 if (module is T)
                     return true;

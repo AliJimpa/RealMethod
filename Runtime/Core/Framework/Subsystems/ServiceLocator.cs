@@ -13,7 +13,7 @@ namespace RealMethod
         private readonly object _lock = new();
         private Dictionary<Type, WeakReference<object>> _services => Data.Repository;
 
-        public ServiceLocator(IShareData data) : base(data)
+        public ServiceLocator(ShareData data) : base(data)
         {
         }
 

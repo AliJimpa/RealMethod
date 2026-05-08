@@ -10,7 +10,7 @@ namespace RealMethod
         private readonly object _lock = new();
         private Dictionary<Type, WeakReference<object>> bindings => Data.Repository;
 
-        public DependencyInjection(IShareData data) : base(data)
+        public DependencyInjection(ShareData data) : base(data)
         {
         }
 
