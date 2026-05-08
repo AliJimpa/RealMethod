@@ -63,7 +63,7 @@ namespace RealMethod
         string Platform { get; }
         int Memory { get; }
     }
-    public interface IDebugService
+    public interface IDebugService2
     {
         void ShowFPS(bool active);
         void ShowToast(string message);

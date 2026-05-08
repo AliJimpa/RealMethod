@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace RealMethod
 {
-    public abstract class InputService : GameService
+    public abstract class InputService : GameModule
     {
         private InputActionAsset CurrentInputAsset;
 

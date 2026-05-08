@@ -3,7 +3,7 @@ using System;
 namespace RealMethod
 {
 
-    public abstract class StateService : GameService
+    public abstract class StateService : GameModule
     {
         protected byte currentState { get; private set; }
         protected byte previousState { get; private set; }

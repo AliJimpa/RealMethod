@@ -76,12 +76,9 @@ namespace RealMethod
     /// Provides core functionality for:
     /// <list type="bullet">
     /// <item>World synchronization (main and additive worlds)</item>
-    /// <item>Service lifecycle notifications (created/removed)</item>
     /// <item>world check for single remove new version</item>
     /// <item>Load & Unload Scene reporting</item>
     /// </list>
-    /// Inherits from <see cref="GameModule"/> and implements <see cref="IRelationBridge"/>
-    /// to integrate with the game's internal world and service management system.
     /// </summary>
     public abstract class GameBridge : IDisposable, IRelationBridge, ILoadScneBridge, IInspectorInfo
     {

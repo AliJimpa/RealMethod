@@ -5,7 +5,7 @@ using System;
 
 namespace RealMethod
 {
-    public sealed class NetworkService : GameService
+    public sealed class NetworkService : GameModule
     {
         //Const Variable
         private const string webImage = "http://upload.wikimedia.org/wikipedia/commons/c/c5/Moraine_Lake_17092005.jpg";

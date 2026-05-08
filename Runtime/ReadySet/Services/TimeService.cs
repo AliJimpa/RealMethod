@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public sealed class TimeService : GameService
+    public sealed class TimeService : GameModule
     {
         private float serviceTime;
         private float worldTime;
         private NameTable<float> RecordTime;
 
-        // Service Methods
+        // Module Methods
         protected override void OnBegin()
         {
             serviceTime = Time.time;

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace RealMethod
 {
     /// <summary>
-    /// Spawn is a sealed static service used to instantiate gameplay objects such as
+    /// Spawn is a sealed static class used to instantiate gameplay objects such as
     /// prefabs, UI elements, audio sources, and other spawnable types.
     ///
     /// This class automatically locates the required manager instances from the
@@ -102,7 +102,7 @@ namespace RealMethod
             }
             else
             {
-                if (Game.World.TryFindManager(out T manager))
+                if (Game.World.TryFindGameManager(out T manager))
                 {
                     Ins.Managers.Add(type, manager);
                     return manager;

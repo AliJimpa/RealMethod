@@ -3,20 +3,30 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public sealed class DebugService : GameService, ILogHandler
+    public interface IDebugService : IService
+    {
+        Vector2 PrintPivot { get; }
+        float PrintSpace { get; }
+        int PrintSize { get; }
+        event System.Action<LogType, string> OnLogWrited;
+
+        void SetPivot(Vector2 pivot);
+        void SetSize(int size);
+    }
+    public sealed class DebugModule : GameModule, ILogHandler, IDebugService
     {
         private class LogLine : IDrawTask
         {
-            private DebugService MyOwner;
+            private DebugModule MyOwner;
             private string MyMessage;
             private LogType MyType;
             private Vector2 MyOffcet;
             private float ActiveTime;
 
 
-            public Vector2 Pivot => MyOwner.PrintPivot;
-            public float Space => MyOwner.PrintSpace;
-            private int Size => MyOwner.PrintSize;
+            public Vector2 Pivot => MyOwner.Pivot;
+            public float Space => ((IDebugService)MyOwner).PrintSpace;
+            private int Size => MyOwner.Size;
             public bool IsFinished => !(Time.time - ActiveTime <= Duration);
             public float Duration
             {
@@ -63,7 +73,7 @@ namespace RealMethod
 
 
 
-            public LogLine(DebugService owner, string message, LogType type)
+            public LogLine(DebugModule owner, string message, LogType type)
             {
                 MyOwner = owner;
                 MyMessage = message;
@@ -71,7 +81,7 @@ namespace RealMethod
                 MyOffcet = Vector2.zero;
                 ActiveTime = 0;
             }
-            public LogLine(DebugService owner, string message, LogType type, Vector2 offcet)
+            public LogLine(DebugModule owner, string message, LogType type, Vector2 offcet)
             {
                 MyOwner = owner;
                 MyMessage = message;
@@ -120,10 +130,8 @@ namespace RealMethod
             }
 
         }
-        // LineSetting
-        public Vector2 PrintPivot = new Vector2(10, 10);
-        public float PrintSpace => Screen.height / 40;
-        public int PrintSize = 1;
+        private Vector2 Pivot = new Vector2(10, 10);
+        private int Size = 1;
         private List<LogLine> Lines = new List<LogLine>(10);
         private ILogHandler defaultLogHandler;
         public event System.Action<LogType, string> OnLogWrited;
@@ -160,10 +168,21 @@ namespace RealMethod
             defaultLogHandler.LogException(exception, context);
             OnLogWrited?.Invoke(LogType.Exception, exception.Message);
         }
+        // Implement IDebugService Interface
+        Vector2 IDebugService.PrintPivot => Pivot;
+        int IDebugService.PrintSize => Size;
+        float IDebugService.PrintSpace => Screen.height / 40;
+        void IDebugService.SetPivot(Vector2 pivot)
+        {
+            Pivot = pivot;
+        }
+        void IDebugService.SetSize(int size)
+        {
+            Size = size;
+        }
 
 
-
-        // Service Methods
+        // Module Methods
         protected override void OnBegin()
         {
             defaultLogHandler = Debug.unityLogger.logHandler;

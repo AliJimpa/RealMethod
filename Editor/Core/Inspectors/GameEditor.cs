@@ -27,7 +27,7 @@ namespace RealMethod.Editor
             {
                 EditorGUILayout.LabelField($"{WorldName} | {BridgeName} | {ConfigName}");
                 EditorGUILayout.LabelField($"GameStat: {Game.State}");
-                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+                EditorGUILayout.LabelField($"----------------------------------------({InfoList.Length})----------------------------------------");
                 if (InfoList != null)
                 {
                     for (int i = 0; i < InfoList.Length; i++)

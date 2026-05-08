@@ -2,10 +2,20 @@ using System;
 
 namespace RealMethod
 {
-    public abstract class RuleService : GameService
+    public interface IRuleService : IService
     {
-        public Action<string> OnAddedRule;
-        public Action<string> OnFinishRule;
+        bool InEffect(string rule);
+        bool IsValid(string rule);
+        void BindRule(string Name, Action<Observer> callback);
+        event Action<string> OnAddedRule;
+        event Action<string> OnFinishRule;
+    }
+
+
+    public abstract class RuleService : GameModule, IRuleService
+    {
+        public event Action<string> OnAddedRule;
+        public event Action<string> OnFinishRule;
         private NameTable<Observer<bool>> Rules;
 
         public RuleService()

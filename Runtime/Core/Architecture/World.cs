@@ -72,7 +72,7 @@ namespace RealMethod
     /// <summary>
     /// Base class representing a game world / scene context.
     /// Manages the player GameObject, locates and initializes child game managers,
-    /// and forwards service updates to managers. Concrete worlds should implement
+    /// Concrete worlds should implement
     /// <see cref="WorldBegin"/> and <see cref="WorldEnd"/> to perform
     /// world-specific initialization and cleanup.
     /// </summary>
@@ -88,7 +88,6 @@ namespace RealMethod
 
         /// <summary>
         /// Unity callback invoked when the script instance is being loaded.
-        /// Connects the world to the game service, binds service callbacks,
         /// initializes child managers and locates or creates the player object,
         /// then calls <see cref="WorldBegin"/> for world-specific initialization.
         /// </summary>
@@ -160,7 +159,6 @@ namespace RealMethod
 #endif
         /// <summary>
         /// Unity callback invoked when the object is being destroyed.
-        /// Unbinds previously bound service callbacks to avoid dangling references.
         /// </summary>
         private void OnDestroy()
         {

@@ -18,7 +18,7 @@ namespace RealMethod.Editor
         {
             if (mode == RuleExecutionMode.AfterCompilation)
             {
-                return type.IsSubclassOf(typeof(GameService));
+                return type.IsSubclassOf(typeof(GameModule));
             }
             else
             {
@@ -30,7 +30,7 @@ namespace RealMethod.Editor
             // Check if class is static
             if (type.IsAbstract && type.IsSealed)
             {
-                Debug.LogError($"Service '{type.FullName}' cannot be static.");
+                Debug.LogError($"{typeof(GameModule).Name} class '{type.FullName}' cannot be static.");
                 return;
             }
 
@@ -46,7 +46,7 @@ namespace RealMethod.Editor
             {
                 if (method.IsStatic)
                 {
-                    Debug.LogError($"Service '{type.FullName}' contains static method '{method.Name}'. Static methods are not allowed in Service classes.");
+                    Debug.LogError($"Module '{type.FullName}' contains static method '{method.Name}'. Static methods are not allowed in module classes.");
                 }
             }
         }
