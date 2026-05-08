@@ -31,8 +31,6 @@ namespace RealMethod
             lock (_lock)
             {
                 bindings[typeof(TInterface)] = new WeakReference<object>(instance);
-                if (instance is IRegistrable provider)
-                    provider.OnRegister();
             }
         }
 

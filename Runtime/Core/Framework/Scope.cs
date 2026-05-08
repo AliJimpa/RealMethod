@@ -138,16 +138,36 @@ namespace RealMethod
         {
             if (IsExistsModule<T>())
             {
-                Debug.LogWarning($"Service of type {typeof(T)} is already added and still alive.");
+                Debug.LogWarning($"Module of type {typeof(T)} is already added and still alive.");
                 return null;
             }
 
             // Create Service
-            T newService = new T();
-            _gameModules.Add(newService);
-            RegisterInterface<IService>(newService);
+            T newModule = new T();
+            _gameModules.Add(newModule);
+            RegisterInterface<IService>(newModule);
 
-            return newService;
+            return newModule;
+        }
+        public GameModule AddModule(Type moduleType)
+        {
+            if (IsExistsModule(moduleType))
+            {
+                Debug.LogWarning($"Module of type {moduleType.Name} is already added and still alive.");
+                return null;
+            }
+
+            if (!typeof(GameModule).IsAssignableFrom(moduleType))
+            {
+                Debug.LogWarning($"Your type({moduleType.Name}) is not assignable to GameModuel");
+                return null;
+            }
+
+            // Create Service
+            GameModule newModule = (GameModule)Activator.CreateInstance(moduleType);
+            _gameModules.Add(newModule);
+            RegisterInterface<IService>(newModule);
+            return newModule;
         }
         /// <summary>
         /// Removes a service of type <typeparamref name="T"/> from the scope.
@@ -377,6 +397,15 @@ namespace RealMethod
             foreach (var module in _gameModules)
             {
                 if (module is T)
+                    return true;
+            }
+            return false;
+        }
+        private bool IsExistsModule(Type moduleType)
+        {
+            foreach (var module in _gameModules)
+            {
+                if (module.GetType() == moduleType)
                     return true;
             }
             return false;

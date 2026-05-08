@@ -72,13 +72,13 @@ namespace RealMethod
             Debug.Log("End Spawn");
         }
 
-        private static T Get<T>(ScopeContext context = ScopeContext.Both) where T : Component, IGameManager
+        private static T Get<T>(ScopeTarget context = ScopeTarget.Both) where T : Component, IGameManager
         {
             System.Type type = typeof(T);
 
             switch (context)
             {
-                case ScopeContext.World:
+                case ScopeTarget.World:
                     if (Instance.WorldManagers.ContainsKey(type))
                     {
                         return (T)Instance.WorldManagers[type].Component;
@@ -92,7 +92,7 @@ namespace RealMethod
                         }
                     }
                     break;
-                case ScopeContext.Game:
+                case ScopeTarget.Game:
                     if (Instance.GameManagers.ContainsKey(type))
                     {
                         return (T)Instance.GameManagers[type].Component;
@@ -106,7 +106,7 @@ namespace RealMethod
                         }
                     }
                     break;
-                case ScopeContext.Both:
+                case ScopeTarget.Both:
                     if (Instance.WorldManagers.ContainsKey(type))
                     {
                         return (T)Instance.WorldManagers[type].Component;

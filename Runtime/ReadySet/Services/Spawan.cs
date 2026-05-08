@@ -75,13 +75,13 @@ namespace RealMethod
             Debug.Log("End Spawn");
         }
 
-        private static T Get<T>(ScopeContext context = ScopeContext.Both) where T : Component, IGameManager
+        private static T Get<T>(ScopeTarget context = ScopeTarget.Both) where T : Component, IGameManager
         {
             System.Type type = typeof(T);
 
             switch (context)
             {
-                case ScopeContext.World:
+                case ScopeTarget.World:
                     if (Instance.WorldManagers.ContainsKey(type))
                     {
                         return (T)Instance.WorldManagers[type].Component;
@@ -95,7 +95,7 @@ namespace RealMethod
                         }
                     }
                     break;
-                case ScopeContext.Game:
+                case ScopeTarget.Game:
                     if (Instance.GameManagers.ContainsKey(type))
                     {
                         return (T)Instance.GameManagers[type].Component;
@@ -109,7 +109,7 @@ namespace RealMethod
                         }
                     }
                     break;
-                case ScopeContext.Both:
+                case ScopeTarget.Both:
                     if (Instance.WorldManagers.ContainsKey(type))
                     {
                         return (T)Instance.WorldManagers[type].Component;
@@ -617,6 +617,43 @@ namespace RealMethod
 
             return target;
         }
+        public static T Service<T>(System.Type ServiceType) where T : IService
+        {
+            if (ServiceType == null)
+            {
+                Debug.LogWarning($" {Instance}: classType is not valid.");
+                return default;
+            }
+
+            bool result = false;
+            var interfaces = ServiceType.GetInterfaces();
+            foreach (var i in interfaces)
+            {
+                // Only interfaces derived from Interface
+                if (typeof(IService).IsAssignableFrom(i))
+                    result = true;
+            }
+
+            if (result == false)
+            {
+                Debug.LogWarning($" {ServiceType.Name}: has not implement any IService.");
+                return default;
+            }
+
+            // Can Select Scope
+            GameModule newModule = Game.Instance.AddModule(ServiceType);
+            if (newModule != null)
+            {
+                newModule.InvokeReqisterEvent();
+                if (newModule is T provider)
+                {
+                    return provider;
+                }
+            }
+
+            return default;
+        }
+
         // Task
         public static T Task<T, F>(F Task, bool AutoStart = false) where T : IHandle where F : class
         {

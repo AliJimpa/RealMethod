@@ -58,16 +58,12 @@ namespace RealMethod
                     if (!weak.TryGetTarget(out _))
                     {
                         _services[serviceType] = new WeakReference<object>(service);
-                        if (service is IRegistrable provider1)
-                            provider1.OnRegister();
                         return;
                     }
 
                     if (overwrite)
                     {
                         _services[serviceType] = new WeakReference<object>(service);
-                        if (service is IRegistrable provider2)
-                            provider2.OnRegister();
                         return;
                     }
 
@@ -76,15 +72,12 @@ namespace RealMethod
                 }
 
                 _services[serviceType] = new WeakReference<object>(service);
-                if (service is IRegistrable provider3)
-                    provider3.OnRegister();
             }
         }
         /// <summary>
         /// Register only if no live instance is currently registered for T.
         /// </summary>
-        public void RegisterIfAbsent<T>(T service)
-            where T : class
+        public void RegisterIfAbsent<T>(T service)where T : class
         {
             if (service == null)
                 throw new ArgumentNullException(nameof(service));
@@ -97,8 +90,6 @@ namespace RealMethod
                     !weak.TryGetTarget(out _))
                 {
                     _services[type] = new WeakReference<object>(service);
-                    if (service is IRegistrable provider)
-                        provider.OnRegister();
                 }
             }
         }
@@ -191,11 +182,6 @@ namespace RealMethod
             {
                 if (_services.ContainsKey(type))
                 {
-                    if (_services[type].TryGetTarget(out object target))
-                    {
-                        if (target is IRegistrable provider)
-                            provider.OnRegister();
-                    }
                     return _services.Remove(type);
                 }
                 return false;

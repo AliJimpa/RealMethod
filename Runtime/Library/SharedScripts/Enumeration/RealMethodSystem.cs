@@ -1,6 +1,6 @@
 namespace RealMethod
 {
-    public enum ScopeContext
+    public enum ScopeTarget
     {
         Both,
         World,
