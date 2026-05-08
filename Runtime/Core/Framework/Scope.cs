@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RealMethod
@@ -22,6 +23,11 @@ namespace RealMethod
     /// </remarks>
     public abstract class Scope : Kernel
     {
+        /// <summary>
+        /// Returns true if the Game system has one or more module;
+        /// otherwise, returns false.
+        /// </summary>
+        public bool HasModule => _gameModules.Count > 0;
         public bool IsScopeOpened { get; private set; } = false;
         /// <summary>
         /// Cached array of managers that were instantiated from configured game prefabs or World gameobject.
@@ -375,6 +381,25 @@ namespace RealMethod
             }
             return false;
         }
+
+
+#if UNITY_EDITOR
+        public override IInspectorInfo[] GetAllInfo()
+        {
+            List<IInspectorInfo> Result = new List<IInspectorInfo>();
+            foreach (var item in base.GetAllInfo())
+            {
+                Result.Add(item);
+            }
+            // My Info
+            var servicesInfo = _gameModules != null ? _gameModules.OfType<IInspectorInfo>().ToArray() : Array.Empty<IInspectorInfo>();
+            foreach (var item in servicesInfo)
+            {
+                Result.Add(item);
+            }
+            return Result.ToArray();
+        }
+#endif
 
     }
 

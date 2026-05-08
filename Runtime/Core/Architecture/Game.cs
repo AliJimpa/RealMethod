@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Linq;
 
 
 #if UNITY_EDITOR
@@ -103,11 +102,6 @@ namespace RealMethod
         /// </summary>
         public static bool IsLoading => Instance.IsGameLoading();
         /// <summary>
-        /// Returns true if the Game system has one or more registered services;
-        /// otherwise, returns false.
-        /// </summary>
-        public static bool HasService => Instance.myServicObjects.Count > 0;
-        /// <summary>
         /// Event invoked when a scene or world starts or finishes loading.
         /// The boolean parameter is true when loading starts and false when loading ends.
         /// </summary>
@@ -173,16 +167,8 @@ namespace RealMethod
 
 
         /// <summary>
-        /// List of runtime-registered <see cref="GameService"/> instances owned by the game.
-        /// </summary>
-        private readonly List<GameService> myServicObjects = new List<GameService>();
-
-
-
-
-        /// <summary>
         /// Initializes the game singleton and core systems on subsystem registration.
-        /// This sets up the <see cref="Instance"/>, game <see cref="IService"/>,
+        /// This sets up the <see cref="Instance"/>, game <see cref="Bridge"/>,
         /// configuration, prefabs and managers and registers quit callbacks.
         /// Invoked when starting up the runtime. Called before the first scene is loaded.
         /// </summary>
@@ -1009,15 +995,8 @@ namespace RealMethod
         /// <returns>Array of service type names.</returns>
         public override IInspectorInfo[] GetAllInfo()
         {
-            List<IInspectorInfo> Result = new List<IInspectorInfo>();
+            List<IInspectorInfo> Result = new List<IInspectorInfo>(10) { Bridge, Config };
             foreach (var item in base.GetAllInfo())
-            {
-                Result.Add(item);
-            }
-            Result.Add(Bridge);
-            Result.Add(Config);
-            var servicesInfo = myServicObjects != null ? myServicObjects.OfType<IInspectorInfo>().ToArray() : Array.Empty<IInspectorInfo>();
-            foreach (var item in servicesInfo)
             {
                 Result.Add(item);
             }

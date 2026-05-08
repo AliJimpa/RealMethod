@@ -5,6 +5,12 @@ using System.Reflection;
 
 namespace RealMethod
 {
+    public interface IFeature
+    {
+
+    }
+
+
     public sealed class DependencyInjection : GameSubsystem
     {
         private readonly object _lock = new();
@@ -148,7 +154,20 @@ namespace RealMethod
 #if UNITY_EDITOR
         protected override string GetInspectorInfor()
         {
-            return $"Repository ({bindings.Count})";
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            for (int i = 0; i < bindings.Count; i++)
+            {
+                var type = bindings.GetKey(i);
+                if (type is IFeature)
+                {
+                    var weakRef = bindings.GetValue(i);
+                    if (weakRef.TryGetTarget(out var target))
+                        sb.AppendLine($"{i}. {type.Name} -> Alive ({target})");
+                    else
+                        sb.AppendLine($"{i}. {type.Name} -> Collected");
+                }
+            }
+            return sb.ToString();
         }
 #endif
     }

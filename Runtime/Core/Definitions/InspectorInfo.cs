@@ -3,6 +3,7 @@ namespace RealMethod
     public interface IInspectorInfo
     {
 #if UNITY_EDITOR
+        string GetTitleInfo() => GetType().Name;
         /// <summary>
         /// Returns a formatted string containing information about this service
         /// intended for display in the Unity Inspector or debugging interfaces.

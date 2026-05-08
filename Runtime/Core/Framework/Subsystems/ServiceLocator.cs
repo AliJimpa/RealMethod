@@ -220,7 +220,19 @@ namespace RealMethod
 #if UNITY_EDITOR
         protected override string GetInspectorInfor()
         {
-            return $"Repository ({_services.Count})";
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            for (int i = 0; i < _services.Count; i++)
+            {
+                var type = _services.GetKey(i);
+                var weakRef = _services.GetValue(i);
+                if (weakRef.TryGetTarget(out var target))
+                    sb.AppendLine($"{i}. {type.Name} -> Alive ({target})");
+                else
+                    sb.AppendLine($"{i}. {type.Name} -> Collected");
+            }
+
+            return sb.ToString();
         }
 #endif
 

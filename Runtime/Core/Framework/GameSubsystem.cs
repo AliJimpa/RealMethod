@@ -5,7 +5,7 @@ namespace RealMethod
 {
     public abstract class GameSubsystem : IInspectorInfo
     {
-        public class ShareData
+        public class ShareData : IInspectorInfo
         {
             public Dictionary<Type, WeakReference<object>> Repository { get; }
 
@@ -13,6 +13,13 @@ namespace RealMethod
             {
                 Repository = new Dictionary<Type, WeakReference<object>>(prewarm);
             }
+
+#if UNITY_EDITOR
+            string IInspectorInfo.GetInfo()
+            {
+                return $"Repository ({Repository.Count})";
+            }
+#endif
         }
         protected ShareData Data { get; private set; }
 

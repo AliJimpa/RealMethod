@@ -39,7 +39,7 @@ namespace RealMethod
 #if UNITY_EDITOR
         public virtual IInspectorInfo[] GetAllInfo()
         {
-            return new IInspectorInfo[2] { Services, DInjection };
+            return new IInspectorInfo[3] { _rpository ,Services, DInjection };
         }
 #endif
     }

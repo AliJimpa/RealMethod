@@ -153,6 +153,10 @@ namespace RealMethod
         {
 
         }
+        public sealed override IInspectorInfo[] GetAllInfo()
+        {
+            return null;
+        }
 #endif
         /// <summary>
         /// Unity callback invoked when the object is being destroyed.
