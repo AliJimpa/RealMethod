@@ -39,104 +39,130 @@ namespace RealMethod
     /// system that intelligently reuses previously found managers and adapts to
     /// scene changes.
     /// </summary>
-    public sealed class Despawn : IBridge, System.IDisposable, IInspectorInfo
+    public sealed class Despawn : Context<Despawn>, IBridge, IInspectorInfo
     {
-        private static Despawn Ins => CacheInstance.Value;
-        private static System.Lazy<Despawn> CacheInstance = new System.Lazy<Despawn>(() => new Despawn());
-
-
-        private Dictionary<System.Type, IGameManager> Managers;
-
-        public Despawn()
-        {
-            Game.Bridge.Bind(this);
-            Managers = new();
-        }
+        private Dictionary<System.Type, IGameManager> GameManagers;
+        private Dictionary<System.Type, IGameManager> WorldManagers;
 
         // Implement IBridge Interface
         void IBridge.OnWorldChanged(World world)
         {
-            Managers.Clear();
+            WorldManagers.Clear();
+            Debug.Log("ChangeWorld Spawn");
         }
-        // Implement IDisposable Interface
-        void System.IDisposable.Dispose()
+
+        protected override void OnBegin()
+        {
+            // Check if you game not initialized
+            if (!Game.IsGameInitialized)
+            {
+                Debug.LogWarning($"Game doesn't initialized !");
+                return;
+            }
+            Game.Bridge.Bind(this);
+            GameManagers = new();
+            WorldManagers = new();
+            Debug.Log("Begin Spawn");
+        }
+        protected override void OnEnd()
         {
             Game.Bridge.Unbind(this);
-            Managers.Clear();
+            GameManagers = null;
+            WorldManagers = null;
+            Debug.Log("End Spawn");
         }
 
-#if UNITY_EDITOR
-        // Implement IInspectorInfo Interface
-        string IInspectorInfo.GetInfo()
-        {
-            return $"Managers ({Managers.Count})";
-        }
-#endif
-
-
-        // Public Functions
-        public void AddManager(IGameManager manager)
-        {
-            System.Type ManagerType = manager.Component.GetType();
-            if (Managers.ContainsKey(ManagerType))
-            {
-                Managers.Add(ManagerType, manager);
-            }
-            else
-            {
-                Debug.LogWarning($"{Ins}: Manager of type '{ManagerType.Name}' already exists. Skipping add.");
-            }
-        }
-
-
-        // Public Functions
-        private static T GetManager<T>() where T : Component, IGameManager
+        private static T Get<T>(ScopeContext context = ScopeContext.Both) where T : Component, IGameManager
         {
             System.Type type = typeof(T);
-            if (Ins.Managers.ContainsKey(type))
+
+            switch (context)
             {
-                if (Ins.Managers[type].Component is T manager)
-                {
-                    return manager;
-                }
-            }
-            else
-            {
-                if (Game.World.TryFindGameManager(out T manager))
-                {
-                    Ins.Managers.Add(type, manager);
-                    return manager;
-                }
+                case ScopeContext.World:
+                    if (Instance.WorldManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.WorldManagers[type].Component;
+                    }
+                    else
+                    {
+                        if (Game.World.TryFindGameManager(out T manager))
+                        {
+                            Instance.WorldManagers.Add(type, manager);
+                            return manager;
+                        }
+                    }
+                    break;
+                case ScopeContext.Game:
+                    if (Instance.GameManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.GameManagers[type].Component;
+                    }
+                    else
+                    {
+                        if (Game.Instance.TryFindGameManager(out T manager))
+                        {
+                            Instance.GameManagers.Add(type, manager);
+                            return manager;
+                        }
+                    }
+                    break;
+                case ScopeContext.Both:
+                    if (Instance.WorldManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.WorldManagers[type].Component;
+                    }
+                    else if (Instance.GameManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.GameManagers[type].Component;
+                    }
+                    else if (Game.World.TryFindGameManager(out T manager1))
+                    {
+                        Instance.WorldManagers.Add(type, manager1);
+                        return manager1;
+                    }
+                    else if (Game.Instance.TryFindGameManager(out T manager2))
+                    {
+                        Instance.GameManagers.Add(type, manager2);
+                        return manager2;
+                    }
+                    break;
             }
 
-            Debug.LogError($"{Ins}:Failed to Despawn, Manager({typeof(T).Name}) is not available.");
+            Debug.LogError($"{Instance}:Failed to spawn, Manager({typeof(T).Name}) is not available. [{context} Context]");
             return null;
         }
 
+
+#if UNITY_EDITOR
+        string IInspectorInfo.GetInfo()
+        {
+            return $"GameManagers ({GameManagers.Count}) , WorldManagers ({WorldManagers.Count})";
+        }
+#endif
 
 
         // UI
         public static bool Widget(string Name, Object despawner = null, bool debug = true)
         {
-            if (GetManager<UIManager>() == null)
+            if (Get<UIManager>() == null)
             {
                 if (debug)
                     Debug.LogWarning("Despawn UIManager is not available.");
                 return false;
             }
 
-            return GetManager<UIManager>().RemoveLayer(Name, despawner);
+            return Get<UIManager>().RemoveLayer(Name, despawner);
         }
         public static bool Widget(MonoBehaviour Comp, Object despawner = null, bool debug = true)
         {
-            if (GetManager<UIManager>() == null)
+            if (Get<UIManager>() == null)
             {
                 if (debug)
                     Debug.LogWarning("Despawn UIManager is not available.");
                 return false;
             }
 
-            return GetManager<UIManager>().RemoveLayer(Comp, despawner);
+            return Get<UIManager>().RemoveLayer(Comp, despawner);
         }
 
         // Prefab
@@ -210,7 +236,7 @@ namespace RealMethod
         // Task
         public static bool Task<T>(T task) where T : IHandle
         {
-            TaskManager<T> manager = GetManager<TaskManager<T>>();
+            TaskManager<T> manager = Get<TaskManager<T>>();
             if (manager == null)
                 return false;
             return manager.Destroy(task);
@@ -219,27 +245,27 @@ namespace RealMethod
         // Enumerator
         public static bool Coroutine(Coroutine coroutine, bool debug = true)
         {
-            if (GetManager<EnumeratorManager>() == null)
+            if (Get<EnumeratorManager>() == null)
             {
                 if (debug)
                     Debug.LogWarning("TaskManager is not available.");
                 return false;
             }
 
-            GetManager<EnumeratorManager>().Stop(coroutine);
+            Get<EnumeratorManager>().Stop(coroutine);
             return true;
         }
 
         // Haptic
         public static bool Haptic(IHapticProvider provider, bool debug = true)
         {
-            if (GetManager<HapticManager>() == null)
+            if (Get<HapticManager>() == null)
             {
                 if (debug)
                     Debug.LogWarning("HapticManager is not available.");
                 return false;
             }
-            return GetManager<HapticManager>().Demolish(provider);
+            return Get<HapticManager>().Demolish(provider);
         }
 
 

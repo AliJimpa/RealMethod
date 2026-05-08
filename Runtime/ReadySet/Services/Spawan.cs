@@ -42,184 +42,159 @@ namespace RealMethod
     /// system that intelligently reuses previously found managers and adapts to
     /// scene changes.
     /// </summary>
-    public sealed class Spawn : IBridge, System.IDisposable, IInspectorInfo
+    public sealed class Spawn : Context<Spawn>, IBridge, IInspectorInfo
     {
-        private static Spawn Ins => CacheInstance.Value;
-        private static System.Lazy<Spawn> CacheInstance = new System.Lazy<Spawn>(() => new Spawn());
-
-        private Dictionary<System.Type, IGameManager> Managers;
-
-
-        public Spawn()
-        {
-            Game.Bridge.Bind(this);
-            Managers = new();
-        }
+        private Dictionary<System.Type, IGameManager> GameManagers;
+        private Dictionary<System.Type, IGameManager> WorldManagers;
 
         // Implement IBridge Interface
         void IBridge.OnWorldChanged(World world)
         {
-            Managers.Clear();
+            WorldManagers.Clear();
+            Debug.Log("ChangeWorld Spawn");
         }
-        // Implement IDisposable Interface
-        void System.IDisposable.Dispose()
+
+        protected override void OnBegin()
+        {
+            // Check if you game not initialized
+            if (!Game.IsGameInitialized)
+            {
+                Debug.LogWarning($"Game doesn't initialized !");
+                return;
+            }
+            Game.Bridge.Bind(this);
+            GameManagers = new();
+            WorldManagers = new();
+            Debug.Log("Begin Spawn");
+        }
+        protected override void OnEnd()
         {
             Game.Bridge.Unbind(this);
-            Managers.Clear();
-        }
-#if UNITY_EDITOR
-        // Implement IInspectorInfo Interface
-        string IInspectorInfo.GetInfo()
-        {
-            return $"Managers ({Managers.Count})";
-        }
-#endif
-
-        // Public Functions
-        public void AddManager(IGameManager manager)
-        {
-            System.Type ManagerType = manager.Component.GetType();
-            if (Managers.ContainsKey(ManagerType))
-            {
-                Managers.Add(ManagerType, manager);
-            }
-            else
-            {
-                Debug.LogWarning($"{Ins}: Manager of type '{ManagerType.Name}' already exists. Skipping add.");
-            }
+            GameManagers = null;
+            WorldManagers = null;
+            Debug.Log("End Spawn");
         }
 
-        // Private Functions
-        private static T GetManager<T>() where T : Component, IGameManager
+        private static T Get<T>(ScopeContext context = ScopeContext.Both) where T : Component, IGameManager
         {
             System.Type type = typeof(T);
-            if (Ins.Managers.ContainsKey(type))
+
+            switch (context)
             {
-                if (Ins.Managers[type].Component is T manager)
-                {
-                    return manager;
-                }
-            }
-            else
-            {
-                if (Game.World.TryFindGameManager(out T manager))
-                {
-                    Ins.Managers.Add(type, manager);
-                    return manager;
-                }
+                case ScopeContext.World:
+                    if (Instance.WorldManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.WorldManagers[type].Component;
+                    }
+                    else
+                    {
+                        if (Game.World.TryFindGameManager(out T manager))
+                        {
+                            Instance.WorldManagers.Add(type, manager);
+                            return manager;
+                        }
+                    }
+                    break;
+                case ScopeContext.Game:
+                    if (Instance.GameManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.GameManagers[type].Component;
+                    }
+                    else
+                    {
+                        if (Game.Instance.TryFindGameManager(out T manager))
+                        {
+                            Instance.GameManagers.Add(type, manager);
+                            return manager;
+                        }
+                    }
+                    break;
+                case ScopeContext.Both:
+                    if (Instance.WorldManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.WorldManagers[type].Component;
+                    }
+                    else if (Instance.GameManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.GameManagers[type].Component;
+                    }
+                    else if (Game.World.TryFindGameManager(out T manager1))
+                    {
+                        Instance.WorldManagers.Add(type, manager1);
+                        return manager1;
+                    }
+                    else if (Game.Instance.TryFindGameManager(out T manager2))
+                    {
+                        Instance.GameManagers.Add(type, manager2);
+                        return manager2;
+                    }
+                    break;
             }
 
-            Debug.LogError($"{Ins}:Failed to spawn, Manager({typeof(T).Name}) is not available. [Note:Manger should be in WorldScope or add manualy]");
+            Debug.LogError($"{Instance}:Failed to spawn, Manager({typeof(T).Name}) is not available. [{context} Context]");
             return null;
         }
+
+
+#if UNITY_EDITOR
+        string IInspectorInfo.GetInfo()
+        {
+            return $"GameManagers ({GameManagers.Count}) , WorldManagers ({WorldManagers.Count})";
+        }
+#endif
 
         // UI
         public static T Widget<T>(string Name, Object spawner = null) where T : MonoBehaviour
         {
-            if (GetManager<UIManager>() != null)
-            {
-                return GetManager<UIManager>().CreateLayer<T>(Name, spawner);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: UIManager is not available.");
-                return null;
-            }
+            return Get<UIManager>().CreateLayer<T>(Name, spawner);
         }
         public static T Widget<T>(VisualTreeAsset UIAsset, string Name, Object spawner = null) where T : MonoBehaviour
         {
-            if (GetManager<UIManager>() != null)
-            {
-                return GetManager<UIManager>().CreateLayer<T>(Name, UIAsset, spawner);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: UIManager is not available.");
-                return null;
-            }
+            return Get<UIManager>().CreateLayer<T>(Name, UIAsset, spawner);
         }
         public static GameObject Widget(UPrefab Prefab, string Name, Object spawner = null)
         {
-            if (GetManager<UIManager>() != null)
-            {
-                //if(Prefab)
-                return GetManager<UIManager>().AddLayer(Name, Prefab, spawner);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: UIManager is not available.");
-                return null;
-            }
+            return Get<UIManager>().AddLayer(Name, Prefab, spawner);
         }
         public static T Widget<T>(UPrefab Prefab, string Name, Object spawner = null) where T : MonoBehaviour
         {
-            if (GetManager<UIManager>() != null)
-            {
-                return GetManager<UIManager>().AddLayer<T>(Name, Prefab, spawner);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: UIManager is not available.");
-                return null;
-            }
+            return Get<UIManager>().AddLayer<T>(Name, Prefab, spawner);
         }
         public static UIDocument UIDoc(string Name, VisualTreeAsset UIAsset)
         {
-            if (GetManager<UIManager>() != null)
-            {
-                return GetManager<UIManager>().CreateLayer(Name, UIAsset);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: UIManager is not available.");
-                return null;
-            }
+            return Get<UIManager>().CreateLayer(Name, UIAsset);
         }
 
         // Screen
         public static void Message(string message)
         {
-            if (GetManager<ScreenManager>() != null)
+            if (Get<ScreenManager>().Informer != null)
             {
-                if (GetManager<ScreenManager>().Informer != null)
-                {
-                    GetManager<ScreenManager>().Informer.Popup(message);
-                }
-                else
-                {
-                    Debug.LogWarning($"ScreenMaanger need to set Informer");
-                }
+                Get<ScreenManager>().Informer.Popup(message);
             }
             else
             {
-                Debug.LogWarning($" {Ins}: ScreenManager is not available.");
+                Debug.LogWarning($"ScreenMaanger need to set Informer");
             }
         }
         public static void Message(string message, float duration)
         {
-            if (GetManager<ScreenManager>() != null)
+            if (Get<ScreenManager>().Informer != null)
             {
-                if (GetManager<ScreenManager>().Informer != null)
-                {
-                    GetManager<ScreenManager>().Informer.Popup(message, duration);
-                }
-                else
-                {
-                    Debug.LogWarning($"ScreenMaanger need to set Informer");
-                }
+                Get<ScreenManager>().Informer.Popup(message, duration);
             }
             else
             {
-                Debug.LogWarning($" {Ins}: ScreenManager is not available.");
+                Debug.LogWarning($"ScreenMaanger need to set Informer");
             }
         }
 
         // Sound
         public static AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            if (GetManager<AudioManager>() != null)
+            if (Get<AudioManager>() != null)
             {
-                return GetManager<AudioManager>().PlaySound(clip, location, parent, group, rolloffDistanceMin, loop, pauseTime, autoDestroy);
+                return Get<AudioManager>().PlaySound(clip, location, parent, group, rolloffDistanceMin, loop, pauseTime, autoDestroy);
             }
             else
             {
@@ -250,9 +225,9 @@ namespace RealMethod
         }
         public static AudioSource Sound2D(AudioClip clip, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
         {
-            if (GetManager<AudioManager>() != null)
+            if (Get<AudioManager>() != null)
             {
-                return GetManager<AudioManager>().PlaySound2D(clip, group, 1, loop, pauseTime, autoDestroy);
+                return Get<AudioManager>().PlaySound2D(clip, group, 1, loop, pauseTime, autoDestroy);
             }
             else
             {
@@ -561,15 +536,7 @@ namespace RealMethod
         // Haptic
         public static IHapticProvider Haptic(HapticConfig config)
         {
-            if (GetManager<HapticManager>() != null)
-            {
-                return GetManager<HapticManager>().Produce(config);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: HapticManager is not available.");
-                return null;
-            }
+            return Get<HapticManager>().Produce(config);
         }
 
         // Particle
@@ -596,7 +563,7 @@ namespace RealMethod
             }
             else
             {
-                Debug.LogWarning($" {Ins}: target is not valid.");
+                Debug.LogWarning($" {Instance}: target is not valid.");
                 return null;
             }
 
@@ -605,7 +572,7 @@ namespace RealMethod
         {
             if (classType == null)
             {
-                Debug.LogWarning($" {Ins}: ClassType is not valid!");
+                Debug.LogWarning($" {Instance}: ClassType is not valid!");
                 return default;
             }
             return (T)System.Activator.CreateInstance(classType);
@@ -616,7 +583,7 @@ namespace RealMethod
         {
             if (owner == null)
             {
-                Debug.LogWarning($" {Ins}: Owner or Author is not available.");
+                Debug.LogWarning($" {Instance}: Owner or Author is not available.");
                 return null;
             }
             GameObject SpawnedObject = Object.Instantiate<GameObject>(prefab, owner.transform);
@@ -653,7 +620,7 @@ namespace RealMethod
         // Task
         public static T Task<T, F>(F Task, bool AutoStart = false) where T : IHandle where F : class
         {
-            TaskManager<T> manager = GetManager<TaskManager<T>>();
+            TaskManager<T> manager = Get<TaskManager<T>>();
             if (manager == null)
                 return default;
             return manager.Create(Task, AutoStart);
@@ -662,27 +629,11 @@ namespace RealMethod
         // Enumerator
         public static Coroutine Coroutine(IEnumerator routine)
         {
-            if (GetManager<EnumeratorManager>() != null)
-            {
-                return GetManager<EnumeratorManager>().Run(routine);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: EnumeratorManager is not available.");
-                return null;
-            }
+            return Get<EnumeratorManager>().Run(routine);
         }
         public static ICoroutineTask CoroutineTask(IEnumerator routine)
         {
-            if (GetManager<EnumeratorManager>() != null)
-            {
-                return GetManager<EnumeratorManager>().StartTask(routine);
-            }
-            else
-            {
-                Debug.LogWarning($" {Ins}: EnumeratorManager is not available.");
-                return null;
-            }
+            return Get<EnumeratorManager>().StartTask(routine);
         }
 
         // Other
@@ -707,10 +658,10 @@ namespace RealMethod
             GameObject emptyobject = new GameObject(clip.name);
             AudioSource source = emptyobject.AddComponent<AudioSource>();
             source.clip = clip;
-            if (GetManager<AudioManager>() != null)
+            if (Get<AudioManager>() != null)
             {
-                source.outputAudioMixerGroup = GetManager<AudioManager>().DefaultGroup;
-                emptyobject.transform.SetParent(GetManager<AudioManager>().transform);
+                source.outputAudioMixerGroup = Get<AudioManager>().DefaultGroup;
+                emptyobject.transform.SetParent(Get<AudioManager>().transform);
             }
             return source;
         }
