@@ -144,25 +144,25 @@ namespace RealMethod
 #endif
 
         // UI
-        public static T Widget<T>(string Name, Object spawner = null) where T : MonoBehaviour
+        public static T Widget<T>(string Name, Object spawner = null, ScopeTarget Scope = ScopeTarget.Both) where T : MonoBehaviour
         {
-            return Get<UIManager>().CreateLayer<T>(Name, spawner);
+            return Get<UIManager>(Scope).CreateLayer<T>(Name, spawner);
         }
-        public static T Widget<T>(VisualTreeAsset UIAsset, string Name, Object spawner = null) where T : MonoBehaviour
+        public static T Widget<T>(VisualTreeAsset UIAsset, string Name, Object spawner = null, ScopeTarget Scope = ScopeTarget.Both) where T : MonoBehaviour
         {
-            return Get<UIManager>().CreateLayer<T>(Name, UIAsset, spawner);
+            return Get<UIManager>(Scope).CreateLayer<T>(Name, UIAsset, spawner);
         }
-        public static GameObject Widget(UPrefab Prefab, string Name, Object spawner = null)
+        public static GameObject Widget(UPrefab Prefab, string Name, Object spawner = null, ScopeTarget Scope = ScopeTarget.Both)
         {
-            return Get<UIManager>().AddLayer(Name, Prefab, spawner);
+            return Get<UIManager>(Scope).AddLayer(Name, Prefab, spawner);
         }
-        public static T Widget<T>(UPrefab Prefab, string Name, Object spawner = null) where T : MonoBehaviour
+        public static T Widget<T>(UPrefab Prefab, string Name, Object spawner = null, ScopeTarget Scope = ScopeTarget.Both) where T : MonoBehaviour
         {
-            return Get<UIManager>().AddLayer<T>(Name, Prefab, spawner);
+            return Get<UIManager>(Scope).AddLayer<T>(Name, Prefab, spawner);
         }
-        public static UIDocument UIDoc(string Name, VisualTreeAsset UIAsset)
+        public static UIDocument UIDoc(string Name, VisualTreeAsset UIAsset, ScopeTarget Scope = ScopeTarget.Both)
         {
-            return Get<UIManager>().CreateLayer(Name, UIAsset);
+            return Get<UIManager>(Scope).CreateLayer(Name, UIAsset);
         }
 
         // Screen
@@ -534,9 +534,9 @@ namespace RealMethod
         }
 
         // Haptic
-        public static IHapticProvider Haptic(HapticConfig config)
+        public static IHapticProvider Haptic(HapticConfig config, ScopeTarget Scope = ScopeTarget.Both)
         {
-            return Get<HapticManager>().Produce(config);
+            return Get<HapticManager>(Scope).Produce(config);
         }
 
         // Particle
@@ -617,7 +617,17 @@ namespace RealMethod
 
             return target;
         }
-        public static T Service<T>(System.Type ServiceType) where T : IService
+        public static bool Service<T>(ScopeTarget Scope = ScopeTarget.Game) where T : GameService, new()
+        {
+            T newModule = GetScope(Scope).AddModule<T>();
+            if (newModule != null)
+            {
+                newModule.InvokeReqisterEvent();
+                return true;
+            }
+            return false;
+        }
+        public static T Service<T>(System.Type ServiceType, ScopeTarget Scope = ScopeTarget.Game) where T : IService
         {
             if (ServiceType == null)
             {
@@ -625,23 +635,13 @@ namespace RealMethod
                 return default;
             }
 
-            bool result = false;
-            var interfaces = ServiceType.GetInterfaces();
-            foreach (var i in interfaces)
-            {
-                // Only interfaces derived from Interface
-                if (typeof(IService).IsAssignableFrom(i))
-                    result = true;
-            }
-
-            if (result == false)
+            if (!ServiceType.HasImplementInterface<T>())
             {
                 Debug.LogWarning($" {ServiceType.Name}: has not implement any IService.");
                 return default;
             }
 
-            // Can Select Scope
-            GameModule newModule = Game.Instance.AddModule(ServiceType);
+            GameModule newModule = GetScope(Scope).AddModule(ServiceType);
             if (newModule != null)
             {
                 newModule.InvokeReqisterEvent();
@@ -653,6 +653,20 @@ namespace RealMethod
 
             return default;
         }
+        public static J Service<T, J>(ScopeTarget Scope = ScopeTarget.Game) where T : GameService, new() where J : IService
+        {
+            T newModule = GetScope(Scope).AddModule<T>();
+            if (newModule != null)
+            {
+                newModule.InvokeReqisterEvent();
+                if (newModule is J provider)
+                {
+                    return provider;
+                }
+            }
+            return default;
+        }
+
 
         // Task
         public static T Task<T, F>(F Task, bool AutoStart = false) where T : IHandle where F : class
@@ -703,6 +717,21 @@ namespace RealMethod
             return source;
         }
 
+
+
+        private static Scope GetScope(ScopeTarget Scope)
+        {
+            switch (Scope)
+            {
+                case ScopeTarget.Game:
+                    return Game.Instance;
+                case ScopeTarget.World:
+                    return Game.World;
+                default:
+                    Debug.LogWarning("Your ScopeTarget should be World or Game");
+                    return null;
+            }
+        }
     }
 }
 

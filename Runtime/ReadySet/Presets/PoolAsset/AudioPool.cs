@@ -109,7 +109,7 @@ namespace RealMethod
         // Base PoolAsset Methods
         protected override void OnRootInitiate(Transform Root)
         {
-            if (Game.World.TryFindManager(out AudioManager audiomanager))
+            if (Game.World.TryFindGameManager(out AudioManager audiomanager))
             {
                 Root.SetParent(audiomanager.transform);
             }

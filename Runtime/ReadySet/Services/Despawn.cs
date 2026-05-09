@@ -142,27 +142,27 @@ namespace RealMethod
 
 
         // UI
-        public static bool Widget(string Name, Object despawner = null, bool debug = true)
+        public static bool Widget(string Name, Object despawner = null, bool debug = true, ScopeTarget Scope = ScopeTarget.Both)
         {
-            if (Get<UIManager>() == null)
+            if (Get<UIManager>(Scope) == null)
             {
                 if (debug)
                     Debug.LogWarning("Despawn UIManager is not available.");
                 return false;
             }
 
-            return Get<UIManager>().RemoveLayer(Name, despawner);
+            return Get<UIManager>(Scope).RemoveLayer(Name, despawner);
         }
-        public static bool Widget(MonoBehaviour Comp, Object despawner = null, bool debug = true)
+        public static bool Widget(MonoBehaviour Comp, Object despawner = null, bool debug = true, ScopeTarget Scope = ScopeTarget.Both)
         {
-            if (Get<UIManager>() == null)
+            if (Get<UIManager>(Scope) == null)
             {
                 if (debug)
                     Debug.LogWarning("Despawn UIManager is not available.");
                 return false;
             }
 
-            return Get<UIManager>().RemoveLayer(Comp, despawner);
+            return Get<UIManager>(Scope).RemoveLayer(Comp, despawner);
         }
 
         // Prefab
@@ -231,6 +231,16 @@ namespace RealMethod
                 return false;
             }
         }
+        public static bool Service<T>(ScopeTarget Scope = ScopeTarget.Game) where T : GameService, new()
+        {
+            if (GetScope(Scope).TryFindModule(out T result))
+            {
+                result.InvokeUnreqisterEvent();
+                return GetScope(Scope).RemoveModule<T>();
+            }
+
+            return false;
+        }
 
 
         // Task
@@ -269,5 +279,19 @@ namespace RealMethod
         }
 
 
+
+        private static Scope GetScope(ScopeTarget Scope)
+        {
+            switch (Scope)
+            {
+                case ScopeTarget.Game:
+                    return Game.Instance;
+                case ScopeTarget.World:
+                    return Game.World;
+                default:
+                    Debug.LogWarning("Your ScopeTarget should be World or Game");
+                    return null;
+            }
+        }
     }
 }

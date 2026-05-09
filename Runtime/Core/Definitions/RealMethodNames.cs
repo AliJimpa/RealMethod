@@ -17,6 +17,10 @@ namespace RealMethod
         // Save
         public const string Save = "OnSave";
         public const string Load = "Onload";
+
+        // Register
+        public const string Register = "OnRegister";
+        public const string Unregister = "OnUnregister";
     }
 
     public static class FunctionNames

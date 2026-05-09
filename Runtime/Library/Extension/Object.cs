@@ -213,13 +213,41 @@ namespace RealMethod
                 obj.SendMessage(MessageNames.Load, option);
             }
         }
-        public static void SendMessage(this object so, string methodName, SendMessageOptions option)
+        public static void InvokeReqisterEvent(this object obj, SendMessageOptions option = SendMessageOptions.DontRequireReceiver)
         {
-            so.SendMessage(methodName, null, option);
+            if (obj is IRegistrable provider)
+            {
+                provider.OnRegister();
+            }
+            else
+            {
+                obj.SendMessage(MessageNames.Register, option);
+            }
+        }
+        public static void InvokeUnreqisterEvent(this object obj, SendMessageOptions option = SendMessageOptions.DontRequireReceiver)
+        {
+            if (obj is IRegistrable provider)
+            {
+                provider.OnUnregister();
+            }
+            else
+            {
+                obj.SendMessage(MessageNames.Unregister, option);
+            }
+        }
+        public static void SendMessage(this object obj, string methodName, SendMessageOptions option)
+        {
+            obj.SendMessage(methodName, null, option);
         }
         public static void SendMessage(this object obj, string methodName, object parameter, SendMessageOptions options)
         {
-            var method = obj.GetType().GetMethod(methodName,
+            if (obj is Component comp)
+            {
+                comp.SendMessage(methodName, parameter, options);
+                return;
+            }
+
+            var method = obj.GetType().GetMethodInHierarchy(methodName,
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
 
             if (method != null)
@@ -379,6 +407,10 @@ namespace RealMethod
                 Debug.LogError($"Target Object({obj}) should implement {typeof(INameIdentifier)} interface.");
                 return false;
             }
+        }
+        public static void Destroy(this System.IDisposable provider)
+        {
+
         }
     }
 }

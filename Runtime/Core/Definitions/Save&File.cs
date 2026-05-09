@@ -68,11 +68,6 @@ namespace RealMethod
         /// </summary>
         IFile MainSaveFile { get; }
     }
-    public interface ISave
-    {
-        void OnLoaded();
-        void OnSaved();
-    }
     /// <summary>
     /// this is UniqueAsset that implement ISaveFile Interface with some Editor Function
     /// for testing save and load
