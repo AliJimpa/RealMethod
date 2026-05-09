@@ -13,9 +13,14 @@ namespace RealMethod
         private readonly object _lock = new();
         private Dictionary<Type, WeakReference<object>> _services => Data.Repository;
 
-        public ServiceLocator(ShareData data) : base(data)
+        // GameSubsystem Methods
+        protected override void OnBegin()
         {
         }
+        protected override void OnEnd()
+        {
+        }
+
 
         /// <summary>
         /// Register a service instance under its concrete or interface type T.
@@ -77,7 +82,7 @@ namespace RealMethod
         /// <summary>
         /// Register only if no live instance is currently registered for T.
         /// </summary>
-        public void RegisterIfAbsent<T>(T service)where T : class
+        public void RegisterIfAbsent<T>(T service) where T : class
         {
             if (service == null)
                 throw new ArgumentNullException(nameof(service));

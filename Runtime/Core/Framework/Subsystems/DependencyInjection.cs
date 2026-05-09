@@ -16,9 +16,15 @@ namespace RealMethod
         private readonly object _lock = new();
         private Dictionary<Type, WeakReference<object>> bindings => Data.Repository;
 
-        public DependencyInjection(ShareData data) : base(data)
+
+        // GameSubsystem Methods
+        protected override void OnBegin()
         {
         }
+        protected override void OnEnd()
+        {
+        }
+
 
 
         /// <summary>
@@ -42,7 +48,6 @@ namespace RealMethod
         {
             return (T)Resolve(typeof(T));
         }
-
         public static object Resolve(Type type)
         {
             // If already registered, return directly
@@ -74,7 +79,6 @@ namespace RealMethod
 
             throw new InvalidOperationException($"Cannot resolve type {type.Name}: no registered instance or injectable constructor.");
         }
-
         private static ConstructorInfo GetInjectableConstructor(Type type)
         {
             // Check if any constructor has [Inject]
@@ -88,7 +92,6 @@ namespace RealMethod
                 .OrderByDescending(c => c.GetParameters().Length)
                 .FirstOrDefault();
         }
-
         /// <summary>
         /// Injects all fields, properties, and methods marked with [Inject].
         /// Works for MonoBehaviours, ScriptableObjects, and normal classes.
@@ -128,7 +131,6 @@ namespace RealMethod
                 }
             }
         }
-
 
 
 

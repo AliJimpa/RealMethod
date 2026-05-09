@@ -23,23 +23,58 @@ namespace RealMethod
     public abstract class Kernel : MonoBehaviour
     {
         private static readonly GameSubsystem.ShareData _rpository = new GameSubsystem.ShareData(10);
-        private static Lazy<ServiceLocator> _serviceLocator = new Lazy<ServiceLocator>(() => new ServiceLocator(_rpository));
-        private static Lazy<DependencyInjection> _dependencyInjection = new Lazy<DependencyInjection>(() => new DependencyInjection(_rpository));
+        private static ServiceLocator _serviceLocator;
+        private static DependencyInjection _dependencyInjection;
 
 
         // GameModules
-        protected static ServiceLocator Services => _serviceLocator.Value;
-        protected static DependencyInjection DInjection => _dependencyInjection.Value;
+        protected static ServiceLocator Services
+        {
+            get
+            {
+                if (_serviceLocator == null)
+                {
+                    _serviceLocator = new ServiceLocator();
+                    ((IBootstrap)_serviceLocator).Setup(_rpository);
+                }
+                return _serviceLocator;
+            }
+        }
+        protected static DependencyInjection DInjection
+        {
+            get
+            {
+                if (_dependencyInjection == null)
+                {
+                    _dependencyInjection = new DependencyInjection();
+                    ((IBootstrap)_serviceLocator).Setup(_rpository);
+                }
+                return _dependencyInjection;
+            }
+        }
 
 
-
+        protected static void ClearKernel()
+        {
+            if (_serviceLocator != null)
+            {
+                ((IDisposable)_serviceLocator).Dispose();
+                _serviceLocator = null;
+            }
+            if (_dependencyInjection != null)
+            {
+                ((IDisposable)_dependencyInjection).Dispose();
+                _dependencyInjection = null;
+            }
+            ((IDisposable)_rpository).Dispose();
+        }
 
 
 
 #if UNITY_EDITOR
         public virtual IInspectorInfo[] GetAllInfo()
         {
-            return new IInspectorInfo[3] { _rpository ,Services, DInjection };
+            return new IInspectorInfo[3] { _rpository, Services, DInjection };
         }
 #endif
     }

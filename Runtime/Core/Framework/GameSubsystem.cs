@@ -3,15 +3,27 @@ using System.Collections.Generic;
 
 namespace RealMethod
 {
-    public abstract class GameSubsystem : IInspectorInfo
+    public interface IBootstrap
     {
-        public class ShareData : IInspectorInfo
+        void Setup(GameSubsystem.ShareData data);
+    }
+
+    public abstract class GameSubsystem : IInspectorInfo, IDisposable, IBootstrap
+    {
+        public class ShareData : IInspectorInfo, IDisposable
         {
             public Dictionary<Type, WeakReference<object>> Repository { get; }
 
             public ShareData(int prewarm)
             {
                 Repository = new Dictionary<Type, WeakReference<object>>(prewarm);
+            }
+
+
+            // Implement IDisposable Interface
+            void IDisposable.Dispose()
+            {
+                Repository.Clear();
             }
 
 #if UNITY_EDITOR
@@ -24,10 +36,22 @@ namespace RealMethod
         protected ShareData Data { get; private set; }
 
 
-        public GameSubsystem(ShareData data)
+        // Implement IBootstrap Interface
+        void IBootstrap.Setup(ShareData data)
         {
             Data = data;
+            OnBegin();
         }
+        // Implement IDisposable Interface
+        void IDisposable.Dispose()
+        {
+            OnEnd();
+            Data = null;
+        }
+
+        protected abstract void OnBegin();
+        protected abstract void OnEnd();
+
 
 #if UNITY_EDITOR
         string IInspectorInfo.GetInfo()

@@ -913,11 +913,12 @@ namespace RealMethod
             OnWorldChanged(World);
         }
         /// <summary>
-        /// Handles application quit events: unbinds world callbacks, deletes services and invokes <see cref="OnGameClosed"/>.
+        /// Handles application quit events: unbinds world callbacks, deletes modules and invokes <see cref="OnGameClosed"/>.
         /// </summary>
         private void Notify_OnGameQuit()
         {
             Application.quitting -= Notify_OnGameQuit;
+            OnGameClosed();
             CloseScope();
             ((IDisposable)Bridge).Dispose();
             Bridge = null;
@@ -931,7 +932,7 @@ namespace RealMethod
             GC.WaitForPendingFinalizers();
             GC.Collect();
 #endif
-            OnGameClosed();
+            ClearKernel();
         }
 
 
