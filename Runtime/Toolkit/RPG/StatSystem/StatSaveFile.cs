@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "StatSaveFile", menuName = "RealMethod/RPG/StatSaveFile", order = 1)]
-    public class StatSaveFile : SaveAsset, IStatStorage
+    public class StatSaveFile : SaveFileAsset, IStatStorage
     {
         [Header("Stat")]
         [SerializeField, ReadOnly, TextArea]

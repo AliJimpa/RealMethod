@@ -46,7 +46,7 @@ namespace RealMethod
 
 
 
-    public abstract class SaveManager : MonoBehaviour, IGameManager, ISaveSystem
+    public abstract class SaveManager : MonoBehaviour, IGameManager, IStorageService
     {
         [Header("Mode")]
         [SerializeField]
@@ -134,10 +134,10 @@ namespace RealMethod
                 Debug.LogError(ex);
                 return;
             }
-            file.FileObject.InvokeSaveEvent();
+            file.Self.InvokeSaveEvent();
             OnSaved?.Invoke(file);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            WriteLog($"Save({GetMethod(file).Format}) Class({file.FileObject.GetType()})");
+            WriteLog($"Save({GetMethod(file).Format}) Class({file.Self.GetType()})");
 #endif
         }
         public void Load(IFile file)
@@ -157,10 +157,10 @@ namespace RealMethod
                 Debug.LogError(ex);
                 return;
             }
-            file.FileObject.InvokeLoadEvent();
+            file.Self.InvokeLoadEvent();
             OnLoaded?.Invoke(file);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            WriteLog($"Load({GetMethod(file).Format}) Class({file.FileObject.GetType()})");
+            WriteLog($"Load({GetMethod(file).Format}) Class({file.Self.GetType()})");
 #endif
         }
         public void Delete(IFile file)
@@ -179,11 +179,14 @@ namespace RealMethod
             }
             OnDeleted?.Invoke(file);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            WriteLog($"Delete({GetMethod(file).Format}) Class({file.FileObject.GetType()})");
+            WriteLog($"Delete({GetMethod(file).Format}) Class({file.Self.GetType()})");
 #endif
         }
         [ContextMenu("Save")]
-        void ISaveSystem.SaveAll()
+        /// <summary>
+        /// Save all file or Specific file that implemented
+        /// </summary>
+        void ISaveService.Save()
         {
             IFile[] files = GetAllFiles();
             if (files != null)
@@ -203,10 +206,10 @@ namespace RealMethod
                             Debug.LogError(ex);
                             return;
                         }
-                        MainSaveFile.FileObject.InvokeSaveEvent();
+                        MainSaveFile.Self.InvokeSaveEvent();
                         OnSaved?.Invoke(MainSaveFile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        WriteLog($"Save[SingleFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.FileObject.GetType()})");
+                        WriteLog($"Save[SingleFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.Self.GetType()})");
 #endif
                         break;
                     case SaveFileStructure.MultiFile:
@@ -234,17 +237,20 @@ namespace RealMethod
                             Debug.LogError(ex);
                             return;
                         }
-                        MainSaveFile.FileObject.InvokeSaveEvent();
+                        MainSaveFile.Self.InvokeSaveEvent();
                         OnSaved?.Invoke(MainSaveFile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        WriteLog($"Save[MergedFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.FileObject.GetType()})");
+                        WriteLog($"Save[MergedFile]({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.Self.GetType()})");
 #endif
                         break;
                 }
             }
         }
         [ContextMenu("Load")]
-        void ISaveSystem.LoadAll()
+        /// <summary>
+        /// Load all file or specific file that implemented
+        /// </summary>
+        void ISaveService.Load()
         {
             IFile[] files = GetAllFiles();
             if (files != null)
@@ -264,10 +270,10 @@ namespace RealMethod
                             Debug.LogError(ex);
                             return;
                         }
-                        MainSaveFile.FileObject.InvokeLoadEvent();
+                        MainSaveFile.Self.InvokeLoadEvent();
                         OnLoaded?.Invoke(MainSaveFile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.FileObject.GetType()})");
+                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.Self.GetType()})");
 #endif
                         break;
                     case SaveFileStructure.MultiFile:
@@ -295,10 +301,10 @@ namespace RealMethod
                             Debug.LogError(ex);
                             return;
                         }
-                        MainSaveFile.FileObject.InvokeLoadEvent();
+                        MainSaveFile.Self.InvokeLoadEvent();
                         OnLoaded?.Invoke(MainSaveFile);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.FileObject.GetType()})");
+                        WriteLog($"Load({GetMethod(MainSaveFile).Format}) Class({MainSaveFile.Self.GetType()})");
 #endif
                         break;
                 }
@@ -338,7 +344,7 @@ namespace RealMethod
         }
         protected virtual bool Validate(IFile file)
         {
-            if (file == null && file.FileObject != null)
+            if (file == null && file.Self != null)
             {
                 Debug.LogError("File Does not valid");
                 return false;
@@ -347,7 +353,7 @@ namespace RealMethod
         }
         protected virtual ISaveMethod GetMethod(IFile file)
         {
-            if (file != null && file.FileObject.HasImplementInterface(out ISaveMethod method))
+            if (file != null && file.Self.HasImplementInterface(out ISaveMethod method))
             {
                 return method;
             }
@@ -365,7 +371,7 @@ namespace RealMethod
         }
         protected virtual void WriteToMergeFile(IFile file, BindingFlags fieldFlags, BindingFlags propertyFlags)
         {
-            object FileObject = file.FileObject;
+            object FileObject = file.Self;
             IMergeFile mergefile = GetMainFile<IMergeFile>();
             foreach (var field in FileObject.GetFields(fieldFlags))
             {
@@ -378,7 +384,7 @@ namespace RealMethod
         }
         protected virtual void ReadFromMergeFile(IFile file, BindingFlags fieldFlags, BindingFlags propertyFlags)
         {
-            object FileObject = file.FileObject;
+            object FileObject = file.Self;
             IMergeFile mergefile = GetMainFile<IMergeFile>();
             foreach (var field in FileObject.GetFields(fieldFlags))
             {
@@ -464,12 +470,12 @@ namespace RealMethod
         }
         protected override void OnSave(IFile file, ISaveMethod Method)
         {
-            object fileObject = file.FileObject;
+            object fileObject = file.Self;
 
             switch (Method.Format)
             {
                 case SaveFormat.None:
-                    if (fileObject is not ISave)
+                    if (fileObject is not ISaveable)
                     {
                         Debug.LogError($"Your file({fileObject}) with name({file.FileName}) should implement ISave Interface");
                     }
@@ -540,12 +546,12 @@ namespace RealMethod
         }
         protected override void OnLoad(IFile file, ISaveMethod Method)
         {
-            object fileObject = file.FileObject;
+            object fileObject = file.Self;
 
             switch (Method.Format)
             {
                 case SaveFormat.None:
-                    if (fileObject is not ISave)
+                    if (fileObject is not ISaveable)
                     {
                         Debug.LogError($"Your file({fileObject}) with name({file.FileName}) should implement ISave Interface");
                     }
@@ -673,7 +679,7 @@ namespace RealMethod
         }
         protected override void OnDelete(IFile file, ISaveMethod Method)
         {
-            object fileObject = file.FileObject;
+            object fileObject = file.Self;
 
             switch (Method.Format)
             {
@@ -1058,7 +1064,7 @@ namespace RealMethod
     {
         [Header("Details")]
         [SerializeField, ConditionalShowByEnum("Mode", SaveFileStructure.SingleFile)]
-        private SaveAsset SingeFileAsset;
+        private FileAsset SingeFileAsset;
         [SerializeField, ConditionalShowByEnum("Mode", SaveFileStructure.MergedFile)]
         private SoftType<IMergeFile> MergeFileClass;
         private object MySaveFile;

@@ -1,6 +1,6 @@
 namespace RealMethod
 {
-    public interface ISave
+    public interface ISaveable
     {
         void OnLoaded();
         void OnSaved();

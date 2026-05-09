@@ -140,32 +140,6 @@ namespace RealMethod
         /// </summary>
         public static event Action<int> OnStateChanged;
 
-
-        /// <summary>
-        /// Gets the active <see cref="ISaveSystem"/> implementation used for saving,
-        /// loading, and checking file existence. This value is assigned internally
-        /// through <c>CheckSaveSystem</c>.
-        /// </summary>
-        public ISaveSystem SaveSystem
-        {
-            get
-            {
-                if (IsGameInitialized == false)
-                {
-                    Debug.LogWarning("Game has not been initialized yet! You cannot call this method before initialization.");
-                    return null;
-                }
-
-
-                ISaveSystem result = World.gameObject.GetComponent<ISaveSystem>();
-                if (result == null)
-                    result = gameObject.GetComponentInChildren<ISaveSystem>();
-
-                return result;
-            }
-        }
-
-
         /// <summary>
         /// Initializes the game singleton and core systems on subsystem registration.
         /// This sets up the <see cref="Instance"/>, game <see cref="Bridge"/>,
@@ -652,32 +626,62 @@ namespace RealMethod
             return false;
         }
         /// <summary>
-        /// Saves the provided file using the active <see cref="ISaveSystem"/> implementation.
+        /// Saves the provided file using the active <see cref="IStorageService"/> implementation.
         /// Logs a warning if no save system is available.
         /// </summary>
-        public static void Save()
+        public static void Save(bool cloude = false)
         {
-            var system = Instance.SaveSystem;
-            if (system == null)
+            IStorageService storage = GetService<IStorageService>();
+            if (storage != null)
+            {
+                storage.Save();
+            }
+            else
             {
                 Debug.LogWarning("There is not any ISaveSystem Implemntation");
-                return;
             }
-            system.SaveAll();
+
+            if (cloude)
+            {
+                ICloudService cloudeserv = GetService<ICloudService>();
+                if (cloudeserv != null)
+                {
+                    cloudeserv.Save();
+                }
+                else
+                {
+                    Debug.LogWarning("There is not any ICloudService Implemntation");
+                }
+            }
         }
         /// <summary>
-        /// Loads the provided file using the active <see cref="ISaveSystem"/> implementation.
+        /// Loads the provided file using the active <see cref="IStorageService"/> implementation.
         /// Logs a warning if no save system is available.
         /// </summary>
-        public static void Load()
+        public static void Load(bool cloude = false)
         {
-            var system = Instance.SaveSystem;
-            if (system == null)
+            IStorageService storage = GetService<IStorageService>();
+            if (storage != null)
+            {
+                storage.Load();
+            }
+            else
             {
                 Debug.LogWarning("There is not any ISaveSystem Implemntation");
-                return;
             }
-            system.LoadAll();
+
+            if (cloude)
+            {
+                ICloudService cloudeserv = GetService<ICloudService>();
+                if (cloudeserv != null)
+                {
+                    cloudeserv.Load();
+                }
+                else
+                {
+                    Debug.LogWarning("There is not any ICloudService Implemntation");
+                }
+            }
         }
         /// <summary>
         /// Quits the application. In the Unity Editor this stops play mode instead.

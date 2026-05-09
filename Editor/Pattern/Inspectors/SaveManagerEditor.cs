@@ -28,7 +28,7 @@ namespace RealMethod.Editor
                     {
                         for (int i = 0; i < files.Length; i++)
                         {
-                            EditorGUILayout.LabelField($"{i}.[{files[i].FileName}]: {files[i].FileObject.GetType()}");
+                            EditorGUILayout.LabelField($"{i}.[{files[i].FileName}]: {files[i].Self.GetType()}");
                         }
                     }
                     EditorGUILayout.Space();

@@ -9,7 +9,7 @@ using UnityEditor;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "UpgradeSaveFile", menuName = "RealMethod/Upgrade/SaveFile", order = 1)]
-    public class UpgradeSaveFile : SaveAsset, IUpgradeStorage
+    public class UpgradeSaveFile : SaveFileAsset, IUpgradeStorage
     {
         [Header("Setting")]
         public bool UsePlayerPrefs = true;

@@ -243,7 +243,7 @@ namespace RealMethod
         }
     }
 
-    public abstract class SettingFile : SaveAsset, ISettingStorage
+    public abstract class SettingFile : SaveFileAsset, ISettingStorage
     {
         protected bool IsDirty { get; private set; }
 

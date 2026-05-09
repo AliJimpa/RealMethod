@@ -9,7 +9,7 @@ using UnityEditor;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "TutorialSaveFile", menuName = "RealMethod/Tutorial/SaveFile", order = 1)]
-    public class TutorialSaveFile : SaveAsset, ITutorialStorage
+    public class TutorialSaveFile : SaveFileAsset, ITutorialStorage
     {
         [Header("Tutorial")]
         [SerializeField, ReadOnly, TextArea]

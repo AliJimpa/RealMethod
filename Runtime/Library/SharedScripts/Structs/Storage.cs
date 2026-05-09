@@ -20,7 +20,7 @@ namespace RealMethod
         [SerializeField, ConditionalShowByEnum("Mode", StorageMode.Shared)]
         private bool UseAsset;
         [SerializeField, ConditionalShowByEnum("Mode", StorageMode.Shared), ConditionalHide("UseAsset", true, false)]
-        private SaveAsset FileAsset;
+        private FileAsset FileAsset;
         [SerializeField, ConditionalShowByEnum("Mode", StorageMode.Shared), ConditionalHide("UseAsset", true, true), ShowOnly]
         private string SelectedMergeFile;
         [SerializeField, ConditionalShowByEnum("Mode", StorageMode.Exclusive)]
@@ -34,17 +34,17 @@ namespace RealMethod
         // Private Fields
         private UnityEngine.Object _owner;
         private T _file;
-        private ISaveSystem _saveSystem;
+        private IStorageService _saveSystem;
         private IFile _mergeFile;
 
         // Properties
-        private ISaveSystem saveSystem
+        private IStorageService saveSystem
         {
             get
             {
                 if (_saveSystem == null)
                 {
-                    _saveSystem = Game.Instance.SaveSystem;
+                    _saveSystem = Game.GetService<IStorageService>();
                 }
                 return _saveSystem;
             }
@@ -97,14 +97,14 @@ namespace RealMethod
                     _mergeFile = saveSystem.MainSaveFile;
                     if (_mergeFile != null)
                     {
-                        SelectedMergeFile = _mergeFile.FileObject.GetType().ToString();
+                        SelectedMergeFile = _mergeFile.Self.GetType().ToString();
                         if (_mergeFile is T provider)
                         {
                             _file = provider;
                         }
                         else
                         {
-                            Debug.LogError($"Your MergeFile({_mergeFile.FileObject.GetType()}) Should implement {typeof(T)} interface");
+                            Debug.LogError($"Your MergeFile({_mergeFile.Self.GetType()}) Should implement {typeof(T)} interface");
                             return;
                         }
                     }

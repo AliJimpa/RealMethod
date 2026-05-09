@@ -193,7 +193,7 @@ namespace RealMethod
         }
         public static void InvokeSaveEvent(this object obj, SendMessageOptions option = SendMessageOptions.RequireReceiver)
         {
-            if (obj is ISave provider)
+            if (obj is ISaveable provider)
             {
                 provider.OnSaved();
             }
@@ -204,7 +204,7 @@ namespace RealMethod
         }
         public static void InvokeLoadEvent(this object obj, SendMessageOptions option = SendMessageOptions.RequireReceiver)
         {
-            if (obj is ISave provider)
+            if (obj is ISaveable provider)
             {
                 provider.OnLoaded();
             }
