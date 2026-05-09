@@ -359,16 +359,30 @@ namespace RealMethod
             }
         }
         /// <summary>
-        /// 
+        /// Injects dependencies into the specified target object using the internal dependency injection system.
         /// </summary>
+        /// <param name="target">The object whose dependencies should be injected.</param>
         public static void Inject(object target)
         {
             DInjection.Inject(target);
         }
+        /// <summary>
+        /// Registers and enables a feature instance in the dependency injection container.
+        /// </summary>
+        /// <typeparam name="F">Type of the feature implementing <see cref="IFeature"/>.</typeparam>
+        /// <param name="instance">The feature instance to register.</param>
+        /// <param name="overwrite">
+        /// If true, replaces an existing registered feature of the same type; otherwise keeps the existing one.
+        /// </param>
         public static void Enable<F>(F instance, bool overwrite = false) where F : IFeature
         {
             DInjection.Register(instance, overwrite);
         }
+        /// <summary>
+        /// Disables and unregisters a feature of the specified type from the dependency injection container.
+        /// </summary>
+        /// <typeparam name="F">Type of the feature implementing <see cref="IFeature"/>.</typeparam>
+        /// <returns>True if the feature was successfully removed; otherwise false.</returns>
         public static bool Disable<F>() where F : IFeature
         {
             return DInjection.Unregister<F>();
