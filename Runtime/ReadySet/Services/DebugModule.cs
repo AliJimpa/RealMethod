@@ -3,16 +3,6 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IDebugService : IService
-    {
-        Vector2 PrintPivot { get; }
-        float PrintSpace { get; }
-        int PrintSize { get; }
-        event System.Action<LogType, string> OnLogWrited;
-
-        void SetPivot(Vector2 pivot);
-        void SetSize(int size);
-    }
     public sealed class DebugModule : GameModule, ILogHandler, IDebugService
     {
         private class LogLine : IDrawTask
@@ -134,7 +124,6 @@ namespace RealMethod
         private int Size = 1;
         private List<LogLine> Lines = new List<LogLine>(10);
         private ILogHandler defaultLogHandler;
-        public event System.Action<LogType, string> OnLogWrited;
 
 
         // Implement ILogHandler Interfacwe
@@ -168,18 +157,21 @@ namespace RealMethod
             defaultLogHandler.LogException(exception, context);
             OnLogWrited?.Invoke(LogType.Exception, exception.Message);
         }
-        // Implement IDebugService Interface
-        Vector2 IDebugService.PrintPivot => Pivot;
-        int IDebugService.PrintSize => Size;
-        float IDebugService.PrintSpace => Screen.height / 40;
-        void IDebugService.SetPivot(Vector2 pivot)
+        // Implement IGUIService Interface
+        Vector2 IGUIService.PrintPivot => Pivot;
+        int IGUIService.PrintSize => Size;
+        void IGUIService.SetPivot(Vector2 pivot)
         {
             Pivot = pivot;
         }
-        void IDebugService.SetSize(int size)
+        void IGUIService.SetSize(int size)
         {
             Size = size;
         }
+        // Implement IDebugService Interface
+        float IDebugService.PrintSpace => Screen.height / 40;
+        public event System.Action<LogType, string> OnLogWrited;
+
 
 
         // Module Methods
@@ -197,6 +189,9 @@ namespace RealMethod
             Debug.unityLogger.logHandler = defaultLogHandler;
             Lines.Clear();
         }
+
+
+
 
         // Methods
         private void RemoveLog(LogLine line)

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace RealMethod
 {
     public interface IAnalyticsService : IService
@@ -65,7 +67,19 @@ namespace RealMethod
         string Platform { get; }
         int Memory { get; }
     }
-    public interface IDebugService2 : IService
+    public interface IGUIService : IService
+    {
+        Vector2 PrintPivot { get; }
+        int PrintSize { get; }
+        void SetPivot(Vector2 pivot);
+        void SetSize(int size);
+    }
+    public interface IDebugService : IGUIService
+    {
+        float PrintSpace { get; }
+        event System.Action<LogType, string> OnLogWrited;
+    }
+    public interface IDeveloperService : IService
     {
         void ShowFPS(bool active);
         void ShowToast(string message);
@@ -114,14 +128,13 @@ namespace RealMethod
         /// </summary>
         IFile MainSaveFile { get; }
     }
-
-    public interface ILogSystem
+    public interface ILogService2 : IService
     {
-        void Log(object message, UnityEngine.Object context);
-        void LogWarning(object message, UnityEngine.Object context);
-        void LogError(object message, UnityEngine.Object context);
+        void Log(object message, Object context);
+        void LogWarning(object message, Object context);
+        void LogError(object message, Object context);
         //void LogException(Exception exception, UnityEngine.Object context);
-        void Assert(object message, UnityEngine.Object context);
+        void Assert(object message, Object context);
     }
 
 
