@@ -2,15 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace RealMethod
 {
-    public interface IFeature
-    {
-
-    }
-
-
     public sealed class DependencyInjection : GameSubsystem
     {
         private readonly object _lock = new();
@@ -32,71 +27,59 @@ namespace RealMethod
         /// After registration, any object resolving or being injected 
         /// with the same type <typeparamref name="T"/> will receive this instance.
         /// </summary>
-        public void Bind<TInterface>(TInterface instance)
+        public void Register<T>(T instance, bool overwrite = false)
         {
             lock (_lock)
             {
-                bindings[typeof(TInterface)] = new WeakReference<object>(instance);
+                Type objectType = typeof(T);
+                if (bindings.TryGetValue(objectType, out var weak))
+                {
+                    if (!weak.TryGetTarget(out _))
+                    {
+                        bindings[objectType] = new WeakReference<object>(instance);
+                        return;
+                    }
+
+                    if (overwrite)
+                    {
+                        bindings[objectType] = new WeakReference<object>(instance);
+                        return;
+                    }
+
+                    throw new InvalidOperationException(
+                        $"Instance of type {objectType.Name} is already registered and still alive.");
+                }
+
+
+                bindings[objectType] = new WeakReference<object>(instance);
             }
         }
-
-        /// <summary>
-        /// Resolves a dependency of the specified type.
-        /// Automatically constructs non-MonoBehaviour classes using constructor injection.
-        /// </summary>
-        public static T Resolve<T>()
+        public bool Unregister<T>()
         {
-            return (T)Resolve(typeof(T));
-        }
-        public static object Resolve(Type type)
-        {
-            // If already registered, return directly
-            // if (bindings.TryGetValue(type, out var existing))
-            //     return existing;
-
-            // Handle constructor injection
-            var ctor = GetInjectableConstructor(type);
-            if (ctor != null)
+            var type = typeof(T);
+            lock (_lock)
             {
-                var parameters = ctor.GetParameters();
-                var args = parameters.Select(p => Resolve(p.ParameterType)).ToArray();
-                var instance = Activator.CreateInstance(type, args);
-
-                // Optionally inject remaining [Inject] fields
-                Inject(instance);
-
-                return instance;
+                return Unregister(type);
             }
-
-            // Fallback for parameterless types
-            var parameterless = type.GetConstructor(Type.EmptyTypes);
-            if (parameterless != null)
-            {
-                var instance = Activator.CreateInstance(type);
-                Inject(instance);
-                return instance;
-            }
-
-            throw new InvalidOperationException($"Cannot resolve type {type.Name}: no registered instance or injectable constructor.");
         }
-        private static ConstructorInfo GetInjectableConstructor(Type type)
+        public bool Unregister(Type type)
         {
-            // Check if any constructor has [Inject]
-            var markedCtor = type.GetConstructors()
-                .FirstOrDefault(c => Attribute.IsDefined(c, typeof(InjectAttribute)));
-            if (markedCtor != null)
-                return markedCtor;
-
-            // Otherwise, pick the one with most parameters for best DI heuristics
-            return type.GetConstructors()
-                .OrderByDescending(c => c.GetParameters().Length)
-                .FirstOrDefault();
+            lock (_lock)
+            {
+                if (bindings.ContainsKey(type))
+                {
+                    return bindings.Remove(type);
+                }
+                return false;
+            }
         }
+
+
         /// <summary>
         /// Injects all fields, properties, and methods marked with [Inject].
         /// Works for MonoBehaviours, ScriptableObjects, and normal classes.
         /// </summary>
-        public static void Inject(object target)
+        public void Inject(object target)
         {
             var type = target.GetType();
 
@@ -133,22 +116,21 @@ namespace RealMethod
         }
 
 
-
-        public TInterface Resolve2<TInterface>()
+        private object Resolve(Type type)
         {
-            lock (_lock)
+            // If already registered, return directly
+            if (bindings != null)
             {
-                Type type = typeof(TInterface);
-                if (bindings.ContainsKey(type))
+                if (bindings.TryGetValue(type, out var weak))
                 {
-                    if (bindings[type].TryGetTarget(out object target))
-                    {
-                        return (TInterface)target;
-                    }
-                    bindings.Remove(type);
+                    if (weak.TryGetTarget(out object existing))
+                        return existing;
                 }
-                return default;
+
             }
+
+            Debug.LogError($"Cannot resolve type {type.Name}: no registered instance or injectable constructor.");
+            return null;
         }
 
 #if UNITY_EDITOR
@@ -158,7 +140,7 @@ namespace RealMethod
             for (int i = 0; i < bindings.Count; i++)
             {
                 var type = bindings.GetKey(i);
-                if (type is IFeature)
+                if (typeof(IFeature).IsAssignableFrom(type))
                 {
                     var weakRef = bindings.GetValue(i);
                     if (weakRef.TryGetTarget(out var target))

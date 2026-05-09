@@ -359,6 +359,21 @@ namespace RealMethod
             }
         }
         /// <summary>
+        /// 
+        /// </summary>
+        public static void Inject(object target)
+        {
+            DInjection.Inject(target);
+        }
+        public static void Enable<F>(F instance, bool overwrite = false) where F : IFeature
+        {
+            DInjection.Register(instance, overwrite);
+        }
+        public static bool Disable<F>() where F : IFeature
+        {
+            return DInjection.Unregister<F>();
+        }
+        /// <summary>
         /// Retrieves the service instance of type <typeparamref name="T"/> if available.
         /// </summary>
         /// <typeparam name="T">IService type to retrieve.</typeparam>

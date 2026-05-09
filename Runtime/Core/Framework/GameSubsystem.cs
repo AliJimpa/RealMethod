@@ -10,7 +10,7 @@ namespace RealMethod
 
     public abstract class GameSubsystem : IInspectorInfo, IDisposable, IBootstrap
     {
-        public class ShareData : IInspectorInfo, IDisposable
+        public sealed class ShareData : IInspectorInfo, IDisposable
         {
             public Dictionary<Type, WeakReference<object>> Repository { get; }
 

@@ -22,12 +22,23 @@ namespace RealMethod
     /// </summary>
     public abstract class Kernel : MonoBehaviour
     {
-        private static readonly GameSubsystem.ShareData _rpository = new GameSubsystem.ShareData(10);
+        private static GameSubsystem.ShareData _rpository;
         private static ServiceLocator _serviceLocator;
         private static DependencyInjection _dependencyInjection;
 
 
         // GameModules
+        private static GameSubsystem.ShareData Repo
+        {
+            get
+            {
+                if (_rpository == null)
+                {
+                    _rpository = new GameSubsystem.ShareData(10);
+                }
+                return _rpository;
+            }
+        }
         protected static ServiceLocator Services
         {
             get
@@ -35,7 +46,7 @@ namespace RealMethod
                 if (_serviceLocator == null)
                 {
                     _serviceLocator = new ServiceLocator();
-                    ((IBootstrap)_serviceLocator).Setup(_rpository);
+                    ((IBootstrap)_serviceLocator).Setup(Repo);
                 }
                 return _serviceLocator;
             }
@@ -47,7 +58,7 @@ namespace RealMethod
                 if (_dependencyInjection == null)
                 {
                     _dependencyInjection = new DependencyInjection();
-                    ((IBootstrap)_serviceLocator).Setup(_rpository);
+                    ((IBootstrap)_dependencyInjection).Setup(Repo);
                 }
                 return _dependencyInjection;
             }
@@ -66,7 +77,12 @@ namespace RealMethod
                 ((IDisposable)_dependencyInjection).Dispose();
                 _dependencyInjection = null;
             }
-            ((IDisposable)_rpository).Dispose();
+            if (_rpository != null)
+            {
+                ((IDisposable)_rpository).Dispose();
+                _rpository = null;
+            }
+
         }
 
 
