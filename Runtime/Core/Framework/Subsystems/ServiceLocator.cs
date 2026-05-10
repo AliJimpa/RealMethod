@@ -216,11 +216,14 @@ namespace RealMethod
             for (int i = 0; i < _services.Count; i++)
             {
                 var type = _services.GetKey(i);
-                var weakRef = _services.GetValue(i);
-                if (weakRef.TryGetTarget(out var target))
-                    sb.AppendLine($"{i}. {type.Name} -> Alive ({target})");
-                else
-                    sb.AppendLine($"{i}. {type.Name} -> Collected");
+                if (typeof(IService).IsAssignableFrom(type))
+                {
+                    var weakRef = _services.GetValue(i);
+                    if (weakRef.TryGetTarget(out var target))
+                        sb.AppendLine($"{i}. {type.Name} -> Alive ({target})");
+                    else
+                        sb.AppendLine($"{i}. {type.Name} -> Collected");
+                }
             }
 
             return sb.ToString();

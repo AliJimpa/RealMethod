@@ -492,7 +492,7 @@ namespace RealMethod
         // Implement IInspectorInfo Interface
         string IInspectorInfo.GetInfo()
         {
-            return $"IsLoading ({IsLoading}) , FadeTime ({FadeTime}) , {GetInspectorInfo()}";
+            return $"IsLoading ({IsLoading}) , FadeTime ({FadeTime}) , BridgeConnect ({bridges.Count}) , {GetInspectorInfo()}";
         }
         protected virtual string GetInspectorInfo()
         {
