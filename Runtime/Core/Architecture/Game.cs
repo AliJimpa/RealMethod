@@ -74,10 +74,6 @@ namespace RealMethod
         /// </summary>
         public static GlobalEnum State { get; private set; } = 0;
         /// <summary>
-        /// This represents the persistent scene reference used for managing components across the game lifecycle.
-        /// </summary>
-        public static Scene PersistentScene => ((IRelationBridge)Bridge).InstanceScene;
-        /// <summary>
         /// Indicates whether a scene or world load operation is currently in progress.
         /// </summary>
         public static bool IsPaused
@@ -101,34 +97,8 @@ namespace RealMethod
         /// Return true when game in loading section for new scene
         /// </summary>
         public static bool IsLoading => Instance.IsGameLoading();
-        /// <summary>
-        /// Event invoked when a scene or world starts or finishes loading.
-        /// The boolean parameter is true when loading starts and false when loading ends.
-        /// </summary>
-        public static event Action<bool> OnSceneLoading
-        {
-            add { ((ILoadScneBridge)Bridge).OnSceneLoading += value; }
-            remove { ((ILoadScneBridge)Bridge).OnSceneLoading -= value; }
-        }
-        /// <summary>
-        /// Event invoked during scene or world loading to report progress.
-        /// The float parameter represents the loading progress from 0 (start) to 1 (complete).
-        /// </summary>
-        public static event Action<float> OnSceneLoadingProcess
-        {
-            add { ((ILoadScneBridge)Bridge).OnSceneLoadingProcess += value; }
-            remove { ((ILoadScneBridge)Bridge).OnSceneLoadingProcess -= value; }
-        }
-        /// <summary>
-        /// This action called every time your game ready to play after load Scene & setup RealMethod
-        /// you can enshure that your game and world do anything and player can ready to play game
-        /// when you change scene after world initiate this evet invoke again.
-        /// </summary>
-        public static event Action OnReady
-        {
-            add { ((IRelationBridge)Bridge).OnGameReady += value; }
-            remove { ((IRelationBridge)Bridge).OnGameReady -= value; }
-        }
+
+
         /// <summary>
         /// Invoked when the process finishes.
         /// Process in your game take define with yourelf.
@@ -139,6 +109,10 @@ namespace RealMethod
         /// Invoked when game state changed.
         /// </summary>
         public static event Action<int> OnStateChanged;
+
+
+
+
 
         /// <summary>
         /// Initializes the game singleton and core systems on subsystem registration.
@@ -249,7 +223,6 @@ namespace RealMethod
             }
 #endif
             Instance.OpenScope(Objects);
-
 
             // Unload Project Setting
             Resources.UnloadAsset(ProjectSettings);
@@ -376,6 +349,33 @@ namespace RealMethod
             {
                 return default;
             }
+        }
+        /// <summary>
+        /// Publishes an event to all subscribers of the specified event type.
+        /// </summary>
+        /// <typeparam name="T">Type of the event.</typeparam>
+        /// <param name="eventData">The event data to publish.</param>
+        public void Publish<T>(T eventData) where T : IEvent
+        {
+            EventBus.Publish(eventData);
+        }
+        /// <summary>
+        /// Subscribes a listener to a specific event type.
+        /// </summary>
+        /// <typeparam name="T">Type of the event to listen for.</typeparam>
+        /// <param name="listener">Callback invoked when the event is published.</param>
+        public void Subscribe<T>(Action<T> listener) where T : IEvent
+        {
+            EventBus.Subscribe(listener);
+        }
+        /// <summary>
+        /// Unsubscribes a listener from a specific event type.
+        /// </summary>
+        /// <typeparam name="T">Type of the event.</typeparam>
+        /// <param name="listener">The listener to remove.</param>
+        public void Unsubscribe<T>(Action<T> listener) where T : IEvent
+        {
+            EventBus.Subscribe(listener);
         }
         /// <summary>
         /// Requests a scene load by build index .
@@ -918,7 +918,7 @@ namespace RealMethod
         /// <returns><c>true</c> if any scne in loading stage; otherwise <c>false</c>.</returns>
         protected virtual bool IsGameLoading()
         {
-            return ((ILoadScneBridge)Bridge).IsLoading;
+            return Bridge.IsLoading;
         }
         /// <summary>
         /// Check for changing state from A to B by author.
@@ -952,19 +952,23 @@ namespace RealMethod
         {
             Application.quitting -= Notify_OnGameQuit;
             OnGameClosed();
+            // Scope
             CloseScope();
+            // Bridge
             ((IDisposable)Bridge).Dispose();
             Bridge = null;
+            // Draw
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             DrawTasks.Clear();
 #endif
-
+            // GC
 #if UNITY_EDITOR
             // Debug only: force GC to verify no references remain
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
 #endif
+            // Kernel
             ClearKernel();
         }
 

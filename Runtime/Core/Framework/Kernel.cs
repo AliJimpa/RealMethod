@@ -25,6 +25,7 @@ namespace RealMethod
         private static GameSubsystem.ShareData _rpository;
         private static ServiceLocator _serviceLocator;
         private static DependencyInjection _dependencyInjection;
+        private static EventBus _eventBus;
 
 
         // GameModules
@@ -63,7 +64,18 @@ namespace RealMethod
                 return _dependencyInjection;
             }
         }
-
+        protected static EventBus EventBus
+        {
+            get
+            {
+                if (_eventBus == null)
+                {
+                    _eventBus = new EventBus();
+                    ((IBootstrap)_eventBus).Setup(Repo);
+                }
+                return _eventBus;
+            }
+        }
 
         protected static void ClearKernel()
         {
@@ -76,6 +88,11 @@ namespace RealMethod
             {
                 ((IDisposable)_dependencyInjection).Dispose();
                 _dependencyInjection = null;
+            }
+            if (_eventBus != null)
+            {
+                ((IDisposable)_eventBus).Dispose();
+                _eventBus = null;
             }
             if (_rpository != null)
             {
@@ -90,7 +107,7 @@ namespace RealMethod
 #if UNITY_EDITOR
         public virtual IInspectorInfo[] GetAllInfo()
         {
-            return new IInspectorInfo[3] { _rpository, Services, DInjection };
+            return new IInspectorInfo[4] { _rpository, Services, DInjection, EventBus };
         }
 #endif
     }

@@ -13,10 +13,12 @@ namespace RealMethod
         public sealed class ShareData : IInspectorInfo, IDisposable
         {
             public Dictionary<Type, WeakReference<object>> Repository { get; }
+            public Dictionary<Type, List<Delegate>> Events { get; }
 
             public ShareData(int prewarm)
             {
                 Repository = new Dictionary<Type, WeakReference<object>>(prewarm);
+                Events = new Dictionary<Type, List<Delegate>>(prewarm);
             }
 
 
@@ -24,12 +26,13 @@ namespace RealMethod
             void IDisposable.Dispose()
             {
                 Repository.Clear();
+                Events.Clear();
             }
 
 #if UNITY_EDITOR
             string IInspectorInfo.GetInfo()
             {
-                return $"Repository ({Repository.Count})";
+                return $"Repository ({Repository.Count}) , Events ({Events.Count})";
             }
 #endif
         }
