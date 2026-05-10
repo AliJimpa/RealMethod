@@ -22,7 +22,7 @@ namespace RealMethod
         // Unity Methods
         private void OnEnable()
         {
-            Game.OnStateChanged += OnStateChange;
+            Game.State.OnStateChanged += OnStateChange;
         }
         protected override void Start()
         {
@@ -34,7 +34,7 @@ namespace RealMethod
         }
         private void OnDisable()
         {
-            Game.OnStateChanged -= OnStateChange;
+            Game.State.OnStateChanged -= OnStateChange;
         }
 
         // CompositManager Methods
@@ -44,11 +44,11 @@ namespace RealMethod
         }
 
         // Functions
-        private void OnStateChange(int stateIndex)
+        private void OnStateChange(GlobalEnum a, GlobalEnum b)
         {
-            if (IsValidState(stateIndex))
+            if (IsValidState(b))
             {
-                PlayState(stateIndex);
+                PlayState(b);
             }
         }
     }

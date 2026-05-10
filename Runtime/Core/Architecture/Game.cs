@@ -72,7 +72,7 @@ namespace RealMethod
         /// <summary>
         /// Reperesent Game State that youser can define state in ProjectSetting
         /// </summary>
-        public static GlobalEnum State { get; private set; } = 0;
+        public static readonly EnumStorage State = new EnumStorage();
         /// <summary>
         /// Indicates whether a scene or world load operation is currently in progress.
         /// </summary>
@@ -97,19 +97,12 @@ namespace RealMethod
         /// Return true when game in loading section for new scene
         /// </summary>
         public static bool IsLoading => Instance.IsGameLoading();
-
-
         /// <summary>
         /// Invoked when the process finishes.
         /// Process in your game take define with yourelf.
         /// (for example: show win screen, game over UI, load next level, etc).
         /// </summary>
         public static event Action<GameProcess> OnCompleted;
-        /// <summary>
-        /// Invoked when game state changed.
-        /// </summary>
-        public static event Action<int> OnStateChanged;
-
 
 
 
@@ -610,22 +603,6 @@ namespace RealMethod
                 Time.fixedDeltaTime = 0.02f * Time.timeScale; // Keeps physics in sync
         }
         /// <summary>
-        /// Sets the GameState to new state you want. 
-        /// </summary>
-        /// <param name="NewState">Target State you want to cahgne</param>
-        /// <param name="author">the refrence from who want to change the gamestate</param>
-        /// <returns></returns>
-        public static bool SetState(int NewState, object author)
-        {
-            if (Instance.CanChangeState(State, NewState, author))
-            {
-                State = NewState;
-                OnStateChanged?.Invoke(State);
-                return true;
-            }
-            return false;
-        }
-        /// <summary>
         /// Saves the provided file using the active <see cref="IStorageService"/> implementation.
         /// Logs a warning if no save system is available.
         /// </summary>
@@ -952,6 +929,8 @@ namespace RealMethod
         {
             Application.quitting -= Notify_OnGameQuit;
             OnGameClosed();
+            // State
+            ((IDisposable)State).Dispose();
             // Scope
             CloseScope();
             // Bridge
