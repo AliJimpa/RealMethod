@@ -23,8 +23,8 @@ namespace RealMethod
         // UIManager Methods
         protected override void InitiateManager(Scope owner)
         {
-            Game.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
-            Game.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);
+            Game.Bridge.OnSceneLoading += (value) => OnLoadScne?.Invoke(value);
+            Game.Bridge.OnSceneLoadingProcess += (value) => OnLoading?.Invoke(value);
         }
         public void SetInformer(IInformer messanger)
         {

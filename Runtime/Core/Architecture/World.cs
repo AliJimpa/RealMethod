@@ -81,6 +81,12 @@ namespace RealMethod
         [Header("Setting")]
         [SerializeField]
         private Prefab DefaultPlayer;
+        /// <summary>
+        /// This action called every time your game ready to play after load Scene & setup RealMethod
+        /// you can enshure that your game and world do anything and player can ready to play game
+        /// when you change scene after world initiate this evet invoke again.
+        /// </summary>
+        public static event System.Action OnReady;
 
 
         private GameObject PlayerObject;
@@ -94,7 +100,7 @@ namespace RealMethod
         private void Awake()
         {
             //Connect to Game With Bridge
-            IRelationBridge SyncProvider = Game.Bridge;
+            IWorldBridge SyncProvider = Game.Bridge;
             if (!SyncProvider.RegisterWorld(this))
             {
                 return;
@@ -121,7 +127,7 @@ namespace RealMethod
             transform.rotation = Quaternion.identity;
 
             WorldBegin();
-            SyncProvider.WorldIsReady();
+            OnReady?.Invoke();
         }
 #if UNITY_EDITOR
         private void OnEnable()
