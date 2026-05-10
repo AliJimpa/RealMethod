@@ -21,6 +21,9 @@ namespace RealMethod
         // Register
         public const string Register = "OnRegister";
         public const string Unregister = "OnUnregister";
+
+        // Messaenger
+        public const string Notify = "OnNotify";
     }
 
     public static class FunctionNames

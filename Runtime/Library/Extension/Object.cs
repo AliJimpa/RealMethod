@@ -235,6 +235,17 @@ namespace RealMethod
                 obj.SendMessage(MessageNames.Unregister, option);
             }
         }
+        public static void InvokeNotify(this object obj, string tag, SendMessageOptions option = SendMessageOptions.RequireReceiver)
+        {
+            if (obj is INotifiable provider)
+            {
+                provider.OnNotify(tag);
+            }
+            else
+            {
+                obj.SendMessage(MessageNames.Notify, tag, option);
+            }
+        }
         public static void SendMessage(this object obj, string methodName, SendMessageOptions option)
         {
             obj.SendMessage(methodName, null, option);
