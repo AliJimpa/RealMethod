@@ -11,24 +11,6 @@ using UnityEditor.SceneManagement;
 
 namespace RealMethod
 {
-    /// <summary>
-    /// Represents the possible outcomes of a Game process.
-    /// </summary>
-    public enum GameProcess
-    {
-        /// <summary>
-        /// The process finished successfully.
-        /// </summary>
-        Success,
-        /// <summary>
-        /// The process failed.
-        /// </summary>
-        Failure,
-        /// <summary>
-        /// The process was cancelled before completion.
-        /// </summary>
-        Cancelled
-    }
 
     /// <summary>
     /// Core game singleton that manages the active <see cref="World"/>, registered <see cref="IService"/>s,
@@ -91,18 +73,31 @@ namespace RealMethod
                 }
             }
         }
-        public static bool IsGameInitialized { get; private set; } = false;
         /// <summary>
         /// Indicates whether the game is in loading stage
         /// Return true when game in loading section for new scene
         /// </summary>
-        public static bool IsLoading => Instance.IsGameLoading();
+        public static bool IsLoading
+        {
+            get
+            {
+                if (Instance != null)
+                {
+                    return Instance.IsGameLoading();
+                }
+                else
+                {
+                    Debug.LogWarning("GameInstance did not called !");
+                    return false;
+                }
+            }
+        }
         /// <summary>
-        /// Invoked when the process finishes.
-        /// Process in your game take define with yourelf.
-        /// (for example: show win screen, game over UI, load next level, etc).
+        /// Indicate whether the game complitly initialized.
+        /// after true OnGameInitialized called.
+        /// befor first scene load
         /// </summary>
-        public static event Action<GameProcess> OnCompleted;
+        public static bool IsGameInitialized { get; private set; } = false;
 
 
 
@@ -254,14 +249,6 @@ namespace RealMethod
 
 
 
-
-        /// <summary>
-        /// Attempts to invoke 
-        /// </summary>
-        public static void Complete(GameProcess result)
-        {
-            OnCompleted.Invoke(result);
-        }
         /// <summary>
         /// Attempts to cast the global <see cref="Instance"/> to the specified type <typeparamref name="T"/>.
         /// Logs an error and returns <c>null</c> if the cast fails.
@@ -299,6 +286,42 @@ namespace RealMethod
             }
         }
         /// <summary>
+        /// Retrieves a manager of type <typeparamref name="T"/> from the active manager scopes.
+        /// The search is performed in the following order:
+        /// 1. The current <c>World</c> scope (if available).
+        /// 2. The global <c>Instance</c> scope.
+        /// </summary>
+        /// <typeparam name="T">The type of manager to retrieve.</typeparam>
+        /// <returns>
+        /// The manager of type <typeparamref name="T"/> if found; otherwise <c>null</c>.
+        /// </returns>
+        public static T GetManager<T>() where T : Component, IGameManager
+        {
+            if (World != null && World.TryFindGameManager(out T worldResult))
+                return worldResult;
+
+            if (Instance.TryFindGameManager(out T gameResult))
+                return gameResult;
+
+            return null;
+        }
+        /// <summary>
+        /// Retrieves the service instance of type <typeparamref name="T"/> if available.
+        /// </summary>
+        /// <typeparam name="T">IService type to retrieve.</typeparam>
+        /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
+        public static T GetService<T>() where T : IService
+        {
+            if (Services.TryGet(out T Myservice))
+            {
+                return Myservice;
+            }
+            else
+            {
+                return default;
+            }
+        }
+        /// <summary>
         /// Injects dependencies into the specified target object using the internal dependency injection system.
         /// </summary>
         /// <param name="target">The object whose dependencies should be injected.</param>
@@ -326,22 +349,6 @@ namespace RealMethod
         public static bool Disable<F>() where F : IFeature
         {
             return DInjection.Unregister<F>();
-        }
-        /// <summary>
-        /// Retrieves the service instance of type <typeparamref name="T"/> if available.
-        /// </summary>
-        /// <typeparam name="T">IService type to retrieve.</typeparam>
-        /// <returns>The service instance of type <typeparamref name="T"/>, or <c>null</c> if not found.</returns>
-        public static T GetService<T>() where T : IService
-        {
-            if (Services.TryGet(out T Myservice))
-            {
-                return Myservice;
-            }
-            else
-            {
-                return default;
-            }
         }
         /// <summary>
         /// Publishes an event to all subscribers of the specified event type.
@@ -530,26 +537,6 @@ namespace RealMethod
         public static Coroutine ReOpenScene()
         {
             return Instance.StartCoroutine(Bridge.GetLoadScneCorotine(SceneManager.GetActiveScene().name)); ;
-        }
-        /// <summary>
-        /// Retrieves a manager of type <typeparamref name="T"/> from the active manager scopes.
-        /// The search is performed in the following order:
-        /// 1. The current <c>World</c> scope (if available).
-        /// 2. The global <c>Instance</c> scope.
-        /// </summary>
-        /// <typeparam name="T">The type of manager to retrieve.</typeparam>
-        /// <returns>
-        /// The manager of type <typeparamref name="T"/> if found; otherwise <c>null</c>.
-        /// </returns>
-        public static T GetManager<T>() where T : Component, IGameManager
-        {
-            if (World != null && World.TryFindGameManager(out T worldResult))
-                return worldResult;
-
-            if (Instance.TryFindGameManager(out T gameResult))
-                return gameResult;
-
-            return null;
         }
         /// <summary>
         /// Parents the provided <paramref name="Target"/> GameObject to the game root instance.
@@ -897,18 +884,6 @@ namespace RealMethod
         {
             return Bridge.IsLoading;
         }
-        /// <summary>
-        /// Check for changing state from A to B by author.
-        /// </summary>
-        /// <param name="A">Current state</param>
-        /// <param name="B">Target state</param>
-        /// <param name="author">this object want to change state</param>
-        /// <returns></returns>
-        protected virtual bool CanChangeState(int A, int B, object author)
-        {
-            return true;
-        }
-
 
 
 

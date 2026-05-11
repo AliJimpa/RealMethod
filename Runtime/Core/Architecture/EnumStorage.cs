@@ -110,12 +110,10 @@ namespace RealMethod
 
             return false;
         }
-
         public override int GetHashCode()
         {
             return _state.GetHashCode();
         }
-
         public override string ToString()
         {
             return _state.ToString();
