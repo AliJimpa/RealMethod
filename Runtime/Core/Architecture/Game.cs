@@ -355,7 +355,7 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">Type of the event.</typeparam>
         /// <param name="eventData">The event data to publish.</param>
-        public void Publish<T>(T eventData) where T : IEvent
+        public static void Publish<T>(T eventData) where T : IEvent
         {
             EventBus.Publish(eventData);
         }
@@ -364,7 +364,7 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">Type of the event to listen for.</typeparam>
         /// <param name="listener">Callback invoked when the event is published.</param>
-        public void Subscribe<T>(Action<T> listener) where T : IEvent
+        public static void Subscribe<T>(Action<T> listener) where T : IEvent
         {
             EventBus.Subscribe(listener);
         }
@@ -373,7 +373,7 @@ namespace RealMethod
         /// </summary>
         /// <typeparam name="T">Type of the event.</typeparam>
         /// <param name="listener">The listener to remove.</param>
-        public void Unsubscribe<T>(Action<T> listener) where T : IEvent
+        public static void Unsubscribe<T>(Action<T> listener) where T : IEvent
         {
             EventBus.Subscribe(listener);
         }
