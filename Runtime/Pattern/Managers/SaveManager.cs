@@ -1113,13 +1113,17 @@ namespace RealMethod
         {
             if (file == null)
             {
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 WriteLog($"File not valid");
+                #endif
                 return false;
             }
 
             if (FileList.Contains(file))// reference comparison
             {
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 WriteLog($"File({file.FileName}) already added");
+                #endif
                 return false;
             }
 
@@ -1138,7 +1142,9 @@ namespace RealMethod
         {
             if (file == null)
             {
+                #if UNITY_EDITOR || DEVELOPMENT_BUILD
                 WriteLog($"File not valid");
+                #endif
                 return false;
             }
 

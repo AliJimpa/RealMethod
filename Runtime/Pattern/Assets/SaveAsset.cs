@@ -1,7 +1,7 @@
-
-using UnityEditor;
-#if UNITY_EDITOR
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
 #endif
 
 namespace RealMethod
@@ -33,7 +33,7 @@ namespace RealMethod
         protected virtual void OnEnable()
         {
 #if !UNITY_EDITOR
-            ISaveSystem saveSystem = Game.GetService<ISaveSystem>();
+            IStorageService saveSystem = Game.GetService<IStorageService>();
             if (saveSystem != null)
             {
                 if (!saveSystem.HasFile(this))
@@ -47,7 +47,7 @@ namespace RealMethod
         protected virtual void OnDisable()
         {
 #if !UNITY_EDITOR
-            ISaveSystem saveSystem = Game.GetService<ISaveSystem>();
+            IStorageService saveSystem = Game.GetService<IStorageService>();
             if (saveSystem != null)
             {
                 if (saveSystem.HasFile(this))
