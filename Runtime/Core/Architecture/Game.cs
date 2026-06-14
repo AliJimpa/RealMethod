@@ -658,204 +658,6 @@ namespace RealMethod
         Application.Quit();
 #endif
         }
-        /// <summary>
-        /// Logs a message to the Unity Console.
-        /// </summary>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Log(object message)
-        {
-            Debug.Log(message);
-        }
-        /// <summary>
-        /// Logs a message to the Unity Console.
-        /// </summary>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        /// <param name="context">Object to which the message applies.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Log(object message, UnityEngine.Object context)
-        {
-            Debug.Log(message, context);
-        }
-        /// <summary>
-        ///  A variant of Debug.Log that logs a warning message to the console.
-        /// </summary>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void LogWarning(object message)
-        {
-            Debug.LogWarning(message);
-        }
-        /// <summary>
-        ///  A variant of Debug.Log that logs a warning message to the console.
-        /// </summary>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        /// <param name="context">Object to which the message applies.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void LogWarning(object message, UnityEngine.Object context)
-        {
-            Debug.LogWarning(message, context);
-        }
-        /// <summary>
-        ///  A variant of Debug.Log that logs an error message to the console.
-        /// </summary>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void LogError(object message)
-        {
-            Debug.LogError(message);
-        }
-        /// <summary>
-        /// A variant of Debug.Log that logs an error message to the console.
-        /// </summary>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        /// <param name="context">Object to which the message applies.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void LogError(object message, UnityEngine.Object context)
-        {
-            Debug.LogError(message, context);
-        }
-        /// <summary>
-        /// A variant of Debug.Log that logs an error message to the console.
-        /// </summary>
-        /// <param name="exception">Runtime Exception.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void LogException(Exception exception)
-        {
-            Debug.LogException(exception);
-        }
-        /// <summary>
-        /// A variant of Debug.Log that logs an error message to the console.
-        /// </summary>
-        /// <param name="exception">Runtime Exception</param>
-        /// <param name="context">Object to which the message applies.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void LogException(Exception exception, UnityEngine.Object context)
-        {
-            Debug.LogException(exception, context);
-        }
-        /// <summary>
-        /// Assert a condition and logs an error message to the Unity console on failure.
-        /// </summary>
-        /// <param name="condition">Condition you expect to be true.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Assert(bool condition)
-        {
-            Debug.Assert(condition);
-        }
-        /// <summary>
-        /// Assert a condition and logs an error message to the Unity console on failure.
-        /// </summary>
-        /// <param name="condition">Condition you expect to be true.</param>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Assert(bool condition, object message)
-        {
-            Debug.Assert(condition, message);
-        }
-        /// <summary>
-        /// Assert a condition and logs an error message to the Unity console on failure.
-        /// </summary>
-        /// <param name="condition">Condition you expect to be true.</param>
-        /// <param name="context">Object to which the message applies.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Assert(bool condition, UnityEngine.Object context)
-        {
-            Debug.Assert(condition, context);
-        }
-        /// <summary>
-        /// Assert a condition and logs an error message to the Unity console on failure.
-        /// </summary>
-        /// <param name="condition">Condition you expect to be true.</param>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Assert(bool condition, string message)
-        {
-            Debug.Assert(condition, message);
-        }
-        /// <summary>
-        /// Assert a condition and logs an error message to the Unity console on failure.
-        /// </summary>
-        /// <param name="condition">Condition you expect to be true.</param>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        /// <param name="context">Object to which the message applies.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Assert(bool condition, object message, UnityEngine.Object context)
-        {
-            Debug.Assert(condition, message, context);
-        }
-        /// <summary>
-        /// Assert a condition and logs an error message to the Unity console on failure.
-        /// </summary>
-        /// <param name="condition">Condition you expect to be true.</param>
-        /// <param name="message">String or object to be converted to string representation for display.</param>
-        /// <param name="context">Object to which the message applies.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Assert(bool condition, string message, UnityEngine.Object context)
-        {
-            Debug.Assert(condition, message, context);
-        }
-        /// <summary>
-        /// Adds a new draw task to the rendering queue.
-        /// </summary>
-        /// <param name="element">The draw task to add. Ignored if null.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Draw(IDrawTask element)
-        {
-            if (element != null)
-            {
-                Instance.DrawTasks.Add(element);
-                if (element.Priority != 0)
-                {
-                    Instance.DrawTasks.Sort((a, b) => a.Priority.CompareTo(b.Priority));
-                }
-                element.Active();
-            }
-        }
-        /// <summary>
-        /// Removes the specified draw task from the rendering queue.
-        /// </summary>
-        /// <param name="element">The draw task to remove.</param>
-        [System.Diagnostics.Conditional("UNITY_EDITOR")]
-        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
-        [HideInCallstack]
-        public static void Erase(IDrawTask element)
-        {
-            Instance.DrawTasks.Remove(element);
-            element.Deactive();
-        }
-
-
 
 
         /// <summary>
@@ -998,6 +800,170 @@ namespace RealMethod
 
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        /// <summary>
+        /// Logs a message to the Unity Console.
+        /// </summary>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        [HideInCallstack]
+        public static void Log(object message)
+        {
+            Debug.Log(message);
+        }
+        /// <summary>
+        /// Logs a message to the Unity Console.
+        /// </summary>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        /// <param name="context">Object to which the message applies.</param>
+        [HideInCallstack]
+        public static void Log(object message, UnityEngine.Object context)
+        {
+            Debug.Log(message, context);
+        }
+        /// <summary>
+        ///  A variant of Debug.Log that logs a warning message to the console.
+        /// </summary>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        [HideInCallstack]
+        public static void LogWarning(object message)
+        {
+            Debug.LogWarning(message);
+        }
+        /// <summary>
+        ///  A variant of Debug.Log that logs a warning message to the console.
+        /// </summary>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        /// <param name="context">Object to which the message applies.</param>
+        [HideInCallstack]
+        public static void LogWarning(object message, UnityEngine.Object context)
+        {
+            Debug.LogWarning(message, context);
+        }
+        /// <summary>
+        ///  A variant of Debug.Log that logs an error message to the console.
+        /// </summary>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        [HideInCallstack]
+        public static void LogError(object message)
+        {
+            Debug.LogError(message);
+        }
+        /// <summary>
+        /// A variant of Debug.Log that logs an error message to the console.
+        /// </summary>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        /// <param name="context">Object to which the message applies.</param>
+        [HideInCallstack]
+        public static void LogError(object message, UnityEngine.Object context)
+        {
+            Debug.LogError(message, context);
+        }
+        /// <summary>
+        /// A variant of Debug.Log that logs an error message to the console.
+        /// </summary>
+        /// <param name="exception">Runtime Exception.</param>
+        [HideInCallstack]
+        public static void LogException(Exception exception)
+        {
+            Debug.LogException(exception);
+        }
+        /// <summary>
+        /// A variant of Debug.Log that logs an error message to the console.
+        /// </summary>
+        /// <param name="exception">Runtime Exception</param>
+        /// <param name="context">Object to which the message applies.</param>
+        [HideInCallstack]
+        public static void LogException(Exception exception, UnityEngine.Object context)
+        {
+            Debug.LogException(exception, context);
+        }
+        /// <summary>
+        /// Assert a condition and logs an error message to the Unity console on failure.
+        /// </summary>
+        /// <param name="condition">Condition you expect to be true.</param>
+        [HideInCallstack]
+        public static void Assert(bool condition)
+        {
+            Debug.Assert(condition);
+        }
+        /// <summary>
+        /// Assert a condition and logs an error message to the Unity console on failure.
+        /// </summary>
+        /// <param name="condition">Condition you expect to be true.</param>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        [HideInCallstack]
+        public static void Assert(bool condition, object message)
+        {
+            Debug.Assert(condition, message);
+        }
+        /// <summary>
+        /// Assert a condition and logs an error message to the Unity console on failure.
+        /// </summary>
+        /// <param name="condition">Condition you expect to be true.</param>
+        /// <param name="context">Object to which the message applies.</param>
+        [HideInCallstack]
+        public static void Assert(bool condition, UnityEngine.Object context)
+        {
+            Debug.Assert(condition, context);
+        }
+        /// <summary>
+        /// Assert a condition and logs an error message to the Unity console on failure.
+        /// </summary>
+        /// <param name="condition">Condition you expect to be true.</param>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        [HideInCallstack]
+        public static void Assert(bool condition, string message)
+        {
+            Debug.Assert(condition, message);
+        }
+        /// <summary>
+        /// Assert a condition and logs an error message to the Unity console on failure.
+        /// </summary>
+        /// <param name="condition">Condition you expect to be true.</param>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        /// <param name="context">Object to which the message applies.</param>
+        [HideInCallstack]
+        public static void Assert(bool condition, object message, UnityEngine.Object context)
+        {
+            Debug.Assert(condition, message, context);
+        }
+        /// <summary>
+        /// Assert a condition and logs an error message to the Unity console on failure.
+        /// </summary>
+        /// <param name="condition">Condition you expect to be true.</param>
+        /// <param name="message">String or object to be converted to string representation for display.</param>
+        /// <param name="context">Object to which the message applies.</param>
+        [HideInCallstack]
+        public static void Assert(bool condition, string message, UnityEngine.Object context)
+        {
+            Debug.Assert(condition, message, context);
+        }
+        /// <summary>
+        /// Adds a new draw task to the rendering queue.
+        /// </summary>
+        /// <param name="element">The draw task to add. Ignored if null.</param>
+        [HideInCallstack]
+        public static void Draw(IDrawTask element)
+        {
+            if (element != null)
+            {
+                Instance.DrawTasks.Add(element);
+                if (element.Priority != 0)
+                {
+                    Instance.DrawTasks.Sort((a, b) => a.Priority.CompareTo(b.Priority));
+                }
+                element.Active();
+            }
+        }
+        /// <summary>
+        /// Removes the specified draw task from the rendering queue.
+        /// </summary>
+        /// <param name="element">The draw task to remove.</param>
+        [HideInCallstack]
+        public static void Erase(IDrawTask element)
+        {
+            Instance.DrawTasks.Remove(element);
+            element.Deactive();
+        }
         /// <summary>
         /// A list containing all active draw tasks queued for rendering.
         /// </summary>
