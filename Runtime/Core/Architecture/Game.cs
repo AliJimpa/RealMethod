@@ -48,7 +48,7 @@ namespace RealMethod
                     Debug.LogWarning("World is not set. Returning null for Player.");
                     return null;
                 }
-                return World.GetPlayerObject();
+                return World.GetPlayer();
             }
         }
         /// <summary>

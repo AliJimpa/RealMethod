@@ -110,8 +110,8 @@ namespace RealMethod
             OpenScope(new GameObject[1] { gameObject });
 
             // Find Player or Create newone
-            var scneplayer = GetPlayerInScene();
-            if (scneplayer == null)
+            var scenePlayer = GetPlayerInScene();
+            if (scenePlayer == null)
             {
                 var starters = FindObjectsByType<PlayerStarter>(FindObjectsSortMode.InstanceID);
                 Transform SpawnPoint = SelectSpawnPoint(starters);
@@ -119,7 +119,7 @@ namespace RealMethod
             }
             else
             {
-                PlayerObject = scneplayer;
+                PlayerObject = scenePlayer;
             }
 
             // Reset Location of World
@@ -179,7 +179,7 @@ namespace RealMethod
         /// </summary>
         /// <param name="index">Player index when supporting multiple players (currently unused).</param>
         /// <returns>The player GameObject reference, or null if none is present.</returns>
-        public GameObject GetPlayerObject(byte index = 0)
+        public GameObject GetPlayer(byte index = 0)
         {
             return PlayerObject;
         }
@@ -189,21 +189,9 @@ namespace RealMethod
         /// <typeparam name="T">Component type to retrieve (must derive from <see cref="MonoBehaviour"/>).</typeparam>
         /// <param name="index">Player index when supporting multiple players (currently unused).</param>
         /// <returns>The component instance if found; otherwise null.</returns>
-        public T GetPlayerComponent<T>(byte index = 0) where T : MonoBehaviour
+        public T GetPlayerComponent<T>(byte index = 0) where T : Component
         {
-            return PlayerObject.GetComponent<T>();
-        }
-        /// <summary>
-        /// Gets a component or class of type <typeparamref name="T"/> from the player GameObject.
-        /// This is a generic helper that uses Unity's <c>GetComponent</c> and returns the result
-        /// as a reference type.
-        /// </summary>
-        /// <typeparam name="T">The class type to retrieve.</typeparam>
-        /// <param name="index">Player index when supporting multiple players (currently unused).</param>
-        /// <returns>The requested class instance, or null if not found.</returns>
-        public T GetPlayerClass<T>(byte index = 0) where T : class
-        {
-            return PlayerObject.GetComponent<T>();
+            return GetPlayer(index).GetComponent<T>();
         }
         /// <summary>
         /// Retrieves all components of type <typeparamref name="T"/> attached to the player GameObject.
@@ -211,14 +199,14 @@ namespace RealMethod
         /// <typeparam name="T">Component type to retrieve.</typeparam>
         /// <param name="index">Player index when supporting multiple players (currently unused).</param>
         /// <returns>Array of components if found; otherwise null and a warning is logged.</returns>
-        public T[] GetPlayerComponents<T>(byte index = 0) where T : MonoBehaviour
+        public T[] GetPlayerComponents<T>(byte index = 0) where T : Component
         {
-            T[] components = PlayerObject.GetComponents<T>();
+            T[] components = GetPlayer(index).GetComponents<T>();
             if (components.Length > 0)
             {
                 return components;
             }
-            Debug.LogWarning($"No components of type {typeof(T).Name} found on {PlayerObject.name} or its children.");
+            Debug.LogWarning($"No components of type {typeof(T).Name} found on {GetPlayer(index).name} or its children.");
             return null;
         }
         /// <summary>
@@ -227,14 +215,14 @@ namespace RealMethod
         /// <typeparam name="T">Component type to retrieve.</typeparam>
         /// <param name="index">Player index when supporting multiple players (currently unused).</param>
         /// <returns>Array of components if found; otherwise null and a warning is logged.</returns>
-        public T[] GetPlayerComponentsInChilderen<T>(byte index = 0) where T : MonoBehaviour
+        public T[] GetPlayerComponentsInChilderen<T>(byte index = 0) where T : Component
         {
-            T[] components = PlayerObject.GetComponentsInChildren<T>();
+            T[] components = GetPlayer(index).GetComponentsInChildren<T>();
             if (components.Length > 0)
             {
                 return components;
             }
-            Debug.LogWarning($"No components of type {typeof(T).Name} found on {PlayerObject.name} or its children.");
+            Debug.LogWarning($"No components of type {typeof(T).Name} found on {GetPlayer(index).name} or its children.");
             return null;
         }
         /// <summary>
@@ -243,9 +231,9 @@ namespace RealMethod
         /// <typeparam name="T">Component type to retrieve.</typeparam>
         /// <param name="index">Player index when supporting multiple players (currently unused).</param>
         /// <returns>The component instance if found; otherwise null.</returns>
-        public T GetPlayerComponentsInChildren<T>(byte index = 0) where T : MonoBehaviour
+        public T GetPlayerComponentsInChildren<T>(byte index = 0) where T : Component
         {
-            return PlayerObject.GetComponentInChildren<T>();
+            return GetPlayer(index).GetComponentInChildren<T>();
         }
 
 

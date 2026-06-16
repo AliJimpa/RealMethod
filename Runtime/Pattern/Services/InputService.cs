@@ -54,7 +54,7 @@ namespace RealMethod
         }
         protected virtual bool TryFindInputAsset(out InputActionAsset asset)
         {
-            PlayerInput playerinput = Game.World.GetPlayerObject().GetComponent<PlayerInput>();
+            PlayerInput playerinput = Game.World.GetPlayer().GetComponent<PlayerInput>();
             if (playerinput != null)
             {
                 if (playerinput.actions != null)

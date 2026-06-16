@@ -43,7 +43,7 @@ namespace RealMethod
             // }
 
             //LG.Initialize();
-            Myplayer = Game.World.GetPlayerObject();
+            Myplayer = Game.World.GetPlayer();
             //ChunkSize = LG.GetChunkSize();
             PlayrLocation = GetGridLocation(Myplayer.transform);
             if (WelcomChunk == null)
