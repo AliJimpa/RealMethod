@@ -19,6 +19,9 @@ namespace RealMethod
         private float height = 2f;
         [SerializeField]
         private float radius = 0.5f;
+        [SerializeField]
+        private bool BottomPivot = false;
+        private Vector3 Pivot => BottomPivot ? transform.position + new Vector3(0, height / 2, 0) : transform.position;
 #endif
 
         private bool hasPlayer = false;
@@ -58,13 +61,13 @@ namespace RealMethod
 #if UNITY_EDITOR
         protected virtual void OnDrawGizmos()
         {
-            bool blocked = Physics.CheckCapsule(transform.position, transform.position + Vector3.up * height, radius);
+            bool blocked = Physics.CheckCapsule(Pivot, transform.position + Vector3.up * height, radius);
 
             Color c = blocked ? Color.red : Color.cyan;
 
-            RM_Gizmos.Capsule(transform.position, c, height, radius);
-            RM_Gizmos.Arrow(transform.position, transform.forward, Color.red);
-            RM_Gizmos.Text(PosName, transform.position + (transform.up * (height / 2)) + (Vector3.up * 0.1f), Color.black);
+            RM_Gizmos.Capsule(Pivot, c, height, radius);
+            RM_Gizmos.Arrow(Pivot, transform.forward, Color.red);
+            RM_Gizmos.Text(PosName, Pivot + (transform.up * (height / 2)) + (Vector3.up * 0.1f), Color.black);
         }
 #endif
     }
