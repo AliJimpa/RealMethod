@@ -41,7 +41,7 @@ namespace RealMethod.Editor
             public const int Toolkit = Method + space;
             public const int Editor = Toolkit + space + priorityjumps;
         }
-        public static string SetttingAssetPath = ProjectSettingAsset.Path;
+        public static string SetttingAssetPath = RM_Framework.ProjectSettingPath_Editor;
         public static string ScriptTemplatesPath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
         public static string PrefabTemplatePath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/Prefabs";
         public const string GameObjectMenuItemPath = "GameObject/RealMethod/";
@@ -54,8 +54,6 @@ namespace RealMethod.Editor
                 return EditorApplication.isPlaying && EditorApplication.isPlayingOrWillChangePlaymode == false;
             }
         }
-
-
 
 
         // Functions

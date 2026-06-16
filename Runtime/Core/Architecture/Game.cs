@@ -112,7 +112,7 @@ namespace RealMethod
         private static void InitializeGame()
         {
             // Load Project Setting
-            ProjectSettingAsset ProjectSettings = Resources.Load<ProjectSettingAsset>("RealMethod/RealMethodSetting");
+            ProjectSettingAsset ProjectSettings = RM_Framework.LoadProjectSetting();
             if (ProjectSettings == null)
             {
                 Debug.LogError("ProjectSettingAsset is missing from Resources folder!");
@@ -121,7 +121,7 @@ namespace RealMethod
             }
 
             // Initiate GameClass
-            var RealObject = new GameObject("RealMethod");
+            var RealObject = new GameObject(RM_Framework.BaseGameObjectName);
             Type TargetClass = ProjectSettings.GetGameType();
             if (TargetClass == null)
             {
