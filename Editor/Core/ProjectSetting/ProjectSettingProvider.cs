@@ -21,6 +21,7 @@ namespace RealMethod.Editor
         {
             Runtime,
             Editor,
+            Development,
         }
         protected class TypeSelector<T>
         {
@@ -108,12 +109,12 @@ namespace RealMethod.Editor
                 if (!myProperty.isArray)
                     return;
 
-                if(myProperty.arraySize < EnforceDisable)
+                if (myProperty.arraySize < EnforceDisable)
                 {
                     myProperty.ClearArray();
                 }
 
-                if(myProperty.arraySize == 0)
+                if (myProperty.arraySize == 0)
                 {
                     DefaultInitiation();
                 }
@@ -171,7 +172,7 @@ namespace RealMethod.Editor
             }
             protected virtual void DefaultInitiation()
             {
-                
+
             }
         }
 
@@ -255,9 +256,10 @@ namespace RealMethod.Editor
     public static class ProjectSettingProvider
     {
         private static bool candraw = true;// Flag to determine if the UI can be drawn
-        private static ProjectSettingSection[] sections = new ProjectSettingSection[4] {
+        private static ProjectSettingSection[] sections = new ProjectSettingSection[5] {
         // Array of sections to be rendered in the settings UI
         new InitializerSettingSection(),
+        new FreeCameraSection(),
         new FolderStructureSection(),
         new GameStatusSection(),
         new CompileRuleSection(),
