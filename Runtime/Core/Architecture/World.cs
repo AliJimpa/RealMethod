@@ -262,10 +262,21 @@ namespace RealMethod
             }
             else
             {
-                GameObject player = new GameObject("Player");
-                player.tag = "Player";
-                player.transform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
-                return player;
+                GameObject NewPlayer = new GameObject("Player");
+                NewPlayer.tag = "Player";
+                NewPlayer.transform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                ProjectSettingAsset ProjectSettings = RM_Framework.LoadProjectSetting();
+                if (ProjectSettings != null)
+                {
+                    NewPlayer.AddComponent<Camera>();
+                    NewPlayer.AddComponent<AudioListener>();
+                    DefaultSpectator FreeCamera = NewPlayer.AddComponent<DefaultSpectator>();
+                    Vector3 CameraSpeedData = new Vector3(ProjectSettings.FreeCameraMoveSpeed, ProjectSettings.FreeCameraSprintSpeed, ProjectSettings.FreeCameraLookSpeed);
+                    FreeCamera.SendMessage("SetupSpectator", CameraSpeedData, SendMessageOptions.RequireReceiver);
+                }
+#endif
+                return NewPlayer;
             }
         }
         /// <summary>
