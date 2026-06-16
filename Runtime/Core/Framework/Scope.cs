@@ -5,6 +5,20 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    public static class Scope_Extensions
+    {
+        public static bool IsGameScope(this Scope target)
+        {
+            return target is Game;
+        }
+        public static bool IsWorldScope(this Scope target)
+        {
+            return target is World;
+        }
+
+    }
+
+
     /// <summary>
     /// An abstract base class that extends <see cref="RealKernel"/> to provide a structured
     /// container for managing game systems and features within a specific context.
@@ -431,7 +445,5 @@ namespace RealMethod
 #endif
 
     }
-
-
 
 }
