@@ -39,7 +39,6 @@ namespace RealMethod
 
         }
 
-        public static string Path = "Assets/Resources/RealMethod/RealMethodSetting.asset";
 
         [Header("Initializer")]
         [SerializeField, ReadOnly]
@@ -85,6 +84,16 @@ namespace RealMethod
         [Header("GameStatus")]
         [ReadOnly]
         public List<string> Status = new List<string>(5) { "Default", "Menu", "Playing", "Pause", "GameOver" };
+#endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        [Header("FreeCamera")]
+        [SerializeField]
+        private Prefab FreeCameraPrefab; // <-- this name must match
+        public float FreeCameraMoveSpeed = 8f;
+        public float FreeCameraSprintSpeed = 20f;
+        public float FreeCameraLookSpeed = 0.15f;
+#endif
+#if UNITY_EDITOR
         [Header("CompileGuard")]
         [SerializeField, ReadOnly]
         private bool Compiling = true; // <-- this name must match
@@ -131,10 +140,6 @@ namespace RealMethod
         protected sealed override void EnsureAssetPermission()
         {
         }
-        public static ProjectSettingAsset Load()
-        {
-            return UnityEditor.AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(Path);
-        }
         public GameObject GetPrefab_2()
         {
             return GamePrefab_2;
@@ -168,6 +173,13 @@ namespace RealMethod
                 result.Add(Type.GetType(item));
             }
             return result.ToArray();
+        }
+#endif
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public GameObject GetFreeCamera()
+        {
+            return FreeCameraPrefab;
         }
 #endif
 
