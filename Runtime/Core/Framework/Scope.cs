@@ -69,7 +69,7 @@ namespace RealMethod
         {
             result = null;
 
-            if (IsScopeLive())
+            if (!IsScopeLive())
                 return false;
 
             if (_gameManagers == null)
@@ -401,7 +401,7 @@ namespace RealMethod
         {
             if (!IsScopeOpened)
             {
-                Debug.LogWarning($"First you shoul open Scope.");
+                Debug.LogWarning($"First you should open Scope.");
                 return false;
             }
             return true;
