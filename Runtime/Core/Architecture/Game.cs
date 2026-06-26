@@ -799,15 +799,19 @@ namespace RealMethod
 #endif
 
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+
         /// <summary>
         /// Logs a message to the Unity Console.
         /// </summary>
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Log(object message)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log(message);
+#endif
         }
         /// <summary>
         /// Logs a message to the Unity Console.
@@ -815,18 +819,26 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         /// <param name="context">Object to which the message applies.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Log(object message, UnityEngine.Object context)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Log(message, context);
+#endif
         }
         /// <summary>
         ///  A variant of Debug.Log that logs a warning message to the console.
         /// </summary>
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void LogWarning(object message)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogWarning(message);
+#endif
         }
         /// <summary>
         ///  A variant of Debug.Log that logs a warning message to the console.
@@ -834,18 +846,26 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         /// <param name="context">Object to which the message applies.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void LogWarning(object message, UnityEngine.Object context)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogWarning(message, context);
+#endif
         }
         /// <summary>
         ///  A variant of Debug.Log that logs an error message to the console.
         /// </summary>
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void LogError(object message)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogError(message);
+#endif
         }
         /// <summary>
         /// A variant of Debug.Log that logs an error message to the console.
@@ -853,18 +873,26 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         /// <param name="context">Object to which the message applies.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void LogError(object message, UnityEngine.Object context)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogError(message, context);
+#endif
         }
         /// <summary>
         /// A variant of Debug.Log that logs an error message to the console.
         /// </summary>
         /// <param name="exception">Runtime Exception.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void LogException(Exception exception)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogException(exception);
+#endif
         }
         /// <summary>
         /// A variant of Debug.Log that logs an error message to the console.
@@ -872,18 +900,26 @@ namespace RealMethod
         /// <param name="exception">Runtime Exception</param>
         /// <param name="context">Object to which the message applies.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void LogException(Exception exception, UnityEngine.Object context)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.LogException(exception, context);
+#endif
         }
         /// <summary>
         /// Assert a condition and logs an error message to the Unity console on failure.
         /// </summary>
         /// <param name="condition">Condition you expect to be true.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Assert(bool condition)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Assert(condition);
+#endif
         }
         /// <summary>
         /// Assert a condition and logs an error message to the Unity console on failure.
@@ -891,9 +927,13 @@ namespace RealMethod
         /// <param name="condition">Condition you expect to be true.</param>
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Assert(bool condition, object message)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Assert(condition, message);
+#endif
         }
         /// <summary>
         /// Assert a condition and logs an error message to the Unity console on failure.
@@ -901,9 +941,13 @@ namespace RealMethod
         /// <param name="condition">Condition you expect to be true.</param>
         /// <param name="context">Object to which the message applies.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Assert(bool condition, UnityEngine.Object context)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Assert(condition, context);
+#endif
         }
         /// <summary>
         /// Assert a condition and logs an error message to the Unity console on failure.
@@ -911,9 +955,13 @@ namespace RealMethod
         /// <param name="condition">Condition you expect to be true.</param>
         /// <param name="message">String or object to be converted to string representation for display.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Assert(bool condition, string message)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Assert(condition, message);
+#endif
         }
         /// <summary>
         /// Assert a condition and logs an error message to the Unity console on failure.
@@ -922,9 +970,13 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         /// <param name="context">Object to which the message applies.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Assert(bool condition, object message, UnityEngine.Object context)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Assert(condition, message, context);
+#endif
         }
         /// <summary>
         /// Assert a condition and logs an error message to the Unity console on failure.
@@ -933,17 +985,23 @@ namespace RealMethod
         /// <param name="message">String or object to be converted to string representation for display.</param>
         /// <param name="context">Object to which the message applies.</param>
         [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Assert(bool condition, string message, UnityEngine.Object context)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Debug.Assert(condition, message, context);
+#endif
         }
         /// <summary>
         /// Adds a new draw task to the rendering queue.
         /// </summary>
         /// <param name="element">The draw task to add. Ignored if null.</param>
-        [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Draw(IDrawTask element)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (element != null)
             {
                 Instance.DrawTasks.Add(element);
@@ -953,17 +1011,23 @@ namespace RealMethod
                 }
                 element.Active();
             }
+#endif
         }
         /// <summary>
         /// Removes the specified draw task from the rendering queue.
         /// </summary>
         /// <param name="element">The draw task to remove.</param>
-        [HideInCallstack]
+        [System.Diagnostics.Conditional("UNITY_EDITOR")]
+        [System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
         public static void Erase(IDrawTask element)
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             Instance.DrawTasks.Remove(element);
             element.Deactive();
+#endif
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         /// <summary>
         /// A list containing all active draw tasks queued for rendering.
         /// </summary>
