@@ -597,16 +597,11 @@ namespace RealMethod
         // Implement ITask Interface
         void ITask.Active(object Instigator)
         {
-            if (IsActive)
-            {
-                Debug.LogWarning($"This Asset({name}) already is active.");
-                return;
-            }
-
             Owner = Instigator;
             if (Owner == null)
             {
                 Debug.LogWarning($"Owner is not valid for Asset({name})");
+                return;
             }
 
             foreach (var item in DrawItems)
