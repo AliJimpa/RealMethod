@@ -516,7 +516,7 @@ namespace RealMethod
                     Debug.LogWarning($"GameObject '{gameObjectName}' not found.");
                     return null;
                 }
-                
+
                 CachedComponent = Target.GetComponent(componentType.Type);
                 if (CachedComponent == null)
                     Debug.LogWarning($"Component type '{componentType.Type}' not found.");
@@ -590,12 +590,12 @@ namespace RealMethod
         private DrawSlot[] DrawItems;
 
 
-        protected DeveloperManager manager { get; private set; } = null;
-        public bool IsActive => manager != null;
+        protected object Owner { get; private set; } = null;
+        public bool IsActive => Owner != null;
 
 
         // Implement ITask Interface
-        void ITask.Active()
+        void ITask.Active(object Instigator)
         {
             if (IsActive)
             {
@@ -603,10 +603,10 @@ namespace RealMethod
                 return;
             }
 
-            manager = Game.GetManager<DeveloperManager>();
-            if (manager == null)
+            Owner = Instigator;
+            if (Owner == null)
             {
-                Debug.LogWarning($"Can't find {typeof(DeveloperManager)} for Asset({name})");
+                Debug.LogWarning($"Owner is not valid for Asset({name})");
             }
 
             foreach (var item in DrawItems)
@@ -614,7 +614,7 @@ namespace RealMethod
                 item.Active(this);
             }
         }
-        void ITask.Deactive()
+        void ITask.Deactive(object Instigator)
         {
             foreach (var item in DrawItems)
             {
@@ -675,7 +675,7 @@ namespace RealMethod
         }
         protected virtual void Reset()
         {
-            manager = null;
+            Owner = null;
         }
 
         // Functions

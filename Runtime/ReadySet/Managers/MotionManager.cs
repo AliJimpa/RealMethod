@@ -28,12 +28,12 @@ namespace RealMethod
 
 
         // Implement ITask Interface
-        void ITask.Active()
+        void ITask.Active(object Instigator)
         {
             IsEnable = true;
             OnEnable();
         }
-        void ITask.Deactive()
+        void ITask.Deactive(object Instigator)
         {
             Finish();
             IsEnable = false;

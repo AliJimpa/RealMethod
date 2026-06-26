@@ -1009,7 +1009,7 @@ namespace RealMethod
                 {
                     Instance.DrawTasks.Sort((a, b) => a.Priority.CompareTo(b.Priority));
                 }
-                element.Active();
+                element.Active(Instance);
             }
 #endif
         }
@@ -1023,7 +1023,7 @@ namespace RealMethod
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Instance.DrawTasks.Remove(element);
-            element.Deactive();
+            element.Deactive(Instance);
 #endif
         }
 
@@ -1041,7 +1041,7 @@ namespace RealMethod
                 if (task == null || task.IsExpired())
                 {
                     if (task != null)
-                        task.Deactive();
+                        task.Deactive(Instance);
                     DrawTasks.RemoveAt(i);
                     continue;
                 }
@@ -1062,7 +1062,7 @@ namespace RealMethod
                 if (task == null || task.IsExpired())
                 {
                     if (task != null)
-                        task.Deactive();
+                        task.Deactive(Instance);
                     DrawTasks.RemoveAt(i);
                     continue;
                 }

@@ -4,8 +4,8 @@ namespace RealMethod
 {
     public interface ITask
     {
-        void Active();
-        void Deactive();
+        void Active(object Instigator);
+        void Deactive(object Instigator);
     }
 
 }

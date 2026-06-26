@@ -60,10 +60,10 @@ namespace RealMethod
 
             foreach (var Asset in GUIAssets)
             {
-                ((ITask)Asset.Key).Active();
+                ((ITask)Asset.Key).Active(this);
             }
         }
-        void Update()
+        private void Update()
         {
             if (ControlMode == VisiblityModes.Input && inputSystem == InputSystemType.OldInputSystem)
             {
@@ -115,7 +115,7 @@ namespace RealMethod
 
             foreach (var Asset in GUIAssets)
             {
-                ((ITask)Asset.Key).Deactive();
+                ((ITask)Asset.Key).Deactive(this);
             }
         }
 
@@ -194,7 +194,7 @@ namespace RealMethod
                 return;
             }
             GUIAssets.Add(asset, true);
-            ((ITask)asset).Active();
+            ((ITask)asset).Active(this);
         }
         public bool Remove(GUIAsset asset)
         {
@@ -203,7 +203,7 @@ namespace RealMethod
                 GUIAsset target = GUIAssets.GetKey(i);
                 if (target == asset)
                 {
-                    ((ITask)target).Deactive();
+                    ((ITask)target).Deactive(this);
                     return GUIAssets.Remove(target);
                 }
             }
@@ -232,14 +232,14 @@ namespace RealMethod
                 Open();
             }
         }
-
-        // Abstract Methods
 #if ENABLE_INPUT_SYSTEM
         private void OnUITrigger(InputAction.CallbackContext context)
         {
             TriggerVisiblity();
         }
 #endif
+
+        // Abstract Methods
         public abstract void InitiateManager(Scope owner);
     }
 

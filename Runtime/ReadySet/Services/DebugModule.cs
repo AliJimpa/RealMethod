@@ -81,11 +81,11 @@ namespace RealMethod
             }
 
             // Implemetn ITask Interface
-            void ITask.Active()
+            void ITask.Active(object Instigator)
             {
                 ActiveTime = Time.time;
             }
-            void ITask.Deactive()
+            void ITask.Deactive(object Instigator)
             {
                 MyOwner.RemoveLog(this);
             }

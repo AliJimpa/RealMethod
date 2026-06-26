@@ -6,7 +6,6 @@ namespace RealMethod
 {
     public interface ITask<T> : ITask, ITick where T : IHandle
     {
-        string ID => this.GetType().ToString();
         T Controller { get; }
     }
 
@@ -26,7 +25,6 @@ namespace RealMethod
     }
     public abstract class TaskManager<J> : TaskManager where J : IHandle
     {
-
         public abstract J Create<F>(F Task, bool AutoStart = false) where F : class;
         public abstract J FindByName(Name16 TaskName);
         public abstract bool Destroy(J motion);
@@ -115,7 +113,7 @@ namespace RealMethod
             if (Task is T provider)
             {
                 Tasks.Add(Task);
-                provider.Active();
+                provider.Active(this);
                 OnTaskAdded?.Invoke(provider.Controller);
                 Task.InvokeSpawnEvent();
                 return provider.Controller;
@@ -130,7 +128,7 @@ namespace RealMethod
         {
             if (Tasks.Contains(task))
             {
-                task.Deactive();
+                task.Deactive(this);
                 OnTaskRemoved?.Invoke(task.Controller);
                 return Tasks.Remove(task);
             }
@@ -147,7 +145,7 @@ namespace RealMethod
                 {
                     if (provider.Controller.IsSame(behavior))
                     {
-                        provider.Deactive();
+                        provider.Deactive(this);
                         OnTaskRemoved?.Invoke(provider.Controller);
                         provider.InvokeDespawnEvent();
                         return Tasks.Remove(provider);
