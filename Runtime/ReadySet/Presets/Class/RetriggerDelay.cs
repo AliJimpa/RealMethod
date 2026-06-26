@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-public class RetriggerDelay
+public sealed class RetriggerDelay
 {
     private static int _nextId;
     public int Id { get; }
