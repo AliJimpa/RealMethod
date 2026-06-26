@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Manager/DeveloperManager")]
-    public class DevManager : DeveloperManager
+    public sealed class DevManager : DeveloperManager
     {
         // DeveloperManager Methods
         public override void InitiateManager(Scope owner)
