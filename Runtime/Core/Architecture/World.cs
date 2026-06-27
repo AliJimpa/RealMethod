@@ -262,21 +262,26 @@ namespace RealMethod
             }
             else
             {
-                GameObject NewPlayer = new GameObject("Player");
-                NewPlayer.tag = "Player";
-                NewPlayer.transform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                GameObject PlayerObject;
                 ProjectSettingAsset ProjectSettings = RM_Framework.LoadProjectSetting();
                 if (ProjectSettings != null)
                 {
-                    NewPlayer.AddComponent<Camera>();
-                    NewPlayer.AddComponent<AudioListener>();
-                    DefaultSpectator FreeCamera = NewPlayer.AddComponent<DefaultSpectator>();
-                    Vector3 CameraSpeedData = new Vector3(ProjectSettings.FreeCameraMoveSpeed, ProjectSettings.FreeCameraSprintSpeed, ProjectSettings.FreeCameraLookSpeed);
-                    FreeCamera.SendMessage("SetupSpectator", CameraSpeedData, SendMessageOptions.RequireReceiver);
+                    GameObject CameraObj = ProjectSettings.GetSpectator();
+                    if (CameraObj)
+                    {
+                        PlayerObject = Instantiate(CameraObj, spawnPoint.position, spawnPoint.rotation);
+                    }
+                    else
+                    {
+                        PlayerObject = CreateDefaultSpectator(spawnPoint);
+                    }
                 }
-#endif
-                return NewPlayer;
+                else
+                {
+                    PlayerObject = CreateDefaultSpectator(spawnPoint);
+                }
+                RM_Framework.UnloadProjectSetting();
+                return PlayerObject;
             }
         }
         /// <summary>
@@ -330,6 +335,23 @@ namespace RealMethod
 
             transform.position = Vector3.zero;
             return transform;
+        }
+
+        /// <summary>
+        /// Create Emoty GameOpbject and requerment component for
+        /// making Spectator
+        /// </summary>
+        /// <param name="spawnPoint"></param>
+        /// <returns></returns>
+        private GameObject CreateDefaultSpectator(Transform spawnPoint)
+        {
+            GameObject NewPlayer = new GameObject("Player");
+            NewPlayer.tag = "Player";
+            NewPlayer.transform.SetPositionAndRotation(spawnPoint.position, spawnPoint.rotation);
+            NewPlayer.AddComponent<Camera>();
+            NewPlayer.AddComponent<AudioListener>();
+            NewPlayer.AddComponent<DefaultSpectator>();
+            return NewPlayer;
         }
 
 

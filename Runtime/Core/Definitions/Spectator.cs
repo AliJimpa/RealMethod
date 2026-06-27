@@ -6,13 +6,10 @@ namespace RealMethod
     {
         [Header("Speed")]
         [SerializeField]
-
         private float moveSpeed = 8f;
         [SerializeField]
-
         private float sprintSpeed = 20f;
         [SerializeField]
-
         private float lookSpeed = 0.15f;
         [Header("SpeedStep")]
         [SerializeField]
@@ -38,13 +35,6 @@ namespace RealMethod
         }
 
         // Methods
-        private void SetupSpectator(Vector3 SpeedData)
-        {
-            moveSpeed = SpeedData.x;
-            sprintSpeed = SpeedData.y;
-            lookSpeed = SpeedData.z;
-            OnInitialize();
-        }
         protected virtual void UpdateLook(Vector2 lookInput)
         {
             yaw += lookInput.x * lookSpeed;
@@ -73,7 +63,5 @@ namespace RealMethod
             moveSpeed = Mathf.Clamp(moveSpeed + delta * speedStep, minSpeed, maxSpeed);
             sprintSpeed = moveSpeed * 2.5f;
         }
-        // Abstract Methods
-        protected abstract void OnInitialize();
     }
 }

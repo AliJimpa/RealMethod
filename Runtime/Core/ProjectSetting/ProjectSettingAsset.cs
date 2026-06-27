@@ -86,12 +86,9 @@ namespace RealMethod
         public List<string> Status = new List<string>(5) { "Default", "Menu", "Playing", "Pause", "GameOver" };
 #endif
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        [Header("FreeCamera")]
+        [Header("Spectator")]
         [SerializeField]
-        private Prefab FreeCameraPrefab; // <-- this name must match
-        public float FreeCameraMoveSpeed = 8f;
-        public float FreeCameraSprintSpeed = 20f;
-        public float FreeCameraLookSpeed = 0.15f;
+        private Prefab SpectatorPrefab; // <-- this name must match
 #endif
 #if UNITY_EDITOR
         [Header("CompileGuard")]
@@ -135,6 +132,10 @@ namespace RealMethod
         {
             return GamePrefab_1;
         }
+        public GameObject GetSpectator()
+        {
+            return SpectatorPrefab;
+        }
 
 #if UNITY_EDITOR
         protected sealed override void EnsureAssetPermission()
@@ -173,13 +174,6 @@ namespace RealMethod
                 result.Add(Type.GetType(item));
             }
             return result.ToArray();
-        }
-#endif
-
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        public GameObject GetFreeCamera()
-        {
-            return FreeCameraPrefab;
         }
 #endif
 

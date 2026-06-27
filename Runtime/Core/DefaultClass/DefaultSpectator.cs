@@ -10,11 +10,6 @@ public sealed class DefaultSpectator : Spectator
 //     public InputActionReference scrollWheel;
 // #endif
 
-    // Free Camera Methods
-    protected override void OnInitialize()
-    {
-    }
-
     // Unity Events
     private void Update()
     {

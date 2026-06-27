@@ -259,7 +259,7 @@ namespace RealMethod.Editor
         private static ProjectSettingSection[] sections = new ProjectSettingSection[5] {
         // Array of sections to be rendered in the settings UI
         new InitializerSettingSection(),
-        new FreeCameraSection(),
+        new SpectatorSection(),
         new FolderStructureSection(),
         new GameStatusSection(),
         new CompileRuleSection(),

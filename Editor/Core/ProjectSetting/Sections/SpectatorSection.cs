@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class FreeCameraSection : ProjectSettingSection
+    public class SpectatorSection : ProjectSettingSection
     {
         private ProjectSettingAsset SettingAsset;
         private SerializedObject projectSettings;
@@ -14,11 +14,11 @@ namespace RealMethod.Editor
         }
         protected override SectionType GetSectionType()
         {
-            return SectionType.Development;
+            return SectionType.Runtime;
         }
         protected override string GetTitle()
         {
-            return "FreeCamera";
+            return "Spectator";
         }
         protected override void BeginRender(ProjectSettingAsset Storage)
         {
@@ -29,11 +29,7 @@ namespace RealMethod.Editor
         {
             EditorGUI.BeginChangeCheck();
 
-            EditorGUILayout.PropertyField(projectSettings.FindProperty("FreeCameraPrefab"), new GUIContent("FreeCameraPrefab"));
-
-            SettingAsset.FreeCameraMoveSpeed = EditorGUILayout.FloatField("FreeCameraMoveSpeed", SettingAsset.FreeCameraMoveSpeed);
-            SettingAsset.FreeCameraSprintSpeed = EditorGUILayout.FloatField("FreeCameraSprintSpeed", SettingAsset.FreeCameraSprintSpeed);
-            SettingAsset.FreeCameraLookSpeed = EditorGUILayout.FloatField("FreeCameraMoveSpeed", SettingAsset.FreeCameraLookSpeed);
+            EditorGUILayout.PropertyField(projectSettings.FindProperty("SpectatorPrefab"), new GUIContent("SpectatorPrefab"));
 
             if (EditorGUI.EndChangeCheck())
             {
