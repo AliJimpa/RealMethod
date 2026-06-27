@@ -111,7 +111,7 @@ namespace RealMethod.Editor
             {
                 if (ProjectSetting_Cache == null)
                 {
-                    if (!RM_Editor.TryGetSettingAsset(out ProjectSetting_Cache))
+                    if (!RM_Editor.TryLoadProjectSettingAsset(out ProjectSetting_Cache))
                     {
                         return null;
                     }

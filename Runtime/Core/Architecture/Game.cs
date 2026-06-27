@@ -213,7 +213,7 @@ namespace RealMethod
             Instance.OpenScope(Objects);
 
             // Unload Project Setting
-            Resources.UnloadAsset(ProjectSettings);
+            RM_Framework.UnloadProjectSetting();
             ProjectSettings = null;
 
             // Move Self GameObject to DontDestroy

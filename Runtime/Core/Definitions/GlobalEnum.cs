@@ -60,6 +60,7 @@ namespace RealMethod
             if (ProjectSettings)
             {
                 var names = ProjectSettings.Status;
+                RM_Framework.UnloadProjectSetting_Editor();
                 if (names == null || Value >= names.Count)
                     return "Undefined";
                 return names[Value];
@@ -68,7 +69,6 @@ namespace RealMethod
             {
                 return $"GlobalEnum index [{Value}]";
             }
-
         }
 #else
         public override string ToString()

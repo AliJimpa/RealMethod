@@ -14,9 +14,10 @@ namespace RealMethod.Editor
         public static void GenerateScriptsFromAnimators()
         {
             ProjectSettingAsset TargetStorage;
-            if (RM_Editor.TryGetSettingAsset(out TargetStorage))
+            if (RM_Editor.TryLoadProjectSettingAsset(out TargetStorage))
             {
                 outputFolder = TargetStorage.GetFolderPathByType(ProjectSettingAsset.AssetFormat.Script) + "/General/AnimatorParam";
+                RM_Editor.UnloadProjectSettingAsset();
             }
             else
             {

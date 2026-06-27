@@ -41,7 +41,7 @@ namespace RealMethod.Editor
             public const int Toolkit = Method + space;
             public const int Editor = Toolkit + space + priorityjumps;
         }
-        public static string SetttingAssetPath = RM_Framework.ProjectSettingPath_Editor;
+        public static string SetttingAssetPath = $"Assets/Resources/{RM_Framework.ProjectSettingPath}.asset";
         public static string ScriptTemplatesPath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/ScriptTemplates";
         public static string PrefabTemplatePath => GetPackagePath("com.mustard.realmethod") + "/Reservoir/Prefabs";
         public const string GameObjectMenuItemPath = "GameObject/RealMethod/";
@@ -57,11 +57,15 @@ namespace RealMethod.Editor
 
 
         // Functions
-        public static bool TryGetSettingAsset(out ProjectSettingAsset settings)
+        public static bool TryLoadProjectSettingAsset(out ProjectSettingAsset settings)
         {
             // Attempt to load the settings asset from the specified path
-            settings = AssetDatabase.LoadAssetAtPath<ProjectSettingAsset>(SetttingAssetPath);
+            settings = RM_Framework.LoadProjectSetting_Editor();
             return settings != null;
+        }
+        public static void UnloadProjectSettingAsset()
+        {
+            RM_Framework.UnloadProjectSetting_Editor();
         }
         private static string GetPackagePath(string packageName)
         {

@@ -11,7 +11,7 @@ namespace RealMethod.Editor
             SerializedProperty valueProp = property.FindPropertyRelative("Value");
             int index = valueProp.intValue;
 
-            if (RM_Editor.TryGetSettingAsset(out ProjectSettingAsset setting))
+            if (RM_Editor.TryLoadProjectSettingAsset(out ProjectSettingAsset setting))
             {
                 string[] names = setting.Status.ToArray();
 
@@ -35,6 +35,7 @@ namespace RealMethod.Editor
                 EditorGUI.LabelField(position, $"{label.text} [{index}]: Can't load ProjectSettingAsset.");
                 GUI.color = prev;
             }
+            RM_Editor.UnloadProjectSettingAsset();
         }
     }
 }
