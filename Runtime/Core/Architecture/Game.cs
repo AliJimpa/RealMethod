@@ -11,6 +11,98 @@ using UnityEditor.SceneManagement;
 
 namespace RealMethod
 {
+    public sealed class GlobalEnum : EnumStorage
+    {
+        private GlobalState _state;
+        public event Action<GlobalState, GlobalState> OnStateChanged;
+
+
+        public GlobalState Global
+        {
+            get => _state;
+            set
+            {
+                if (_state == value)
+                    return;
+
+                var old = _state;
+                _state = value;
+
+                OnStateChanged?.Invoke(old, _state);
+            }
+        }
+
+
+        // -------- Operator Overloads --------
+        public static implicit operator GlobalState(GlobalEnum storage)
+        {
+            return storage.Global;
+        }
+
+        public static implicit operator GlobalEnum(GlobalState value)
+        {
+            return new GlobalEnum { Global = value };
+        }
+
+        public static bool operator ==(GlobalEnum a, GlobalState b)
+            => a is not null && a._state == b;
+
+        public static bool operator !=(GlobalEnum a, GlobalState b)
+            => !(a == b);
+
+        public static bool operator <(GlobalEnum a, GlobalState b)
+            => a is not null && a._state < b;
+
+        public static bool operator >(GlobalEnum a, GlobalState b)
+            => a is not null && a._state > b;
+
+        public static bool operator <=(GlobalEnum a, GlobalState b)
+            => a is not null && a._state <= b;
+
+        public static bool operator >=(GlobalEnum a, GlobalState b)
+            => a is not null && a._state >= b;
+
+        public static bool operator ==(GlobalState a, GlobalEnum b)
+            => b == a;
+
+        public static bool operator !=(GlobalState a, GlobalEnum b)
+            => !(b == a);
+
+        public static bool operator <(GlobalState a, GlobalEnum b)
+            => b is not null && a < b._state;
+
+        public static bool operator >(GlobalState a, GlobalEnum b)
+            => b is not null && a > b._state;
+
+        public static bool operator <=(GlobalState a, GlobalEnum b)
+            => b is not null && a <= b._state;
+
+        public static bool operator >=(GlobalState a, GlobalEnum b)
+            => b is not null && a >= b._state;
+
+        // -------- Overrides --------
+
+        public override bool Equals(object obj)
+        {
+            if (obj is GlobalEnum other)
+                return _state.Equals(other._state);
+
+            if (obj is GlobalState e)
+                return _state.Equals(e);
+
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return _state.GetHashCode();
+        }
+        public override string ToString()
+        {
+            return _state.ToString();
+        }
+    }
+
+
 
     /// <summary>
     /// Core game singleton that manages the active <see cref="World"/>, registered <see cref="IService"/>s,
@@ -54,7 +146,7 @@ namespace RealMethod
         /// <summary>
         /// Reperesent Game State that youser can define state in ProjectSetting
         /// </summary>
-        public static readonly EnumStorage State = new EnumStorage();
+        public static GlobalEnum State = new GlobalEnum();
         /// <summary>
         /// Indicates whether a scene or world load operation is currently in progress.
         /// </summary>

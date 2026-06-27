@@ -4,39 +4,39 @@ using UnityEngine;
 namespace RealMethod
 {
     /// <summary>
-    /// This struct stores a game status as a byte index.
+    /// This struct stores a game status as a int index.
     /// The actual readable names are not stored here.
     /// Instead, the names are defined in a global list
     /// inside ProjectSettingsAsset that just compile in editor.
     /// </summary>
     [Serializable]
-    public struct GlobalEnum
+    public struct GlobalState
     {
         [SerializeField]
         private int Value; // <-- this name must match
         
 
-        public static bool operator ==(GlobalEnum a, GlobalEnum b)
+        public static bool operator ==(GlobalState a, GlobalState b)
         {
             return a.Value == b.Value;
         }
-        public static bool operator !=(GlobalEnum a, GlobalEnum b)
+        public static bool operator !=(GlobalState a, GlobalState b)
         {
             return a.Value != b.Value;
         }
-        public static bool operator <(GlobalEnum a, GlobalEnum b)
+        public static bool operator <(GlobalState a, GlobalState b)
         {
             return a.Value < b.Value;
         }
-        public static bool operator >(GlobalEnum a, GlobalEnum b)
+        public static bool operator >(GlobalState a, GlobalState b)
         {
             return a.Value > b.Value;
         }
-        public static bool operator <=(GlobalEnum a, GlobalEnum b)
+        public static bool operator <=(GlobalState a, GlobalState b)
         {
             return a.Value <= b.Value;
         }
-        public static bool operator >=(GlobalEnum a, GlobalEnum b)
+        public static bool operator >=(GlobalState a, GlobalState b)
         {
             return a.Value >= b.Value;
         }
@@ -45,7 +45,7 @@ namespace RealMethod
 
         public override bool Equals(object obj)
         {
-            return obj is GlobalEnum other && other.Value == Value;
+            return obj is GlobalState other && other.Value == Value;
         }
         public override int GetHashCode()
         {
@@ -76,8 +76,5 @@ namespace RealMethod
             return $"GlobalEnum index [{Value}]";
         }
 #endif
-
-
-
     }
 }

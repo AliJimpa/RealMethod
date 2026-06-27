@@ -3,7 +3,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Manager/MusicManager")]
-    public sealed class MusicManager : CompositManager<GlobalEnum>
+    public sealed class MusicManager : CompositManager<GlobalState>
     {
         [Header("MusicList")]
         [SerializeField]
@@ -38,13 +38,13 @@ namespace RealMethod
         }
 
         // CompositManager Methods
-        protected override bool CompairStates(GlobalEnum State_A, GlobalEnum State_B)
+        protected override bool CompairStates(GlobalState State_A, GlobalState State_B)
         {
             return State_A == State_B;
         }
 
         // Functions
-        private void OnStateChange(GlobalEnum a, GlobalEnum b)
+        private void OnStateChange(GlobalState a, GlobalState b)
         {
             if (IsValidState(b))
             {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace RealMethod.Editor
 {
-    public class GameStatusSection : ProjectSettingSection
+    public class GlobalStateSection : ProjectSettingSection
     {
         private ProjectSettingAsset SettingAsset;
         private SerializedObject projectSettings;
@@ -37,7 +37,7 @@ namespace RealMethod.Editor
 
         protected override string GetTitle()
         {
-            return "GameStatus";
+            return "GlobalState";
         }
         protected override SectionType GetSectionType()
         {

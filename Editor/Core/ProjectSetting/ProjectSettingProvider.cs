@@ -261,7 +261,7 @@ namespace RealMethod.Editor
         new InitializerSettingSection(),
         new SpectatorSection(),
         new FolderStructureSection(),
-        new GameStatusSection(),
+        new GlobalStateSection(),
         new CompileRuleSection(),
         };
 
