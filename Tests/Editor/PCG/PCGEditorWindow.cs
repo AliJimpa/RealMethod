@@ -89,7 +89,7 @@ namespace RealMethod.Editor
 
 
         // Add the menu item
-        [MenuItem("Tools/RealMethod/Kit/PCG")]
+        //[MenuItem("Tools/RealMethod/Kit/PCG")]
         public static void ShowWindow()
         {
             GetWindow<PCGEditorWindow>("PCG Window");
@@ -142,9 +142,9 @@ namespace RealMethod.Editor
                     if (i != 3)
                     {
                         LayerStatus[i].LayerName = ((PCGSourceLayer)i).ToString();
-                        LayerStatus[i].PrefabCount = Resurce.GetValue().GetPrefabCount((PCGSourceLayer)i);
+                        //LayerStatus[i].PrefabCount = Resurce.GetValue().GetPrefabCount((PCGSourceLayer)i);
                         TPrefabCount += LayerStatus[i].PrefabCount;
-                        LayerStatus[i].TotalInstance = Resurce.GetValue().GetTotalInstance((PCGSourceLayer)i);
+                        //LayerStatus[i].TotalInstance = Resurce.GetValue().GetTotalInstance((PCGSourceLayer)i);
                         TTotalInstance += LayerStatus[i].TotalInstance;
                     }
                     else
@@ -157,15 +157,15 @@ namespace RealMethod.Editor
 
                 TTotalInstance = 0;
                 PrefabStatus = new List<PCGPrefabStatus>();
-                for (int i = 0; i < Resurce.GetValue().GetLength(); i++)
-                {
-                    PCGPrefabStatus newindex;
-                    newindex.PrefabName = Resurce.GetValue().GetSource(i).Prefab.name;
-                    newindex.Count = Resurce.GetValue().GetSource(i).Count;
-                    TTotalInstance += newindex.Count;
-                    newindex.Label = Resurce.GetValue().GetSource(i).Label;
-                    PrefabStatus.Add(newindex);
-                }
+                // for (int i = 0; i < Resurce.GetValue().GetLength(); i++)
+                // {
+                //     PCGPrefabStatus newindex;
+                //     newindex.PrefabName = Resurce.GetValue().GetSource(i).Prefab.name;
+                //     newindex.Count = Resurce.GetValue().GetSource(i).Count;
+                //     TTotalInstance += newindex.Count;
+                //     newindex.Label = Resurce.GetValue().GetSource(i).Label;
+                //     PrefabStatus.Add(newindex);
+                // }
                 PCGPrefabStatus TotalIndex;
                 TotalIndex.PrefabName = "Total";
                 TotalIndex.Count = TTotalInstance;
@@ -222,7 +222,7 @@ namespace RealMethod.Editor
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Generate"))
             {
-                GeneratedObject = Genration.GetValue().GetFullProcess(Resurce.GetValue());
+                //GeneratedObject = Genration.GetValue().GetFullProcess(Resurce.GetValue());
                 RuntimeCount.x = GeneratedObject.Length;
             }
             if (GUILayout.Button("Instantiate"))
@@ -246,21 +246,21 @@ namespace RealMethod.Editor
                     CashObject[3] = ForegroundLayer;
                     for (int i = 0; i < GeneratedObject.Length; i++)
                     {
-                        PCGSource Source = Resurce.GetValue().GetSource(GeneratedObject[i].PrefabID);
-                        switch (GeneratedObject[i].GetLayer(Resurce.GetValue()))
-                        {
-                            case PCGSourceLayer.Background:
-                                InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), BackgroundLayer.transform);
-                                break;
-                            case PCGSourceLayer.Middleground:
-                                InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), MiddlgroundLayer.transform);
-                                break;
-                            case PCGSourceLayer.Foreground:
-                                InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), ForegroundLayer.transform);
-                                break;
-                        }
+                        // PCGSource Source = Resurce.GetValue().GetSource(GeneratedObject[i].PrefabID);
+                        // switch (GeneratedObject[i].GetLayer(Resurce.GetValue()))
+                        // {
+                        //     case PCGSourceLayer.Background:
+                        //         InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), BackgroundLayer.transform);
+                        //         break;
+                        //     case PCGSourceLayer.Middleground:
+                        //         InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), MiddlgroundLayer.transform);
+                        //         break;
+                        //     case PCGSourceLayer.Foreground:
+                        //         InitiateObject[i] = Instantiate(Source.Prefab, GeneratedObject[i].Position, Quaternion.Euler(GeneratedObject[i].Rotation), ForegroundLayer.transform);
+                        //         break;
+                        // }
                         InitiateObject[i].transform.localScale = GeneratedObject[i].Scale;
-                        InitiateObject[i].name = GeneratedObject[i].CodeName;
+                        //InitiateObject[i].name = GeneratedObject[i].CodeName;
                         RuntimeCount.y++;
                     }
                 }
