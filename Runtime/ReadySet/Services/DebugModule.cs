@@ -21,21 +21,12 @@ namespace RealMethod
             {
                 get
                 {
-                    switch (MyType)
-                    {
-                        case LogType.Log:
-                            return 5;
-                        case LogType.Warning:
-                            return 10;
-                        case LogType.Error:
-                            return 15;
-                        case LogType.Assert:
-                            return 20;
-                        case LogType.Exception:
-                            return 25;
-                        default:
-                            return 0;
-                    }
+                    int index = (int)MyType;
+
+                    if (index >= 0 && index < MyOwner.LogDuraion.Length)
+                        return MyOwner.LogDuraion[index];
+
+                    return 8; // fallback
                 }
             }
             public Color Color
@@ -114,6 +105,7 @@ namespace RealMethod
         private int Size = 1;
         private List<LogLine> Lines = new List<LogLine>(10);
         private ILogHandler defaultLogHandler;
+        private float[] LogDuraion;
         private Color[] LogColors;
 
 
@@ -170,8 +162,10 @@ namespace RealMethod
         {
             defaultLogHandler = Debug.unityLogger.logHandler;
             Debug.unityLogger.logHandler = this;
+
             ProjectSettingAsset Setting;
             Setting = RM_Framework.LoadProjectSetting();
+            LogDuraion = new float[5] { Setting.Error_Duration, Setting.Assert_Duration, Setting.Warning_Duration, Setting.Log_Duration, Setting.Exception_Duration };
             LogColors = new Color[5] { Setting.Error_Color, Setting.Assert_Color, Setting.Warning_Color, Setting.Log_Color, Setting.Exception_Color };
             RM_Framework.UnloadProjectSetting();
         }

@@ -35,11 +35,37 @@ namespace RealMethod.Editor
                 SettingAsset.ResetLogColor();
             }
             EditorGUILayout.EndHorizontal();
-            SettingAsset.Log_Color = EditorGUILayout.ColorField("Log", SettingAsset.Log_Color);
-            SettingAsset.Warning_Color = EditorGUILayout.ColorField("Warning", SettingAsset.Warning_Color);
-            SettingAsset.Error_Color = EditorGUILayout.ColorField("Error", SettingAsset.Error_Color);
-            SettingAsset.Assert_Color = EditorGUILayout.ColorField("Assert", SettingAsset.Assert_Color);
-            SettingAsset.Exception_Color = EditorGUILayout.ColorField("Exception", SettingAsset.Exception_Color);
+
+            EditorGUILayout.LabelField("Log", EditorStyles.boldLabel); // Section Title
+            EditorGUILayout.BeginHorizontal();
+            SettingAsset.Log_Duration = EditorGUILayout.FloatField("Duration", SettingAsset.Log_Duration);
+            SettingAsset.Log_Color = EditorGUILayout.ColorField("Color", SettingAsset.Log_Color);
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Warning", EditorStyles.boldLabel); // Section Title
+            EditorGUILayout.BeginHorizontal();
+            SettingAsset.Warning_Duration = EditorGUILayout.FloatField("Duration", SettingAsset.Warning_Duration);
+            SettingAsset.Warning_Color = EditorGUILayout.ColorField("Color", SettingAsset.Warning_Color);
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Error", EditorStyles.boldLabel); // Section Title
+            EditorGUILayout.BeginHorizontal();
+            SettingAsset.Error_Duration = EditorGUILayout.FloatField("Duration", SettingAsset.Error_Duration);
+            SettingAsset.Error_Color = EditorGUILayout.ColorField("Color", SettingAsset.Error_Color);
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Assert", EditorStyles.boldLabel); // Section Title
+            EditorGUILayout.BeginHorizontal();
+            SettingAsset.Assert_Duration = EditorGUILayout.FloatField("Duration", SettingAsset.Assert_Duration);
+            SettingAsset.Assert_Color = EditorGUILayout.ColorField("Color", SettingAsset.Assert_Color);
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Exception", EditorStyles.boldLabel); // Section Title
+            EditorGUILayout.BeginHorizontal();
+            SettingAsset.Exception_Duration = EditorGUILayout.FloatField("Duration", SettingAsset.Exception_Duration);
+            SettingAsset.Exception_Color = EditorGUILayout.ColorField("Color", SettingAsset.Exception_Color);
+            EditorGUILayout.EndHorizontal();
+
 
             if (EditorGUI.EndChangeCheck())
             {

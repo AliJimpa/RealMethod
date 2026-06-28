@@ -90,10 +90,15 @@ namespace RealMethod
         [SerializeField]
         private Prefab SpectatorPrefab; // <-- this name must match
         [Header("Debug")]
+        public float Log_Duration = 5;
         public Color Log_Color = Color.cyan;
+        public float Warning_Duration = 10;
         public Color Warning_Color = Color.yellow;
+        public float Error_Duration = 15;
         public Color Error_Color = Color.red;
+        public float Assert_Duration = 15;
         public Color Assert_Color = new Color(1f, 0.4941176f, 0.4941176f);
+        public float Exception_Duration = 15;
         public Color Exception_Color = Color.blue;
 #endif
 #if UNITY_EDITOR
@@ -186,10 +191,15 @@ namespace RealMethod
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         public void ResetLogColor()
         {
+            Log_Duration = 5;
             Log_Color = Color.cyan;
+            Warning_Duration = 10;
             Warning_Color = Color.yellow;
+            Error_Duration = 15;
             Error_Color = Color.red;
-            Assert_Color = new Color(1f, 0.4941176f, 0.4941176f);;
+            Assert_Duration = 15;
+            Assert_Color = new Color(1f, 0.4941176f, 0.4941176f);
+            Exception_Duration = 15;
             Exception_Color = Color.blue;
         }
 #endif
