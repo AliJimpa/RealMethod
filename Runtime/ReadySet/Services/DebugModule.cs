@@ -13,7 +13,6 @@ namespace RealMethod
             private Vector2 MyOffcet;
             private float ActiveTime;
 
-
             public Vector2 Pivot => MyOwner.Pivot;
             public float Space => ((IDebugService)MyOwner).PrintSpace;
             private int Size => MyOwner.Size;
@@ -43,21 +42,12 @@ namespace RealMethod
             {
                 get
                 {
-                    switch (MyType)
-                    {
-                        case LogType.Log:
-                            return Color.cyan;
-                        case LogType.Warning:
-                            return Color.yellow;
-                        case LogType.Error:
-                            return Color.red;
-                        case LogType.Assert:
-                            return Color.white;
-                        case LogType.Exception:
-                            return Color.blue;
-                        default:
-                            return Color.black;
-                    }
+                    int index = (int)MyType;
+
+                    if (index >= 0 && index < MyOwner.LogColors.Length)
+                        return MyOwner.LogColors[index];
+
+                    return Color.white; // fallback
                 }
             }
 
@@ -124,6 +114,7 @@ namespace RealMethod
         private int Size = 1;
         private List<LogLine> Lines = new List<LogLine>(10);
         private ILogHandler defaultLogHandler;
+        private Color[] LogColors;
 
 
         // Implement ILogHandler Interfacwe
@@ -179,6 +170,10 @@ namespace RealMethod
         {
             defaultLogHandler = Debug.unityLogger.logHandler;
             Debug.unityLogger.logHandler = this;
+            ProjectSettingAsset Setting;
+            Setting = RM_Framework.LoadProjectSetting();
+            LogColors = new Color[5] { Setting.Error_Color, Setting.Assert_Color, Setting.Warning_Color, Setting.Log_Color, Setting.Exception_Color };
+            RM_Framework.UnloadProjectSetting();
         }
         protected override void OnWorldChanged()
         {
@@ -189,8 +184,6 @@ namespace RealMethod
             Debug.unityLogger.logHandler = defaultLogHandler;
             Lines.Clear();
         }
-
-
 
 
         // Methods

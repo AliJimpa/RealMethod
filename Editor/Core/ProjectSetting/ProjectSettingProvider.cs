@@ -256,12 +256,13 @@ namespace RealMethod.Editor
     public static class ProjectSettingProvider
     {
         private static bool candraw = true;// Flag to determine if the UI can be drawn
-        private static ProjectSettingSection[] sections = new ProjectSettingSection[5] {
+        private static ProjectSettingSection[] sections = new ProjectSettingSection[6] {
         // Array of sections to be rendered in the settings UI
         new InitializerSettingSection(),
         new SpectatorSection(),
         new FolderStructureSection(),
         new GlobalStateSection(),
+        new DebugSection(),
         new CompileRuleSection(),
         };
 

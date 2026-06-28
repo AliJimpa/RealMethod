@@ -89,6 +89,12 @@ namespace RealMethod
         [Header("Spectator")]
         [SerializeField]
         private Prefab SpectatorPrefab; // <-- this name must match
+        [Header("Debug")]
+        public Color Log_Color = Color.cyan;
+        public Color Warning_Color = Color.yellow;
+        public Color Error_Color = Color.red;
+        public Color Assert_Color = new Color(1f, 0.4941176f, 0.4941176f);
+        public Color Exception_Color = Color.blue;
 #endif
 #if UNITY_EDITOR
         [Header("CompileGuard")]
@@ -174,6 +180,17 @@ namespace RealMethod
                 result.Add(Type.GetType(item));
             }
             return result.ToArray();
+        }
+#endif
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public void ResetLogColor()
+        {
+            Log_Color = Color.cyan;
+            Warning_Color = Color.yellow;
+            Error_Color = Color.red;
+            Assert_Color = new Color(1f, 0.4941176f, 0.4941176f);;
+            Exception_Color = Color.blue;
         }
 #endif
 
