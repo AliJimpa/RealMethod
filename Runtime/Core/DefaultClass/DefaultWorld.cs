@@ -7,11 +7,11 @@ namespace RealMethod
     {
         protected override void WorldBegin()
         {
-            Debug.Log("DefaultWorld Begin");
+            
         }
         protected override void WorldEnd()
         {
-            Debug.Log("DefaultWorld End");
+            
         }
     }
 }

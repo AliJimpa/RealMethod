@@ -8,11 +8,10 @@ namespace RealMethod
         {
             if (HasCloneName())
             {
-                Debug.LogError($"UniqueAsset Can't Clone at Runtime, NewFile Removed!");
+                Debug.LogError($"GameConfig Can't Clone at Runtime, NewFile Removed!");
                 Destroy(this);
                 return;
             }
-            Debug.Log("DefaultConfig Loaded");
         }
     }
 }
