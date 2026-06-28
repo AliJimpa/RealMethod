@@ -182,4 +182,56 @@ namespace RealMethod.Editor
 
     }
 
+    public enum PCGSourceLayer
+    {
+        Background,
+        MiddelGround,
+        Forground,
+    }
+    public enum PCGSourceLoadOrder
+    {
+        Low,
+        Medium,
+        High,
+    }
+    public class PCGSource
+    {
+        public GameObject Prefab;
+        public PCGSourceLayer Layer;
+        public PCGSourceLoadOrder LoadPriority;
+        public string Label;
+        public int Count;
+    }
+    public interface IPCGCashAsset
+    {
+        void SetData(PCGData[] array);
+    }
+    public interface IPCGResource
+    {
+        void SetData(PCGSource[] array);
+    }
+    public class PCGResourceConfig : ConfigAsset
+    {
+
+    }
+    public class PCGCashAsset : DataAsset
+    {
+
+    }
+    public class PCGData
+    {
+        public Vector3 Position;
+        public Vector3 Rotation;
+        public Vector3 Scale;
+
+        public PCGData()
+        {
+            
+        }
+
+        public PCGData(int a1, int a2, int a3)
+        {
+            Position = new Vector3(a1, a2, a3);
+        }
+    }
 }
