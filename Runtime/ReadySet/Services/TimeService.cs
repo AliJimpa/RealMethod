@@ -4,7 +4,14 @@ namespace RealMethod
 {
     public interface ITimer : IService
     {
-
+        float GetServiceTime();
+        float GetWorldTime();
+        void StartRecord(string tag);
+        void ResetRecord(string tag);
+        bool RemoveRecord(string Tag);
+        float GetTime(string tag);
+        bool IsValidTime(string tag);
+        bool TryGetTime(string tag, out float time);
     }
 
     public sealed class TimeService : GameService, ITimer
