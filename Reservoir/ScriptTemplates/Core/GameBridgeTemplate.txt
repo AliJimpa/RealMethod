@@ -2,4 +2,7 @@ using RealMethod;
 
 public class #SCRIPTNAME# : GameBridge
 {
+    public #SCRIPTNAME#(Action<World> method) : base(method)
+    {
+    }
 }

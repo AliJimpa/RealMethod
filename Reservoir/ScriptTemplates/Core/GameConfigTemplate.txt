@@ -4,9 +4,14 @@ using RealMethod;
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
 public class #SCRIPTNAME# : GameConfig
 {
-    // GameConfig Methods
-    public override void Initialized(Game Author)
+    private void OnEnable()
     {
-        // Called after load in Game by GameClass
+        if (HasCloneName())
+        {
+            Debug.LogError($"GameConfig Can't Clone at Runtime, NewFile Removed!");
+            Destroy(this);
+            return;
+        }
+        Debug.Log("DefaultConfig Loaded");
     }
 }
