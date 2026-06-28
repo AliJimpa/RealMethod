@@ -9,7 +9,7 @@ namespace RealMethod
     public abstract class PlayerStarter : MonoBehaviour
     {
         [Header("Details")]
-        [SerializeField]
+        [SerializeField, Tooltip("Name of this spawn point used for identification in the world & Editor.")]
         private string posName = "None";
         public string PosName => posName;
 
@@ -82,7 +82,7 @@ namespace RealMethod
     public abstract class World : Scope
     {
         [Header("Setting")]
-        [SerializeField]
+        [SerializeField,Tooltip("The default player prefab spawned when no player exists in the scene.")]
         private Prefab DefaultPlayer;
         /// <summary>
         /// This action called every time your game ready to play after load Scene & setup RealMethod
