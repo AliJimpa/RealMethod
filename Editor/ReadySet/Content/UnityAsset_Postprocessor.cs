@@ -5,13 +5,13 @@ namespace RealMethod.Editor
 {
     public class UnityAsset_Postprocessor : AssetPostprocessor
     {
-        private static AssetProcess[] AssetList = new AssetProcess[5]
+        private static AssetProcess[] AssetList = new AssetProcess[2]
         {
             new WorldAsset_UnityAsset(),
             new Table_UnityAsset(),
-            new PCGResource_UnityAsset(),
-            new PCGGeneration_UnityAsset(),
-            new PCGCash_UnityAsset()
+            // new PCGResource_UnityAsset(),
+            // new PCGGeneration_UnityAsset(),
+            // new PCGCash_UnityAsset()
         };
 
         [InitializeOnLoadMethod]
