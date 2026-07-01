@@ -31,7 +31,7 @@ namespace RealMethod
             public AssetFormat AssetType;
             public string AssetPath;
             public string FolderName => System.IO.Path.GetFileName(AssetPath);
-            public string GetFolderPath(ProjectSettingAsset settingAsset)
+            public string GetFolderPath()
             {
                 string RootPath = "Assets/" + Application.productName;
                 return $"{RootPath}/{AssetPath}";
@@ -169,7 +169,7 @@ namespace RealMethod
         }
         public string GetFolderPathByType(AssetFormat identity)
         {
-            return GetFolderAddressByType(identity).GetFolderPath(this);
+            return GetFolderAddressByType(identity).GetFolderPath();
         }
         public FolderAddress GetFolderAddressByIndex(int index) => folderStructure[index];
         public void SetFolderAddressPath(int index, string value) => folderStructure[index].AssetPath = value;

@@ -36,7 +36,7 @@ namespace RealMethod.Editor
                     }
                     else
                     {
-                        string folderpath = address.GetFolderPath(MyStorage);
+                        string folderpath = address.GetFolderPath();
                         string FolderAddress = string.Join("/", folderpath.Split('/')[..^1]); // Remove the last segment of the path
                         string folderName = System.IO.Path.GetFileName(folderpath); // Get the last segment of the path
                         CreateFolder(FolderAddress, folderName); // Create the folder
@@ -71,7 +71,7 @@ namespace RealMethod.Editor
                     }
                     else
                     {
-                        string folderpath = MyStorage.FolderStructure[i].GetFolderPath(MyStorage);
+                        string folderpath = MyStorage.FolderStructure[i].GetFolderPath();
                         string FolderAddress = string.Join("/", folderpath.Split('/')[..^1]); // Remove the last segment of the path
                         string folderName = System.IO.Path.GetFileName(folderpath); // Get the last segment of the path
                         CreateFolder(FolderAddress, folderName); // Create the folder
