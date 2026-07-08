@@ -23,7 +23,7 @@ namespace RealMethod
             EditorGUILayout.LabelField($"Debug ({MyController.Count})", EditorStyles.boldLabel);
             for (int i = 0; i < MyController.Count; i++)
             {
-                EditorGUILayout.LabelField($"{MyController.GetAbility(i).NameID}: {IsReady(MyController.GetAbility(i))}");
+                EditorGUILayout.LabelField($"{MyController.GetAbility(i).Self}: {IsReady(MyController.GetAbility(i))}");
             }
 
         }

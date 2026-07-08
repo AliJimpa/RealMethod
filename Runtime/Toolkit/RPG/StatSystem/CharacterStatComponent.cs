@@ -14,7 +14,7 @@ namespace RealMethod
         private BuffConfig[] DefaultBuff;
 
 
-        protected DataManager SaveSystem;
+        protected SaveManager SaveSystem;
 
 
         // Unity Methods
@@ -31,7 +31,7 @@ namespace RealMethod
         }
         private void Start()
         {
-            SaveSystem = Game.FindManager<DataManager>();
+            SaveSystem = Game.GetManager<SaveManager>();
         }
         private void OnEnable()
         {
@@ -93,7 +93,7 @@ namespace RealMethod
             if (SaveSystem)
             {
                 Profile.StoreStats();
-                SaveSystem.SaveFile(Profile.file);
+                SaveSystem.Save(Profile.file);
             }
             else
             {

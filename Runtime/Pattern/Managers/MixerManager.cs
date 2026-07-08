@@ -8,45 +8,33 @@ namespace RealMethod
     {
         [Header("Mixer")]
         [SerializeField]
-        private AudioMixer Mixer;
-        public AudioMixer mixer => Mixer;
+        private AudioMixer mixer;
+        public AudioMixer Mixer => mixer;
+#if UNITY_EDITOR
         [SerializeField]
-        private StringFloatDictionary Parameter;
+        private Map<string, float> Parameter;
+#endif
 
-        // Operators
-        public float this[string name]
-        {
-            get => Parameter[name];
-            set => Parameter[name] = value;
-        }
 
         // IGameManager Interface Implementation
-        MonoBehaviour IGameManager.GetManagerClass()
+        public virtual void InitiateManager(Scope owner)
         {
-            return this;
-        }
-        void IGameManager.InitiateManager(bool AlwaysLoaded)
-        {
-            InitiateManager(AlwaysLoaded);
-        }
-        void IGameManager.ResolveService(Service service, bool active)
-        {
-            InitiateService(service);
+
         }
 
         // Unity Methods
 #if UNITY_EDITOR
-        private void OnValidate()
+        protected virtual void OnValidate()
         {
-            if (Mixer != null)
+            if (mixer != null)
             {
                 Parameter.Clear();
-                System.Array parameters = (System.Array)Mixer.GetType().GetProperty("exposedParameters").GetValue(Mixer, null);
+                System.Array parameters = (System.Array)mixer.GetType().GetProperty("exposedParameters").GetValue(mixer, null);
                 for (int i = 0; i < parameters.Length; i++)
                 {
                     var o = parameters.GetValue(i);
                     string PrametrName = (string)o.GetType().GetField("name").GetValue(o);
-                    Mixer.GetFloat(PrametrName, out float result);
+                    mixer.GetFloat(PrametrName, out float result);
                     Parameter.Add(PrametrName, result);
                 }
             }
@@ -54,25 +42,30 @@ namespace RealMethod
 #endif
 
         // Public Functions
-        public void Sync()
+        public void SetParam(string param, float value)
         {
-            if (Mixer != null)
+            mixer.SetFloat(param, value);
+        }
+        public float GetParam(string param)
+        {
+            if (mixer.GetFloat(param, out float result))
             {
-                foreach (var param in Parameter)
-                {
-                    Mixer.SetFloat(param.Key, param.Value);
-                }
+                return result;
             }
             else
             {
-                Debug.LogError("AudioMixers Not Valid!");
+                Debug.LogError($"Can't find any value with param:({param})");
+                return 0;
             }
-
         }
-
-        // Abstract Method
-        protected abstract void InitiateManager(bool AlwaysLoaded);
-        protected abstract void InitiateService(Service service);
+        public bool TryGetParam(string param, out float result)
+        {
+            return mixer.GetFloat(param, out result);
+        }
+        public void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1f)
+        {
+            snapshot?.TransitionTo(transitionTime);
+        }
     }
 
 

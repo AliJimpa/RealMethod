@@ -6,8 +6,8 @@ using UnityEngine.UI;
 namespace RealMethod
 {
     [Serializable]
-    public class SelectableElement : SerializableDictionary<string, Selectable> { }
-    public interface ISettingStorage : IStorage
+    public class SelectableElement : Map<string, Selectable> { }
+    public interface ISettingStorage : IFile
     {
         bool IsSettingDirty { get; }
         void OnFileSynced();
@@ -25,10 +25,10 @@ namespace RealMethod
         private SelectableElement UIElements;
         [Header("Save")]
         [SerializeField]
-        private StorageFile<ISettingStorage, SettingFile> Storage;
+        private Storage<ISettingStorage> Storage;
 
-        public bool isFileDirty => Storage.provider.IsSettingDirty;
-        public SaveFile file => Storage.file;
+        public bool isFileDirty => Storage.File.IsSettingDirty;
+        public ISettingStorage file => Storage.File;
         public bool isInSync { get; private set; } = false;
 
         // Unity Methods
@@ -60,11 +60,11 @@ namespace RealMethod
         private void OnEnable()
         {
             // Sacan all variable in save file
-            Scaning.Scan(Storage.file);
+            Scaning.Scan(Storage.File);
         }
         private void Start()
         {
-            Storage.Load(this);
+            Storage.Refresh();
             SyncUI();
         }
         private void OnDisable()
@@ -84,28 +84,28 @@ namespace RealMethod
             }
             foreach (FieldInfo field in Scaning.GetFields())
             {
-                object value = field.GetValue(Storage.file);
+                object value = field.GetValue(Storage.File);
                 switch (value)
                 {
                     case float f:
                         if (element is Slider slide)
                         {
                             if (field.Name == label)
-                                field.SetValue(Storage.file, slide.value);
+                                field.SetValue(Storage.File, slide.value);
                         }
                         break;
                     case int i:
                         if (element is Dropdown dropdown)
                         {
                             if (field.Name == label)
-                                field.SetValue(Storage.file, dropdown.value);
+                                field.SetValue(Storage.File, dropdown.value);
                         }
                         break;
                     case bool b:
                         if (element is Toggle toggle)
                         {
                             if (field.Name == label)
-                                field.SetValue(Storage.file, toggle.isOn);
+                                field.SetValue(Storage.File, toggle.isOn);
                         }
                         break;
                     default:
@@ -113,7 +113,7 @@ namespace RealMethod
                         break;
                 }
             }
-            Storage.provider.OnFileSynced();
+            Storage.File.OnFileSynced();
             isInSync = false;
         }
         public void SyncFile()
@@ -126,25 +126,25 @@ namespace RealMethod
                 {
                     if (element.Key == fileData[i].Name)
                     {
-                        object value = fileData[i].GetValue(Storage.file);
+                        object value = fileData[i].GetValue(Storage.File);
                         switch (value)
                         {
                             case float fl:
                                 if (element.Value is Slider slide)
                                 {
-                                    fileData[i].SetValue(Storage.file, slide.value);
+                                    fileData[i].SetValue(Storage.File, slide.value);
                                 }
                                 break;
                             case int iin:
                                 if (element.Value is Dropdown dropdown)
                                 {
-                                    fileData[i].SetValue(Storage.file, dropdown.value);
+                                    fileData[i].SetValue(Storage.File, dropdown.value);
                                 }
                                 break;
                             case bool bo:
                                 if (element.Value is Toggle toggle)
                                 {
-                                    fileData[i].SetValue(Storage.file, toggle.isOn);
+                                    fileData[i].SetValue(Storage.File, toggle.isOn);
                                 }
                                 break;
                             default:
@@ -154,7 +154,7 @@ namespace RealMethod
                     }
                 }
             }
-            Storage.provider.OnFileSynced();
+            Storage.File.OnFileSynced();
             isInSync = false;
         }
         [ContextMenu("Sync_UI")]
@@ -168,7 +168,7 @@ namespace RealMethod
                 {
                     if (element.Key == fileData[i].Name)
                     {
-                        object value = fileData[i].GetValue(Storage.file);
+                        object value = fileData[i].GetValue(Storage.File);
                         switch (value)
                         {
                             case float fl:
@@ -243,29 +243,29 @@ namespace RealMethod
         }
     }
 
-    public abstract class SettingFile : SaveFile, ISettingStorage
+    public abstract class SettingFile : SaveFileAsset, ISettingStorage
     {
         protected bool IsDirty { get; private set; }
 
         // Implement ISettingStorage Interface
         public bool IsSettingDirty => IsDirty;
-        void IStorage.StorageCreated(UnityEngine.Object author)
-        {
-            SetupSettingData();
-        }
-        void IStorage.StorageLoaded(UnityEngine.Object author)
-        {
-            ApplySettingData();
-        }
+        // void IStorage.StorageCreated(UnityEngine.Object author)
+        // {
+        //     SetupSettingData();
+        // }
+        // void IStorage.StorageLoaded(UnityEngine.Object author)
+        // {
+        //     ApplySettingData();
+        // }
         void ISettingStorage.OnFileSynced()
         {
             IsDirty = true;
             ApplySettingData();
         }
-        void IStorage.StorageClear()
-        {
-            OnResetSetting();
-        }
+        // void IStorage.StorageClear()
+        // {
+        //     OnResetSetting();
+        // }
 
         // Protected Method
         protected sealed override void OnSaved()

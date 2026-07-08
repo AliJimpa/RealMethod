@@ -2,27 +2,45 @@ using UnityEngine;
 
 namespace RealMethod
 {
-    public sealed class TimeService : Service
+    public interface ITimer : IService
+    {
+        float GetServiceTime();
+        float GetWorldTime();
+        void StartRecord(string tag);
+        void ResetRecord(string tag);
+        bool RemoveRecord(string Tag);
+        float GetTime(string tag);
+        bool IsValidTime(string tag);
+        bool TryGetTime(string tag, out float time);
+    }
+
+    public sealed class TimeService : GameService, ITimer
     {
         private float serviceTime;
         private float worldTime;
-        private Hictionary<float> RecordTime;
+        private NameTable<float> RecordTime;
 
-        // Service Methods
-        protected override void OnStart(object Author)
+        // Module Methods
+        protected override void OnBegin()
         {
             serviceTime = Time.time;
             worldTime = Time.time;
-            RecordTime = new Hictionary<float>(10);
+            RecordTime = new NameTable<float>(10);
         }
-        protected override void OnNewWorld()
+        protected override void OnWorldChanged()
         {
             worldTime = Time.time;
         }
-        protected override void OnEnd(object Author)
+        protected override void OnEnd()
         {
             RecordTime.Clear();
         }
+#if UNITY_EDITOR
+        protected override string GetInspectorInfo()
+        {
+            return $"Record ({RecordTime.Count})";
+        }
+#endif
 
         // Public Functions
         public bool CheckRecord(string tag, float targettime)
@@ -68,6 +86,8 @@ namespace RealMethod
         {
             return RecordTime.ContainsKey(tag);
         }
+
+
     }
 
 }

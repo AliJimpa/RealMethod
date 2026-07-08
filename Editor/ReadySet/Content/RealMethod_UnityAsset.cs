@@ -2,7 +2,7 @@ using UnityEditor;
 
 namespace RealMethod.Editor
 {
-    public class Table_UnityAsset : AssetHandeler<TableAsset, DataAsset>
+    public class Table_UnityAsset : AssetProcess<TableAsset, DataAsset>
     {
         protected override void Initialized()
         {
@@ -26,7 +26,7 @@ namespace RealMethod.Editor
             TableViewerWindow.OpenWindow(asset);
         }
     }
-    public class WorldScene_UnityAsset : AssetHandeler<WorldSceneConfig, DataAsset>
+    public class WorldAsset_UnityAsset : AssetProcess<WorldAsset, DataAsset>
     {
         protected override void Initialized()
         {
@@ -44,12 +44,12 @@ namespace RealMethod.Editor
         {
             return "Icons/Core/WorldSceneAsset";
         }
-        protected override void DoubleClick(WorldSceneConfig asset)
+        protected override void DoubleClick(WorldAsset asset)
         {
             asset.OnAssetClick();
         }
     }
-    public class Game_UnityAsset : AssetHandeler<MonoScript, Game>
+    public class Game_UnityAsset : AssetProcess<MonoScript, Game>
     {
         protected override void Initialized()
         {
@@ -69,7 +69,7 @@ namespace RealMethod.Editor
         }
         protected override void DoubleClick(MonoScript asset)
         {
-            
+
         }
     }
 

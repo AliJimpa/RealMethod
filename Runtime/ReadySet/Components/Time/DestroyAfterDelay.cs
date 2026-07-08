@@ -3,12 +3,12 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Time/DestroyAfterDelay")]
-    public sealed class DestroyAfterDelay : MonoBehaviour, IInitializableWithArgument<float>
+    public sealed class DestroyAfterDelay : MonoBehaviour, ISpawnWithArgument<float>
     {
         public float Delay = 5;
 
         // Implement IInitializableWithArgument Interface
-        public void Initialize(float argument)
+        public void OnSpawn(float argument)
         {
             Delay = argument;
         }

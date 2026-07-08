@@ -45,9 +45,9 @@ namespace RealMethod
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
-            if (AlwaysLoaded) return;
+            if (owner.IsGameScope()) return;
 
             // MyWorld = GetComponent<CCWorld>();
             // if (MyWorld == null) Debug.LogError("AIDirector Couldn't Find World.");
@@ -55,10 +55,6 @@ namespace RealMethod
             // MyWorld.OndifficultyChange += UpdateDifficultyData;
             // MyWorld.OnGameBegin += OnGameStarted;
 
-        }
-        public void ResolveService(Service service, bool active)
-        {
-            throw new System.NotImplementedException();
         }
 
         // #endregion

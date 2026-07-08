@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "StatSaveFile", menuName = "RealMethod/RPG/StatSaveFile", order = 1)]
-    public class StatSaveFile : SaveFile, IStatStorage
+    public class StatSaveFile : SaveFileAsset, IStatStorage
     {
         [Header("Stat")]
         [SerializeField, ReadOnly, TextArea]
@@ -18,72 +18,58 @@ namespace RealMethod
         public List<float> Mins = new List<float>(5);
         public List<float> Maxs = new List<float>(5);
 
-
-        protected override void OnStable(DataManager manager)
-        {
-        }
+        // SaveFile Methods
         protected override void OnSaved()
         {
             if (UsePlayerPrefs)
             {
-                RM_PlayerPrefs.SetArray("StatName", Names.ToArray());
-                RM_PlayerPrefs.SetArray("StatBaseValue", BaseValue.ToArray());
-                RM_PlayerPrefs.SetArray("StatMin", Mins.ToArray());
-                RM_PlayerPrefs.SetArray("StatMax", Maxs.ToArray());
+                RM_Save.SetArray("StatName", Names.ToArray());
+                RM_Save.SetArray("StatBaseValue", BaseValue.ToArray());
+                RM_Save.SetArray("StatMin", Mins.ToArray());
+                RM_Save.SetArray("StatMax", Maxs.ToArray());
             }
         }
         protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
             {
-                Names = RM_PlayerPrefs.GetArray<string>("StatName").ToList();
-                BaseValue = RM_PlayerPrefs.GetArray<float>("StatBaseValue").ToList();
-                Mins = RM_PlayerPrefs.GetArray<float>("StatMin").ToList();
-                Maxs = RM_PlayerPrefs.GetArray<float>("StatMax").ToList();
+                Names = RM_Save.GetArray<string>("StatName").ToList();
+                BaseValue = RM_Save.GetArray<float>("StatBaseValue").ToList();
+                Mins = RM_Save.GetArray<float>("StatMin").ToList();
+                Maxs = RM_Save.GetArray<float>("StatMax").ToList();
             }
         }
-        protected override void OnDeleted()
-        {
-            if (UsePlayerPrefs)
-            {
-                Names = null;
-                BaseValue = null;
-                Mins = null;
-                Maxs = null;
-            }
-        }
-
 
         // Implement IStorage Interface
-        void IStorage.StorageCreated(Object author)
-        {
-        }
-        void IStorage.StorageLoaded(Object author)
-        {
-        }
-        void IStorage.StorageClear()
-        {
-        }
+        // void IStorage.StorageCreated(Object author)
+        // {
+        // }
+        // void IStorage.StorageLoaded(Object author)
+        // {
+        // }
+        // void IStorage.StorageClear()
+        // {
+        // }
         // Implement IStatStorage Interface
         void IStatStorage.StoreStats(IStat[] stats)
         {
-            foreach (var stat in stats)
-            {
-                if (Names.Contains(stat.NameID))
-                {
-                    int targetindex = Names.IndexOf(stat.NameID);
-                    BaseValue[targetindex] = stat.BaseValue;
-                    Mins[targetindex] = stat.MinValue;
-                    Maxs[targetindex] = stat.MaxValue;
-                }
-                else
-                {
-                    Names.Add(stat.NameID);
-                    BaseValue.Add(stat.BaseValue);
-                    Mins.Add(stat.MinValue);
-                    Maxs.Add(stat.MaxValue);
-                }
-            }
+            // foreach (var stat in stats)
+            // {
+            //     if (Names.Contains(stat.NameID))
+            //     {
+            //         int targetindex = Names.IndexOf(stat.NameID);
+            //         BaseValue[targetindex] = stat.BaseValue;
+            //         Mins[targetindex] = stat.MinValue;
+            //         Maxs[targetindex] = stat.MaxValue;
+            //     }
+            //     else
+            //     {
+            //         Names.Add(stat.NameID);
+            //         BaseValue.Add(stat.BaseValue);
+            //         Mins.Add(stat.MinValue);
+            //         Maxs.Add(stat.MaxValue);
+            //     }
+            // }
         }
         bool IStatStorage.TryLoadStats(StatData data)
         {
@@ -97,14 +83,16 @@ namespace RealMethod
             return false;
         }
 
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
+
+        // Unity Event
+        protected override void Reset()
         {
+            base.Reset();
+            
             Names.Clear();
             BaseValue.Clear();
             Mins.Clear();
             Maxs.Clear();
         }
-#endif
     }
 }

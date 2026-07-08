@@ -5,7 +5,7 @@ using System;
 
 namespace RealMethod
 {
-    public sealed class NetworkService : Service
+    public sealed class NetworkService : GameModule
     {
         //Const Variable
         private const string webImage = "http://upload.wikimedia.org/wikipedia/commons/c/c5/Moraine_Lake_17092005.jpg";
@@ -15,16 +15,15 @@ namespace RealMethod
         private const string xmlApi = "http://api.openweathermap.org/data/2.5/weather?q=Chicago,us&mode=xml&APPID=<your api key>";
 
 
-
-        protected override void OnStart(object Author)
+        protected override void OnBegin()
         {
             throw new NotImplementedException();
         }
-        protected override void OnNewWorld()
+        protected override void OnWorldChanged()
         {
             throw new NotImplementedException();
         }
-         protected override void OnEnd(object Author)
+        protected override void OnEnd()
         {
             throw new NotImplementedException();
         }
@@ -81,7 +80,6 @@ namespace RealMethod
             callback(DownloadHandlerTexture.GetContent(request));
         }
 
-       
 
     }
 

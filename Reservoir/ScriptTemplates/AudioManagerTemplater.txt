@@ -1,7 +1,0 @@
-using RealMethod;
-
-public class #SCRIPTNAME# : AudioManager
-{
-
-
-}

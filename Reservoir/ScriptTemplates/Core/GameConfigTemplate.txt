@@ -1,0 +1,17 @@
+using UnityEngine;
+using RealMethod;
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "#PROJECTNAME#/#SCRIPTNAME#", order = 1)]
+public class #SCRIPTNAME# : GameConfig
+{
+    private void OnEnable()
+    {
+        if (HasCloneName())
+        {
+            Debug.LogError($"GameConfig Can't Clone at Runtime, NewFile Removed!");
+            Destroy(this);
+            return;
+        }
+        Debug.Log("DefaultConfig Loaded");
+    }
+}

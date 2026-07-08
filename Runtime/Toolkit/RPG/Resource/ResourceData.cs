@@ -44,7 +44,7 @@ namespace RealMethod
         float IResource.Value => value;
         float IResource.MaxValue => GetMaxValue(defaultMaxValue);
         // Implement IIdentifier Interface
-        public string NameID => resourceName;
+        public Name16 NameID => resourceName;
         void IResource.Refill()
         {
             value = provider.MaxValue;
@@ -83,7 +83,7 @@ namespace RealMethod
     public abstract class ResourceData<T> : ResourceData, IResourceData where T : System.Enum
     {
         [System.Serializable]
-        private class StatRatio : SerializableDictionary<T, float> { }
+        private class StatRatio : Map<T, float> { }
         // Variable
         [SerializeField, ReadOnly]
         private float additiveMaxValue = 0;

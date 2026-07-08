@@ -1,0 +1,16 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : TickManager<YOURUNIT>
+{
+
+    // TickManager Methods
+    protected override void InitiateManager(Scope owner)
+    {
+
+    }
+    protected override bool CheckUnit(T unit)
+    {
+        return true;
+    }
+
+}

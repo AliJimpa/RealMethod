@@ -1,16 +1,19 @@
-
-using UnityEngine;
-
 namespace RealMethod
 {
-    public abstract class GameConfig : ConfigAsset
+    /// <summary>
+    /// Base configuration asset for game-wide settings and initialization logic.
+    /// </summary>
+    public abstract class GameConfig : ConfigAsset, IInspectorInfo
     {
-        [Header("Game")]
-        [SerializeField]
-        private float fadeTime = 0;
-        public float FadeTime => fadeTime;
-
-        public abstract void Initialized(Game Author);
+#if UNITY_EDITOR
+        string IInspectorInfo.GetInfo()
+        {
+            return GetInspectorInfo();
+        }
+        protected virtual string GetInspectorInfo()
+        {
+            return null;
+        }
+#endif
     }
-
 }

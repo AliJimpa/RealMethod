@@ -2,22 +2,33 @@ using System;
 
 namespace RealMethod
 {
-    public abstract class RuleService : Service
+    public interface IRuleService : IService
     {
-        public Action<string> OnAddedRule;
-        public Action<string> OnFinishRule;
-        private Hictionary<Observer<bool>> Rules;
+        bool InEffect(string rule);
+        bool IsValid(string rule);
+        void BindRule(string Name, Action<Observer> callback);
+        event Action<string> OnAddedRule;
+        event Action<string> OnFinishRule;
+    }
+
+
+    public abstract class RuleService : GameModule, IRuleService
+    {
+        public event Action<string> OnAddedRule;
+        public event Action<string> OnFinishRule;
+        private NameTable<Observer<bool>> Rules;
 
         public RuleService()
         {
-            Rules = new Hictionary<Observer<bool>>(5);
+            Rules = new NameTable<Observer<bool>>(5);
         }
 
-        protected override void OnNewWorld()
+
+        protected override void OnWorldChanged()
         {
-            foreach (var item in Rules.GetValues())
+            foreach (var item in Rules)
             {
-                item.Check();
+                item.Value.Check();
             }
         }
 
@@ -37,9 +48,9 @@ namespace RealMethod
         }
         public void UpdateRules()
         {
-            foreach (Observer<bool> item in Rules.GetValues())
+            foreach (var item in Rules)
             {
-                item.Check();
+                item.Value.Check();
             }
         }
         public bool InEffect(string rule)

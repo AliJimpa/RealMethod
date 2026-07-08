@@ -11,15 +11,10 @@ namespace RealMethod
         private bool UseExecuter = true;
         [SerializeField, ConditionalHide("UseExecuter", true, true)]
         private GameObject Target;
-        [Header("Method")]
-        [SerializeField]
-        private bool WithInterface = true;
-        [SerializeField]
-        private bool WithSendMessage = false;
 
 
         // Base ExecutCommand Methods
-        protected override bool OnInitiate(Object author, Object owner)
+        protected override bool OnInitiate(Object owner)
         {
             return true;
         }
@@ -27,12 +22,12 @@ namespace RealMethod
         {
             return enabled;
         }
-        protected override void Execute(object Owner)
+        protected override void Execute(object Executer)
         {
 
             if (UseExecuter)
             {
-                if (Owner is MonoBehaviour Mono)
+                if (Executer is MonoBehaviour Mono)
                 {
                     ApplyDeath(Mono.gameObject);
                 }
@@ -56,25 +51,7 @@ namespace RealMethod
                 return;
             }
 
-            // Interface
-            if (WithInterface)
-            {
-                IDamage interfce = target.GetComponent<IDamage>();
-                if (interfce != null)
-                {
-                    interfce.Die();
-                }
-                else
-                {
-                    Debug.LogError($"IDamage interface not found on the {target}.");
-                }
-            }
-
-            // SendMessage
-            if (WithSendMessage)
-            {
-                target.SendMessage("Die", SendMessageOptions.RequireReceiver);
-            }
+            target.Death();
         }
 
     }

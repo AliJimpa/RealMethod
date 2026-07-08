@@ -10,16 +10,16 @@ namespace RealMethod
         private HapticManager manager;
 
         // Command Methods
-        protected override bool OnInitiate(Object author, Object owner)
+        protected override bool OnInitiate(Object owner)
         {
-            manager = Game.FindManager<HapticManager>();
+            manager = Game.GetManager<HapticManager>();
             return manager != null;
         }
-        protected override bool CanExecute(object Owner)
+        protected override bool CanExecute(object Executer)
         {
             return enabled && manager != null;
         }
-        protected override void Execute(object Owner)
+        protected override void Execute(object Executer)
         {
             foreach (var conf in configs)
             {

@@ -34,7 +34,7 @@ namespace RealMethod
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
             // if (!LG)
             // {
@@ -43,7 +43,7 @@ namespace RealMethod
             // }
 
             //LG.Initialize();
-            Myplayer = Game.World.GetPlayerObject();
+            Myplayer = Game.World.GetPlayer();
             //ChunkSize = LG.GetChunkSize();
             PlayrLocation = GetGridLocation(Myplayer.transform);
             if (WelcomChunk == null)
@@ -53,11 +53,6 @@ namespace RealMethod
             StartCoroutine(OnPlayerLocationChange());
 
         }
-        public void ResolveService(Service service, bool active)
-        {
-            throw new System.NotImplementedException();
-        }
-
 
         private void OnEnable()
         {

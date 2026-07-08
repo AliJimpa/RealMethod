@@ -16,7 +16,7 @@ namespace RealMethod
         private float duration = 2;
 
         //Actions
-        public Action<Transform> OnSpawn;
+        public event Action<Transform> OnSpawned;
 
 
         // Private Variable
@@ -74,14 +74,14 @@ namespace RealMethod
         {
             CacheDuration = overrideDuration;
             Transform result = Request();
-            OnSpawn?.Invoke(result);
+            OnSpawned?.Invoke(result);
             return result;
         }
         public Transform Spawn()
         {
             CacheDuration = duration;
             Transform result = Request();
-            OnSpawn?.Invoke(result);
+            OnSpawned?.Invoke(result);
             return result;
         }
         public void Despawn()
@@ -149,15 +149,14 @@ namespace RealMethod
             return autoDespawn ? PoolBack(Comp) : null;
         }
 
-#if UNITY_EDITOR
-        // Base DataAsset Methods
-        public override void OnEditorPlay()
+
+        protected override void Reset()
         {
-            base.OnEditorPlay();
+            base.Reset();
             UseCacheData = 0;
             CacheDuration = 0;
         }
-#endif
+
         // IEnumerator
         private IEnumerator PoolBack(Transform Transf)
         {

@@ -10,7 +10,7 @@ namespace RealMethod
         {
             foreach (var command in GetComponents<ICommand>())
             {
-                command.Initiate(null, this);
+                command.Initiate(this);
             }
         }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "InventorySaveFile", menuName = "RealMethod/Inventory/SaveFile", order = 1)]
-    public class InventorySaveFile : SaveFile, IInventoryStorage
+    public class InventorySaveFile : SaveFileAsset, IInventoryStorage
     {
         [Header("Inventory")]
         [SerializeField, ReadOnly, TextArea]
@@ -22,62 +22,49 @@ namespace RealMethod
 
 
         // SaveFile Methods
-        protected override void OnStable(DataManager manager)
-        {
-
-        }
         protected override void OnSaved()
         {
             if (UsePlayerPrefs)
             {
-                RM_PlayerPrefs.SetArray("ItemsName", ItemsName.ToArray());
-                RM_PlayerPrefs.SetArray("ItemsQuantity", ItemsQuantity.ToArray());
-                RM_PlayerPrefs.SetArray("ItemsCapacity", ItemsCapacity.ToArray());
+                RM_Save.SetArray("ItemsName", ItemsName.ToArray());
+                RM_Save.SetArray("ItemsQuantity", ItemsQuantity.ToArray());
+                RM_Save.SetArray("ItemsCapacity", ItemsCapacity.ToArray());
             }
         }
         protected override void OnLoaded()
         {
             if (UsePlayerPrefs)
             {
-                ItemsName = RM_PlayerPrefs.GetArray<string>("ItemsName").ToList();
-                ItemsQuantity = RM_PlayerPrefs.GetArray<int>("ItemsQuantity").ToList();
-                ItemsCapacity = RM_PlayerPrefs.GetArray<int>("ItemsCapacity").ToList();
-            }
-        }
-        protected override void OnDeleted()
-        {
-            if (UsePlayerPrefs)
-            {
-                ItemsName = null;
-                ItemsQuantity = null;
-                ItemsCapacity = null;
+                ItemsName = RM_Save.GetArray<string>("ItemsName").ToList();
+                ItemsQuantity = RM_Save.GetArray<int>("ItemsQuantity").ToList();
+                ItemsCapacity = RM_Save.GetArray<int>("ItemsCapacity").ToList();
             }
         }
 
 
         // Implement IInventorySave Interface
-        void IStorage.StorageCreated(Object author)
-        {
-        }
-        void IStorage.StorageLoaded(Object author)
-        {
-        }
+        // void IStorage.StorageCreated(Object author)
+        // {
+        // }
+        // void IStorage.StorageLoaded(Object author)
+        // {
+        // }
         void IInventoryStorage.CreateItem(InventoryItemProperty item)
         {
-            ItemsName.Add(item.Name);
+            ItemsName.Add(item.SelfName);
             ItemsQuantity.Add(item.Quantity);
             ItemsCapacity.Add(item.Capacity);
         }
         void IInventoryStorage.DestroyItem(IInventoryItem item)
         {
-            int Target = GetIndexItem(item.NameID);
+            int Target = GetIndexItem(item.SelfName);
             ItemsName.RemoveAt(Target);
             ItemsQuantity.RemoveAt(Target);
             ItemsCapacity.RemoveAt(Target);
         }
         void IInventoryStorage.UpdateQuantity(IInventoryItem item, int amount)
         {
-            int Target = GetIndexItem(item.NameID);
+            int Target = GetIndexItem(item.SelfName);
             if (amount != 0)
             {
                 ItemsQuantity[Target] += amount;
@@ -90,7 +77,7 @@ namespace RealMethod
         }
         void IInventoryStorage.UpdateCapacity(IInventoryItem item, int value)
         {
-            int Target = GetIndexItem(item.NameID);
+            int Target = GetIndexItem(item.SelfName);
             ItemsCapacity[Target] = value;
         }
         InventoryItemProperty[] IInventoryStorage.GetItems()
@@ -104,7 +91,7 @@ namespace RealMethod
                 {
                     for (int i = 0; i < ItemsName.Count; i++)
                     {
-                        if (ItemsName[i] == item.NameID)
+                        if (ItemsName[i] == item.SelfName)
                         {
                             Result.Add(new InventoryItemProperty(item, ItemsQuantity[i], ItemsCapacity[i]));
                             continue;
@@ -119,12 +106,12 @@ namespace RealMethod
             }
             return Result.ToArray();
         }
-        void IStorage.StorageClear()
-        {
-            ItemsName.Clear();
-            ItemsQuantity.Clear();
-            ItemsCapacity.Clear();
-        }
+        // void IStorage.StorageClear()
+        // {
+        //     ItemsName.Clear();
+        //     ItemsQuantity.Clear();
+        //     ItemsCapacity.Clear();
+        // }
 
         // Private Functions
         private int GetIndexItem(string name)

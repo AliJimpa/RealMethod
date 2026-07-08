@@ -56,16 +56,16 @@ namespace RealMethod
 
 
         // ExecutCommand Methods
-        protected override bool OnInitiate(Object author, Object owner)
+        protected override bool OnInitiate(Object owner)
         {
             NotifyStatus = new bool[notify.Length];
             return true;
         }
-        protected override bool CanExecute(object Owner)
+        protected override bool CanExecute(object Executer)
         {
             return enabled;
         }
-        protected override void Execute(object Owner)
+        protected override void Execute(object Executer)
         {
             StartTimer();
         }

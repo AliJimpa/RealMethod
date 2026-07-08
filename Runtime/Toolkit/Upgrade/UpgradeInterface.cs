@@ -28,7 +28,7 @@ namespace RealMethod
         IUpgradeItem GetStartItem();
     }
 
-    public interface IUpgradeStorage : IStorage
+    public interface IUpgradeStorage : IFile
     {
         void UnlockItem(IUpgradeItem item);
         void LockItem(IUpgradeItem item);

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "ParticlePool", menuName = "RealMethod/Pool/ParticlePool", order = 1)]
-    public sealed class ParticlePool : PoolAsset<ParticleSystem> , IPoolSpawner<ParticleSystem>
+    public sealed class ParticlePool : PoolAsset<ParticleSystem>, IPoolSpawner<ParticleSystem>
     {
         [Header("Setting")]
         [SerializeField]
@@ -14,7 +14,8 @@ namespace RealMethod
 
 
         //Actions
-        public Action<ParticleSystem> OnSpawn;
+        public event Action<ParticleSystem> OnSpawned;
+
 
         // Private Variable
         private byte UseCacheData = 0; //0:NoCashing 1:CachePosition 2:CachePosition&Rotation 3:CacheTransform 
@@ -48,7 +49,7 @@ namespace RealMethod
         public ParticleSystem Spawn()
         {
             ParticleSystem result = Request();
-            OnSpawn?.Invoke(result);
+            OnSpawned?.Invoke(result);
             return result;
         }
 
@@ -93,14 +94,12 @@ namespace RealMethod
             return PoolBack(Comp);
         }
 
-#if UNITY_EDITOR
-        // Base DataAsset Methods
-        public override void OnEditorPlay()
+
+        protected override void Reset()
         {
-            base.OnEditorPlay();
+            base.Reset();
             UseCacheData = 0;
         }
-#endif
 
 
         // IEnumerator

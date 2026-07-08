@@ -3,31 +3,37 @@ using UnityEngine.InputSystem;
 
 namespace RealMethod
 {
-    public abstract class InputService : Service
+    public abstract class InputService : GameModule
     {
         private InputActionAsset CurrentInputAsset;
 
-        protected sealed override void OnStart(object Author)
+        protected override void OnBegin()
         {
             if (TryFindInputAsset(out InputActionAsset newAsset))
             {
                 ReplaceInputAsset(newAsset);
             }
         }
-        protected sealed override void OnNewWorld()
+        protected override void OnWorldChanged()
         {
             if (TryFindInputAsset(out InputActionAsset newAsset))
             {
                 ReplaceInputAsset(newAsset);
             }
         }
-        protected sealed override void OnEnd(object Author)
+        protected override void OnEnd()
         {
             if (CurrentInputAsset != null)
             {
                 OnDisposeInputAsset(CurrentInputAsset);
             }
         }
+#if UNITY_EDITOR
+        protected override string GetInspectorInfo()
+        {
+            return CurrentInputAsset.name;
+        }
+#endif
 
 
         public void ReplaceInputAsset(InputActionAsset asset)
@@ -48,7 +54,7 @@ namespace RealMethod
         }
         protected virtual bool TryFindInputAsset(out InputActionAsset asset)
         {
-            PlayerInput playerinput = Game.World.GetPlayerObject().GetComponent<PlayerInput>();
+            PlayerInput playerinput = Game.World.GetPlayer().GetComponent<PlayerInput>();
             if (playerinput != null)
             {
                 if (playerinput.actions != null)
@@ -64,6 +70,8 @@ namespace RealMethod
 
         protected abstract void OnAcquireInputAsset(InputActionAsset asset);
         protected abstract void OnDisposeInputAsset(InputActionAsset asset);
+
+
     }
 
 

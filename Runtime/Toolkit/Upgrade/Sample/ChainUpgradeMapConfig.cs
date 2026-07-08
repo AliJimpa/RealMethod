@@ -70,7 +70,7 @@ namespace RealMethod
     {
         [Header("Setting")]
         [SerializeField]
-        private SaveFile CoinFile;
+        private FileAsset CoinFile;
         [SerializeField]
         public int[] pricing;
         [SerializeField, ReadOnly]

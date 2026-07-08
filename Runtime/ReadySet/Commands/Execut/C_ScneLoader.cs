@@ -17,18 +17,18 @@ namespace RealMethod
         [Header("Assets")]
         [SerializeField]
         private LoadMethod method = LoadMethod.SceneAsset;
-        [SerializeField, ShowInInspectorByEnum("method", 0)]
+        [SerializeField, ConditionalShowByEnum("method", 0)]
         private int sceneIndex;
-        [SerializeField, ShowInInspectorByEnum("method", 1)]
+        [SerializeField, ConditionalShowByEnum("method", 1)]
         private string sceneName;
-        [SerializeField, ShowInInspectorByEnum("method", 2)]
-        private SceneReference sceneAsset;
-        [SerializeField, ShowInInspectorByEnum("method", 3)]
-        private WorldSceneConfig worldAsset;
+        [SerializeField, ConditionalShowByEnum("method", 2)]
+        private SceneAsset sceneAsset;
+        [SerializeField, ConditionalShowByEnum("method", 3)]
+        private WorldAsset worldAsset;
         [Header("Setting")]
-        [SerializeField, ShowInInspectorByEnum("method", 0, 1)]
+        [SerializeField, ConditionalShowByEnum("method", 0, 1)]
         private bool IsAsync = false;
-        [SerializeField, ShowInInspectorByEnum("method", 0, 1)]
+        [SerializeField, ConditionalShowByEnum("method", 0, 1)]
         private LoadSceneMode LoadType = LoadSceneMode.Single;
 
         public Action OnAsyncSceneLoaded;
@@ -36,15 +36,15 @@ namespace RealMethod
 
 
         // ExecutCommand Methods
-        protected override bool OnInitiate(UnityEngine.Object author, UnityEngine.Object owner)
+        protected override bool OnInitiate(UnityEngine.Object owner)
         {
             return true;
         }
-        protected override bool CanExecute(object Owner)
+        protected override bool CanExecute(object Executer)
         {
             return enabled;
         }
-        protected override void Execute(object Owner)
+        protected override void Execute(object Executer)
         {
             switch (method)
             {

@@ -1,0 +1,12 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : MixerManager
+{
+
+    // Implement IGameManage Methods
+    protected override void InitiateManager(Scope owner)
+    {
+        throw new System.NotImplementedException();
+    }
+
+}

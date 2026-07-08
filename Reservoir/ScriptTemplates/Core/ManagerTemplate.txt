@@ -1,0 +1,15 @@
+using UnityEngine;
+using RealMethod;
+
+public class #SCRIPTNAME# : MonoBehaviour, IGameManager
+{
+    // Implement IGameManage Interface
+    MonoBehaviour IGameManager.GetManagerClass() => this;
+    void IGameManager.InitiateManager(Scope owner)
+    {
+        // Called Just Once Befor any Awake called
+        // Called when World or Game initializing
+        // Owner means your manager initialize in GameScope(always valid) or World Scope(destroy after change World)
+    }
+
+}

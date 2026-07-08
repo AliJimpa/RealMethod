@@ -9,23 +9,23 @@ namespace RealMethod
         public UnityEvent<MonoBehaviour> OnExecute;
 
         // ExecutCommand Methods
-        protected override bool OnInitiate(Object author, Object owner)
+        protected override bool OnInitiate( Object owner)
         {
             return true;
         }
-        protected override bool CanExecute(object Owner)
+        protected override bool CanExecute(object Executer)
         {
             return enabled;
         }
-        protected override void Execute(object Owner)
+        protected override void Execute(object Executer)
         {
-            if (Owner is MonoBehaviour MyOwner)
+            if (Executer is MonoBehaviour MyOwner)
             {
                 OnExecute?.Invoke(MyOwner);
             }
             else
             {
-                Debug.LogError("Event_com.Execute: Owner is not a MonoBehaviour. Event not invoked.");
+                Debug.LogError("Event_com.Execute: Executer is not a MonoBehaviour. Event not invoked.");
             }
         }
     }

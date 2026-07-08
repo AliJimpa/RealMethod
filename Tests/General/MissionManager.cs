@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -24,7 +23,7 @@ namespace RealMethod
         public GameObject UI;
         public Animator playerStatusAnimator;
         public GameObject MissionPassUI;
-        public SceneReference HomeScene;
+        public SceneAsset HomeScene;
         [Header("Events")]
         public UnityEvent<MissionManager> OnMissionCompleted;
 
@@ -34,8 +33,6 @@ namespace RealMethod
         //private PlayerEnergy playerenargy;
         // private Rigidbody body;
         private int currentObstacleCount = 0;
-        // private bool IsMissionComplited = false;
-        private DataManager dataManager;
         private Text GoalRecord;
         private Text GoalTitle;
         private Button NextLevel;
@@ -48,14 +45,14 @@ namespace RealMethod
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
             //MyWorld = Game.CastWorld<CCWorld>();
             //GameObject PlayerObject = MyWorld.GetPlayerObject();
             //playercontroller = PlayerObject.GetComponent<PlayerController>();
             //playerenargy = PlayerObject.GetComponent<PlayerEnergy>();
             //body = PlayerObject.GetComponent<Rigidbody>();
-            dataManager = Game.Instance.GetComponent<DataManager>();
+            //dataManager = Game.Instance.GetComponent<SaveManager>();
             GoalRecord = UI.GetComponentsInChildren<Text>()[1];
             GoalTitle = UI.GetComponentsInChildren<Text>()[0];
             GoalRecord.text = $"{currentObstacleCount}/{ObstacleCount}";
@@ -64,9 +61,6 @@ namespace RealMethod
             NextLevel = MissionPassUI.transform.Find("B_NextMission").GetComponent<Button>();
             //if (GameData.GetMissionsLength() == MissionID)
             //NextLevel.gameObject.SetActive(false);
-        }
-        public void ResolveService(Service service, bool active)
-        {
         }
 
 

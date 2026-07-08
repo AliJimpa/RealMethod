@@ -2,42 +2,41 @@ using UnityEngine;
 
 namespace RealMethod
 {
+    /// <summary>
+    /// Defines the core behavior required for all game manager classes.
+    /// </summary>
     public interface IGameManager
     {
-        MonoBehaviour GetManagerClass();
-        void InitiateManager(bool AlwaysLoaded);
-        void ResolveService(Service service, bool active);
+        /// <summary>
+        /// Gets the Unity <see cref="Component"/> instance that implements this interface.
+        /// </summary>
+        /// <remarks>
+        /// This allows systems interacting with the interface to access the underlying
+        /// Unity component and its associated GameObject and Transform.
+        /// </remarks>
+        Component Component => (Component)this;
+
+        /// <summary>
+        /// Initializes the manager and prepares it for use in the game lifecycle.
+        /// </summary>
+        /// <param name="owner">
+        /// Whitch owner class Initiation the manager
+        /// </param>
+        void InitiateManager(Scope owner);
     }
 
-    public interface IService
+    public class GameManager : Method, IGameManager
     {
-        void Created(object author);
-        void WorldUpdated();
-        void Deleted(object author);
-    }
-
-    public abstract class Service : IService
-    {
-        public IService provider => this;
-
-        // Implement IService Interface
-        void IService.Created(object author)
+        // Implement IGameManager Interface
+        public void InitiateManager(Scope owner)
         {
-            OnStart(author);
-        }
-        void IService.WorldUpdated()
-        {
-            OnNewWorld();
-        }
-        void IService.Deleted(object author)
-        {
-            OnEnd(author);
+            OnInitiateManager(owner);
         }
 
-        // Abstract Method
-        protected abstract void OnStart(object Author);
-        protected abstract void OnNewWorld();
-        protected abstract void OnEnd(object Author);
+        protected virtual void OnInitiateManager(Scope owner)
+        {
+
+        }
     }
 
 }

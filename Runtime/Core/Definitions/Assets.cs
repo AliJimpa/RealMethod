@@ -1,26 +1,59 @@
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace RealMethod
 {
-    public interface IAsset
+    public interface IAsset : IIdentifier
     {
         PrimitiveAsset GetAsset();
-        void OnSpawned(Object spawner);
     }
-    // PrimitiveAsset: is a ScriptableObject with some functions & IAsset interface
-    public abstract class PrimitiveAsset : ScriptableObject, IAsset
-    {
-        // Implement IAsset Interface
-        PrimitiveAsset IAsset.GetAsset()
-        {
-            return this;
-        }
-        public virtual void OnSpawned(Object spawner)
-        {
 
+    /// <summary>
+    /// Base class for all custom asset types in the system.
+    /// Provides shared functionality and common rules for assets derived from ScriptableObject,
+    /// such as cloning, instancing, or direct usage depending on the derived asset type.
+    /// </summary>
+    public abstract class PrimitiveAsset : ScriptableObject, IAsset, ISpawn, ISpawnWithAuthor
+    {
+        public bool IsSpawned { get; private set; } = false;
+
+        // Implement IIdentifier Interface
+        public Name16 NameID => name;
+        // Implement IAsset Interface
+        PrimitiveAsset IAsset.GetAsset() => this;
+        // Implement ISpawn interface
+        void ISpawn.OnSpawn()
+        {
+            IsSpawned = true;
+            EnsureAssetPermission();
+            OnSpawn(null);
+        }
+        // Implement ISpawnWithAuthor interface
+        void ISpawnWithAuthor.OnSpawn(Object author)
+        {
+            IsSpawned = true;
+            EnsureAssetPermission();
+            OnSpawn(author);
+        }
+
+
+        protected virtual void OnSpawn(Object spawner)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log($"[{name}] Spawned");
+#endif
+        }
+        /// <summary>
+        /// Ensures this asset can be used safely. Throws an error if it's not.
+        /// </summary>
+        protected virtual void EnsureAssetPermission()
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.LogError($"[{name}] For this asset didnt write any permission.");
+#endif
         }
 
         public bool HasCloneName()
@@ -44,71 +77,87 @@ namespace RealMethod
 #endif
         }
 
+
 #if UNITY_EDITOR
-        public virtual void OnEditorPlay()
+        /// <summary>
+        /// Returns whether Reset() should be automatically called for the given
+        /// PlayModeStateChange. If this method returns true, Unity's Reset() method
+        /// on this ScriptableObject will be invoked for that state.
+        /// </summary>
+        /// <param name="state">The current play mode state change.</param>
+        public virtual bool AutoReset(PlayModeStateChange state)
         {
-            Debug.Log($"[{GetType()}]  -> {name} OnEditorPlay called.");
+            return false;
         }
 #endif
     }
 
 
-    // DataAsset: is just a PrimitiveAsset
+    /// <summary>
+    /// A standard asset used to store data.
+    /// Developers can create and use these assets directly in the project
+    /// and access the functionality provided by PrimitiveAsset.
+    /// </summary>
     public abstract class DataAsset : PrimitiveAsset
     {
+
     }
-    // TemplateAsset: is a PrimitiveAsset that you can't create new at runtime
-    public abstract class TemplateAsset : PrimitiveAsset
+    /// <summary>
+    /// Represents an asset used only as a clone.
+    /// This asset cannot be used directly or instantiated normally.
+    /// Its purpose is to generate clones that will be used instead of the original asset.
+    /// </summary>
+    public abstract class CloneAsset : PrimitiveAsset
     {
-        protected virtual void OnEnable()
+        protected sealed override void EnsureAssetPermission()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (!HasCloneName())
             {
                 if (!IsProjectAsset())
                 {
-                    Debug.LogError($"TemplateAsset Can't Create New Instance at Runtime, NewFile Removed!");
-                    Destroy(this);
+                    Debug.LogError($"[{name}] CloneAsset cannot create new instance at runtime. Asset has been removed!");
+                    DestroyImmediate(this);
                     return;
                 }
             }
+#endif
         }
+
     }
-    // FileAsset: is a PrimitiveAsset that you can't clone at runtime
-    public abstract class FileAsset : PrimitiveAsset
-    {
-        protected virtual void OnEnable()
-        {
-            if (HasCloneName())
-            {
-                Debug.LogError($"FileAsset Can't Clone at Runtime, NewFile Removed!");
-                Destroy(this);
-                return;
-            }
-        }
-    }
-    // UniqueAsset: is a PrimitiveAsset that you can't clone or create new at runtime
+    /// <summary>
+    /// Represents a unique shared asset in the project.
+    /// Developers must use the asset directly and cannot clone it
+    /// or create new instances from it.
+    /// </summary>
     public abstract class UniqueAsset : PrimitiveAsset
     {
-        protected virtual void OnEnable()
+        protected override void EnsureAssetPermission()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
             if (HasCloneName())
             {
-                Debug.LogError($"UniqueAsset Can't Clone at Runtime, NewFile Removed!");
-                Destroy(this);
+                Debug.LogError($"[{name}] UniqueAsset cannot clone at runtime. NewAsset has been removed!");
+                DestroyImmediate(this);
                 return;
             }
             if (!IsProjectAsset())
             {
-                Debug.LogError($"UniqueAsset Can't Create New Instance at Runtime, NewFile Removed!");
-                Destroy(this);
+                Debug.LogError($"[{name}] UniqueAsset cannot create new instance at runtime. NewAsset has been removed!");
+                DestroyImmediate(this);
                 return;
             }
+#endif
         }
     }
-    // ConfigAsset: is a UniqueAsset that you can't decelar modifier variable or method , all of things should be readonly 
+    /// <summary>
+    /// A specialized UniqueAsset used for global configuration.
+    /// The asset is intended to be read-only at runtime,
+    /// and developers should not add mutable fields or methods
+    /// that modify its configuration values.
+    /// </summary>
     public abstract class ConfigAsset : UniqueAsset
     {
 
     }
-
 }

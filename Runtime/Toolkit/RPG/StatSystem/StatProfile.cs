@@ -18,7 +18,7 @@ namespace RealMethod
         void DeclineBuff(IStatModifier modifier, T identity);
         IStat GetStat(T identity);
     }
-    public interface IStatStorage : IStorage
+    public interface IStatStorage : IFile
     {
         void StoreStats(IStat[] stat);
         bool TryLoadStats(StatData data);
@@ -45,8 +45,7 @@ namespace RealMethod
             }
         }
 
-        // Implement IIdentifier Interface
-        public string NameID => profileName;
+        // Implement IPrimitiveStatContainer Interface
         void IPrimitiveStatContainer.InitializeResource(IResourceData resource)
         {
             resource.Initialize(this);
@@ -76,22 +75,22 @@ namespace RealMethod
     {
         [Header("Save")]
         [SerializeField]
-        private StorageFile<IStatStorage, StatSaveFile> storage;
-        public SaveFile file => storage.file;
+        private Storage<IStatStorage> storage;
+        public IStatStorage file => storage.File;
 
         protected sealed override IStatStorage GetStorage()
         {
-            return storage.provider;
+            return storage.File;
         }
         protected sealed override bool LoadStorage()
         {
-            return storage.Load(this);
+            return storage.IsExist;
         }
     }
     public abstract class StatProfile<En, Sd> : StatProfileStorage, IPrimitiveStatContainer<En> where En : System.Enum where Sd : StatData
     {
         [System.Serializable]
-        private class GameStat : SerializableDictionary<En, Sd> { }
+        private class GameStat : Map<En, Sd> { }
         [Header("Definition")]
         [SerializeField]
         private GameStat ChacterStats;
@@ -277,13 +276,6 @@ namespace RealMethod
             }
         }
 
-
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
-        {
-            Clear();
-        }
-#endif
     }
 
 }

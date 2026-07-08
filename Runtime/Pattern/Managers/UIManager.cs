@@ -10,11 +10,11 @@ namespace RealMethod
     {
         public enum UIMethod
         {
-            [EnumDescription("IMGUI (Legacy - Editor Only)")]
+            [DescriptionEnum("IMGUI (Legacy - Editor Only)")]
             IMGUI,
-            [EnumDescription("uGUI - Canvas-based UI for runtime")]
+            [DescriptionEnum("uGUI - Canvas-based UI for runtime")]
             uGUI,
-            [EnumDescription("UI Toolkit - Modern retained UI system")]
+            [DescriptionEnum("UI Toolkit - Modern retained UI system")]
             UI_Toolkit
         }
 
@@ -24,22 +24,18 @@ namespace RealMethod
         [SerializeField]
         private UIMethod method = UIMethod.uGUI;
         public UIMethod Method => method;
-        [SerializeField, ShowInInspectorByEnum("method", 2)]
+        [SerializeField, ConditionalShowByEnum("method", 2)]
         private PanelSettings UISetting;
         // Actions 
         public System.Action<CanvasGroup, bool> OnFadeIn;
         public System.Action<CanvasGroup, bool> OnFadeOut;
         // Private Variable
-        private Hictionary<GameObject> Layers = new Hictionary<GameObject>(5);
+        private NameTable<GameObject> Layers = new NameTable<GameObject>(5);
 
 
 
         // Implement IGameManager Interface
-        MonoBehaviour IGameManager.GetManagerClass()
-        {
-            return this;
-        }
-        void IGameManager.InitiateManager(bool alwaysLoaded)
+        void IGameManager.InitiateManager(Scope owner)
         {
             if (header == null)
             {
@@ -73,11 +69,7 @@ namespace RealMethod
                 }
             }
 
-            InitiateManager(alwaysLoaded);
-        }
-        void IGameManager.ResolveService(Service service, bool active)
-        {
-            InitiateService(service);
+            InitiateManager(owner);
         }
 
 
@@ -85,8 +77,12 @@ namespace RealMethod
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            if (gameObject.layer != 5)
-                gameObject.layer = 5;
+            if (header != null)
+            {
+                if (header.gameObject.layer != 5)
+                    header.gameObject.layer = 5;
+            }
+
         }
 #endif
 
@@ -133,11 +129,11 @@ namespace RealMethod
                 {
                     if (creator != null)
                     {
-                        widget.GetWidgetClass().SendSpawnEvent(creator);
+                        widget.GetWidgetClass().InvokeSpawnEvent(creator);
                     }
                     else
                     {
-                        widget.GetWidgetClass().SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                        widget.GetWidgetClass().InvokeSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
                     }
                 }
                 return TargetClass;
@@ -188,11 +184,11 @@ namespace RealMethod
                 {
                     if (creator != null)
                     {
-                        widget.GetWidgetClass().SendSpawnEvent(creator);
+                        widget.GetWidgetClass().InvokeSpawnEvent(creator);
                     }
                     else
                     {
-                        widget.GetWidgetClass().SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                        widget.GetWidgetClass().InvokeSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
                     }
                 }
                 return TargetClass;
@@ -204,14 +200,14 @@ namespace RealMethod
         }
         public GameObject AddLayer(string name, UPrefab Prefab, Object spawner = null)
         {
-            GameObject SpawnedObject = Instantiate(Prefab.asset, header.position, Quaternion.identity, header);
+            GameObject SpawnedObject = Instantiate<GameObject>(Prefab, header.position, Quaternion.identity, header);
             if (spawner != null)
             {
-                SpawnedObject.SendSpawnEvent(spawner);
+                SpawnedObject.InvokeSpawnEvent(spawner);
             }
             else
             {
-                SpawnedObject.SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                SpawnedObject.InvokeSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
             }
             SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
@@ -224,14 +220,14 @@ namespace RealMethod
                 Debug.LogError($"Prefab should has Widget Class Component");
                 return null;
             }
-            GameObject SpawnedObject = Instantiate(Prefab.asset, header.position, Quaternion.identity, header);
+            GameObject SpawnedObject = Instantiate<GameObject>(Prefab, header.position, Quaternion.identity, header);
             if (spawner != null)
             {
-                SpawnedObject.SendSpawnEvent(spawner);
+                SpawnedObject.InvokeSpawnEvent(spawner);
             }
             else
             {
-                SpawnedObject.SendSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                SpawnedObject.InvokeSpawnEvent(this, SendMessageOptions.DontRequireReceiver);
             }
             SpawnedObject.name = name;
             Layers.Add(name, SpawnedObject);
@@ -261,11 +257,11 @@ namespace RealMethod
                 {
                     if (despawner != null)
                     {
-                        Target.SendDespawnEvent(despawner);
+                        Target.InvokeDespawnEvent(despawner);
                     }
                     else
                     {
-                        Target.SendDespawnEvent(this, SendMessageOptions.DontRequireReceiver);
+                        Target.InvokeDespawnEvent(this, SendMessageOptions.DontRequireReceiver);
                     }
                     Destroy(Target);
                 }
@@ -528,9 +524,9 @@ namespace RealMethod
         {
             T Reslut = null;
             IWidget TargetWidget;
-            foreach (var Lay in Layers.GetValues())
+            foreach (var Lay in Layers)
             {
-                TargetWidget = Lay.GetComponent<IWidget>();
+                TargetWidget = Lay.Value.GetComponent<IWidget>();
                 if (TargetWidget == null)
                 {
                     continue;
@@ -550,8 +546,7 @@ namespace RealMethod
         }
 
         // Abstract Methods
-        protected abstract void InitiateManager(bool alwaysLoaded);
-        protected abstract void InitiateService(Service newService);
+        protected abstract void InitiateManager(Scope owner);
 
         //Enumerators
         private IEnumerator FadeIn(CanvasGroup canvas, float fadeDuration)
@@ -620,9 +615,5 @@ namespace RealMethod
     }
 
 
-    public interface IWidget
-    {
-        MonoBehaviour GetWidgetClass();
-        void SceneInitialized(UIManager manager);
-    }
+
 }

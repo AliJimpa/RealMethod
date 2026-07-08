@@ -4,19 +4,18 @@ namespace RealMethod
 {
     public static class Animator_Extension
     {
-        public static Coroutine PlayAndNotify(this Animator animator, string stateName, System.Action onFinished, int layer = 0)
+        public static Coroutine Play(this Animator animator, string stateName, System.Action onFinished, int layer = 0)
         {
             animator.Play(stateName, layer);
             // Start a coroutine to watch for finish
             var runner = animator.GetComponent<MonoBehaviour>();
             if (runner == null)
             {
-                Debug.LogWarning("For Use PlayAndNotify you need to a MonoBehaviour for running Cortine for Finish Callback");
+                Debug.LogWarning("For Use Play you need to a MonoBehaviour for running Cortine for Finish Callback");
                 return null;
             }
-            return runner.StartCoroutine(RM_Coroutine.WaitForState(animator, layer, stateName, onFinished));
+            return runner.StartCoroutine(RM_Animation.WaitForState(animator, layer, stateName, onFinished));
         }
-
         /// <summary>
         /// Checks if the Animator is currently playing a specific state.
         /// </summary>
@@ -25,7 +24,6 @@ namespace RealMethod
             var info = animator.GetCurrentAnimatorStateInfo(layer);
             return info.IsName(stateName) && info.normalizedTime < 1f;
         }
-
         /// <summary>
         /// Checks if the Animator is in a specific state (finished or still playing).
         /// </summary>
@@ -33,7 +31,6 @@ namespace RealMethod
         {
             return animator.GetCurrentAnimatorStateInfo(layer).IsName(stateName);
         }
-
         /// <summary>
         /// Returns the normalized progress of the current animation state (0 → 1).
         /// </summary>
@@ -41,7 +38,6 @@ namespace RealMethod
         {
             return animator.GetCurrentAnimatorStateInfo(layer).normalizedTime;
         }
-
         /// <summary>
         /// Safely sets a trigger (resets it first to avoid stuck transitions).
         /// </summary>
@@ -50,7 +46,6 @@ namespace RealMethod
             animator.ResetTrigger(triggerName);
             animator.SetTrigger(triggerName);
         }
-
         /// <summary>
         /// Immediately stops all animations and plays the given state.
         /// </summary>
@@ -59,7 +54,6 @@ namespace RealMethod
             animator.Play(stateName, layer, normalizedTime);
             animator.Update(0f); // force immediate update so the state is applied instantly
         }
-
         /// <summary>
         /// Checks if the current state is about to end (useful for chaining combos).
         /// </summary>
@@ -68,7 +62,6 @@ namespace RealMethod
             var info = animator.GetCurrentAnimatorStateInfo(layer);
             return info.normalizedTime >= threshold && !info.loop;
         }
-
         /// <summary>
         /// Crossfades safely only if the target state isn’t already playing.
         /// </summary>

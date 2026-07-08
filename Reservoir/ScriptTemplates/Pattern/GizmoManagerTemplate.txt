@@ -1,0 +1,11 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : GizmoManager
+{
+    // Base SaveManager Methods
+    protected override GUIRenderer[] GetRenderSlots()
+    {
+        throw new System.NotImplementedException();
+    }
+
+}

@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 namespace RealMethod
 {
-    public abstract class AbilityAsset : TemplateAsset, IAbility, ICooldown
+    public abstract class AbilityAsset : CloneAsset, IAbility, ICooldown
     {
         private float lastUsedTime = -Mathf.Infinity;
 
-        // Implement IIdentifier Interface
-        string IIdentifier.NameID => name;
         // Implement IAbility Interface
         public bool CanUse(GameObject user)
         {
@@ -59,13 +58,6 @@ namespace RealMethod
         protected abstract float GetCooldown();
         protected abstract IAbilityEffect[] GetEffects();
         protected abstract bool Prerequisite(GameObject user);
-
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
-        {
-            lastUsedTime = -Mathf.Infinity;
-        }
-#endif
     }
     public abstract class AbilityEffectAsset : AbilityAsset
     {
@@ -120,13 +112,5 @@ namespace RealMethod
             }
             return null;
         }
-
-#if UNITY_EDITOR
-        public override void OnEditorPlay()
-        {
-            base.OnEditorPlay();
-            myEffects = null;
-        }
-#endif
     }
 }

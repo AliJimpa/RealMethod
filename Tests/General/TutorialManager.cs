@@ -51,7 +51,7 @@ namespace RealMethod
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
             // if (Savefile == null)
             // {
@@ -72,10 +72,6 @@ namespace RealMethod
             //     Destroy(this);
             // }
         }
-        public void ResolveService(Service service, bool active)
-        {
-        }
-
 
         // Private Methods
         private void BeginTutorial()
@@ -224,7 +220,7 @@ namespace RealMethod
         //     aIManager.SetEnemySpawnEnabled(true);
         //     ResetPlayer();
         //     Savefile.FirstPlay = true;
-        //     Game.Instance.GetComponent<DataManager>().SaveFile();
+        //     Game.Instance.GetComponent<SaveManager>().SaveFile();
         //     Destroy(this);
         // }
 

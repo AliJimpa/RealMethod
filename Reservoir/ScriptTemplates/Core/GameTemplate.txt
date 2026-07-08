@@ -1,0 +1,45 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : Game
+{
+
+    // Game Methods
+    protected override void OnGameOpen()
+    {
+        // Invoked when starting up the runtime. Called before the first scene is loaded.
+        // Called when game run in platform befor any scene loaded or even splash screen
+        // In this stage your game component just created.
+        Debug.Log("DefultGame Opened");
+    }
+    protected override void OnGameInitialized()
+    {
+        // Invoked when the first scene's objects are loaded into memory but before Awake has been called.
+        // Called right after Unity finishes loading the engine before any scene or subsystem is loaded.
+        // You can insure when called that GameBridge , GameConfig and all Managers in GameScope Initilized.
+        AddModule<DebugModule>();
+        Debug.Log("DefultGame Initialized");
+    }
+    protected override void OnGameStart()
+    {
+        // Invoked when the first scene's objects are loaded into memory but before Awake has been called.
+        // Called after Unity finishes initializing the engine, but before the first scene is loaded.
+        // It’s guaranteed to execute before any Awake() or Start() in your scene objects.
+        Debug.Log("DefultGame Started");
+    }
+    protected override void OnWorldChanged(World NewWorld)
+    {
+        // Called when each World Initialized
+        // You can insure the Game.world refrence is valid
+        // Note: if you use world in scene and load scene as additive not OpenScen() that world didnt connect to Game and removed by Main World class (more= GameBridge)
+        Debug.Log($"New world assign: {NewWorld}");
+    }
+    protected override void OnGameClosed()
+    {
+        // Called when application start exit
+        // You can insure this called befor and object destroy in scene (yes befor)
+        Debug.Log("DefultGame Closed");
+    }
+    
+
+    
+}

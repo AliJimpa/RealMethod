@@ -1,6 +1,6 @@
 namespace RealMethod
 {
-    public interface IInventoryStorage : IStorage
+    public interface IInventoryStorage : IFile
     {
         InventoryItemProperty[] GetItems();
         void CreateItem(InventoryItemProperty item);
@@ -10,7 +10,7 @@ namespace RealMethod
         void UpdateCapacity(IInventoryItem item, int value);
     }
 
-    public interface IInventoryItem : IItem , IResourceItem
+    public interface IInventoryItem : IItem, IResourceItem, INameIdentifier
     {
         void PickedUp(Inventory owner, int quantity);
         void Cahanged(int quantity);

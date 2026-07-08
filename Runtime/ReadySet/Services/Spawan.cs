@@ -1,0 +1,737 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.UIElements;
+using System.Collections.Generic;
+
+namespace RealMethod
+{
+    /// <summary>
+    /// Spawn is a sealed static class used to instantiate gameplay objects such as
+    /// prefabs, UI elements, audio sources, and other spawnable types.
+    ///
+    /// This class automatically locates the required manager instances from the
+    /// World scope. When a new spawn request is made, Spawn will:
+    ///     1) Look for a cached manager of the requested type.
+    ///     2) If missing, it will attempt to find the manager inside World.
+    ///     3) The found manager is cached internally for reuse to avoid repeated lookups.
+    ///
+    /// Developers may register their own managers manually if needed.
+    /// This is useful when:
+    ///     • A custom manager needs to be used before Spawn's automatic discovery.
+    ///     • Multiple child managers inherit from an abstract base manager.
+    ///       (Example: UIManager → ScreenManager / HUDManager)
+    ///       Spawn will always pick the FIRST accessible base type (UIManager),
+    ///       unless the developer registers a specific child manager earlier.
+    ///
+    /// Important notes:
+    ///     • Spawn is a sealed class and cannot be inherited or modified.
+    ///     • Spawn’s methods work only with the corresponding manager types
+    ///       (UIManager, AudioManager, ScreenManager, TaskManager, HapticManager, EnumeratorManager & ..).
+    ///     • When scenes change, World scope clears all managers. Spawn will also
+    ///       lose cached references and re-discover managers on the next request.
+    ///       Developers must ensure their managers are available in World before
+    ///       calling Spawn.
+    ///
+    /// To manually register a manager early:
+    ///     Game.World.SpawnService.AddManager(customManager);
+    /// This guarantees Spawn will use the developer‑provided manager instead of
+    /// auto-discovering one.
+    ///
+    /// Overall, Spawn provides a fast, centralized, and manager‑aware spawning
+    /// system that intelligently reuses previously found managers and adapts to
+    /// scene changes.
+    /// </summary>
+    public sealed class Spawn : Context<Spawn>, IBridge, IInspectorInfo
+    {
+        private Dictionary<System.Type, IGameManager> GameManagers;
+        private Dictionary<System.Type, IGameManager> WorldManagers;
+
+        // Implement IBridge Interface
+        void IBridge.OnWorldChanged(World world)
+        {
+            WorldManagers.Clear();
+            Debug.Log("ChangeWorld Spawn");
+        }
+
+        protected override void OnBegin()
+        {
+            // Check if you game not initialized
+            if (!Game.IsGameInitialized)
+            {
+                Debug.LogWarning($"Game doesn't initialized !");
+                return;
+            }
+            Game.Bridge.Bind(this);
+            GameManagers = new();
+            WorldManagers = new();
+            Debug.Log("Begin Spawn");
+        }
+        protected override void OnEnd()
+        {
+            Game.Bridge.Unbind(this);
+            GameManagers = null;
+            WorldManagers = null;
+            Debug.Log("End Spawn");
+        }
+
+        private static T Get<T>(ScopeTarget context = ScopeTarget.Both) where T : Component, IGameManager
+        {
+            System.Type type = typeof(T);
+
+            switch (context)
+            {
+                case ScopeTarget.World:
+                    if (Instance.WorldManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.WorldManagers[type].Component;
+                    }
+                    else
+                    {
+                        if (Game.World.TryFindGameManager(out T manager))
+                        {
+                            Instance.WorldManagers.Add(type, manager);
+                            return manager;
+                        }
+                    }
+                    break;
+                case ScopeTarget.Game:
+                    if (Instance.GameManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.GameManagers[type].Component;
+                    }
+                    else
+                    {
+                        if (Game.Instance.TryFindGameManager(out T manager))
+                        {
+                            Instance.GameManagers.Add(type, manager);
+                            return manager;
+                        }
+                    }
+                    break;
+                case ScopeTarget.Both:
+                    if (Instance.WorldManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.WorldManagers[type].Component;
+                    }
+                    else if (Instance.GameManagers.ContainsKey(type))
+                    {
+                        return (T)Instance.GameManagers[type].Component;
+                    }
+                    else if (Game.World.TryFindGameManager(out T manager1))
+                    {
+                        Instance.WorldManagers.Add(type, manager1);
+                        return manager1;
+                    }
+                    else if (Game.Instance.TryFindGameManager(out T manager2))
+                    {
+                        Instance.GameManagers.Add(type, manager2);
+                        return manager2;
+                    }
+                    break;
+            }
+
+            Debug.LogError($"{Instance}:Failed to spawn, Manager({typeof(T).Name}) is not available. [{context} Context]");
+            return null;
+        }
+
+
+#if UNITY_EDITOR
+        string IInspectorInfo.GetInfo()
+        {
+            return $"GameManagers ({GameManagers.Count}) , WorldManagers ({WorldManagers.Count})";
+        }
+#endif
+
+        // UI
+        public static T Widget<T>(string Name, Object spawner = null, ScopeTarget Scope = ScopeTarget.Both) where T : MonoBehaviour
+        {
+            return Get<UIManager>(Scope).CreateLayer<T>(Name, spawner);
+        }
+        public static T Widget<T>(VisualTreeAsset UIAsset, string Name, Object spawner = null, ScopeTarget Scope = ScopeTarget.Both) where T : MonoBehaviour
+        {
+            return Get<UIManager>(Scope).CreateLayer<T>(Name, UIAsset, spawner);
+        }
+        public static GameObject Widget(UPrefab Prefab, string Name, Object spawner = null, ScopeTarget Scope = ScopeTarget.Both)
+        {
+            return Get<UIManager>(Scope).AddLayer(Name, Prefab, spawner);
+        }
+        public static T Widget<T>(UPrefab Prefab, string Name, Object spawner = null, ScopeTarget Scope = ScopeTarget.Both) where T : MonoBehaviour
+        {
+            return Get<UIManager>(Scope).AddLayer<T>(Name, Prefab, spawner);
+        }
+        public static UIDocument UIDoc(string Name, VisualTreeAsset UIAsset, ScopeTarget Scope = ScopeTarget.Both)
+        {
+            return Get<UIManager>(Scope).CreateLayer(Name, UIAsset);
+        }
+
+        // Screen
+        public static void Message(string message)
+        {
+            if (Get<ScreenManager>().Informer != null)
+            {
+                Get<ScreenManager>().Informer.Popup(message);
+            }
+            else
+            {
+                Debug.LogWarning($"ScreenMaanger need to set Informer");
+            }
+        }
+        public static void Message(string message, float duration)
+        {
+            if (Get<ScreenManager>().Informer != null)
+            {
+                Get<ScreenManager>().Informer.Popup(message, duration);
+            }
+            else
+            {
+                Debug.LogWarning($"ScreenMaanger need to set Informer");
+            }
+        }
+
+        // Sound
+        public static AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
+        {
+            if (Get<AudioManager>() != null)
+            {
+                return Get<AudioManager>().PlaySound(clip, location, parent, group, rolloffDistanceMin, loop, pauseTime, autoDestroy);
+            }
+            else
+            {
+                GameObject AudioObject = new GameObject();
+                AudioObject.name = "Audio_" + clip.name;
+                AudioSource source = AudioObject.AddComponent<AudioSource>();
+                source.clip = clip;
+                source.outputAudioMixerGroup = group;
+                source.spatialBlend = 0;
+                source.minDistance = rolloffDistanceMin;
+                source.transform.SetParent(parent != null ? parent : Game.World.transform);
+                AudioObject.transform.localPosition = location;
+                source.Play();
+                if (autoDestroy)
+                {
+                    AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                }
+                else
+                {
+                    Debug.LogWarning("for loop or puaseTime , you need to use AudioManager");
+                }
+                return source;
+            }
+        }
+        public static AudioSource Sound3D(AudioClip clip, Vector3 location, Transform parent = null, bool autoDestroy = true)
+        {
+            return Sound3D(clip, location, parent, null, 1f, false, 0f, autoDestroy);
+        }
+        public static AudioSource Sound2D(AudioClip clip, AudioMixerGroup group = null, float rolloffDistanceMin = 1f, bool loop = false, float pauseTime = 0, bool autoDestroy = true)
+        {
+            if (Get<AudioManager>() != null)
+            {
+                return Get<AudioManager>().PlaySound2D(clip, group, 1, loop, pauseTime, autoDestroy);
+            }
+            else
+            {
+                GameObject AudioObject = new GameObject();
+                AudioObject.name = "Audio_" + clip.name;
+                AudioObject.transform.SetParent(Game.World.transform);
+                AudioSource source = AudioObject.AddComponent<AudioSource>();
+                source.clip = clip;
+                source.outputAudioMixerGroup = group;
+                source.spatialBlend = 0;
+                source.minDistance = rolloffDistanceMin;
+                source.Play();
+                if (autoDestroy)
+                {
+                    AudioObject.AddComponent<DestroyAfterDelay, float>(clip.length);
+                }
+                else
+                {
+                    Debug.LogWarning("for loop or puaseTime , you need to use AudioManager");
+                }
+                return source;
+            }
+        }
+        public static AudioSource Sound2D(AudioClip clip, bool autoDestroy = true)
+        {
+            return Sound2D(clip, null, 1f, false, 0f, autoDestroy);
+        }
+
+        // Clone 
+        public static T Clone<T>(T original, Object spawner = null) where T : Object
+        {
+            if (spawner != null)
+            {
+                var target = Object.Instantiate(original);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(original);
+            }
+        }
+        public static T Clone<T>(T original, Transform parent, Object spawner = null) where T : Object
+        {
+            if (spawner != null)
+            {
+                var target = Object.Instantiate(original, parent);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(original, parent);
+            }
+        }
+        public static T Clone<T>(T original, Vector3 position, Quaternion rotation, Object spawner = null) where T : Object
+        {
+            if (spawner != null)
+            {
+                var target = Object.Instantiate(original, position, rotation);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(original, position, rotation);
+            }
+        }
+        public static T Clone<T>(T original, Transform parent, bool worldPositionStays, Object spawner = null) where T : Object
+        {
+            if (spawner != null)
+            {
+                var target = Object.Instantiate(original, parent, worldPositionStays);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(original, parent, worldPositionStays);
+            }
+        }
+
+        // Prefab
+        public static GameObject Prefab(PrefabCore prefab, Object spawner = null)
+        {
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate<GameObject>(prefab, Game.World.transform);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate<GameObject>(prefab, Game.World.transform);
+            }
+        }
+        public static GameObject Prefab(PrefabCore prefab, Transform parent, Object spawner = null)
+        {
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate<GameObject>(prefab, parent);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate<GameObject>(prefab, parent);
+            }
+        }
+        public static GameObject Prefab(PrefabCore prefab, Transform parent, bool instantiateInWorldSpace, Object spawner = null)
+        {
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate<GameObject>(prefab, parent, instantiateInWorldSpace);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate<GameObject>(prefab, parent, instantiateInWorldSpace);
+            }
+        }
+        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Vector3 rotation, Object spawner = null)
+        {
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation));
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation));
+            }
+        }
+        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Quaternion rotation, Object spawner = null)
+        {
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate<GameObject>(prefab, position, rotation);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate<GameObject>(prefab, position, rotation);
+            }
+        }
+        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Object spawner = null)
+        {
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.identity);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate<GameObject>(prefab, position, Quaternion.identity);
+            }
+        }
+        public static GameObject Prefab(PrefabCore prefab, Vector3 position, Vector3 rotation, Transform parent, Object spawner = null)
+        {
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation), parent);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate<GameObject>(prefab, position, Quaternion.Euler(rotation), parent);
+            }
+        }
+        public static GameObject Prefab(PrefabCore prefab, UnityEngine.SceneManagement.Scene scene, Object spawner = null)
+        {
+            if (spawner != null)
+            {
+                GameObject target = Object.Instantiate(prefab, scene) as GameObject;
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab, scene) as GameObject;
+            }
+
+        }
+        public static T Prefab<T>(PrefabCore<T> prefab, Object spawner = null) where T : Component
+        {
+            if (spawner != null)
+            {
+                T target = Object.Instantiate(prefab.GetMainComponent());
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.GetMainComponent());
+            }
+        }
+        public static T Prefab<T>(PrefabCore<T> prefab, Transform parent, Object spawner = null) where T : Component
+        {
+            if (spawner != null)
+            {
+                T target = Object.Instantiate(prefab.GetMainComponent(), parent);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.GetMainComponent(), parent);
+            }
+        }
+        public static T Prefab<T>(PrefabCore<T> prefab, Vector3 position, Quaternion rotation, Object spawner = null) where T : Component
+        {
+            if (spawner != null)
+            {
+                T target = Object.Instantiate(prefab.GetMainComponent(), position, rotation);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.GetMainComponent(), position, rotation);
+            }
+        }
+        public static T Prefab<T>(PrefabCore<T> prefab, Transform parent, bool worldPositionStays, Object spawner = null) where T : Component
+        {
+            if (spawner != null)
+            {
+                T target = Object.Instantiate(prefab.GetMainComponent(), parent, worldPositionStays);
+                target.InvokeSpawnEvent(spawner);
+                return target;
+            }
+            else
+            {
+                return Object.Instantiate(prefab.GetMainComponent(), parent, worldPositionStays);
+            }
+        }
+
+        // Pool
+        public static T Pool<T>(PoolAsset<T> asset) where T : Component
+        {
+            if (asset is IPoolSpawner<T> pooler)
+            {
+                return pooler.Spawn();
+            }
+            else
+            {
+                Debug.LogWarning("PoolAsset does not implement IPoolSpawner.");
+                return null;
+            }
+        }
+        public static T Pool<T>(PoolAsset<T> asset, Vector3 location) where T : Component
+        {
+            if (asset is IPoolSpawner<T> pooler)
+            {
+                return pooler.Spawn(location);
+            }
+            else
+            {
+                Debug.LogWarning("PoolAsset does not implement IPoolSpawner.");
+                return null;
+            }
+        }
+        public static T Pool<T>(PoolAsset<T> asset, Vector3 location, Quaternion rotation) where T : Component
+        {
+            if (asset is IPoolSpawner<T> pooler)
+            {
+                return pooler.Spawn(location, rotation);
+            }
+            else
+            {
+                Debug.LogWarning("PoolAsset does not implement IPoolSpawner.");
+                return null;
+            }
+        }
+        public static T Pool<T>(PoolAsset<T> asset, Vector3 location, Quaternion rotation, Vector3 scale) where T : Component
+        {
+            if (asset is IPoolSpawner<T> pooler)
+            {
+                return pooler.Spawn(location, rotation, scale);
+            }
+            else
+            {
+                Debug.LogWarning("PoolAsset does not implement IPoolSpawner.");
+                return null;
+            }
+        }
+
+        // Effect
+        public static EffectPlayer Effect(EPrefab prefab, Object spawner = null)
+        {
+            return Prefab(prefab, spawner);
+        }
+        public static EffectPlayer Effect(EPrefab prefab, Vector3 location, Vector3 rotation, Object spawner = null)
+        {
+            return Prefab(prefab, location, Quaternion.Euler(rotation), spawner);
+        }
+        public static EffectPlayer Effect(EPrefab prefab, Transform parent, Object spawner = null)
+        {
+            return Prefab(prefab, parent, spawner);
+        }
+
+        // Haptic
+        public static IHapticProvider Haptic(HapticConfig config, ScopeTarget Scope = ScopeTarget.Both)
+        {
+            return Get<HapticManager>(Scope).Produce(config);
+        }
+
+        // Particle
+        public static ParticleSystem Particle(PSPrefab prefab, Vector3 location, Vector3 rotation, Object spawner = null)
+        {
+            return Prefab(prefab, location, Quaternion.Euler(rotation), spawner);
+        }
+        public static ParticleSystem Particle(PSPrefab prefab, Transform parent, Object spawner = null)
+        {
+            return Prefab(prefab, parent, spawner);
+        }
+
+        // Code
+        public static T Component<T>(GameObject target, Object spawner = null) where T : MonoBehaviour
+        {
+            if (target)
+            {
+                var result = target.AddComponent<T>();
+                if (spawner != null)
+                {
+                    result.InvokeSpawnEvent(spawner);
+                }
+                return target.AddComponent<T>();
+            }
+            else
+            {
+                Debug.LogWarning($" {Instance}: target is not valid.");
+                return null;
+            }
+
+        }
+        public static T Class<T>(System.Type classType)
+        {
+            if (classType == null)
+            {
+                Debug.LogWarning($" {Instance}: ClassType is not valid!");
+                return default;
+            }
+            return (T)System.Activator.CreateInstance(classType);
+        }
+
+        // Realmethod
+        public static T Command<T>(CPrefab prefab, MonoBehaviour owner) where T : Command
+        {
+            if (owner == null)
+            {
+                Debug.LogWarning($" {Instance}: Owner or Author is not available.");
+                return null;
+            }
+            GameObject SpawnedObject = Object.Instantiate<GameObject>(prefab, owner.transform);
+            T TargetCommand = SpawnedObject.GetComponent<T>();
+            if (!TargetCommand.GetComponent<ICommand>().Initiate(owner))
+            {
+                Debug.LogWarning($"Spawn Command Breack: Initiation failed for command '{typeof(T).Name}' on '{prefab.NameID}'.");
+            }
+            return TargetCommand;
+        }
+        public static T Asset<T>(Object spawner = null) where T : PrimitiveAsset
+        {
+            var target = ScriptableObject.CreateInstance<T>();
+            target.InvokeSpawnEvent(spawner);
+            target.name = $"{typeof(T).Name}_Instance";
+
+            return target;
+        }
+        public static PrimitiveAsset Asset(System.Type type, Object spawner = null)
+        {
+            if (type == null)
+                throw new System.ArgumentNullException(nameof(type));
+
+            if (!typeof(PrimitiveAsset).IsAssignableFrom(type))
+                throw new System.ArgumentException(
+                    $"Type {type.Name} must inherit from PrimitiveAsset.");
+
+            PrimitiveAsset target = (PrimitiveAsset)ScriptableObject.CreateInstance(type);
+            target.InvokeSpawnEvent(spawner);
+            target.name = $"{type.Name}_Instance";
+
+            return target;
+        }
+        public static bool Service<T>(ScopeTarget Scope = ScopeTarget.Game) where T : GameService, new()
+        {
+            T newModule = GetScope(Scope).AddModule<T>();
+            if (newModule != null)
+            {
+                newModule.InvokeReqisterEvent();
+                return true;
+            }
+            return false;
+        }
+        public static T Service<T>(System.Type ServiceType, ScopeTarget Scope = ScopeTarget.Game) where T : IService
+        {
+            if (ServiceType == null)
+            {
+                Debug.LogWarning($" {Instance}: classType is not valid.");
+                return default;
+            }
+
+            if (!ServiceType.HasImplementInterface<T>())
+            {
+                Debug.LogWarning($" {ServiceType.Name}: has not implement any IService.");
+                return default;
+            }
+
+            GameModule newModule = GetScope(Scope).AddModule(ServiceType);
+            if (newModule != null)
+            {
+                newModule.InvokeReqisterEvent();
+                if (newModule is T provider)
+                {
+                    return provider;
+                }
+            }
+
+            return default;
+        }
+        public static J Service<T, J>(ScopeTarget Scope = ScopeTarget.Game) where T : GameService, new() where J : IService
+        {
+            T newModule = GetScope(Scope).AddModule<T>();
+            if (newModule != null)
+            {
+                newModule.InvokeReqisterEvent();
+                if (newModule is J provider)
+                {
+                    return provider;
+                }
+            }
+            return default;
+        }
+
+
+        // Task
+        public static T Task<T, F>(F Task, bool AutoStart = false) where T : IHandle where F : class
+        {
+            TaskManager<T> manager = Get<TaskManager<T>>();
+            if (manager == null)
+                return default;
+            return manager.Create(Task, AutoStart);
+        }
+
+        // Enumerator
+        public static Coroutine Coroutine(IEnumerator routine)
+        {
+            return Get<EnumeratorManager>().Run(routine);
+        }
+        public static ICoroutineTask CoroutineTask(IEnumerator routine)
+        {
+            return Get<EnumeratorManager>().StartTask(routine);
+        }
+
+        // Other
+        public static GameObject Empty(string name)
+        {
+            return new GameObject(name);
+        }
+        public static MeshRenderer Mesh(Mesh geometry)
+        {
+            GameObject emptyobject = new GameObject(geometry.name);
+            emptyobject.AddComponent<MeshFilter>().mesh = geometry;
+            return emptyobject.AddComponent<MeshRenderer>();
+        }
+        public static MeshRenderer Mesh(Mesh geometry, Vector3 location)
+        {
+            MeshRenderer result = Mesh(geometry);
+            result.transform.position = location;
+            return result;
+        }
+        public static AudioSource Audio(AudioClip clip)
+        {
+            GameObject emptyobject = new GameObject(clip.name);
+            AudioSource source = emptyobject.AddComponent<AudioSource>();
+            source.clip = clip;
+            if (Get<AudioManager>() != null)
+            {
+                source.outputAudioMixerGroup = Get<AudioManager>().DefaultGroup;
+                emptyobject.transform.SetParent(Get<AudioManager>().transform);
+            }
+            return source;
+        }
+
+
+
+        private static Scope GetScope(ScopeTarget Scope)
+        {
+            switch (Scope)
+            {
+                case ScopeTarget.Game:
+                    return Game.Instance;
+                case ScopeTarget.World:
+                    return Game.World;
+                default:
+                    Debug.LogWarning("Your ScopeTarget should be World or Game");
+                    return null;
+            }
+        }
+    }
+}
+

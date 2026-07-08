@@ -14,12 +14,13 @@ namespace RealMethod
         [SerializeField]
         private UnityEvent<bool> RuleEffect;
 
-        private RuleService ruleServ;
+        private IRuleService ruleServ;
         public bool IsServiceRegistered => ruleServ != null;
 
         private void Awake()
         {
-            if (Game.TryFindService(out ruleServ))
+            ruleServ = Game.GetService<IRuleService>();
+            if (ruleServ != null)
             {
                 if (ruleServ.IsValid(Rule))
                 {

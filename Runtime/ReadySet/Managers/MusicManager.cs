@@ -3,95 +3,55 @@ using UnityEngine;
 namespace RealMethod
 {
     [AddComponentMenu("RealMethod/Manager/MusicManager")]
-    public sealed class MusicManager : CompositManager<DefaulMusicState, DefaulMusicLayer>
+    public sealed class MusicManager : CompositManager<GlobalState>
     {
-        [Header("Music")]
+        [Header("MusicList")]
         [SerializeField]
-        private AudioClip[] CreateLayers;
-        [SerializeField]
-        private bool AddServiceOnInitiate = false;
+        private Map<Name16, AudioClip> Clips = new Map<Name16, AudioClip>();
 
-        protected override void OnInitiate(bool AlwaysLoaded)
+        // GameManager
+        public override void InitiateManager(Scope owner)
         {
-            foreach (var clip in CreateLayers)
+            base.InitiateManager(owner);
+            foreach (var clip in Clips)
             {
-                CreateLayer(clip);
+                CreateLayer(clip.Key, clip.Value);
             }
-            if (AddServiceOnInitiate)
-                Game.AddService<DefaulMusicState>(this);
-        }
-        protected override void MusicStateAssigned()
-        {
         }
 
-    }
-
-    public enum DefaulMusicLayer
-    {
-        Default,
-        Menu,
-        StartGame,
-        Level,
-        Cutscene,
-        Victory,
-        Defeat,
-        GameOver,
-        Tutorial,
-        Loading,
-        Exploration,
-        Combat,
-        Dialogue,
-        Quest,
-        Fight,
-        BossFight,
-        Puzzle,
-        Hint,
-        Mission,
-        Story,
-        Chase,
-        Damaged,
-        Racing,
-        Pause,
-        Inventory,
-        EndGame,
-    }
-
-    public sealed class DefaulMusicState : StateService<DefaulMusicLayer>
-    {
-        public DefaulMusicState() : base(DefaulMusicLayer.Default) // Replace default(StateList) with an actual enum value if needed
+        // Unity Methods
+        private void OnEnable()
         {
-
+            Game.State.OnStateChanged += OnStateChange;
         }
-
-        // Service Methods
-        protected override void OnStart(object Author)
+        protected override void Start()
         {
-        }
-        protected override void OnEnd(object Author)
-        {
-
-        }
-
-        // StateService Methods
-        protected override DefaulMusicLayer DefaultState()
-        {
-            return DefaulMusicLayer.Default;
-        }
-        public override bool CanSwitch(DefaulMusicLayer A, DefaulMusicLayer B)
-        {
-            if (A == B)
+            if (PlayOnStart)
             {
-                return false;
+                CurrentState = Game.State;
             }
-            return true;
+            base.Start();
         }
-        protected override bool CanResetforNewWorld(World NewWorld)
+        private void OnDisable()
         {
-            return false;
+            Game.State.OnStateChanged -= OnStateChange;
         }
 
-    }
+        // CompositManager Methods
+        protected override bool CompairStates(GlobalState State_A, GlobalState State_B)
+        {
+            return State_A == State_B;
+        }
 
+        // Functions
+        private void OnStateChange(GlobalState a, GlobalState b)
+        {
+            if (IsValidState(b))
+            {
+                PlayState(b);
+            }
+        }
+    }
 
 
 

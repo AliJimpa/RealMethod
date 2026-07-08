@@ -66,13 +66,9 @@ namespace RealMethod
         {
             return this;
         }
-        void IGameManager.InitiateManager(bool AlwaysLoaded)
+        void IGameManager.InitiateManager(Scope owner)
         {
-            InitiateManager(AlwaysLoaded);
-        }
-        void IGameManager.ResolveService(Service service, bool active)
-        {
-            InitiateService(service);
+            InitiateManager(owner);
         }
 
 
@@ -107,8 +103,7 @@ namespace RealMethod
 
 
         // Abstract Methods
-        protected abstract void InitiateManager(bool alwaysLoaded);
-        protected abstract void InitiateService(Service newService);
+        protected abstract void InitiateManager(Scope owner);
 
     }
 

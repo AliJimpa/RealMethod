@@ -46,20 +46,11 @@ namespace RealMethod
             throw new System.NotImplementedException();
         }
 
-        public MonoBehaviour GetManagerClass()
-        {
-            return this;
-        }
-        public void InitiateManager(bool AlwaysLoaded)
+
+        public void InitiateManager(Scope owner)
         {
             throw new System.NotImplementedException();
         }
-        public void ResolveService(Service service, bool active)
-        {
-            throw new System.NotImplementedException();
-        }
-
-
     }
 
 }

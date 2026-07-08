@@ -33,14 +33,9 @@ namespace RealMethod
         }
 
         // Initializes the manager and subscribes to the difficulty change event
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
             //CCGame.CastWorld<CCWorld>().OndifficultyChange += OnPlayerLevelChanged;
-        }
-
-        // Placeholder for initiating services, currently does nothing
-        public void ResolveService(Service service, bool active)
-        {
         }
 
         #endregion

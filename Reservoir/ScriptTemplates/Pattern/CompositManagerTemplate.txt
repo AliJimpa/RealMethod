@@ -1,0 +1,23 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : CompositManager<MUSCSTATE>
+{
+        [Header("MusicList")]
+        [SerializeField]
+        private Map<Name16, AudioClip> Clips = new Map<Name16, AudioClip>();
+
+        // IGameManager Interface
+        protected override void InitiateManager(Scope owner)
+        {
+            base.InitiateManager(owner);
+            foreach (var clip in Clips)
+            {
+                CreateLayer(clip.Key, clip.Value);
+            }
+        }
+
+        protected override bool CompairStates(MUSCIENUM State_A, MUSCIENUM State_B)
+        {
+            return State_A == State_B;
+        }
+}

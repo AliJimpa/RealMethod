@@ -3,7 +3,7 @@ using System;
 namespace RealMethod
 {
 
-    public abstract class StateService : Service
+    public abstract class StateService : GameModule
     {
         protected byte currentState { get; private set; }
         protected byte previousState { get; private set; }
@@ -16,14 +16,13 @@ namespace RealMethod
         }
 
         // StateService Methods
-        protected sealed override void OnNewWorld()
+        protected override void OnWorldChanged()
         {
             if (CanResetforNewWorld(Game.World))
             {
                 ResetToDefault();
             }
         }
-
         // Public Functions
         public bool SetState(byte target)
         {

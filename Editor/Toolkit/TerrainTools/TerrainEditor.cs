@@ -71,7 +71,7 @@ namespace RealMethod.Editor
     // If You Remove PCG Kit Just Remove ExportTreeData from this code.
     public class ExportTreeData : Object
     {
-        private EP_ScriptableObject<PCGCashAsset> CashFile;
+        private EP_Asset<PCGCashAsset> CashFile;
         private EP_String CashAddress;
         private ProjectSettingAsset ProjectSetting;
         private Terrain OwnerTerrain;
@@ -92,9 +92,9 @@ namespace RealMethod.Editor
                 return;
             }
 
-            CashFile = new EP_ScriptableObject<PCGCashAsset>("Cash", editor);
+            CashFile = new EP_Asset<PCGCashAsset>("Cash", editor);
             CashAddress = new EP_String("Address", editor);
-            CashAddress.SetValue(ProjectSetting.FindAddres(ProjectSettingAsset.IdentityAsset.PCG).Path + "/TerrainCash.asset");
+            CashAddress.SetValue(ProjectSetting.GetFolderPathByType(ProjectSettingAsset.AssetFormat.ScriptableObject) + "/TerrainCash.asset");
         }
 
         public void OnRender()
@@ -138,8 +138,8 @@ namespace RealMethod.Editor
                 if (GUILayout.Button("CreateCash"))
                 {
                     string directoryfile = Path.GetDirectoryName(CashAddress.GetValue());
-                    PCGResourceConfig ResurcePack = RM_Create.ScriptableObj<PCGResourceConfig>(directoryfile + "/TerrainResource.asset");
-                    PCGCashAsset Temporery = RM_Create.ScriptableObj<PCGCashAsset>(CashAddress.GetValue());
+                    PCGResourceConfig ResurcePack = RM_Create.Asset<PCGResourceConfig>(directoryfile + "/TerrainResource.asset");
+                    PCGCashAsset Temporery = RM_Create.Asset<PCGCashAsset>(CashAddress.GetValue());
                     TerrainData Data = OwnerTerrain.terrainData;
                     PCGSource[] TerrainSource = new PCGSource[Data.treePrototypes.Length];
                     TreeInstance[] trees = OwnerTerrain.terrainData.treeInstances;
@@ -182,4 +182,56 @@ namespace RealMethod.Editor
 
     }
 
+    public enum PCGSourceLayer
+    {
+        Background,
+        MiddelGround,
+        Forground,
+    }
+    public enum PCGSourceLoadOrder
+    {
+        Low,
+        Medium,
+        High,
+    }
+    public class PCGSource
+    {
+        public GameObject Prefab;
+        public PCGSourceLayer Layer;
+        public PCGSourceLoadOrder LoadPriority;
+        public string Label;
+        public int Count;
+    }
+    public interface IPCGCashAsset
+    {
+        void SetData(PCGData[] array);
+    }
+    public interface IPCGResource
+    {
+        void SetData(PCGSource[] array);
+    }
+    public class PCGResourceConfig : ConfigAsset
+    {
+
+    }
+    public class PCGCashAsset : DataAsset
+    {
+
+    }
+    public class PCGData
+    {
+        public Vector3 Position;
+        public Vector3 Rotation;
+        public Vector3 Scale;
+
+        public PCGData()
+        {
+            
+        }
+
+        public PCGData(int a1, int a2, int a3)
+        {
+            Position = new Vector3(a1, a2, a3);
+        }
+    }
 }

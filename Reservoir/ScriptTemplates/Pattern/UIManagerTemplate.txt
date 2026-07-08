@@ -1,0 +1,12 @@
+using RealMethod;
+
+public class #SCRIPTNAME# : UIManager
+{
+
+    // UIManager Methods
+    protected override void InitiateManager(Scope owner)
+    {
+
+    }
+
+}

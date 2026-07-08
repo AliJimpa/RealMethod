@@ -1,0 +1,33 @@
+using System;
+using RealMethod.Editor;
+using UnityEngine;
+
+public class #SCRIPTNAME# : CompileRule
+{
+    // CompileRule Methods
+    protected override void Initilized()
+    {
+        // Called right after Construct
+    }
+    public override void OnStartCheck(RuleExecutionMode mode)
+    {
+        // Called once per mode befor any cheking.
+    }
+    public override bool CanCheck(RuleExecutionMode mode, Type type)
+    {
+        // A Type that all target classes must derive from
+        if (mode == RuleExecutionMode.AfterCompilation)
+        {
+            return type.IsSubclassOf(typeof(????));
+        }
+        else
+        {
+            // Skip other mode
+            return false;
+        }
+    }
+    public override void OnCheck(Type type)
+    {
+        // Called when CanCheck was true.
+    }
+}

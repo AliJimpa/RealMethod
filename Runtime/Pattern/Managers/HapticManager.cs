@@ -22,7 +22,7 @@ namespace RealMethod
             private HapticManager Owner;
 
             // Implement IIdentifier Interface
-            public string NameID => Config.NameID;
+            public Name16 NameID => Config.NameID;
             // Implement IHapticProvider Interface
             public HapticController(HapticManager manager, HapticConfig config)
             {
@@ -65,17 +65,12 @@ namespace RealMethod
         {
             return this;
         }
-        public void InitiateManager(bool AlwaysLoaded)
+        public void InitiateManager(Scope owner)
         {
-            if (!AlwaysLoaded)
+            if (owner.IsWorldScope())
             {
                 Debug.LogWarning("HapticManager Should initiate in Game Scope");
                 return;
-            }
-
-            if (Game.TryFindService(out Spawn SpawnServ))
-            {
-                SpawnServ.BringManager(this);
             }
 
             if (DefaultConfig != null)
@@ -86,14 +81,6 @@ namespace RealMethod
                 }
             }
         }
-        public void ResolveService(Service service, bool active)
-        {
-            if (service is Spawn spawnservice)
-            {
-                spawnservice.BringManager(this);
-            }
-        }
-
 
         // Public Methods
         public IHapticProvider Produce(HapticConfig config)
@@ -110,7 +97,7 @@ namespace RealMethod
         {
             foreach (var item in produceList)
             {
-                if (item.NameID == target.NameID)
+                if (item == target)
                 {
                     return produceList.Remove(item);
                 }
@@ -146,9 +133,6 @@ namespace RealMethod
         [Header("Info")]
         [SerializeField]
         private string configName;
-
-        // Implement 
-        public string NameID => configName;
 
         private void OnValidate()
         {

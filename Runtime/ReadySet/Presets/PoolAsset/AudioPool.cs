@@ -6,7 +6,7 @@ using UnityEngine.Audio;
 namespace RealMethod
 {
     [CreateAssetMenu(fileName = "AudioPool", menuName = "RealMethod/Pool/AudioPool", order = 1)]
-    public sealed class AudioPool : PoolAsset<AudioSource> , IPoolSpawner<AudioSource>
+    public sealed class AudioPool : PoolAsset<AudioSource>, IPoolSpawner<AudioSource>
     {
         [Header("Setting")]
         [SerializeField]
@@ -21,7 +21,7 @@ namespace RealMethod
         private float rolloffDistanceMax = 100f;
 
         //Actions
-        public Action<AudioSource> OnSpawn;
+        public event Action<AudioSource> OnSpawned;
 
 
         // Private Variable
@@ -87,7 +87,7 @@ namespace RealMethod
         public AudioSource Spawn()
         {
             AudioSource result = Request();
-            OnSpawn?.Invoke(result);
+            OnSpawned?.Invoke(result);
             return result;
         }
 
@@ -109,8 +109,7 @@ namespace RealMethod
         // Base PoolAsset Methods
         protected override void OnRootInitiate(Transform Root)
         {
-            AudioManager audiomanager = Game.World.GetManager<AudioManager>();
-            if (audiomanager != null)
+            if (Game.World.TryFindGameManager(out AudioManager audiomanager))
             {
                 Root.SetParent(audiomanager.transform);
             }
@@ -192,14 +191,11 @@ namespace RealMethod
             return PoolBack(Comp);
         }
 
-#if UNITY_EDITOR
-        // Base DataAsset Methods
-        public override void OnEditorPlay()
+        protected override void Reset()
         {
-            base.OnEditorPlay();
+            base.Reset();
             UseCacheData = 0;
         }
-#endif
 
         // IEnumerator
         private IEnumerator PoolBack(AudioSource source)

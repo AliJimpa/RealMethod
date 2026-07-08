@@ -4,7 +4,6 @@ namespace RealMethod
 {
     public static class Array_Extension
     {
-        // Extention 
         public static bool IsValidIndex(this Array array, int index)
         {
             return index >= 0 && index < array.Length;
@@ -51,6 +50,24 @@ namespace RealMethod
             }
             return sum;
         }
+        /// <summary>
+        /// Appends two arrays into a new combined array.
+        /// </summary>
+        /// <typeparam name="T">The element type of the arrays.</typeparam>
+        /// <param name="first">The first array.</param>
+        /// <param name="second">The second array.</param>
+        /// <returns>A new array containing elements of both arrays.</returns>
+        public static T[] CombineWith<T>(this T[] first, T[] second)
+        {
+            if (first == null) return second;
+            if (second == null) return first;
 
+            T[] result = new T[first.Length + second.Length];
+
+            Array.Copy(first, 0, result, 0, first.Length);
+            Array.Copy(second, 0, result, first.Length, second.Length);
+
+            return result;
+        }
     }
 }

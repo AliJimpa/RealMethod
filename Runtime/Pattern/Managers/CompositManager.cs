@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -33,13 +32,37 @@ namespace RealMethod
         }
         [Header("Composit")]
         [SerializeField]
+        private Transform header;
+        [SerializeField]
         private AudioMixerGroup DefaultGroup;
 
-        private Hictionary<AudioBehaviour> Layers = new Hictionary<AudioBehaviour>(5);
+        protected NameTable<AudioBehaviour> Layers = new NameTable<AudioBehaviour>(5);
         public int LayerCount => Layers.Count;
 
+        // Override Methods
+        public override void InitiateManager(Scope owner)
+        {
+            base.InitiateManager(owner);
+
+            foreach (Transform item in header)
+            {
+                AudioSource source = item.GetComponent<AudioSource>();
+                if (source != null)
+                {
+                    if (!Layers.ContainsKey(item.name))
+                    {
+                        Layers.Add(item.name, source);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Layer '{item.name}' already exists in the manager.");
+                    }
+                }
+            }
+        }
+
         // Public Functions
-        public void PlayLayer(string layerName)
+        public void PlayLayer(Name16 layerName)
         {
             if (Layers.ContainsKey(layerName))
             {
@@ -58,7 +81,7 @@ namespace RealMethod
                 Debug.LogWarning($"Layer '{layerName}' does not exist in the manager.");
             }
         }
-        public void PauseLayer(string layerName)
+        public void PauseLayer(Name16 layerName)
         {
             if (Layers.ContainsKey(layerName))
             {
@@ -77,25 +100,35 @@ namespace RealMethod
                 Debug.LogWarning($"Layer '{layerName}' does not exist in the manager.");
             }
         }
-        public bool IsValidLayer(string layerName)
+        public void Pause()
+        {
+            foreach (var layer in Layers)
+            {
+                if (layer.Value is AudioSource source)
+                {
+                    source.Pause();
+                }
+            }
+        }
+        public bool IsValidLayer(Name16 layerName)
         {
             return Layers.ContainsKey(layerName);
         }
-        public void AddLayer(string layerName, APrefab prefab)
+        public void AddLayer(Name16 layerName, APrefab prefab)
         {
             if (IsValidLayer(layerName))
             {
                 Debug.LogWarning($"Layer '{layerName}' already exists. Use a different name.");
                 return;
             }
-            AudioSource source = Instantiate(prefab.asset, transform).GetComponent<AudioSource>();
+            AudioSource source = Instantiate<GameObject>(prefab, header).GetComponent<AudioSource>();
             Layers.Add(layerName, source);
         }
         public void CreateLayer(AudioClip clip)
         {
             CreateLayer(clip.name, clip);
         }
-        public void CreateLayer(string layerName, AudioClip clip)
+        public void CreateLayer(Name16 layerName, AudioClip clip)
         {
             if (IsValidLayer(layerName))
             {
@@ -103,7 +136,7 @@ namespace RealMethod
                 return;
             }
             GameObject SoundObject = new GameObject("Layer_" + clip.name, new Type[1] { typeof(AudioSource) });
-            SoundObject.transform.SetParent(transform);
+            SoundObject.transform.SetParent(header);
             AudioSource source = SoundObject.GetComponent<AudioSource>();
             source.clip = clip;
             source.outputAudioMixerGroup = DefaultGroup;
@@ -113,7 +146,7 @@ namespace RealMethod
             source.loop = true;
             Layers.Add(layerName, source);
         }
-        public void RemoveLayer(string layerName)
+        public void RemoveLayer(Name16 layerName)
         {
             if (Layers.ContainsKey(layerName))
             {
@@ -125,14 +158,14 @@ namespace RealMethod
                 Debug.LogWarning($"Layer '{layerName}' does not exist in the manager.");
             }
         }
-        public void FadeInLayer(string layerName, float duration)
+        public void FadeInLayer(Name16 layerName, float duration)
         {
             if (Layers.ContainsKey(layerName))
             {
                 AudioSource source = Layers[layerName] as AudioSource;
                 if (source != null)
                 {
-                    StartCoroutine(FadeIn(source, duration));
+                    StartCoroutine(RM_Audio.FadeIn(source, duration));
                 }
                 else
                 {
@@ -144,14 +177,14 @@ namespace RealMethod
                 Debug.LogWarning($"Cannot fade in layer: {layerName} not found.");
             }
         }
-        public void FadeOutLayer(string layerName, float duration)
+        public void FadeOutLayer(Name16 layerName, float duration)
         {
             if (Layers.ContainsKey(layerName))
             {
                 AudioSource source = Layers[layerName] as AudioSource;
                 if (source != null)
                 {
-                    StartCoroutine(FadeOut(source, duration));
+                    StartCoroutine(RM_Audio.FadeOut(source, duration));
                 }
                 else
                 {
@@ -163,7 +196,7 @@ namespace RealMethod
                 Debug.LogWarning($"Cannot fade out layer: {layerName} not found.");
             }
         }
-        public void CrossfadeLayer(string layerA, string layerB, float duration)
+        public void CrossfadeLayer(Name16 layerA, Name16 layerB, float duration)
         {
             if (Layers.ContainsKey(layerA) && Layers.ContainsKey(layerB))
             {
@@ -171,8 +204,8 @@ namespace RealMethod
                 AudioSource sourceB = Layers[layerB] as AudioSource;
                 if (sourceA != null && sourceB != null)
                 {
-                    StartCoroutine(FadeIn(sourceB, duration));
-                    StartCoroutine(FadeOut(sourceA, duration));
+                    StartCoroutine(RM_Audio.FadeIn(sourceB, duration));
+                    StartCoroutine(RM_Audio.FadeOut(sourceA, duration));
                 }
                 else
                 {
@@ -184,11 +217,22 @@ namespace RealMethod
                 Debug.LogWarning($"Cannot crossfade layers: {layerA} or {layerB} not found.");
             }
         }
-        public void TransitionToSnapshot(AudioMixerSnapshot snapshot, float transitionTime = 1f)
+        public AudioSource[] GetActiveLayers()
         {
-            snapshot?.TransitionTo(transitionTime);
+            List<AudioSource> Result = new List<AudioSource>();
+            foreach (var layer in Layers)
+            {
+                if (layer.Value is AudioSource source)
+                {
+                    if (source.isPlaying)
+                    {
+                        Result.Add(source);
+                    }
+                }
+            }
+            return Result.ToArray();
         }
-        public T GetLayerComponent<T>(string layerName) where T : AudioBehaviour
+        public T GetLayer<T>(Name16 layerName) where T : AudioBehaviour
         {
             if (Layers.ContainsKey(layerName))
             {
@@ -200,7 +244,7 @@ namespace RealMethod
                 return null;
             }
         }
-        public AudioSource GetLayer(string layerName)
+        public AudioSource GetLayer(Name16 layerName)
         {
             if (Layers.ContainsKey(layerName))
             {
@@ -212,7 +256,12 @@ namespace RealMethod
                 return null;
             }
         }
-        public MusicLerp CreateLerp(string LayerA, string LayerB)
+        public AudioBehaviour[] GetLayers()
+        {
+            return Layers.Values.ToArray();
+        }
+
+        public MusicLerp CreateLerp(Name16 LayerA, Name16 LayerB)
         {
             if (!Layers.ContainsKey(LayerA) || !Layers.ContainsKey(LayerB))
             {
@@ -221,239 +270,126 @@ namespace RealMethod
             }
             return new MusicLerp((AudioSource)Layers[LayerA], (AudioSource)Layers[LayerB]);
         }
-        public AudioBehaviour[] GetLayers()
-        {
-            return Layers.GetValues().ToArray();
-        }
-
-        // Protected Functions
-        protected void InitiateLayers()
-        {
-            foreach (Transform item in transform)
-            {
-                AudioSource source = item.GetComponent<AudioSource>();
-                if (source != null)
-                {
-                    if (!Layers.ContainsKey(item.name))
-                    {
-                        Layers.Add(item.name, source);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Layer '{item.name}' already exists in the manager.");
-                    }
-                }
-            }
-        }
-
-        // Enumerator
-        private IEnumerator FadeIn(AudioSource source, float duration)
-        {
-            source.Play();
-            source.volume = 0f; // Start volume at 0
-            float timer = 0f;
-            while (timer < duration)
-            {
-                float t = timer / duration;
-                source.volume = Mathf.Lerp(0f, 1f, t);
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            source.volume = 1f; // Ensure volume is set to 1 at the end
-        }
-        private IEnumerator FadeOut(AudioSource source, float duration)
-        {
-            source.volume = 1f; // Start volume at 1
-            float timer = 0f;
-            while (timer < duration)
-            {
-                float t = timer / duration;
-                source.volume = Mathf.Lerp(1f, 0f, t);
-                timer += Time.deltaTime;
-                yield return null;
-            }
-            source.volume = 0f; // Ensure volume is set to 0 at the end
-            source.Stop();
-        }
-
     }
 
-
-    public abstract class CompositManager<T, J> : CompositManager where T : StateService where J : Enum
+    public abstract class CompositManager<T> : CompositManager
     {
         [Serializable]
         protected struct MusicState
         {
             [SerializeField]
-            private J State;
-            public J state => State;
+            private bool DeactivePreviousLayers;
             [SerializeField]
-            private bool CrossWithPreviousState;
+            private Name16[] ActiveLayers;
+            [SerializeField]
+            private bool FadingMethod;
+            [SerializeField, ConditionalHide("FadingMethod", true, false)]
+            private float Duration;
             [Space]
             [SerializeField]
-            private string[] FadeInLayers;
-            [SerializeField]
-            private string[] FadeOutLayers;
-            [Space]
-            [SerializeField]
+            private bool ApplySnapshot;
+            [SerializeField, ConditionalHide("ApplySnapshot", true, false)]
             public AudioMixerSnapshot shot;
-            [SerializeField]
-            private float duration;
 
-            private CompositManager manager;
 
-            public void Start(CompositManager owner)
+            public void Play(CompositManager manager)
             {
-                manager = owner;
-            }
-
-            public void Run(MusicState previousState)
-            {
-                if (manager == null)
+                if (DeactivePreviousLayers)
                 {
-                    return;
-                }
-                if (CrossWithPreviousState)
-                {
-                    previousState.Reverse();
-                }
-                if (FadeInLayers != null)
-                {
-                    foreach (var layer in FadeInLayers)
+                    AudioSource[] layers = manager.GetActiveLayers();
+                    foreach (var layer in layers)
                     {
-                        manager.FadeInLayer(layer, duration);
+                        if (FadingMethod)
+                        {
+                            manager.StartCoroutine(RM_Audio.FadeOut(layer, Duration));
+                        }
+                        else
+                        {
+                            layer.Stop();
+                        }
+
                     }
                 }
-                if (FadeOutLayers != null)
-                {
-                    foreach (var layer in FadeOutLayers)
-                    {
-                        manager.FadeOutLayer(layer, duration);
-                    }
-                }
-                if (shot != null)
-                {
-                    manager.TransitionToSnapshot(shot, duration);
-                }
-            }
 
-            public void Reverse()
-            {
-                if (manager == null)
+                foreach (var layer in ActiveLayers)
                 {
-                    return;
-                }
-                if (FadeInLayers != null)
-                {
-                    foreach (var layer in FadeInLayers)
+                    if (FadingMethod)
                     {
-                        manager.FadeOutLayer(layer, duration);
+                        manager.FadeInLayer(layer, Duration);
                     }
+                    else
+                    {
+                        manager.PauseLayer(layer);
+                    }
+                }
+
+                if (ApplySnapshot)
+                {
+                    manager.TransitionToSnapshot(shot, Duration);
                 }
             }
         }
-
 
         [Header("State")]
+        [field: SerializeField]
+        protected bool PlayOnStart { get; private set; } = true;
+        [field: SerializeField]
+        public T CurrentState { get; protected set; }
         [SerializeField]
-        private MusicState[] StateBehavior;
-        [SerializeField, Tooltip("Run the default state on initiate, if true, the 'FirstState' in the Service Class will be run Behavior.")]
-        private bool RunFirstState = false;
+        protected Map<T, MusicState> StateBehavior = new Map<T, MusicState>();
 
-        protected T stateService;
-        public J currentState => stateService.GetCurrentState<J>();
+        public event Action<T> OnMusicChange;
 
-        // IGameManager Interface Implementation
-        protected sealed override void InitiateManager(bool AlwaysLoaded)
+        // Unity
+        protected virtual void Start()
         {
-            InitiateLayers();
-            OnInitiate(AlwaysLoaded);
-            InitiateMusicStates();
-            if (Game.TryFindService(out stateService))
+            if (PlayOnStart)
             {
-                stateService.OnStateUpdate += OnStateChanged;
-                if (RunFirstState)
-                {
-                    if (IsValidState(currentState))
-                    {
-                        GetMusicState(currentState).Run(default);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"First state '{currentState}' is not valid in the music state behavior.");
-                    }
-                }
-                MusicStateAssigned();
-            }
-        }
-        protected sealed override void InitiateService(Service service)
-        {
-            if (stateService == null)
-            {
-                if (service is T stateserv)
-                {
-                    stateService = stateserv;
-                    stateService.OnStateUpdate += OnStateChanged;
-                    if (IsValidState(currentState))
-                    {
-                        GetMusicState(currentState).Run(default);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"First state '{currentState}' is not valid in the music state behavior.");
-                    }
-                    MusicStateAssigned();
-                }
+                PlayState(CurrentState, false);
             }
         }
 
-
-        // Protected Methods
-        protected virtual void OnStateChanged(StateService service)
+        // Public Functions
+        public void PlayState(T state, bool CompairState = true)
         {
-            J NewState = stateService.GetCurrentState<J>();
-            if (IsValidState(NewState))
+            if (CompairState)
             {
-                MusicState NewMusicState = GetMusicState(NewState);
-                J LastState = stateService.GetPreviousState<J>();
-                MusicState LastMusicState = GetMusicState(LastState);
-                NewMusicState.Run(LastMusicState);
-            }
-        }
-
-        // Private Methods
-        private void InitiateMusicStates()
-        {
-            List<J> seen = new List<J>();
-
-            for (int i = 0; i < StateBehavior.Length; i++)
-            {
-                if (seen.Contains(StateBehavior[i].state))
+                if (CompairStates(state, CurrentState))
                 {
-                    Debug.LogWarning($"Duplicate layer '{StateBehavior[i].state}' found at index {i} (already added at index {seen.IndexOf(StateBehavior[i].state)})");
-                }
-                else
-                {
-                    StateBehavior[i].Start(this);
-                    seen.Add(StateBehavior[i].state);
+                    Debug.LogWarning($"State {state} already is playing");
+                    return;
                 }
             }
+            if (TryFindState(state, out MusicState Music))
+            {
+                Music.Play(this);
+                CurrentState = state;
+                OnMusicChange?.Invoke(CurrentState);
+            }
+            else
+            {
+                Debug.LogWarning($"State ({state}) is not valid in the music state behavior.");
+            }
         }
-        private bool IsValidState(J state)
+        public bool IsValidState(T TargetState)
         {
-            return StateBehavior.Any(s => s.state.Equals(state));
+            return StateBehavior.ContainsKey(TargetState);
         }
-        private MusicState GetMusicState(J state)
+
+        // Private Functions
+        protected bool TryFindState(T TargetState, out MusicState result)
         {
-            return StateBehavior.FirstOrDefault(s => s.state.Equals(state));
+            if (StateBehavior.ContainsKey(TargetState))
+            {
+                result = StateBehavior[TargetState];
+                return true;
+            }
+            result = default;
+            return false;
         }
 
-
-        //Abstract Method
-        protected abstract void OnInitiate(bool AlwaysLoaded);
-        protected abstract void MusicStateAssigned();
-
+        // Abstraction Methods
+        protected abstract bool CompairStates(T State_A, T State_B);
     }
-
 
 }

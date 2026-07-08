@@ -19,7 +19,7 @@ namespace RealMethod
         private IInventoryItem itemprovider;
 
         // ExecutCommand Methods
-        protected override bool OnInitiate(Object author, Object owner)
+        protected override bool OnInitiate(Object owner)
         {
             if (items == null)
             {
@@ -36,12 +36,12 @@ namespace RealMethod
                 return false;
             }
         }
-        protected override bool CanExecute(object Owner)
+        protected override bool CanExecute(object Executer)
         {
             if (!enabled)
                 return false;
 
-            if (Owner is Component mono)
+            if (Executer is Component mono)
             {
                 IPicker Picker = mono.GetComponent<IPicker>();
                 if (Picker != null)

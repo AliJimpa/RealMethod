@@ -3,16 +3,39 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Reflection;
 
+
 namespace RealMethod.Editor
 {
-    // Base EditorProperty Class
-    // This class is used to create custom editor properties that can be rendered in the Unity Editor.
+    /// <summary>
+    /// Base class responsible for rendering a property in the Unity Editor
+    /// and handling potential validation errors with optional fix actions.
+    /// </summary>
     public abstract class EditorProperty
     {
-        protected Object Owner;
-        public string PropertyName { get; private set; }
-        private ErrorAction PropertyError = null;
+        /// <summary>
+        /// Holds the current error state for this property.
+        /// If not null, the property will render an error instead of its normal UI.
+        /// </summary>
+        private ErrorAction PropertyError;
 
+
+        /// <summary>
+        /// The Unity object that owns this property.
+        /// Usually a MonoBehaviour, ScriptableObject, or other UnityEngine.Object.
+        /// </summary>
+        public Object Owner { get; private set; }
+        /// <summary>
+        /// Name of the property being rendered.
+        /// Used for identification and debugging.
+        /// </summary>
+        public string PropertyName { get; private set; }
+
+
+        /// <summary>
+        /// Creates a new editor property renderer.
+        /// </summary>
+        /// <param name="_Name">Name of the property.</param>
+        /// <param name="_Owner">Object that owns the property.</param>
         public EditorProperty(string _Name, Object _Owner)
         {
             PropertyName = _Name;
@@ -24,9 +47,17 @@ namespace RealMethod.Editor
             }
         }
 
+
+        /// <summary>
+        /// Renders the property in the inspector.
+        /// If the property has an error, the error UI is rendered instead.
+        /// </summary>
+        /// <returns>
+        /// A byte result defined by the implementation (usually used for change flags or state).
+        /// </returns>
         public byte Render()
         {
-            if (PropertyError == null)
+            if (!PropertyError.IsValid)
             {
                 return UpdateRender();
             }
@@ -36,36 +67,142 @@ namespace RealMethod.Editor
                 return 0;
             }
         }
-
+        /// <summary>
+        /// Registers an error for this property and provides a fix callback.
+        /// When an error exists, normal rendering is replaced with an error UI.
+        /// </summary>
+        /// <param name="message">Error message shown in the inspector.</param>
+        /// <param name="id">Identifier used to determine which fix action to apply.</param>
         protected void Error(string message, int id)
         {
-            PropertyError = new ErrorAction(message, id, FixError);
+            PropertyError.Create(message, id, FixError);
         }
 
+
+        /// <summary>
+        /// Implemented by derived classes to render the property UI.
+        /// Called only when no error is active.
+        /// </summary>
         protected abstract byte UpdateRender();
+        /// <summary>
+        /// Called when the user activates the fix action from an error message.
+        /// </summary>
+        /// <param name="Id">Identifier of the error that should be fixed.</param>
         protected abstract void FixError(int Id);
     }
+    /// <summary>
+    /// Generic editor property wrapper that stores and manages a value of type <typeparamref name="T"/>.
+    /// 
+    /// This class extends <see cref="EditorProperty"/> and adds value storage, 
+    /// comparison operators, and implicit conversion for easier usage in editor code.
+    /// 
+    /// It is typically used by custom inspector systems to track a property's
+    /// current value and optionally compare against a cached value to detect changes.
+    /// </summary>
+    /// <typeparam name="T">Type of the property value.</typeparam>
     public abstract class EditorProperty<T> : EditorProperty
     {
+        /// <summary>
+        /// Returns true if the current value is valid (not null).
+        /// Mainly useful for reference types.
+        /// </summary>
         public bool isvalid => CurrentValue != null;
+        /// <summary>
+        /// Current value of the property.
+        /// This is the active value used by the editor UI.
+        /// </summary>
         protected T CurrentValue;
+        /// <summary>
+        /// Cached value used for change tracking or restoring previous state.
+        /// (Likely intended as "CacheValue".)
+        /// </summary>
         protected T CashValue;
 
+        /// <summary>
+        /// Creates a new property without assigning a default value.
+        /// </summary>
+        /// <param name="Name">Name of the property.</param>
+        /// <param name="other">Owner Unity object.</param>
         public EditorProperty(string Name, Object other) : base(Name, other)
         {
         }
+        /// <summary>
+        /// Creates a new property with a default value.
+        /// The default is applied to both the current and cached values.
+        /// </summary>
+        /// <param name="Name">Name of the property.</param>
+        /// <param name="other">Owner Unity object.</param>
+        /// <param name="DefaultValue">Initial value assigned to the property.</param>
         public EditorProperty(string Name, Object other, T DefaultValue) : base(Name, other)
         {
             CurrentValue = DefaultValue;
             CashValue = DefaultValue;
         }
+        /// <summary>
+        /// Returns the current value of the property.
+        /// </summary>
         public T GetValue()
         {
             return CurrentValue;
         }
+        /// <summary>
+        /// Updates the current value of the property.
+        /// </summary>
+        /// <param name="NewValue">New value to assign.</param>
         public void SetValue(T NewValue)
         {
             CurrentValue = NewValue;
+        }
+
+        // Operators
+        public static implicit operator T(EditorProperty<T> property)
+        {
+            return property != null ? property.CurrentValue : default;
+        }
+        public static bool operator ==(EditorProperty<T> a, EditorProperty<T> b)
+        {
+            if (ReferenceEquals(a, b))
+                return true;
+
+            if (a is null || b is null)
+                return false;
+
+            return EqualityComparer<T>.Default.Equals(a.CurrentValue, b.CurrentValue);
+        }
+        public static bool operator !=(EditorProperty<T> a, EditorProperty<T> b)
+        {
+            return !(a == b);
+        }
+        public static bool operator ==(EditorProperty<T> a, T b)
+        {
+            if (a is null)
+                return false;
+
+            return EqualityComparer<T>.Default.Equals(a.CurrentValue, b);
+        }
+        public static bool operator !=(EditorProperty<T> a, T b)
+        {
+            return !(a == b);
+        }
+
+        // Overrides
+        /// <summary>
+        /// Determines equality between this property and another object.
+        /// Supports comparison with both EditorProperty&lt;T&gt; and raw values of type T.
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if (obj is EditorProperty<T> other)
+                return EqualityComparer<T>.Default.Equals(CurrentValue, other.CurrentValue);
+
+            if (obj is T value)
+                return EqualityComparer<T>.Default.Equals(CurrentValue, value);
+
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return CurrentValue?.GetHashCode() ?? 0;
         }
 
     }
@@ -317,7 +454,7 @@ namespace RealMethod.Editor
 
         protected override byte UpdateRender()
         {
-            CashValue = EditorGUILayout.Popup("Ability Effect", CurrentValue, Options);
+            CashValue = EditorGUILayout.Popup($"{PropertyName}:", CurrentValue, Options);
             if (CashValue == CurrentValue)
             {
                 return 0; // No change
@@ -333,9 +470,9 @@ namespace RealMethod.Editor
             throw new System.NotImplementedException();
         }
     }
-    public class EP_ScriptableObject<T> : EditorProperty<T> where T : ScriptableObject
+    public class EP_Asset<T> : EditorProperty<T> where T : PrimitiveAsset
     {
-        public EP_ScriptableObject(string Name, Object other) : base(Name, other)
+        public EP_Asset(string Name, Object other) : base(Name, other)
         {
             CurrentValue = null;
             CashValue = null;
@@ -359,9 +496,9 @@ namespace RealMethod.Editor
         }
 
     }
-    public class EP_Class<T> : EditorProperty<T> where T : class
+    public class EP_Variable<T> : EditorProperty<T> where T : class
     {
-        public EP_Class(string Name, Object other) : base(Name, other)
+        public EP_Variable(string Name, Object other) : base(Name, other)
         {
         }
 
@@ -524,7 +661,6 @@ namespace RealMethod.Editor
     }
 
 
-
     // Storeable
     // EditorProperty that can be stored in the MetaData
     public abstract class EP_Storeable : EditorProperty
@@ -616,9 +752,9 @@ namespace RealMethod.Editor
 
     }
     /// Sample EP_Storeable
-    public class EPS_ScriptableObjectList<T> : EP_StoreableList<T> where T : ScriptableObject
+    public class EPS_AssetList<T> : EP_StoreableList<T> where T : PrimitiveAsset
     {
-        public EPS_ScriptableObjectList(UnityEditor.Editor other, string Name) : base(other, Name)
+        public EPS_AssetList(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 
@@ -715,9 +851,6 @@ namespace RealMethod.Editor
             return AssetDatabase.GetAssetPath(Target);
         }
 
-
-
-
     }
     public class EPS_Enum<T> : EP_Storeable<T> where T : System.Enum
     {
@@ -770,9 +903,9 @@ namespace RealMethod.Editor
         {
         }
     }
-    public class EPS_ScriptableObject<T> : EP_Storeable<T> where T : ScriptableObject
+    public class EPS_Asset<T> : EP_Storeable<T> where T : PrimitiveAsset
     {
-        public EPS_ScriptableObject(UnityEditor.Editor other, string Name) : base(other, Name)
+        public EPS_Asset(UnityEditor.Editor other, string Name) : base(other, Name)
         {
         }
 

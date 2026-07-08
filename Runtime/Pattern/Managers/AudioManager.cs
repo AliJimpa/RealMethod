@@ -10,22 +10,20 @@ namespace RealMethod
     {
         [Header("Audio")]
         [SerializeField]
-        private AudioMixerGroup DefaultGroup;
-        public AudioMixerGroup defaultGroup => DefaultGroup;
+        private AudioMixerGroup defaultGroup;
+        public AudioMixerGroup DefaultGroup => defaultGroup;
 
         public ObjectPool<AudioSource> soundPool;
 
-        protected override void InitiateManager(bool AlwaysLoaded)
+        // Manager
+        public override void InitiateManager(Scope owner)
         {
-            if (AlwaysLoaded)
+            base.InitiateManager(owner);
+
+            if (owner.IsGameScope())
             {
                 Debug.LogError("You can't use AudioManager in [Game] Scope");
                 return;
-            }
-
-            if (CanBringtoSpawn() && Game.TryFindService(out Spawn SpawnServ))
-            {
-                SpawnServ.BringManager(this);
             }
 
             soundPool = new ObjectPool<AudioSource>(
@@ -35,15 +33,7 @@ namespace RealMethod
             actionOnDestroy: OnDestroySource,
             collectionCheck: false,
             defaultCapacity: 10,
-            maxSize: 500
-        );
-        }
-        protected override void InitiateService(Service service)
-        {
-            if (CanBringtoSpawn() && service is Spawn SpawnServ)
-            {
-                SpawnServ.BringManager(this);
-            }
+            maxSize: 500);
         }
 
         // Public Functions
@@ -51,7 +41,7 @@ namespace RealMethod
         {
             AudioSource source = soundPool.Get();
             source.clip = clip;
-            source.outputAudioMixerGroup = group != null ? group : DefaultGroup;
+            source.outputAudioMixerGroup = group != null ? group : defaultGroup;
             source.spatialBlend = 1;
             source.minDistance = rolloffDistanceMin;
             source.loop = loop;
@@ -75,7 +65,7 @@ namespace RealMethod
         {
             AudioSource source = soundPool.Get();
             source.clip = clip;
-            source.outputAudioMixerGroup = group != null ? group : DefaultGroup;
+            source.outputAudioMixerGroup = group != null ? group : defaultGroup;
             source.spatialBlend = 0;
             source.minDistance = rolloffDistanceMin;
             source.loop = loop;
@@ -120,9 +110,6 @@ namespace RealMethod
             if (source != null)
                 Destroy(source.gameObject);
         }
-
-        // Abstract Methods
-        protected abstract bool CanBringtoSpawn();
 
         // Enumerator Methods
         private IEnumerator PauseAfterSecond(AudioSource source, float time)
